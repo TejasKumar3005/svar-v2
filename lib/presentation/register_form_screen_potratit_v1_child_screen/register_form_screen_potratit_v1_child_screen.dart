@@ -1,0 +1,684 @@
+import 'package:svar_new/widgets/custom_icon_button.dart';
+import 'package:svar_new/widgets/custom_text_form_field.dart';
+import 'package:svar_new/core/utils/validation_functions.dart';
+import 'package:svar_new/widgets/custom_outlined_button.dart';
+import 'models/register_form_screen_potratit_v1_child_model.dart';
+import 'package:flutter/material.dart';
+import 'package:svar_new/core/app_export.dart';
+import 'provider/register_form_screen_potratit_v1_child_provider.dart';
+
+class RegisterFormScreenPotratitV1ChildScreen extends StatefulWidget {
+  const RegisterFormScreenPotratitV1ChildScreen({Key? key})
+      : super(
+          key: key,
+        );
+
+  @override
+  RegisterFormScreenPotratitV1ChildScreenState createState() =>
+      RegisterFormScreenPotratitV1ChildScreenState();
+
+  static Widget builder(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => RegisterFormScreenPotratitV1ChildProvider(),
+      child: RegisterFormScreenPotratitV1ChildScreen(),
+    );
+  }
+}
+
+// ignore_for_file: must_be_immutable
+class RegisterFormScreenPotratitV1ChildScreenState
+    extends State<RegisterFormScreenPotratitV1ChildScreen> {
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        extendBody: true,
+        extendBodyBehindAppBar: true,
+        backgroundColor: appTheme.orange100,
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          width: SizeUtils.width,
+          height: SizeUtils.height,
+          decoration: BoxDecoration(
+            color: appTheme.orange100,
+            image: DecorationImage(
+              image: AssetImage(
+                ImageConstant.imgRegisterFormScreen,
+              ),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Form(
+              key: _formKey,
+              child: Container(
+                width: 432.h,
+                padding: EdgeInsets.symmetric(
+                  horizontal: 37.h,
+                  vertical: 17.v,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 8.v),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 1.v),
+                            child: CustomIconButton(
+                              height: 37.adaptSize,
+                              width: 37.adaptSize,
+                              padding: EdgeInsets.all(9.h),
+                              decoration: IconButtonStyleHelper
+                                  .gradientDeepOrangeToDeepOrange,
+                              child: CustomImageView(
+                                imagePath:
+                                    ImageConstant.imgArrowDownWhiteA70001,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 6.h),
+                            child: CustomIconButton(
+                              height: 38.adaptSize,
+                              width: 38.adaptSize,
+                              padding: EdgeInsets.all(3.h),
+                              onTap: () {
+                                onTapBtnHomeBTN(context);
+                              },
+                              child: CustomImageView(
+                                imagePath: ImageConstant.imgHomeBtn,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 17.v),
+                    Container(
+                      margin: EdgeInsets.only(
+                        left: 7.h,
+                        right: 5.h,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 9.h,
+                        vertical: 37.v,
+                      ),
+                      decoration: AppDecoration.outlineOrangeA.copyWith(
+                        borderRadius: BorderRadiusStyle.roundedBorder10,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildNamePlaceholder(context),
+                          SizedBox(height: 16.v),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 3.h),
+                                decoration:
+                                    AppDecoration.outlineOrangeA200.copyWith(
+                                  borderRadius:
+                                      BorderRadiusStyle.roundedBorder5,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CustomImageView(
+                                      imagePath: ImageConstant.imgSettings,
+                                      width: 10.h,
+                                      margin: EdgeInsets.only(
+                                        top: 4.v,
+                                        bottom: 1.v,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 4.h),
+                                      child: SizedBox(
+                                        height: 23.v,
+                                        child: VerticalDivider(
+                                          width: 1.h,
+                                          thickness: 1.v,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                        left: 13.h,
+                                        top: 2.v,
+                                        bottom: 1.v,
+                                      ),
+                                      child: Text(
+                                        "lbl_guardian".tr,
+                                        style: theme.textTheme.labelLarge,
+                                      ),
+                                    ),
+                                    CustomImageView(
+                                      imagePath: ImageConstant.imgPolygon23,
+                                      width: 5.h,
+                                      radius: BorderRadius.circular(
+                                        1.h,
+                                      ),
+                                      margin: EdgeInsets.only(
+                                        left: 15.h,
+                                        top: 7.v,
+                                        bottom: 8.v,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 24.v,
+                                width: 193.h,
+                                child: Stack(
+                                  alignment: Alignment.centerLeft,
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Container(
+                                        width: 191.h,
+                                        margin: EdgeInsets.only(left: 1.h),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 7.h,
+                                          vertical: 2.v,
+                                        ),
+                                        decoration: AppDecoration
+                                            .outlineOrangeA200
+                                            .copyWith(
+                                          borderRadius:
+                                              BorderRadiusStyle.roundedBorder5,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 19.h),
+                                              child: Text(
+                                                "lbl_9312211596".tr,
+                                                style:
+                                                    theme.textTheme.labelLarge,
+                                              ),
+                                            ),
+                                            Container(
+                                              width: 38.h,
+                                              margin:
+                                                  EdgeInsets.only(bottom: 3.v),
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 4.h,
+                                                vertical: 2.v,
+                                              ),
+                                              decoration: AppDecoration
+                                                  .outlineOrangeA2001
+                                                  .copyWith(
+                                                borderRadius: BorderRadiusStyle
+                                                    .roundedBorder5,
+                                              ),
+                                              child: Text(
+                                                "lbl_send_otp".tr,
+                                                style: CustomTextStyles
+                                                    .nunitoTeal90004ExtraBold,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Container(
+                                        height: 24.v,
+                                        width: 20.h,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 1.h,
+                                          vertical: 2.v,
+                                        ),
+                                        decoration: AppDecoration
+                                            .outlineOrangeA2002
+                                            .copyWith(
+                                          borderRadius:
+                                              BorderRadiusStyle.customBorderTL5,
+                                        ),
+                                        child: CustomImageView(
+                                          imagePath: ImageConstant.imgIndia,
+                                          width: 14.h,
+                                          alignment: Alignment.center,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(height: 16.v),
+                          _buildAddressGrp(context),
+                          SizedBox(height: 17.v),
+                          _buildEmail(context),
+                          SizedBox(height: 6.v),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 50.v,
+                                width: 137.h,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    _buildEditText(context),
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        "lbl".tr,
+                                        style: CustomTextStyles
+                                            .displaySmallNunitoTeal90004,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.symmetric(vertical: 12.v),
+                                padding: EdgeInsets.symmetric(horizontal: 6.h),
+                                decoration:
+                                    AppDecoration.outlineOrangeA200.copyWith(
+                                  borderRadius:
+                                      BorderRadiusStyle.roundedBorder5,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      height: 20.v,
+                                      width: 13.h,
+                                      margin: EdgeInsets.only(top: 2.v),
+                                      child: Stack(
+                                        alignment: Alignment.centerLeft,
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Container(
+                                              height: 15.v,
+                                              width: 13.h,
+                                              margin: EdgeInsets.only(top: 1.v),
+                                              decoration: BoxDecoration(
+                                                color: appTheme.gray5001,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  3.h,
+                                                ),
+                                                border: Border.all(
+                                                  color: appTheme.orangeA200,
+                                                  width: 1.h,
+                                                  strokeAlign:
+                                                      strokeAlignOutside,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 1.h),
+                                              child: Text(
+                                                "lbl_0".tr,
+                                                style:
+                                                    theme.textTheme.titleSmall,
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 20.v,
+                                      width: 15.h,
+                                      margin: EdgeInsets.only(
+                                        left: 4.h,
+                                        top: 2.v,
+                                      ),
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Container(
+                                              height: 15.adaptSize,
+                                              width: 15.adaptSize,
+                                              margin: EdgeInsets.only(top: 1.v),
+                                              decoration: BoxDecoration(
+                                                color: appTheme.gray5001,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  3.h,
+                                                ),
+                                                border: Border.all(
+                                                  color: appTheme.orangeA200,
+                                                  width: 1.h,
+                                                  strokeAlign:
+                                                      strokeAlignOutside,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "lbl_2".tr,
+                                              style: theme.textTheme.titleSmall,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 20.v,
+                                      width: 14.h,
+                                      margin: EdgeInsets.only(
+                                        left: 4.h,
+                                        top: 2.v,
+                                      ),
+                                      child: Stack(
+                                        alignment: Alignment.centerRight,
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Container(
+                                              height: 15.v,
+                                              width: 14.h,
+                                              margin: EdgeInsets.only(top: 1.v),
+                                              decoration: BoxDecoration(
+                                                color: appTheme.gray5001,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  3.h,
+                                                ),
+                                                border: Border.all(
+                                                  color: appTheme.orangeA200,
+                                                  width: 1.h,
+                                                  strokeAlign:
+                                                      strokeAlignOutside,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Padding(
+                                              padding:
+                                                  EdgeInsets.only(right: 1.h),
+                                              child: Text(
+                                                "lbl_6".tr,
+                                                style:
+                                                    theme.textTheme.titleSmall,
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 20.v,
+                                      width: 15.h,
+                                      margin: EdgeInsets.only(
+                                        left: 4.h,
+                                        top: 2.v,
+                                      ),
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Container(
+                                              height: 15.adaptSize,
+                                              width: 15.adaptSize,
+                                              margin: EdgeInsets.only(top: 1.v),
+                                              decoration: BoxDecoration(
+                                                color: appTheme.gray5001,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  3.h,
+                                                ),
+                                                border: Border.all(
+                                                  color: appTheme.orangeA200,
+                                                  width: 1.h,
+                                                  strokeAlign:
+                                                      strokeAlignOutside,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "lbl_1".tr,
+                                              style: theme.textTheme.titleSmall,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      height: 20.v,
+                                      width: 14.h,
+                                      margin: EdgeInsets.only(
+                                        left: 4.h,
+                                        top: 2.v,
+                                      ),
+                                      child: Stack(
+                                        alignment: Alignment.centerLeft,
+                                        children: [
+                                          Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Container(
+                                              height: 15.v,
+                                              width: 14.h,
+                                              margin: EdgeInsets.only(top: 1.v),
+                                              decoration: BoxDecoration(
+                                                color: appTheme.gray5001,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  3.h,
+                                                ),
+                                                border: Border.all(
+                                                  color: appTheme.orangeA200,
+                                                  width: 1.h,
+                                                  strokeAlign:
+                                                      strokeAlignOutside,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 1.h),
+                                              child: Text(
+                                                "lbl_1".tr,
+                                                style:
+                                                    theme.textTheme.titleSmall,
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      width: 35.h,
+                                      margin: EdgeInsets.only(
+                                        left: 22.h,
+                                        top: 2.v,
+                                        bottom: 5.v,
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 7.h,
+                                        vertical: 1.v,
+                                      ),
+                                      decoration: AppDecoration
+                                          .outlineOrangeA2001
+                                          .copyWith(
+                                        borderRadius:
+                                            BorderRadiusStyle.roundedBorder5,
+                                      ),
+                                      child: Text(
+                                        "lbl_verify".tr,
+                                        style: CustomTextStyles.nunitoTeal90004,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(height: 22.v),
+                          _buildNext(context)
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 11.v),
+                    SizedBox(
+                      height: 313.v,
+                      width: 255.h,
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          CustomImageView(
+                            imagePath: ImageConstant.imgFather,
+                            width: 213.h,
+                            alignment: Alignment.centerLeft,
+                          ),
+                          CustomImageView(
+                            imagePath: ImageConstant.imgMascot173x143,
+                            width: 143.h,
+                            alignment: Alignment.bottomRight,
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Section Widget
+  Widget _buildNamePlaceholder(BuildContext context) {
+    return Selector<RegisterFormScreenPotratitV1ChildProvider,
+        TextEditingController?>(
+      selector: (context, provider) => provider.namePlaceholderController,
+      builder: (context, namePlaceholderController, child) {
+        return CustomTextFormField(
+          controller: namePlaceholderController,
+          hintText: "msg_rakesh_ramji_rastogi".tr,
+        );
+      },
+    );
+  }
+
+  /// Section Widget
+  Widget _buildAddressGrp(BuildContext context) {
+    return Selector<RegisterFormScreenPotratitV1ChildProvider,
+        TextEditingController?>(
+      selector: (context, provider) => provider.addressGrpController,
+      builder: (context, addressGrpController, child) {
+        return CustomTextFormField(
+          controller: addressGrpController,
+          hintText: "msg_f_1_40_new_friends".tr,
+          hintStyle: CustomTextStyles.labelLarge12,
+        );
+      },
+    );
+  }
+
+  /// Section Widget
+  Widget _buildEmail(BuildContext context) {
+    return Selector<RegisterFormScreenPotratitV1ChildProvider,
+        TextEditingController?>(
+      selector: (context, provider) => provider.emailController,
+      builder: (context, emailController, child) {
+        return CustomTextFormField(
+          controller: emailController,
+          hintText: "msg_rakeshramjirast".tr,
+          textInputType: TextInputType.emailAddress,
+          validator: (value) {
+            if (value == null || (!isValidEmail(value, isRequired: true))) {
+              return "err_msg_please_enter_valid_email".tr;
+            }
+            return null;
+          },
+        );
+      },
+    );
+  }
+
+  /// Section Widget
+  Widget _buildEditText(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: 12.v),
+      child: Selector<RegisterFormScreenPotratitV1ChildProvider,
+          TextEditingController?>(
+        selector: (context, provider) => provider.editTextController,
+        builder: (context, editTextController, child) {
+          return CustomTextFormField(
+            width: 137.h,
+            controller: editTextController,
+            textInputAction: TextInputAction.done,
+            alignment: Alignment.topCenter,
+            obscureText: true,
+          );
+        },
+      ),
+    );
+  }
+
+  /// Section Widget
+  Widget _buildNext(BuildContext context) {
+    return CustomOutlinedButton(
+      width: 113.h,
+      text: "lbl_next".tr,
+      buttonStyle: CustomButtonStyles.none,
+      decoration: CustomButtonStyles.gradientDeepOrangeToOrangeDecoration,
+      onPressed: () {
+        onTapNext(context);
+      },
+    );
+  }
+
+  /// Navigates to the welcomeScreenPotraitScreen when the action is triggered.
+  onTapBtnHomeBTN(BuildContext context) {
+    NavigatorService.pushNamed(
+      AppRoutes.welcomeScreenPotraitScreen,
+    );
+  }
+
+  /// Navigates to the mainInteractionScreen when the action is triggered.
+  onTapNext(BuildContext context) {
+    NavigatorService.pushNamed(
+      AppRoutes.mainInteractionScreen,
+    );
+  }
+}
