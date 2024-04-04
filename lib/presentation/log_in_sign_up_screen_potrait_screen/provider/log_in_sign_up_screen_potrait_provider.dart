@@ -12,8 +12,8 @@ class LogInSignUpScreenPotraitProvider extends ChangeNotifier {
   LogInSignUpScreenPotraitModel logInSignUpScreenPotraitModelObj =
       LogInSignUpScreenPotraitModel();
 
-  @override
+ @override
   void dispose() {
     super.dispose();
-  }
+  } 
 }

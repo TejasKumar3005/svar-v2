@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
                     '',
                   ),
                 ],
-                initialRoute: AppRoutes.initialRoute,
+                initialRoute: AppRoutes.registerFormScreenPotratitV1ChildScreen,
                 routes: AppRoutes.routes,
               );
             },
