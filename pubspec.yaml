@@ -21,10 +21,10 @@ dependencies:
   firebase_storage: ^11.1.0
   geolocator: ^11.0.0
   geocoding: ^3.0.0
-  location: ^6.0.1
+  location: ^5.0.3
   confetti: ^0.7.0
   app_settings: ^5.1.1
-  http: ^1.2.1
+  http: ^1.0.0
   tflite_flutter: ^0.10.4
 dev_dependencies: 
   flutter_test: 
