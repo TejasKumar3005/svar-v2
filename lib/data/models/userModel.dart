@@ -2,7 +2,7 @@ import 'package:svar_new/data/models/game_statsModel.dart';
 import 'package:svar_new/data/models/gift.dart';
 
 class UserModel {
-  String p_name;
+  String? p_name;
   String name;
   String? password;
   String? email;
@@ -26,7 +26,7 @@ class UserModel {
                   current_level: 0);
 
   UserModel({
-    required this.p_name,
+   this.p_name,
     required this.name,
     this.password,
     required this.email,

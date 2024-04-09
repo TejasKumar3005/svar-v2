@@ -15,7 +15,10 @@ class RegisterFormScreenPotratitV1ChildProvider extends ChangeNotifier {
 
   TextEditingController emailController = TextEditingController();
 
-  TextEditingController editTextController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController otpController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController guardianController = TextEditingController();
 
   RegisterFormScreenPotratitV1ChildModel
       registerFormScreenPotratitV1ChildModelObj =
@@ -27,6 +30,8 @@ class RegisterFormScreenPotratitV1ChildProvider extends ChangeNotifier {
     namePlaceholderController.dispose();
     addressGrpController.dispose();
     emailController.dispose();
-    editTextController.dispose();
+    passwordController.dispose();
+    otpController.dispose();
+    phoneNumberController.dispose();
   }
 }
