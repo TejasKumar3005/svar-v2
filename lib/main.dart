@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
-
+import 'package:svar_new/database/authentication.dart';
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +43,11 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
               create: (context) => UserDataProvider(),
             ),
+
+            ChangeNotifierProvider(
+              create: (context) => AuthConroller(),
+            ),
+            
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
@@ -130,7 +135,7 @@ class MyApp extends StatelessWidget {
                   Locale("vi"),
                   Locale("zh")
                 ],
-                initialRoute: AppRoutes.registerFormScreenPotratitV1ChildScreen,
+                initialRoute: AppRoutes.loadingScreen,
                 routes: AppRoutes.routes,
               );
             },

@@ -385,6 +385,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
               ),
               Container(
                 width: 281.h,
+                height: 156.v,
                 margin: EdgeInsets.only(
                   left: 21.h,
                   top: 11.v,
@@ -393,41 +394,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                 decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                   borderRadius: BorderRadiusStyle.roundedBorder20,
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 156.v,
-                      width: 281.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          20.h,
-                        ),
-                        border: Border.all(
-                          color: appTheme.whiteA70001,
-                          width: 5.h,
-                        ),
-                        gradient: LinearGradient(
-                          begin: Alignment(1, 0.5),
-                          end: Alignment(0.35, 0.5),
-                          colors: [
-                            appTheme.red10001,
-                            appTheme.whiteA70001,
-                            appTheme.orange5000
-                          ],
-                        ),
-                      ),
-                    ),
-                    CustomImageView(
-                      imagePath: ImageConstant.imgLocation,
-                      width: 54.h,
-                      margin: EdgeInsets.only(
-                        left: 518.h,
-                        top: 46.v,
-                        bottom: 43.v,
-                      ),
-                    )
-                  ],
-                ),
+                
               )
             ],
           ),

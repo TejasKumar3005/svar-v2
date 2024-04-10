@@ -12,9 +12,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AuthConroller extends ChangeNotifier {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   Position? currentPostion;
-  BuildContext context;
+  BuildContext? context;
   String? optId;
-  AuthConroller({required this.context});
+  AuthConroller({this.context});
   void setCurrPos(Position pos) {
     currentPostion = pos;
     notifyListeners();
@@ -30,14 +30,14 @@ class AuthConroller extends ChangeNotifier {
           codeSent: (String verificationId, int? vid) {
             optId = verificationId;
             notifyListeners();
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
               content: Text("code sent to " + phone),
               backgroundColor: Colors.green,
             ));
           },
           codeAutoRetrievalTimeout: (String timeout) {});
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context!).showSnackBar(const SnackBar(
         content: Text("Something went wrong"),
         backgroundColor: Colors.red,
       ));
@@ -49,7 +49,7 @@ class AuthConroller extends ChangeNotifier {
       firebaseAuth.signInWithCredential(PhoneAuthProvider.credential(
           verificationId: optId!, smsCode: sms));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context!).showSnackBar(const SnackBar(
         content: Text("Something went wrong"),
         backgroundColor: Colors.red,
       ));
@@ -63,20 +63,20 @@ class AuthConroller extends ChangeNotifier {
                 email: model.email!, password: model.password!))
             .user;
         if (user != null) {
-          await UserData(uid: user.uid, buildContext: context)
+          await UserData(uid: user.uid, buildContext: context!)
               .saveUserData(model);
 
           return true;
         }
         return false;
       } else {
-        getCurrentPosition(context).then((value) async {
+        getCurrentPosition(context!).then((value) async {
           if (value) {
             User? user = (await firebaseAuth.createUserWithEmailAndPassword(
                     email: model.email!, password: model.password!))
                 .user;
             if (user != null) {
-              await UserData(uid: user.uid, buildContext: context)
+              await UserData(uid: user.uid, buildContext: context!)
                   .saveUserData(model);
 
               return true;
@@ -86,13 +86,13 @@ class AuthConroller extends ChangeNotifier {
         return false;
       }
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
         content: Text(e.toString()),
         backgroundColor: Colors.red,
       ));
       return false;
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
         content: Text(e.toString()),
         backgroundColor: Colors.red,
       ));
@@ -103,13 +103,13 @@ class AuthConroller extends ChangeNotifier {
   Future UpdategoogleSignUp(UserModel model, String uid) async {
     try {
       if (currentPostion != null) {
-        await UserData(uid: uid, buildContext: context).saveUserData(model);
+        await UserData(uid: uid, buildContext: context!).saveUserData(model);
 
         return true;
       } else {
-        getCurrentPosition(context).then((value) async {
+        getCurrentPosition(context!).then((value) async {
           if (value) {
-            await UserData(uid: uid, buildContext: context).saveUserData(model);
+            await UserData(uid: uid, buildContext: context!).saveUserData(model);
 
             return true;
           }
@@ -124,7 +124,7 @@ class AuthConroller extends ChangeNotifier {
 
   Future updateUserData(
       String uid, String name, String mobile, String gender) async {
-    await UserData(uid: uid, buildContext: context).updateUserInfo({
+    await UserData(uid: uid, buildContext: context!).updateUserInfo({
       "name": name,
       "mobile": mobile,
       "gender": gender,
@@ -139,7 +139,7 @@ class AuthConroller extends ChangeNotifier {
 
       if (firebaseAuth.currentUser != null) {
         await UserData(
-                uid: firebaseAuth.currentUser!.uid, buildContext: context)
+                uid: firebaseAuth.currentUser!.uid, buildContext: context!)
             .getUserData();
       }
       return true;
@@ -183,7 +183,7 @@ class AuthConroller extends ChangeNotifier {
             await userCollection.doc(userCredential.user!.uid).get();
         if (documentSnapshot.exists) {
           // user already exists
-          await UserData(uid: userCredential.user!.uid, buildContext: context)
+          await UserData(uid: userCredential.user!.uid, buildContext: context!)
               .getUserData();
           return true;
         }

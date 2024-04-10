@@ -24,17 +24,14 @@ class LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 3000), () {
-      NavigatorService.popAndPushNamed(
-        AppRoutes.logInSignUpScreenPotraitScreen,
-      );
-    });
+    
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Color(0xff00FFFF),
         extendBody: true,
         extendBodyBehindAppBar: true,
         body: Container(
@@ -78,7 +75,7 @@ class LoadingScreenState extends State<LoadingScreen> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 26.v),
+                              SizedBox(height: 25.v),
                               Text(
                                 "lbl_loading".tr,
                                 style: CustomTextStyles.titleLarge21,
@@ -91,7 +88,7 @@ class LoadingScreenState extends State<LoadingScreen> {
                         alignment: Alignment.bottomCenter,
                         child: Container(
                           height: 28.v,
-                          width: 454.h,
+                          width:300.h,
                           margin: EdgeInsets.only(bottom: 27.v),
                           padding: EdgeInsets.symmetric(
                             horizontal: 4.h,

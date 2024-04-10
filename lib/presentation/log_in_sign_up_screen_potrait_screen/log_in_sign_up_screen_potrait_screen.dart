@@ -35,10 +35,13 @@ class LogInSignUpScreenPotraitScreenState
       child: Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
+        
         body: Container(
+          
           width: SizeUtils.width,
           height: SizeUtils.height,
           decoration: BoxDecoration(
+            image: DecorationImage(image: AssetImage("assets/images/BG.png"),fit: BoxFit.fill),
             gradient: LinearGradient(
               begin: Alignment(0.52, 0.33),
               end: Alignment(1, 0.61),
@@ -55,70 +58,7 @@ class LogInSignUpScreenPotraitScreenState
               child: Column(
                 children: [
                   _buildClose(context),
-                  SizedBox(
-                    height: 759.v,
-                    width: double.maxFinite,
-                    child: Stack(
-                      alignment: Alignment.topRight,
-                      children: [
-                        CustomImageView(
-                          imagePath: ImageConstant.imgTree,
-                          width: 109.h,
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(top: 233.v),
-                        ),
-                        CustomImageView(
-                          imagePath: ImageConstant.imgTreeGreen400,
-                          width: 68.h,
-                          alignment: Alignment.topRight,
-                          margin: EdgeInsets.only(top: 303.v),
-                        ),
-                        CustomImageView(
-                          imagePath: ImageConstant.imgTreeGreen400102x88,
-                          width: 88.h,
-                          alignment: Alignment.centerRight,
-                          margin: EdgeInsets.only(right: 110.h),
-                        ),
-                        CustomImageView(
-                          imagePath: ImageConstant.imgEllipse176253x430,
-                          height: 253.v,
-                          alignment: Alignment.bottomCenter,
-                          margin: EdgeInsets.only(bottom: 111.v),
-                        ),
-                        CustomImageView(
-                          imagePath: ImageConstant.imgEllipse177286x164,
-                          width: 164.h,
-                          alignment: Alignment.bottomRight,
-                          margin: EdgeInsets.only(bottom: 78.v),
-                        ),
-                        CustomImageView(
-                          imagePath: ImageConstant.imgEllipse175291x430,
-                          height: 291.v,
-                          alignment: Alignment.bottomCenter,
-                        ),
-                        CustomImageView(
-                          imagePath: ImageConstant.imgMascot,
-                          width: 191.h,
-                          alignment: Alignment.bottomRight,
-                          margin: EdgeInsets.only(
-                            right: 24.h,
-                            bottom: 237.v,
-                          ),
-                        ),
-                        CustomImageView(
-                          imagePath: ImageConstant.imgUnionCyanA100,
-                          width: 157.h,
-                          alignment: Alignment.topRight,
-                        ),
-                        CustomImageView(
-                          imagePath: ImageConstant.imgUnionCyanA10071x110,
-                          height: 71.v,
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(
-                            left: 18.h,
-                            top: 21.v,
-                          ),
-                        ),
+                  
                         Align(
                           alignment: Alignment.topCenter,
                           child: Padding(
@@ -132,6 +72,7 @@ class LogInSignUpScreenPotraitScreenState
                               children: [
                                 CustomIconButton(
                                   height: 68.v,
+                                  
                                   width: 266.h,
                                   padding: EdgeInsets.all(4.h),
                                   decoration: IconButtonStyleHelper
@@ -139,28 +80,24 @@ class LogInSignUpScreenPotraitScreenState
                                   onTap: () {
                                     onTapBtnUser(context);
                                   },
-                                  child: CustomImageView(
-                                    imagePath: ImageConstant.imgUser,
-                                  ),
+                                  child: Center(child: Text("Log In",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 25),))
                                 ),
                                 SizedBox(height: 18.v),
                                 CustomIconButton(
                                   height: 68.v,
                                   width: 266.h,
-                                  padding: EdgeInsets.all(8.h),
+                                  padding: EdgeInsets.all(4.h),
                                   decoration: IconButtonStyleHelper
                                       .gradientDeepOrangeToOrange,
-                                  child: CustomImageView(
-                                    imagePath: ImageConstant.imgUser,
-                                  ),
+                                  child: Center(child: Text("Sign Up",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 25),))
                                 )
                               ],
                             ),
                           ),
                         )
-                      ],
-                    ),
-                  )
+                  //     ],
+                  //   ),
+                  // )
                 ],
               ),
             ),
@@ -218,7 +155,7 @@ class LogInSignUpScreenPotraitScreenState
             width: 363.h,
             margin: EdgeInsets.only(left: 5.h),
             child: Stack(
-              alignment: Alignment.bottomLeft,
+              alignment: Alignment.bottomCenter,
               children: [
                 CustomImageView(
                   imagePath: ImageConstant.imgUnion,
