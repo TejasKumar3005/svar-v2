@@ -8,17 +8,55 @@ import 'package:svar_new/data/models/game_statsModel.dart';
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
 class AuthConroller extends ChangeNotifier {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   Position? currentPostion;
   BuildContext context;
+  String? optId;
   AuthConroller({required this.context});
   void setCurrPos(Position pos) {
     currentPostion = pos;
     notifyListeners();
   }
 
-  Future registeruser(UserModel model) async {
+  Future phoneVerification(String phone) async {
+    try {
+      firebaseAuth.verifyPhoneNumber(
+          phoneNumber: phone,
+          timeout: Duration(seconds: 120),
+          verificationCompleted: (AuthCredential authCredential) {},
+          verificationFailed: (FirebaseAuthException authexception) {},
+          codeSent: (String verificationId, int? vid) {
+            optId = verificationId;
+            notifyListeners();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("code sent to " + phone),
+              backgroundColor: Colors.green,
+            ));
+          },
+          codeAutoRetrievalTimeout: (String timeout) {});
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Something went wrong"),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
+
+  Future registerWithPhone(String sms) async {
+    try {
+      firebaseAuth.signInWithCredential(PhoneAuthProvider.credential(
+          verificationId: optId!, smsCode: sms));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Something went wrong"),
+        backgroundColor: Colors.red,
+      ));
+    }
+  }
+
+  Future<bool> registeruser(UserModel model) async {
     try {
       if (currentPostion != null) {
         User? user = (await firebaseAuth.createUserWithEmailAndPassword(
@@ -30,6 +68,7 @@ class AuthConroller extends ChangeNotifier {
 
           return true;
         }
+        return false;
       } else {
         getCurrentPosition(context).then((value) async {
           if (value) {
@@ -44,16 +83,24 @@ class AuthConroller extends ChangeNotifier {
             }
           }
         });
+        return false;
       }
     } on FirebaseAuthException catch (e) {
-      return e.message;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ));
+      return false;
     } catch (e) {
-      return e.toString();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ));
+      return false;
     }
   }
 
-  Future UpdategoogleSignUp(
-     UserModel model, String uid) async {
+  Future UpdategoogleSignUp(UserModel model, String uid) async {
     try {
       if (currentPostion != null) {
         await UserData(uid: uid, buildContext: context).saveUserData(model);
@@ -75,8 +122,8 @@ class AuthConroller extends ChangeNotifier {
     }
   }
 
-  Future updateUserData(String uid, String name,
-      String mobile, String gender) async {
+  Future updateUserData(
+      String uid, String name, String mobile, String gender) async {
     await UserData(uid: uid, buildContext: context).updateUserInfo({
       "name": name,
       "mobile": mobile,
@@ -91,7 +138,9 @@ class AuthConroller extends ChangeNotifier {
           email: email, password: password);
 
       if (firebaseAuth.currentUser != null) {
-        await UserData(uid: firebaseAuth.currentUser!.uid,buildContext: context).getUserData();
+        await UserData(
+                uid: firebaseAuth.currentUser!.uid, buildContext: context)
+            .getUserData();
       }
       return true;
     } on FirebaseAuthException catch (e) {
@@ -134,7 +183,8 @@ class AuthConroller extends ChangeNotifier {
             await userCollection.doc(userCredential.user!.uid).get();
         if (documentSnapshot.exists) {
           // user already exists
-          await UserData(uid: userCredential.user!.uid,buildContext:context).getUserData();
+          await UserData(uid: userCredential.user!.uid, buildContext: context)
+              .getUserData();
           return true;
         }
 
@@ -153,7 +203,7 @@ class AuthConroller extends ChangeNotifier {
             location: [],
             access_token: credential.accessToken.toString(),
             subscription_status: "NO",
-            mobile:"",
+            mobile: "",
             gift_purchase_history: [],
             gameStats: GameStatsModel(
                 gifts: [],
