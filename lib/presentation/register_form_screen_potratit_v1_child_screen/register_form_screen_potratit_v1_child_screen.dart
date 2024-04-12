@@ -34,6 +34,8 @@ class RegisterFormScreenPotratitV1ChildScreenState
     extends State<RegisterFormScreenPotratitV1ChildScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController phoneCtrl = TextEditingController();
+  List<String> list = <String>["Guardian","Mother","Father"];
+  String dropdownValue = "Guardian";
 
   @override
   void initState() {
@@ -164,28 +166,37 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.only(
-                                        left: 13.h,
-                                        top: 2.v,
-                                        bottom: 1.v,
-                                      ),
-                                      child: Text(
-                                        "lbl_guardian".tr,
-                                        style: theme.textTheme.labelLarge,
-                                      ),
-                                    ),
-                                    CustomImageView(
-                                      imagePath: ImageConstant.imgPolygon23,
-                                      width: 5.h,
-                                      radius: BorderRadius.circular(
-                                        1.h,
-                                      ),
-                                      margin: EdgeInsets.only(
-                                        left: 15.h,
-                                        top: 7.v,
-                                        bottom: 8.v,
-                                      ),
-                                    )
+                                        padding: EdgeInsets.only(
+                                          left: 13.h,
+                                          top: 2.v,
+                                          bottom: 1.v,
+                                        ),
+                                        child: SizedBox(
+                                          height: 24.v,
+                                          child: DropdownButton<String>(
+                                            iconEnabledColor: PrimaryColors().amber900,
+                                            value: dropdownValue,
+                                            icon:
+                                                const Icon(Icons.arrow_drop_down),
+                                            elevation: 16,
+                                            style: theme.textTheme.labelLarge,
+                                            underline: Container(),
+                                            onChanged: (String? value) {
+                                              // This is called when the user selects an item.
+                                              setState(() {
+                                                dropdownValue = value!;
+                                              });
+                                            },
+                                            items: list
+                                                .map<DropdownMenuItem<String>>(
+                                                    (String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(value,style:TextStyle(color: PrimaryColors().amber900),),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        )),
                                   ],
                                 ),
                               ),
@@ -246,8 +257,10 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                     AuthConroller(
                                                         context: context);
                                                 authConroller
-                                                    .phoneVerification(
-                                                        "+91" + textCtrl.phoneNumberController.text)
+                                                    .phoneVerification("+91" +
+                                                        textCtrl
+                                                            .phoneNumberController
+                                                            .text)
                                                     .then((value) => {});
                                               },
                                               child: Container(
@@ -364,7 +377,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     SizedBox(
-                                      width: 138.h,
+                                      width: 110.h,
                                       child: Padding(
                                           padding: EdgeInsets.only(left: 19.h),
                                           child: Selector<
@@ -575,9 +588,15 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                               .then((value) => {
                                                     authConroller
                                                         .registeruser(UserModel(
-                                                            name: textCtrl.namePlaceholderController.text,
-                                                            email: textCtrl.emailController.text,
-                                                            mobile: textCtrl.phoneNumberController.text,
+                                                            name: textCtrl
+                                                                .namePlaceholderController
+                                                                .text,
+                                                            email: textCtrl
+                                                                .emailController
+                                                                .text,
+                                                            mobile: textCtrl
+                                                                .phoneNumberController
+                                                                .text,
                                                             gameStats: GameStatsModel(
                                                                 gifts: [],
                                                                 progressScore:

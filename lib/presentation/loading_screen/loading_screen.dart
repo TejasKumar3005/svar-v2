@@ -20,10 +20,18 @@ class LoadingScreen extends StatefulWidget {
   }
 }
 
-class LoadingScreenState extends State<LoadingScreen> {
+class LoadingScreenState extends State<LoadingScreen> with TickerProviderStateMixin{
+  late AnimationController controller;
   @override
   void initState() {
     super.initState();
+   controller = AnimationController(
+      vsync:this ,
+      duration: const Duration(seconds: 5),
+    )..addListener(() {
+        setState(() {});
+      });
+      controller.repeat(reverse: false);
     
   }
 
@@ -97,11 +105,12 @@ class LoadingScreenState extends State<LoadingScreen> {
                           decoration: AppDecoration.fillLightGreen.copyWith(
                             borderRadius: BorderRadiusStyle.circleBorder14,
                           ),
-                          child: CustomImageView(
-                            imagePath: ImageConstant.imgLoadingBar,
-                            height: 22.v,
-                            alignment: Alignment.centerLeft,
-                          ),
+                          child:LinearProgressIndicator(
+                             borderRadius: BorderRadiusStyle.circleBorder14,
+                            color: PrimaryColors().green30001,
+              value: controller.value,
+              semanticsLabel: 'Linear progress indicator',
+            ),
                         ),
                       )
                     ],
