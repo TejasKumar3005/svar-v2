@@ -85,26 +85,26 @@ class RegisterFormScreenPotratitV1ChildScreenState
                       child: Row(
                         children: [
                          Padding(
-                            padding: EdgeInsets.only(left: 6.h),
+                            padding: EdgeInsets.only(left: 1.h),
                             child: CustomIconButton(
                               height: 38.adaptSize,
                               width: 38.adaptSize,
-                              padding: EdgeInsets.all(3.h),
-                              onTap: () {
-                                onTapBtnHomeBTN(context);
-                              },
+                              
+                            
                               child: CustomImageView(
-                                imagePath: ImageConstant.imgHomeBtn,
+                                imagePath: ImageConstant.imgBackBtn,
                               ),
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 6.h),
+                            padding: EdgeInsets.only(left: 1.h),
                             child: CustomIconButton(
                               height: 38.adaptSize,
                               width: 38.adaptSize,
-                              padding: EdgeInsets.all(3.h),
-                              
+                      
+                                onTap: () {
+                                onTapBtnHomeBTN(context);
+                              },
                               child: CustomImageView(
                                 imagePath: ImageConstant.imgHomeBtn,
                               ),
@@ -267,7 +267,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                     .then((value) => {});
                                               },
                                               child: Container(
-                                                width: 38.h,
+                                                width: 39.h,
                                                 margin: EdgeInsets.only(
                                                     bottom: 3.v),
                                                 padding: EdgeInsets.symmetric(
@@ -285,6 +285,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                   "lbl_send_otp".tr,
                                                   style: CustomTextStyles
                                                       .nunitoteal90003ExtraBold,
+                                                      
                                                 ),
                                               ),
                                             )

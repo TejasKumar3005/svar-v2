@@ -228,6 +228,8 @@ static String imgArrowDownWhiteA70001 =
 
 static String imgHomeBtn = '$imagePath/img_home_btn.png';
 
+static String imgBackBtn = '$imagePath/img_back_btn.png'; 
+
 static String imgMascot173x143 = '$imagePath/img_mascot_173x143.png';
 
 static String imgMainInteraction = '$imagePath/img_main_interaction.png';
