@@ -34,7 +34,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
     extends State<RegisterFormScreenPotratitV1ChildScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController phoneCtrl = TextEditingController();
-  List<String> list = <String>["Guardian","Mother","Father"];
+  List<String> list = <String>["Guardian", "Mother", "Father"];
   String dropdownValue = "Guardian";
 
   @override
@@ -90,8 +90,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                               height: 37.adaptSize,
                               width: 37.adaptSize,
                               padding: EdgeInsets.all(9.h),
-                              decoration: IconButtonStyleHelper
-                                  .gradientDeepOrangeToDeepOrange,
+                              decoration: CustomButtonStyles.gradientDeepOrangeToOrangeDecoration,
                               child: CustomImageView(
                                 imagePath:
                                     ImageConstant.imgArrowDownWhiteA70001,
@@ -174,10 +173,11 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                         child: SizedBox(
                                           height: 24.v,
                                           child: DropdownButton<String>(
-                                            iconEnabledColor: PrimaryColors().amber900,
+                                            iconEnabledColor:
+                                                PrimaryColors().amber900,
                                             value: dropdownValue,
-                                            icon:
-                                                const Icon(Icons.arrow_drop_down),
+                                            icon: const Icon(
+                                                Icons.arrow_drop_down),
                                             elevation: 16,
                                             style: theme.textTheme.labelLarge,
                                             underline: Container(),
@@ -192,7 +192,12 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                     (String value) {
                                               return DropdownMenuItem<String>(
                                                 value: value,
-                                                child: Text(value,style:TextStyle(color: PrimaryColors().amber900),),
+                                                child: Text(
+                                                  value,
+                                                  style: TextStyle(
+                                                      color: PrimaryColors()
+                                                          .amber900),
+                                                ),
                                               );
                                             }).toList(),
                                           ),
@@ -281,7 +286,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                 child: Text(
                                                   "lbl_send_otp".tr,
                                                   style: CustomTextStyles
-                                                      .nunitoTeal90004ExtraBold,
+                                                      .nunitoteal90003ExtraBold,
                                                 ),
                                               ),
                                             )
@@ -358,7 +363,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                     //   child: Text(
                                     //     "lbl".tr,
                                     //     style: CustomTextStyles
-                                    //         .displaySmallNunitoTeal90004,
+                                    //         .displaySmallNunitoteal90003,
                                     //   ),
                                     // )
                                   ],
@@ -630,7 +635,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                         child: Text(
                                           "lbl_verify".tr,
                                           style:
-                                              CustomTextStyles.nunitoTeal90004,
+                                              CustomTextStyles.nunitoteal90003,
                                         ),
                                       ),
                                     )

@@ -134,7 +134,7 @@ class WelcomeScreenPotraitScreenState
                                   height: 68.v,
                                   width: 266.h,
                                   padding: EdgeInsets.all(4.h),
-                                  decoration: IconButtonStyleHelper
+                                  decoration: AppDecoration
                                       .gradientGreenToLightGreen,
                                   onTap: () {
                                     onTapBtnUser(context);

@@ -75,7 +75,7 @@ class LogInSignUpScreenPotraitScreenState
                                   
                                   width: 266.h,
                                   padding: EdgeInsets.all(4.h),
-                                  decoration: IconButtonStyleHelper
+                                  decoration: AppDecoration
                                       .gradientGreenToLightGreen,
                                   onTap: () {
                                     onTapBtnUser(context);
@@ -140,7 +140,7 @@ class LogInSignUpScreenPotraitScreenState
                     width: 37.adaptSize,
                     padding: EdgeInsets.all(9.h),
                     decoration:
-                        IconButtonStyleHelper.gradientDeepOrangeToDeepOrange,
+                        CustomButtonStyles.gradientDeepOrangeToOrangeDecoration,
                     alignment: Alignment.topRight,
                     child: CustomImageView(
                       imagePath: ImageConstant.imgArrowDown,

@@ -1,6 +1,8 @@
+import 'package:svar_new/core/app_export.dart';
+
 import 'models/loading_model.dart';
 import 'package:flutter/material.dart';
-import 'package:svar_new/core/app_export.dart';
+
 import 'provider/loading_provider.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -20,19 +22,19 @@ class LoadingScreen extends StatefulWidget {
   }
 }
 
-class LoadingScreenState extends State<LoadingScreen> with TickerProviderStateMixin{
+class LoadingScreenState extends State<LoadingScreen>
+    with TickerProviderStateMixin {
   late AnimationController controller;
   @override
   void initState() {
     super.initState();
-   controller = AnimationController(
-      vsync:this ,
+    controller = AnimationController(
+      vsync: this,
       duration: const Duration(seconds: 5),
     )..addListener(() {
         setState(() {});
       });
-      controller.repeat(reverse: false);
-    
+    controller.repeat(reverse: false);
   }
 
   @override
@@ -96,21 +98,21 @@ class LoadingScreenState extends State<LoadingScreen> with TickerProviderStateMi
                         alignment: Alignment.bottomCenter,
                         child: Container(
                           height: 28.v,
-                          width:300.h,
+                          width: 300.h,
                           margin: EdgeInsets.only(bottom: 27.v),
                           padding: EdgeInsets.symmetric(
                             horizontal: 4.h,
                             vertical: 3.v,
                           ),
                           decoration: AppDecoration.fillLightGreen.copyWith(
-                            borderRadius: BorderRadiusStyle.circleBorder14,
+                            borderRadius: BorderRadiusStyle.roundedBorder15,
                           ),
-                          child:LinearProgressIndicator(
-                             borderRadius: BorderRadiusStyle.circleBorder14,
+                          child: LinearProgressIndicator(
+                            borderRadius: BorderRadiusStyle.roundedBorder15,
                             color: PrimaryColors().green30001,
-              value: controller.value,
-              semanticsLabel: 'Linear progress indicator',
-            ),
+                            value: controller.value,
+                            semanticsLabel: 'Linear progress indicator',        
+                          ),
                         ),
                       )
                     ],

@@ -373,7 +373,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                   height: 101.adaptSize,
                   width: 101.adaptSize,
                   padding: EdgeInsets.all(20.h),
-                  decoration: IconButtonStyleHelper.outlineBlack,
+                  decoration: AppDecoration.outlineBlack,
                   alignment: Alignment.center,
                   onTap: () {
                     onTapBtnUser(context);
