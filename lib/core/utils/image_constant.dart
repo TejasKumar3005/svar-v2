@@ -16,6 +16,7 @@ static String imgEllipse177286x164 = '$imagePath/img_ellipse_177_286x164.png';
 
 static String imgEllipse175291x430 = '$imagePath/img_ellipse_175_291x430.png';
 
+static String next = '$imagePath/next_button.png';
 // Login Screen Potrait images
 static String imgLock = '$imagePath/img_lock.svg';
 
@@ -225,7 +226,7 @@ static String imgArrowDown = '$imagePath/img_arrow_down.svg';
 static String imgArrowDownWhiteA70001 =
 '$imagePath/img_arrow_down_white_a700_01.svg';
 
-static String imgHomeBtn = '$imagePath/img_home_btn.svg';
+static String imgHomeBtn = '$imagePath/img_home_btn.png';
 
 static String imgMascot173x143 = '$imagePath/img_mascot_173x143.png';
 

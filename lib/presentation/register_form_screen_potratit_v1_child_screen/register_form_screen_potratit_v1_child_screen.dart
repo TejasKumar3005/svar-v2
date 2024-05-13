@@ -84,16 +84,17 @@ class RegisterFormScreenPotratitV1ChildScreenState
                       alignment: Alignment.centerLeft,
                       child: Row(
                         children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: 1.v),
+                         Padding(
+                            padding: EdgeInsets.only(left: 6.h),
                             child: CustomIconButton(
-                              height: 37.adaptSize,
-                              width: 37.adaptSize,
-                              padding: EdgeInsets.all(9.h),
-                              decoration: CustomButtonStyles.gradientDeepOrangeToOrangeDecoration,
+                              height: 38.adaptSize,
+                              width: 38.adaptSize,
+                              padding: EdgeInsets.all(3.h),
+                              onTap: () {
+                                onTapBtnHomeBTN(context);
+                              },
                               child: CustomImageView(
-                                imagePath:
-                                    ImageConstant.imgArrowDownWhiteA70001,
+                                imagePath: ImageConstant.imgHomeBtn,
                               ),
                             ),
                           ),
@@ -103,9 +104,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                               height: 38.adaptSize,
                               width: 38.adaptSize,
                               padding: EdgeInsets.all(3.h),
-                              onTap: () {
-                                onTapBtnHomeBTN(context);
-                              },
+                              
                               child: CustomImageView(
                                 imagePath: ImageConstant.imgHomeBtn,
                               ),
@@ -182,7 +181,6 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                             style: theme.textTheme.labelLarge,
                                             underline: Container(),
                                             onChanged: (String? value) {
-                                              // This is called when the user selects an item.
                                               setState(() {
                                                 dropdownValue = value!;
                                               });
@@ -623,7 +621,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                           bottom: 5.v,
                                         ),
                                         padding: EdgeInsets.symmetric(
-                                          horizontal: 7.h,
+                                          horizontal: 5.h,
                                           vertical: 1.v,
                                         ),
                                         decoration: AppDecoration
@@ -749,16 +747,22 @@ class RegisterFormScreenPotratitV1ChildScreenState
     );
   }
 
-  /// Section Widget
   Widget _buildNext(BuildContext context) {
-    return CustomOutlinedButton(
-      width: 113.h,
-      text: "lbl_next".tr,
-      buttonStyle: CustomButtonStyles.none,
-      decoration: CustomButtonStyles.gradientDeepOrangeToOrangeDecoration,
-      onPressed: () {
+    return GestureDetector(
+      onTap: () {
         onTapNext(context);
       },
+      child: Container(
+        width: 113.h, // Adjust the width as needed
+        height: 48.0, // Adjust the height as needed
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image:
+                AssetImage(ImageConstant.next), // Replace with your image path
+            fit: BoxFit.contain, // Adjust the fit as needed
+          ),
+        ),
+      ),
     );
   }
 
