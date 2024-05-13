@@ -44,7 +44,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = context.watch<AuthConroller>();
+    // final ctrl = context.watch<AuthConroller>();
     final textCtrl = context.watch<RegisterFormScreenPotratitV1ChildProvider>();
     return SafeArea(
       child: Scaffold(
@@ -585,35 +585,35 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                     // ),
                                     GestureDetector(
                                       onTap: () {
-                                        AuthConroller authConroller =
-                                            AuthConroller(context: context);
-                                        if (ctrl.optId != null) {
-                                          authConroller
-                                              .registerWithPhone("")
-                                              .then((value) => {
-                                                    authConroller
-                                                        .registeruser(UserModel(
-                                                            name: textCtrl
-                                                                .namePlaceholderController
-                                                                .text,
-                                                            email: textCtrl
-                                                                .emailController
-                                                                .text,
-                                                            mobile: textCtrl
-                                                                .phoneNumberController
-                                                                .text,
-                                                            gameStats: GameStatsModel(
-                                                                gifts: [],
-                                                                progressScore:
-                                                                    0.0,
-                                                                badges_earned: [],
-                                                                levels_on: [],
-                                                                exercises: [],
-                                                                current_level:
-                                                                    0)))
-                                                        .then((value) => {})
-                                                  });
-                                        }
+                                        // AuthConroller authConroller =
+                                        //     AuthConroller(context: context);
+                                        // if (ctrl.optId != null) {
+                                        //   authConroller
+                                        //       .registerWithPhone("")
+                                        //       .then((value) => {
+                                        //             authConroller
+                                        //                 .registeruser(UserModel(
+                                        //                     name: textCtrl
+                                        //                         .namePlaceholderController
+                                        //                         .text,
+                                        //                     email: textCtrl
+                                        //                         .emailController
+                                        //                         .text,
+                                        //                     mobile: textCtrl
+                                        //                         .phoneNumberController
+                                        //                         .text,
+                                        //                     gameStats: GameStatsModel(
+                                        //                         gifts: [],
+                                        //                         progressScore:
+                                        //                             0.0,
+                                        //                         badges_earned: [],
+                                        //                         levels_on: [],
+                                        //                         exercises: [],
+                                        //                         current_level:
+                                        //                             0)))
+                                        //                 .then((value) => {})
+                                        //           });
+                                        // }
                                       },
                                       child: Container(
                                         width: 35.h,
