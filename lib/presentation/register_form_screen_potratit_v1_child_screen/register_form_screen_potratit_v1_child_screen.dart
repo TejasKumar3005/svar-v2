@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:svar_new/data/models/game_statsModel.dart';
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/database/authentication.dart';
@@ -5,6 +7,7 @@ import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/widgets/custom_text_form_field.dart';
 import 'package:svar_new/core/utils/validation_functions.dart';
 import 'package:svar_new/widgets/custom_outlined_button.dart';
+import 'package:svar_new/widgets/nextButton.dart';
 import 'models/register_form_screen_potratit_v1_child_model.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -645,7 +648,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                             ],
                           ),
                           SizedBox(height: 22.v),
-                          _buildNext(context)
+                          buildNext(context)
                         ],
                       ),
                     ),
@@ -750,17 +753,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
   }
 
   /// Section Widget
-  Widget _buildNext(BuildContext context) {
-    return CustomOutlinedButton(
-      width: 113.h,
-      text: "lbl_next".tr,
-      buttonStyle: CustomButtonStyles.none,
-      decoration: CustomButtonStyles.gradientDeepOrangeToOrangeDecoration,
-      onPressed: () {
-        onTapNext(context);
-      },
-    );
-  }
+
 
   /// Navigates to the welcomeScreenPotraitScreen when the action is triggered.
   onTapBtnHomeBTN(BuildContext context) {

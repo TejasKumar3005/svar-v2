@@ -1,4 +1,7 @@
+import 'package:carousel_slider/carousel_options.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
+import 'package:svar_new/widgets/game_stats_header.dart';
 import 'models/main_interaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -46,13 +49,18 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
           ),
           child: Container(
             width: 768.h,
-            padding: EdgeInsets.symmetric(vertical: 47.v),
+            padding: EdgeInsets.symmetric(vertical:30.v),
             child: Column(
               children: [
-                _buildAppBar(context),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 5.h,
+                  ),
+                  child: AppStatsHeader(per: 40),
+                ),
                 Spacer(),
                 SizedBox(height: 19.v),
-                _buildUser(context)
+                carouselSlider(context)
               ],
             ),
           ),
@@ -373,13 +381,18 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                   height: 101.adaptSize,
                   width: 101.adaptSize,
                   padding: EdgeInsets.all(20.h),
-                  decoration: AppDecoration.outlineBlack,
+                  decoration: AppDecoration.outlineWhiteA.copyWith(
+                      color: AppDecoration.fillDeepOrange.color,
+                      borderRadius: BorderRadius.all(
+                          Radius.circular((101.adaptSize) / 2))),
                   alignment: Alignment.center,
                   onTap: () {
                     onTapBtnUser(context);
                   },
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgUserWhiteA70001,
+                  child: Center(
+                    child: CustomImageView(
+                      imagePath: ImageConstant.imgUserWhiteA70001,
+                    ),
                   ),
                 ),
               ),
@@ -394,10 +407,90 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                 decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                   borderRadius: BorderRadiusStyle.roundedBorder20,
                 ),
-                
               )
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget carouselSlider(BuildContext context) {
+    return Align(
+
+      alignment: Alignment.center,
+      
+      child: CarouselSlider(
+        items: [
+          Container(
+                  width: 281.h,
+                  height: 156.v,
+                  // padding: EdgeInsets.symmetric(vertical: 32.v),
+                  decoration: AppDecoration.outlineWhiteA.copyWith(
+                    borderRadius: BorderRadiusStyle.roundedBorder20,
+                  ),
+                  child: CustomIconButton(
+                    height: 101.adaptSize,
+                    width: 101.adaptSize,
+                    padding: EdgeInsets.all(20.h),
+                    decoration: AppDecoration.outlineWhiteA.copyWith(
+                        color: AppDecoration.fillDeepOrange.color,
+                        borderRadius: BorderRadius.all(
+                            Radius.circular((101.adaptSize) / 2))),
+                    alignment: Alignment.center,
+                    onTap: () {
+                      onTapBtnUser(context);
+                    },
+                    child: Center(
+                      child: CustomImageView(
+                        imagePath: ImageConstant.imgUserWhiteA70001,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 281.h,
+                  height: 156.v,
+                  margin: EdgeInsets.only(
+                    left: 21.h,
+                    top: 11.v,
+                    bottom: 11.v,
+                  ),
+                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+                    borderRadius: BorderRadiusStyle.roundedBorder20,
+                  ),
+                  child: Center(
+                    child: CustomImageView(
+                        height: 108.v,
+                      width: 134.h,
+                      fit: BoxFit.contain,
+                      imagePath: ImageConstant.imgLock,
+                    ),
+                  ),
+                )
+                ,
+                Container(
+                  width: 281.h,
+                  height: 156.v,
+                  margin: EdgeInsets.only(
+                    left: 21.h,
+                    top: 11.v,
+                    bottom: 11.v,
+                  ),
+                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+                    borderRadius: BorderRadiusStyle.roundedBorder20,
+                  ),
+                  
+                )
+        ],
+      
+        //Slider Container properties
+        options: CarouselOptions(
+          autoPlay: true,
+          autoPlayCurve: Curves.decelerate,
+          enlargeCenterPage: true,
+          enlargeFactor: 0.2,
+          autoPlayAnimationDuration: const Duration(milliseconds: 800),
         ),
       ),
     );

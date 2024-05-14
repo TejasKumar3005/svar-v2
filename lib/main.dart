@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:svar_new/data/models/game_statsModel.dart';
+import 'package:svar_new/presentation/main_interaction_screen/main_interaction_screen.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'core/app_export.dart';
@@ -140,7 +141,7 @@ class MyApp extends StatelessWidget {
                 supportedLocales: locals,
                 // initialRoute: AppRoutes.mainInteractionScreen,
                 // routes: AppRoutes.routes,
-                home: AppStatsHeader(),
+                home: MainInteractionScreen(),
               );
             },
           ),
