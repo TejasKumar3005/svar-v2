@@ -63,7 +63,6 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                         _buildAppBar(context),
                         SizedBox(height: 2.v),
                         Container(
-                          margin: EdgeInsets.symmetric(horizontal: 151.h),
                           padding: EdgeInsets.symmetric(
                             horizontal: 33.h,
                             vertical: 8.v,
@@ -71,11 +70,11 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                           decoration: AppDecoration.fillAmber.copyWith(
                             borderRadius: BorderRadiusStyle.roundedBorder27,
                           ),
-                          child: Column(
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(height: 1.v),
+                              SizedBox(width: 20.h),
                               Text(
                                 "msg_let_s_learn_phonemes".tr.toUpperCase(),
                                 style: theme.textTheme.headlineMedium,
@@ -83,7 +82,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 64.v),
+                        SizedBox(height: 70.v),
                         _buildGrid(context),
                       ],
                     ),
@@ -103,56 +102,51 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         CustomIconButton(
-          height: 37.adaptSize,
-          width: 37.adaptSize,
-          padding: EdgeInsets.all(11.h),
-          decoration: IconButtonStyleHelper.gradientDeepOrangeToDeepOrangeTL18,
+          height: 60.adaptSize,
+          width: 60.adaptSize,
+          
           child: CustomImageView(
-            imagePath: ImageConstant.imgArrowDownWhiteA70001,
+            imagePath: ImageConstant.imgBackBtn,
           ),
         ),
         CustomIconButton(
-          height: 37.adaptSize,
-          width: 37.adaptSize,
-          padding: EdgeInsets.all(5.h),
+          height: 60.adaptSize,
+          width: 60.adaptSize,
           child: CustomImageView(
-            imagePath: ImageConstant.imgHomeBtn,
+            imagePath: ImageConstant.imgMenuBtn,
           ),
         ),
       ],
     );
   }
 
-  /// Section Widget
-  Widget _buildGrid(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 18.h),
-        child: Consumer<PhonmesListProvider>(
-          builder: (context, provider, child) {
-            return ListView.separated(
-              physics: BouncingScrollPhysics(),
-              shrinkWrap: true,
-              separatorBuilder: (
-                context,
-                index,
-              ) {
-                return SizedBox(
-                  height: 1.v,
-                );
-              },
-              itemCount: provider.phonmesListModelObj.gridItemList.length,
-              itemBuilder: (context, index) {
-                GridItemModel model =
-                    provider.phonmesListModelObj.gridItemList[index];
-                return GridItemWidget(
-                  model,
-                );
-              },
-            );
-          },
-        ),
+Widget _buildGrid(BuildContext context) {
+  return Expanded(
+    child: Padding(
+     padding: EdgeInsets.only(top: 10),
+      child: Consumer<PhonmesListProvider>(
+        builder: (context, provider, child) {
+          return GridView.builder(
+            physics: BouncingScrollPhysics(),
+            shrinkWrap: true,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 5,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+            ),
+            itemCount: provider.phonmesListModelObj.gridItemList.length,
+            itemBuilder: (context, index) {
+              GridItemModel model =
+                  provider.phonmesListModelObj.gridItemList[index];
+              return Align(
+                child: GridItemWidget(model),
+              );
+            },
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
+}
+
 }

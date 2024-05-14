@@ -30,7 +30,8 @@ static String next = '$imagePath/next_button.png';
 
   static String imgShineWhiteA70001 = '$imagePath/img_shine_white_a700_01.svg';
 
-// Register Form Screen -Potratit V1 ( Child ) images
+ static String imgNextBtn = '$imagePath/Next_BTN.png';
+
   static String imgRegisterFormScreen =
       '$imagePath/img_register_form_screen.png';
 
@@ -237,11 +238,13 @@ static String imgHomeBtn = '$imagePath/img_home_btn.png';
 
 static String imgBackBtn = '$imagePath/img_back_btn.png'; 
 
-  static String imgMascot173x143 = '$imagePath/img_mascot_173x143.png';
+static String imgMenuBtn = '$imagePath/Menu_BTN.png';
+  
+static String imgMascot173x143 = '$imagePath/img_mascot_173x143.png';
 
 static String imgMainInteraction = '$imagePath/main_interaction_screen.png';
 
-  static String imgTelevisionWhiteA70001 =
+static String imgTelevisionWhiteA70001 =
       '$imagePath/img_television_white_a700_01.svg';
 
   static String imgEllipse67 = '$imagePath/img_ellipse_67.svg';

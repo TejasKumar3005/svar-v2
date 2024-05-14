@@ -14,16 +14,16 @@ import 'package:svar_new/database/authentication.dart';
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // if (kIsWeb) {
-  //   await Firebase.initializeApp(
-  //       options: FirebaseOptions(
-  //           apiKey: "AIzaSyBsu-nyp97TJiICB9WtvuH05Ygap7xLpsU",
-  //           appId: "1:346602804482:web:57ea49a41e7b6a9cc2de1b",
-  //           messagingSenderId: "346602804482",
-  //           projectId: "faceattendance-a1720"));
-  // } else {
-  //   await Firebase.initializeApp();
-  // }
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: FirebaseOptions(
+            apiKey: "AIzaSyBsu-nyp97TJiICB9WtvuH05Ygap7xLpsU",
+            appId: "1:346602804482:web:57ea49a41e7b6a9cc2de1b",
+            messagingSenderId: "346602804482",
+            projectId: "faceattendance-a1720"));
+  } else {
+    await Firebase.initializeApp();
+  }
   Future.wait([
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -139,8 +139,8 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                // initialRoute: AppRoutes.mainInteractionScreen,
-                // routes: AppRoutes.routes,
+                initialRoute: AppRoutes.mainInteractionScreen,
+                routes: AppRoutes.routes,
                 home: MainInteractionScreen(),
               );
             },
