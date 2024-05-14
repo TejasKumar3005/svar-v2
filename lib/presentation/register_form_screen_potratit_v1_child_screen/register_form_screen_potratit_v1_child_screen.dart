@@ -87,26 +87,25 @@ class RegisterFormScreenPotratitV1ChildScreenState
                       alignment: Alignment.centerLeft,
                       child: Row(
                         children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: 1.v),
+                         Padding(
+                            padding: EdgeInsets.only(left: 1.h),
                             child: CustomIconButton(
-                              height: 37.adaptSize,
-                              width: 37.adaptSize,
-                              padding: EdgeInsets.all(9.h),
-                              decoration: CustomButtonStyles.gradientDeepOrangeToOrangeDecoration,
+                              height: 38.adaptSize,
+                              width: 38.adaptSize,
+                              
+                            
                               child: CustomImageView(
-                                imagePath:
-                                    ImageConstant.imgArrowDownWhiteA70001,
+                                imagePath: ImageConstant.imgBackBtn,
                               ),
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 6.h),
+                            padding: EdgeInsets.only(left: 1.h),
                             child: CustomIconButton(
                               height: 38.adaptSize,
                               width: 38.adaptSize,
-                              padding: EdgeInsets.all(3.h),
-                              onTap: () {
+                      
+                                onTap: () {
                                 onTapBtnHomeBTN(context);
                               },
                               child: CustomImageView(
@@ -185,7 +184,6 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                             style: theme.textTheme.labelLarge,
                                             underline: Container(),
                                             onChanged: (String? value) {
-                                              // This is called when the user selects an item.
                                               setState(() {
                                                 dropdownValue = value!;
                                               });
@@ -272,7 +270,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                     .then((value) => {});
                                               },
                                               child: Container(
-                                                width: 38.h,
+                                                width: 39.h,
                                                 margin: EdgeInsets.only(
                                                     bottom: 3.v),
                                                 padding: EdgeInsets.symmetric(
@@ -290,6 +288,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                   "lbl_send_otp".tr,
                                                   style: CustomTextStyles
                                                       .nunitoteal90003ExtraBold,
+                                                      
                                                 ),
                                               ),
                                             )
@@ -626,7 +625,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                           bottom: 5.v,
                                         ),
                                         padding: EdgeInsets.symmetric(
-                                          horizontal: 7.h,
+                                          horizontal: 5.h,
                                           vertical: 1.v,
                                         ),
                                         decoration: AppDecoration
