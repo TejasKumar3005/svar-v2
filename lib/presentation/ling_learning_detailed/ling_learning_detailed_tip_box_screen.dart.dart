@@ -3,266 +3,225 @@ import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 
-
 class LingLearningDetailedTipBoxScreen extends StatefulWidget {
-const LingLearningDetailedTipBoxScreen({Key? key})
-: super(
-key: key,
-);
+  const LingLearningDetailedTipBoxScreen({Key? key})
+      : super(
+          key: key,
+        );
 
-@override
-LingLearningDetailedTipBoxScreenState createState() =>
-LingLearningDetailedTipBoxScreenState();
+  @override
+  LingLearningDetailedTipBoxScreenState createState() =>
+      LingLearningDetailedTipBoxScreenState();
 
-static Widget builder(BuildContext context) {
-return ChangeNotifierProvider(
-create: (context) => LingLearningDetailedTipBoxProvider(),
-child: LingLearningDetailedTipBoxScreen(),
-);
-}
+  static Widget builder(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => LingLearningDetailedTipBoxProvider(),
+      child: LingLearningDetailedTipBoxScreen(),
+    );
+  }
 }
 
 class LingLearningDetailedTipBoxScreenState
-extends State<LingLearningDetailedTipBoxScreen> {
-@override
-void initState() {
-super.initState();
-NavigatorService.pushNamed(
-AppRoutes.tipBoxVideoScreen,
-);
-}
+    extends State<LingLearningDetailedTipBoxScreen> {
+  @override
+  void initState() {
+    super.initState();
+    NavigatorService.pushNamed(
+      AppRoutes.tipBoxVideoScreen,
+    );
+  }
 
-@override
-Widget build(BuildContext context) {
-return SafeArea(
-child: Scaffold(
-body: SizedBox(
-height: 432.v,
-width: 768.h,
-child: Stack(
-alignment: Alignment.bottomLeft,
-children: [
-CustomImageView(
-imagePath: ImageConstant.imgGroup7,
-height: 430.v,
-width: 768.h,
-alignment: Alignment.center,
-),
-CustomImageView(
-imagePath: ImageConstant.imgProtaganist1,
-height: 693.v,
-width: 303.h,
-alignment: Alignment.bottomLeft,
-margin: EdgeInsets.only(left: 81.h),
-),
-Align(
-alignment: Alignment.center,
-child: Container(
-padding: EdgeInsets.symmetric(
-horizontal: 24.h,
-vertical: 36.v,
-),
-child: Column(
-mainAxisSize: MainAxisSize.min,
-children: [
-_buildAppBar(context),
-SizedBox(height: 23.v),
-Align(
-alignment: Alignment.centerRight,
-child: Container(
-margin: EdgeInsets.only(
-left: 356.h,
-right: 18.h,
-),
-padding: EdgeInsets.symmetric(
-horizontal: 45.h,
-vertical: 15.v,
-),
-decoration: AppDecoration.outlineTeal.copyWith(
-borderRadius: BorderRadiusStyle.roundedBorder20,
-),
-child: Column(
-mainAxisSize: MainAxisSize.min,
-children: [
-Text(
-"msg_parental_tip_box".tr,
-style:
-CustomTextStyles.titleSmallPoppinsTeal900,
-),
-SizedBox(height: 14.v),
-Align(
-alignment: Alignment.centerLeft,
-child: Card(
-clipBehavior: Clip.antiAlias,
-elevation: 0,
-shape: RoundedRectangleBorder(
-side: BorderSide(
-color: appTheme.lime90002,
-width: 2.h,
-),
-borderRadius:
-BorderRadiusStyle.roundedBorder1,
-),
-child: Container(
-height: 126.v,
-width: 238.h,
-decoration:
-AppDecoration.outlineLime.copyWith(
-borderRadius:
-BorderRadiusStyle.roundedBorder1,
-),
-child: Stack(
-alignment: Alignment.topRight,
-children: [
-CustomImageView(
-imagePath: ImageConstant.imgMouth1,
-height: 126.v,
-width: 238.h,
-radius: BorderRadius.circular(
-1.h,
-),
-alignment: Alignment.center,
-),
-Align(
-alignment: Alignment.topRight,
-child: Container(
-height: 88.v,
-width: 96.h,
-margin: EdgeInsets.only(
-top: 11.v,
-right: 56.h,
-),
-child: Stack(
-alignment: Alignment.topRight,
-children: [
-Align(
-alignment: Alignment.topRight,
-child: Container(
-height: 6.v,
-width: 13.h,
-margin: EdgeInsets.only(
-top: 20.v,
-right: 30.h,
-),
-decoration: BoxDecoration(
-color: appTheme
-.deepOrangeA70001,
-borderRadius:
-BorderRadius.circular(
-6.h,
-),
-),
-),
-),
-CustomImageView(
-imagePath: ImageConstant
-.imgCheckmark,
-height: 17.v,
-width: 31.h,
-alignment: Alignment.topRight,
-),
-CustomIconButton(
-height: 74.adaptSize,
-width: 74.adaptSize,
-padding: EdgeInsets.all(15.h),
-decoration:
-IconButtonStyleHelper
-.outlineTeal,
-alignment:
-Alignment.bottomLeft,
-onTap: () {
-onTapBtnUser(context);
-},
-child: CustomImageView(
-imagePath: ImageConstant
-.imgUserWhiteA7000174x74,
-),
-)
-],
-),
-),
-)
-],
-),
-),
-),
-),
-SizedBox(height: 16.v),
-SizedBox(
-width: 245.h,
-child: Text(
-"msg_apply_a_drop_of".tr,
-maxLines: 4,
-overflow: TextOverflow.ellipsis,
-textAlign: TextAlign.center,
-style: CustomTextStyles
-.labelLargeNunitoSansGray5002,
-),
-),
-SizedBox(height: 6.v)
-],
-),
-),
-),
-SizedBox(height: 10.v)
-],
-),
-),
-)
-],
-),
-),
-),
-);
-}
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        body: SizedBox(
+          height: 432.v,
+          width: 768.h,
+          child: Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 18.h,
+                    vertical: 36.v,
+                  ),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(
+                        ImageConstant.imgGroup7,
+                      ),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildAppBar(context),
+                      SizedBox(height: 56.v),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 84.h),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 14.v),
+                                child: Column(
+                                  children: [
+                                    CustomImageView(
+                                      imagePath: ImageConstant.imgImage85,
+                                      height: 166.v,
+                                      width: 195.h,
+                                    ),
+                                    SizedBox(height: 27.v),
+                                    GestureDetector(
+                                      onTap: () {
+                                        onTapNextBTNTextButton(context);
+                                      },
+                                      child: Container(
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                CustomImageView(
+                                                  imagePath:
+                                                      ImageConstant.imgNextBtn,
+                                                  height: 30
+                                                      .v, // Increase the height to make the button bigger
+                                                  width: 60.h,
+                                                  // Increase the width to make the button bigger
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              CustomImageView(
+                                imagePath: ImageConstant.imgLaptop,
+                                height: 86.v,
+                                width: 88.h,
+                                margin: EdgeInsets.only(top: 160.v),
+                                onTap: () {
+                                  onTapImgLaptop(context);
+                                },
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 19.v)
+                    ],
+                  ),
+                ),
+              ),
+              CustomImageView(
+                imagePath: ImageConstant.imgProtaganist1,
+                height: 663.v,
+                width: 310.h,
+                alignment: Alignment.bottomRight,
+                margin: EdgeInsets.only(right: 103.h),
+              ),
+              SizedBox(height: 5.v),
+              SizedBox(
+                width: 150.h, // Reduced width for the text box
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    "msg_apply_a_drop_of".tr,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: CustomTextStyles.labelLargeNunitoSansGray5002,
+                  ),
+                ),
+              ),
+              SizedBox(height: 6.v),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-/// Section Widget
-Widget _buildAppBar(BuildContext context) {
-return Padding(
-padding: EdgeInsets.only(left: 4.h),
-child: Row(
-mainAxisAlignment: MainAxisAlignment.center,
-children: [
-CustomIconButton(
-height: 37.adaptSize,
-width: 37.adaptSize,
-padding: EdgeInsets.all(9.h),
-decoration:
-IconButtonStyleHelper.gradientDeepOrangeToDeepOrangeTL18,
-child: CustomImageView(
-imagePath: ImageConstant.imgArrowDownWhiteA70001,
-),
-),
-Spacer(),
-CustomIconButton(
-height: 37.adaptSize,
-width: 37.adaptSize,
-padding: EdgeInsets.all(3.h),
-child: CustomImageView(
-imagePath: ImageConstant.imgHomeBtn,
-),
-),
-Padding(
-padding: EdgeInsets.only(left: 4.h),
-child: CustomIconButton(
-height: 37.adaptSize,
-width: 37.adaptSize,
-padding: EdgeInsets.all(3.h),
-child: CustomImageView(
-imagePath: ImageConstant.imgFullvolBtn,
-),
-),
-)
-],
-),
-);
-}
+  /// Section Widget
+  Widget _buildAppBar(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 4.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CustomIconButton(
+            height: 37.adaptSize,
+            width: 37.adaptSize,
+            padding: EdgeInsets.all(9.h),
+            decoration:
+                IconButtonStyleHelper.gradientDeepOrangeToDeepOrangeTL18,
+            child: CustomImageView(
+              imagePath: ImageConstant.imgArrowDownWhiteA70001,
+            ),
+          ),
+          Spacer(),
+          CustomIconButton(
+            height: 37.adaptSize,
+            width: 37.adaptSize,
+            padding: EdgeInsets.all(3.h),
+            child: CustomImageView(
+              imagePath: ImageConstant.imgHomeBtn,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 4.h),
+            child: CustomIconButton(
+              height: 37.adaptSize,
+              width: 37.adaptSize,
+              padding: EdgeInsets.all(3.h),
+              child: CustomImageView(
+                imagePath: ImageConstant.imgFullvolBtn,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
 
-/// Navigates to the tipBoxVideoScreen when the action is triggered.
-onTapBtnUser(BuildContext context) {
-NavigatorService.pushNamed(
-AppRoutes.tipBoxVideoScreen,
-);
-}
-}
+  /// Navigates to the tipBoxVideoScreen when the action is triggered.
+  onTapBtnUser(BuildContext context) {
+    NavigatorService.pushNamed(
+      AppRoutes.tipBoxVideoScreen,
+    );
+  }
 
+  /// Navigates to the phonemsLevelScreenTwoScreen when the action is triggered.
+  onTapBtnArrowDown(BuildContext context) {
+    NavigatorService.pushNamed(
+      AppRoutes.phonemsLevelScreenTwoScreen,
+    );
+  }
+
+  /// Navigates to the lingLearningQuickTipScreen when the action is triggered.
+  onTapNextBTNTextButton(BuildContext context) {
+    NavigatorService.pushNamed(
+      AppRoutes.lingLearningQuickTipScreen,
+    );
+  }
+
+  /// Navigates to the lingLearningQuickTipScreen when the action is triggered.
+  onTapImgLaptop(BuildContext context) {
+    NavigatorService.pushNamed(
+      AppRoutes.lingLearningQuickTipScreen,
+    );
+  }
+}

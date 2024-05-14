@@ -142,8 +142,8 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                // initialRoute: AppRoutes.mainInteractionScreen,
-                // routes: AppRoutes.routes,
+                initialRoute: AppRoutes.mainInteractionScreen,
+                routes: AppRoutes.routes,
                 home: MainInteractionScreen(),
               );
             },

@@ -30,7 +30,8 @@ static String next = '$imagePath/next_button.png';
 
   static String imgShineWhiteA70001 = '$imagePath/img_shine_white_a700_01.svg';
 
-// Register Form Screen -Potratit V1 ( Child ) images
+ static String imgNextBtn = '$imagePath/Next_BTN.png';
+
   static String imgRegisterFormScreen =
       '$imagePath/img_register_form_screen.png';
 
@@ -238,11 +239,13 @@ static String imgHomeBtn = '$imagePath/img_home_btn.png';
 
 static String imgBackBtn = '$imagePath/img_back_btn.png'; 
 
-  static String imgMascot173x143 = '$imagePath/img_mascot_173x143.png';
+static String imgMenuBtn = '$imagePath/Menu_BTN.png';
+  
+static String imgMascot173x143 = '$imagePath/img_mascot_173x143.png';
 
 static String imgMainInteraction = '$imagePath/main_interaction_screen.png';
 
-  static String imgTelevisionWhiteA70001 =
+static String imgTelevisionWhiteA70001 =
       '$imagePath/img_television_white_a700_01.svg';
 
   static String imgEllipse67 = '$imagePath/img_ellipse_67.svg';
@@ -255,7 +258,7 @@ static String imgMainInteraction = '$imagePath/main_interaction_screen.png';
 
   static String imgCandy1 = '$imagePath/img_candy_1.png';
 
-  static String imgFullvolBtn = '$imagePath/img_fullvol_btn.svg';
+  static String imgFullvolBtn = '$imagePath/FullVol_BTN_IconButton.png';
 
   static String imgEllipse39 = '$imagePath/img_ellipse_39.svg';
 
@@ -278,7 +281,9 @@ static String imgMainInteraction = '$imagePath/main_interaction_screen.png';
 
   static String imgEllipse39WhiteA70001 =
       '$imagePath/img_ellipse_39_white_a700_01.svg';
-
+  
+  static String imgTipBtn = '$imagePath/Tip_BTN_ICNButton.png';
+  
   static String imgUserWhiteA7000119x18 =
       '$imagePath/img_user_white_a700_01_19x18.svg';
 
@@ -297,7 +302,7 @@ static String imgMainInteraction = '$imagePath/main_interaction_screen.png';
   static String imgUserWhiteA700018x9 =
       '$imagePath/img_user_white_a700_01_8x9.svg';
 
-  static String imgProtaganist1 = '$imagePath/img_protaganist_1.png';
+  static String imgProtaganist1 = '$imagePath/img_child.png';
 
   static String imgMouth1 = '$imagePath/img_mouth_1.png';
 
