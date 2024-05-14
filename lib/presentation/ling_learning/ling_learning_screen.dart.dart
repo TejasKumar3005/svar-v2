@@ -92,9 +92,8 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                                                       ImageConstant.imgNextBtn,
                                                   height: 30
                                                       .v, // Increase the height to make the button bigger
-                                                  width: 60
-                                                      .h,
-                                                       // Increase the width to make the button bigger
+                                                  width: 60.h,
+                                                  // Increase the width to make the button bigger
                                                 ),
                                               ],
                                             )
@@ -135,7 +134,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                 height: 60.v,
                 width: 60.h,
                 alignment: Alignment.bottomRight,
-                margin: EdgeInsets.only(right: 60.h , bottom: 80),
+                margin: EdgeInsets.only(right: 60.h, bottom: 80),
               )
             ],
           ),
