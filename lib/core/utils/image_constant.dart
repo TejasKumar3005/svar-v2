@@ -257,7 +257,7 @@ static String imgTelevisionWhiteA70001 =
 
   static String imgCandy1 = '$imagePath/img_candy_1.png';
 
-  static String imgFullvolBtn = '$imagePath/img_fullvol_btn.svg';
+  static String imgFullvolBtn = '$imagePath/FullVol_BTN_IconButton.png';
 
   static String imgEllipse39 = '$imagePath/img_ellipse_39.svg';
 
@@ -280,7 +280,9 @@ static String imgTelevisionWhiteA70001 =
 
   static String imgEllipse39WhiteA70001 =
       '$imagePath/img_ellipse_39_white_a700_01.svg';
-
+  
+  static String imgTipBtn = '$imagePath/Tip_BTN_ICNButton.png';
+  
   static String imgUserWhiteA7000119x18 =
       '$imagePath/img_user_white_a700_01_19x18.svg';
 
@@ -299,7 +301,7 @@ static String imgTelevisionWhiteA70001 =
   static String imgUserWhiteA700018x9 =
       '$imagePath/img_user_white_a700_01_8x9.svg';
 
-  static String imgProtaganist1 = '$imagePath/img_protaganist_1.png';
+  static String imgProtaganist1 = '$imagePath/img_child.png';
 
   static String imgMouth1 = '$imagePath/img_mouth_1.png';
 
