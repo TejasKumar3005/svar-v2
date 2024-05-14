@@ -82,7 +82,8 @@ static String next = '$imagePath/next_button.png';
 // Quit Game Screen images
   static String imgMascot136x118 = '$imagePath/img_mascot_136x118.png';
 
-  static String imgGroup235 = '$imagePath/img_group_235.svg';
+  static String imgThoughtCloud = '$imagePath/thought_cloud.png';
+  static String imgExitBtnShine = '$imagePath/exit_btn_shine.png';
 
 // Loading Screen images
   static String imgLoadingBar = '$imagePath/img_loading_bar.svg';

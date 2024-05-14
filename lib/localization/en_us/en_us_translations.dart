@@ -12,6 +12,7 @@ final Map<String, String> enUs = {
 "lbl_verify": "Verify",
 "msg_f_1_40_new_friends":
 "F-1/40 New Friends Colony, Near Indira Park, Delhi",
+"msg_quit_game":"Quit Game",
 "msg_rakesh_ramji_rastogi": "Rakesh Ramji Rastogi",
 "msg_rakeshramjirast": "rakeshramjirastogiontherocks@gmail.com",
 

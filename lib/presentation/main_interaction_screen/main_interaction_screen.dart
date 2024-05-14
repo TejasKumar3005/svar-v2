@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'models/main_interaction_model.dart';
@@ -26,9 +27,10 @@ class MainInteractionScreen extends StatefulWidget {
 }
 
 class MainInteractionScreenState extends State<MainInteractionScreen> {
-   @override
+  @override
   void initState() {
     super.initState();
+    
     // Set the orientation to landscape
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
@@ -53,7 +55,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
         extendBody: true,
         extendBodyBehindAppBar: true,
         body: Container(
-          width: SizeUtils.width,
+          width: MediaQuery.of(context).size.width,
           height: SizeUtils.height,
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -65,7 +67,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
           ),
           child: Container(
             width: 768.h,
-            padding: EdgeInsets.symmetric(vertical:30.v),
+            padding: EdgeInsets.symmetric(vertical: 30.v),
             child: Column(
               children: [
                 Padding(
@@ -433,73 +435,69 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
 
   Widget carouselSlider(BuildContext context) {
     return Align(
-
       alignment: Alignment.center,
-      
       child: CarouselSlider(
         items: [
           Container(
-                  width: 281.h,
-                  height: 156.v,
-                  // padding: EdgeInsets.symmetric(vertical: 32.v),
-                  decoration: AppDecoration.outlineWhiteA.copyWith(
-                    borderRadius: BorderRadiusStyle.roundedBorder20,
-                  ),
-                  child: CustomIconButton(
-                    height: 101.adaptSize,
-                    width: 101.adaptSize,
-                    padding: EdgeInsets.all(20.h),
-                    decoration: AppDecoration.outlineWhiteA.copyWith(
-                        color: AppDecoration.fillDeepOrange.color,
-                        borderRadius: BorderRadius.all(
-                            Radius.circular((101.adaptSize) / 2))),
-                    alignment: Alignment.center,
-                    onTap: () {
-                      onTapBtnUser(context);
-                    },
-                    child: Center(
-                      child: CustomImageView(
-                        imagePath: ImageConstant.imgUserWhiteA70001,
-                      ),
-                    ),
-                  ),
+            width: 281.h,
+            height: 156.v,
+            // padding: EdgeInsets.symmetric(vertical: 32.v),
+            decoration: AppDecoration.outlineWhiteA.copyWith(
+              borderRadius: BorderRadiusStyle.roundedBorder20,
+            ),
+            child: CustomIconButton(
+              height: 101.adaptSize,
+              width: 101.adaptSize,
+              padding: EdgeInsets.all(20.h),
+              decoration: AppDecoration.outlineWhiteA.copyWith(
+                  color: AppDecoration.fillDeepOrange.color,
+                  borderRadius:
+                      BorderRadius.all(Radius.circular((101.adaptSize) / 2))),
+              alignment: Alignment.center,
+              onTap: () {
+                showQuitDialog(context);
+              },
+              child: Center(
+                child: CustomImageView(
+                  imagePath: ImageConstant.imgUserWhiteA70001,
                 ),
-                Container(
-                  width: 281.h,
-                  height: 156.v,
-                  margin: EdgeInsets.only(
-                    left: 21.h,
-                    top: 11.v,
-                    bottom: 11.v,
-                  ),
-                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
-                    borderRadius: BorderRadiusStyle.roundedBorder20,
-                  ),
-                  child: Center(
-                    child: CustomImageView(
-                        height: 108.v,
-                      width: 134.h,
-                      fit: BoxFit.contain,
-                      imagePath: ImageConstant.imgLock,
-                    ),
-                  ),
-                )
-                ,
-                Container(
-                  width: 281.h,
-                  height: 156.v,
-                  margin: EdgeInsets.only(
-                    left: 21.h,
-                    top: 11.v,
-                    bottom: 11.v,
-                  ),
-                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
-                    borderRadius: BorderRadiusStyle.roundedBorder20,
-                  ),
-                  
-                )
+              ),
+            ),
+          ),
+          Container(
+            width: 281.h,
+            height: 156.v,
+            margin: EdgeInsets.only(
+              left: 21.h,
+              top: 11.v,
+              bottom: 11.v,
+            ),
+            decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+              borderRadius: BorderRadiusStyle.roundedBorder20,
+            ),
+            child: Center(
+              child: CustomImageView(
+                height: 108.v,
+                width: 134.h,
+                fit: BoxFit.contain,
+                imagePath: ImageConstant.imgLock,
+              ),
+            ),
+          ),
+          Container(
+            width: 281.h,
+            height: 156.v,
+            margin: EdgeInsets.only(
+              left: 21.h,
+              top: 11.v,
+              bottom: 11.v,
+            ),
+            decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+              borderRadius: BorderRadiusStyle.roundedBorder20,
+            ),
+          )
         ],
-      
+
         //Slider Container properties
         options: CarouselOptions(
           autoPlay: true,
