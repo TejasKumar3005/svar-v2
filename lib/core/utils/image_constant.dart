@@ -214,12 +214,18 @@ static String imgTreeGreen400102x88 =
 
 static String imgMascot = '$imagePath/img_mascot.png';
 
+static String playBtn = '$imagePath/Play_BTN.png';
+
+static String settingsBtn = '$imagePath/Settings_BTN.png';  
+
 static String imgUnionCyanA100 = '$imagePath/img_union_cyan_a100.png';
 
 static String imgUnionCyanA10071x110 =
 '$imagePath/img_union_cyan_a100_71x110.svg';
 
 static String imgUser = '$imagePath/img_user.svg';
+
+static String mainScreen = '$imagePath/main_screen.png';
 
 static String imgArrowDown = '$imagePath/img_arrow_down.svg';
 
@@ -232,7 +238,7 @@ static String imgBackBtn = '$imagePath/img_back_btn.png';
 
 static String imgMascot173x143 = '$imagePath/img_mascot_173x143.png';
 
-static String imgMainInteraction = '$imagePath/img_main_interaction.png';
+static String imgMainInteraction = '$imagePath/main_interaction_screen.png';
 
 static String imgTelevisionWhiteA70001 =
 '$imagePath/img_television_white_a700_01.svg';
