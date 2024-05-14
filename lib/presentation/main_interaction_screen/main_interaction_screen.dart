@@ -6,6 +6,7 @@ import 'models/main_interaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/main_interaction_provider.dart';
+import 'package:flutter/services.dart';
 
 class MainInteractionScreen extends StatefulWidget {
   const MainInteractionScreen({Key? key})
@@ -25,9 +26,24 @@ class MainInteractionScreen extends StatefulWidget {
 }
 
 class MainInteractionScreenState extends State<MainInteractionScreen> {
-  @override
+   @override
   void initState() {
     super.initState();
+    // Set the orientation to landscape
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    // Reset the orientation when the screen is disposed
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    super.dispose();
   }
 
   @override
