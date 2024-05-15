@@ -19,7 +19,7 @@ class ImageConstant {
   static String imgEllipse175291x430 = '$imagePath/img_ellipse_175_291x430.png';
 
 static String next = '$imagePath/next_button.png';
-// Login Screen Potrait images
+
   static String imgLock = '$imagePath/img_lock.png';
 
   static String imgEllipse1761 = '$imagePath/img_ellipse_176_1.png';
