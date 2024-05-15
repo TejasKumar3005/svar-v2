@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:svar_new/widgets/grid_item_model.dart.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -28,22 +29,24 @@ class GridItemWidget extends StatelessWidget {
         borderRadius: BorderRadiusStyle.roundedBorder20,
       ),
       child: Container(
-        height: 133.v,
+        height: 150.v,
         width: 118.h,
-        padding: EdgeInsets.all(5.h),
+    
         decoration: AppDecoration.outlineWhiteA700015.copyWith(
           borderRadius: BorderRadiusStyle.roundedBorder20,
         ),
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 14.v),
-                child: Container(
-                  height: 10.v,
-                  width: 86.h,
+            Column(
+              children: [
+                Text(
+                  gridItemModelObj.widget!,
+                  style: theme.textTheme.displayLarge!.copyWith(fontSize: 41),
+                ),
+                Container(
+                  height: 8.v,
+                  width: 45.h,
                   decoration: BoxDecoration(
                     color: appTheme.whiteA70001,
                     borderRadius: BorderRadius.circular(
@@ -63,24 +66,22 @@ class GridItemWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
+          
+          
             Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: EdgeInsets.only(top: 11.v),
-                child: Text(
-                  gridItemModelObj.widget!,
-                  style: theme.textTheme.displayLarge,
-                ),
-              ),
-            ),
-            CustomImageView(
-              imagePath: ImageConstant.imgShineWhiteA7000123x30,
-              height: 23.v,
-              width: 30.h,
               alignment: Alignment.topLeft,
-            ),
+              child: CustomImageView(
+                imagePath: ImageConstant.imgShine,
+                height: 23.v,
+                width: 30.h,
+                fit: BoxFit.contain,
+                alignment: Alignment.topLeft,
+              ),
+            )
+            
+            ,
           ],
         ),
       ),

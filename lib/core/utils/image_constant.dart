@@ -237,7 +237,7 @@ static String mainScreen = '$imagePath/main_screen.png';
 
 static String imgHomeBtn = '$imagePath/img_home_btn.png';
 
-static String imgBackBtn = '$imagePath/img_back_btn.png'; 
+static String imgBackBtn = '$imagePath/back_btn.png'; 
 
 static String imgMenuBtn = '$imagePath/Menu_BTN.png';
   

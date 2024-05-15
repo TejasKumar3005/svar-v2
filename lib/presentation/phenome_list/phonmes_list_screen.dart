@@ -1,4 +1,4 @@
-import 'package:svar_new/presentation/phenome_list/phonmes_list_provider.dart.dart';
+import 'package:svar_new/presentation/phenome_list/phonmes_list_provider.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -49,7 +49,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
             width: 768.h,
             padding: EdgeInsets.symmetric(
               horizontal: 29.h,
-              vertical: 35.v,
+              vertical: 20.v,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -101,20 +101,17 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CustomIconButton(
-          height: 60.adaptSize,
-          width: 60.adaptSize,
-          
-          child: CustomImageView(
-            imagePath: ImageConstant.imgBackBtn,
-          ),
+        CustomImageView(
+        height: 37.5.adaptSize,
+            width: 37.5.adaptSize,
+          fit: BoxFit.contain,
+          imagePath: ImageConstant.imgBackBtn,
         ),
-        CustomIconButton(
-          height: 60.adaptSize,
-          width: 60.adaptSize,
-          child: CustomImageView(
-            imagePath: ImageConstant.imgMenuBtn,
-          ),
+        CustomImageView(
+          height: 37.5.adaptSize,
+            width: 37.5.adaptSize,
+            fit: BoxFit.contain,
+          imagePath: ImageConstant.imgMenuBtn,
         ),
       ],
     );

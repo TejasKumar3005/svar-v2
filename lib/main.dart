@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:svar_new/data/models/game_statsModel.dart';
 import 'package:svar_new/presentation/main_interaction_screen/main_interaction_screen.dart';
+import 'package:svar_new/presentation/phenome_list/phonmes_list_screen.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart.dart';
 import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_screen/register_form_screen_potratit_v1_child_screen.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
@@ -142,9 +143,9 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                initialRoute: AppRoutes.mainInteractionScreen,
+                initialRoute: AppRoutes.lingLearningScreen,
                 routes: AppRoutes.routes,
-                home: MainInteractionScreen(),
+                // home: PhonmesListScreen(),
               );
             },
           ),

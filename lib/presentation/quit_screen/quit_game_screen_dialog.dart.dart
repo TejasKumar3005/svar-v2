@@ -190,11 +190,11 @@ Widget QuitDialog(BuildContext context) {
                                 Expanded(
                                   child: GestureDetector(
                                     onTap: () {
-                                      ParentalControlIntegration
-                                              .checkParentalControlPIN("1234")
-                                          .then((value) => {if(value){
-                                            Navigator.of(context).pop()
-                                          }});
+                                      // ParentalControlIntegration
+                                      //         .checkParentalControlPIN("1234")
+                                      //     .then((value) => {if(value){
+                                      //       Navigator.of(context).pop()
+                                      //     }});
                                     },
                                     child: Container(
                                       margin: EdgeInsets.only(right: 5.h),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart.dart';
+import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import '../../../core/app_export.dart';
 
 /// A provider class for the PhonmesListScreen.
