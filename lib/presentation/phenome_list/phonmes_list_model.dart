@@ -3,7 +3,6 @@ import 'package:svar_new/widgets/grid_item_model.dart.dart';
 import '../../../core/app_export.dart';
 
 
-
 class PhonmesListModel {
   List<GridItemModel> gridItemList = [
     GridItemModel(widget: "ग"),
