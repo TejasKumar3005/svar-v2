@@ -7,11 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 
 class LingLearningScreen extends StatefulWidget {
-  const LingLearningScreen({Key? key})
-      : super(
-          key: key,
-        );
-        
+  const LingLearningScreen({Key? key}) : super(key: key);
+
   @override
   LingLearningScreenState createState() => LingLearningScreenState();
 
@@ -31,6 +28,8 @@ class LingLearningScreenState extends State<LingLearningScreen> {
 
   @override
   Widget build(BuildContext context) {
+    LingLearningProvider lingLearningProvider =
+        Provider.of<LingLearningProvider>(context, listen: false);
     return SafeArea(
       child: Scaffold(
         body: Container(

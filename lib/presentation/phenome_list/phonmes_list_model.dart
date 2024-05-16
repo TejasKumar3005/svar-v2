@@ -1,6 +1,7 @@
 import 'package:svar_new/widgets/grid_item_model.dart.dart';
-
+import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import '../../../core/app_export.dart';
+import 'package:provider/provider.dart'; 
 
 
 class PhonmesListModel {
@@ -31,4 +32,10 @@ class PhonmesListModel {
     GridItemModel(widget: "ल"),
     GridItemModel(widget: "व"),
   ];
+
+  void onTapCharacter(BuildContext context, String character) {
+    LingLearningProvider lingLearningProvider =
+        Provider.of<LingLearningProvider>(context, listen: false);
+    lingLearningProvider.setSelectedCharacter(character);
+  }
 }
