@@ -7,10 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 
 class LingLearningScreen extends StatefulWidget {
-  const LingLearningScreen({Key? key})
-      : super(
-          key: key,
-        );
+  const LingLearningScreen({Key? key}) : super(key: key);
 
   @override
   LingLearningScreenState createState() => LingLearningScreenState();
@@ -31,86 +28,85 @@ class LingLearningScreenState extends State<LingLearningScreen> {
 
   @override
   Widget build(BuildContext context) {
+    LingLearningProvider lingLearningProvider =
+        Provider.of<LingLearningProvider>(context, listen: false);
     return SafeArea(
       child: Scaffold(
         body: Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
-            image: DecorationImage(image: AssetImage(ImageConstant.imgGroup7),fit: BoxFit.cover)
-          ),
+              image: DecorationImage(
+                  image: AssetImage(ImageConstant.imgGroup7),
+                  fit: BoxFit.cover)),
           child: Column(
             mainAxisSize: MainAxisSize.max,
-          children: [
+            children: [
               _buildAppBar(context),
-            Stack(
-              children: [
+              Stack(children: [
                 Align(
                   alignment: Alignment.center,
                   child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 18.h,
-                        vertical: 36.v,
-                      ),
-                      
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                        
-                        
-                          CustomImageView(
-                            imagePath: ImageConstant.imgImage85,
-                            height: 166.v,
-                            width: 195.h,
-                            fit: BoxFit.contain,
-                          ),
-                          SizedBox(height: 27.v),
-                          GestureDetector(
-                            onTap: () {
-                              onTapNextBTNTextButton(context);
-                            },
-                            child: CustomImageView(
-                              imagePath:
-                                  ImageConstant.imgNextBtn,
-                              height: 30
-                                  .v, // Increase the height to make the button bigger
-                              width: 60.h,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 18.h,
+                          vertical: 36.v,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CustomImageView(
+                              imagePath: ImageConstant.imgImage85,
+                              height: 250.v,
+                              width: 195.h,
                               fit: BoxFit.contain,
-                              // Increase the width to make the button bigger
                             ),
-                          ),
-                          SizedBox(height: 19.v)
-                        ],
+                            SizedBox(height: 27.v),
+                            GestureDetector(
+                              onTap: () {
+                                onTapNextBTNTextButton(context);
+                              },
+                              child: CustomImageView(
+                                imagePath: ImageConstant.imgNextBtn,
+                                height: 30
+                                    .v, // Increase the height to make the button bigger
+                                width: 60.h,
+                                fit: BoxFit.contain,
+                                // Increase the width to make the button bigger
+                              ),
+                            ),
+                            SizedBox(height: 19.v)
+                          ],
+                          
+                        ),
+                        
                       ),
-                    ),
-                  
-                    CustomImageView(
-                      imagePath: ImageConstant.imgTipBtn,
-                      height: 60.v,
-                      width: 60.h,
-                      alignment: Alignment.bottomRight,
-                      margin: EdgeInsets.only(right: 60.h, bottom: 80),
-                    )
-                  ],
-                                ),
+
+                    ],
+                  ),
                 ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: CustomImageView(
-                        imagePath: ImageConstant.imgProtaganist1,
-                        height: 663.v,
-                        width: 310.h,
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: CustomImageView(
+                    imagePath: ImageConstant.imgProtaganist1,
+                    height: 300.v,
+                    width: 200.h,
+                    alignment: Alignment.bottomRight,
+                    margin: EdgeInsets.only(right: 103.h),
+                  ),
+                ),
+                 CustomImageView(
+                        imagePath: ImageConstant.imgTipBtn,
+                        height: 60.v,
+                        width: 60.h,
                         alignment: Alignment.bottomRight,
-                        margin: EdgeInsets.only(right: 103.h),
-                      ),
-              ),
-              ]
-            ),
-          ],
-                      ),
+                        margin: EdgeInsets.only(right: 50.h, bottom: 10.h),
+                      )
+              ]),
+            ],
+          ),
         ),
       ),
     );
