@@ -21,6 +21,8 @@ class AppDecoration {
   static BoxDecoration get fillDeeporange70002 => BoxDecoration(
         color: appTheme.deepOrange70002,
       );
+  static BoxDecoration get fillDeepOrange10 =>
+      BoxDecoration(color: appTheme.deepOrande10);
   static BoxDecoration get fillGray => BoxDecoration(
         color: appTheme.gray300,
       );
@@ -135,6 +137,15 @@ class AppDecoration {
           width: 2.h,
         ),
       );
+
+  static BoxDecoration get outlineFilledBlue => BoxDecoration(
+        color: appTheme.blue20001,
+        border: Border.all(
+          color: appTheme.whiteA70001,
+          width: 1.h,
+          strokeAlign: strokeAlignOutside,
+        ),
+      );
   static BoxDecoration get outlineBlack9002 => BoxDecoration(
         color: appTheme.whiteA70001,
         border: Border.all(
@@ -161,6 +172,13 @@ class AppDecoration {
         border: Border.all(
           color: appTheme.black900,
           width: 2.h,
+        ),
+      );
+  static BoxDecoration get outlineBlackYellow => BoxDecoration(
+        color: appTheme.yellow500,
+        border: Border.all(
+          color: appTheme.black900,
+          width: 1.h,
         ),
       );
   static BoxDecoration get outlineBlack9006 => BoxDecoration(
@@ -263,6 +281,14 @@ class AppDecoration {
       );
   static BoxDecoration get outlineWhiteA70001 => BoxDecoration(
         color: appTheme.orangeA200,
+        border: Border.all(
+          color: appTheme.whiteA70001,
+          width: 5.h,
+          strokeAlign: strokeAlignOutside,
+        ),
+      );
+  static BoxDecoration get outlineWhiteDeepOrangeA200 => BoxDecoration(
+        color: appTheme.deepOrangeA200,
         border: Border.all(
           color: appTheme.whiteA70001,
           width: 5.h,

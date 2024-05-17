@@ -14,6 +14,7 @@ import 'package:svar_new/presentation/phenome_list/phonmes_list_screen.dart';
 import 'package:svar_new/presentation/phenoms_level_screen_one/phonems_level_screen_one_screen.dart';
 import 'package:svar_new/presentation/phonems_level_screen_two/phonems_level_screen_two_screen.dart';
 import 'package:svar_new/presentation/tip_box_video/tip_box_video_screen.dart';
+import 'package:svar_new/presentation/user_profile_screen/user_profile_screen.dart';
 import 'package:svar_new/presentation/welcome_screen/welcome_screen.dart.dart';
 import '../presentation/welcome_screen_potrait_screen/welcome_screen_potrait_screen.dart';
 import '../presentation/log_in_sign_up_screen_potrait_screen/log_in_sign_up_screen_potrait_screen.dart';
@@ -89,6 +90,7 @@ class AppRoutes {
   static const String appNavigationScreen = '/app_navigation_screen';
 
   static const String initialRoute = '/initialRoute';
+  static const String userProfileScreen = '/user_profile';
 
   static Map<String, WidgetBuilder> get routes => {
         welcomeScreenPotraitScreen: WelcomeScreenPotraitScreen.builder,
@@ -124,6 +126,7 @@ class AppRoutes {
             LingLearningDetailedTipBoxScreen.builder,
         tipBoxVideoScreen: TipBoxVideoScreen.builder,
         appNavigationScreen: AppNavigationScreen.builder,
-        initialRoute: LoadingScreen.builder
+        initialRoute: LoadingScreen.builder,
+        userProfileScreen:UserProfileScreen.builder
       };
 }

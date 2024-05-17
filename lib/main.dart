@@ -143,7 +143,7 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                initialRoute: AppRoutes.lingLearningScreen,
+                initialRoute: AppRoutes.userProfileScreen,
                 routes: AppRoutes.routes,
                 // home: PhonmesListScreen(),
               );

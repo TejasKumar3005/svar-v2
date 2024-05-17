@@ -5,12 +5,14 @@ class ImageConstant {
 // Welcome Screen Potrait images
   static String imgEllipse176 = '$imagePath/img_ellipse_176.png';
   static String imgMenuBTn = '$imagePath/menu_btn.png';
+  static String imgProfileBg = '$imagePath/bg_user_profile.png';
+  static String imgMascotBGProfile = '$imagePath/mascot_bg_profile.png';
   static String imgShine = '$imagePath/shine.png';
 
   static String imgEllipse177 = '$imagePath/img_ellipse_177.png';
 
   static String imgEllipse175 = '$imagePath/img_ellipse_175.png';
-
+  static String imgCoin = '$imagePath/coin.png';
 // Log IN / Sign UP Screen Potrait images
   static String imgEllipse176253x430 = '$imagePath/img_ellipse_176_253x430.png';
 
@@ -18,7 +20,7 @@ class ImageConstant {
 
   static String imgEllipse175291x430 = '$imagePath/img_ellipse_175_291x430.png';
 
-static String next = '$imagePath/next_button.png';
+  static String next = '$imagePath/next_button.png';
 // Login Screen Potrait images
   static String imgLock = '$imagePath/img_lock.png';
 
@@ -30,7 +32,7 @@ static String next = '$imagePath/next_button.png';
 
   static String imgShineWhiteA70001 = '$imagePath/img_shine_white_a700_01.svg';
 
- static String imgNextBtn = '$imagePath/Next_BTN.png';
+  static String imgNextBtn = '$imagePath/Next_BTN.png';
 
   static String imgRegisterFormScreen =
       '$imagePath/img_register_form_screen.png';
@@ -93,7 +95,6 @@ static String next = '$imagePath/next_button.png';
   static String imgWelcomeScreen = '$imagePath/img_welcome_screen.png';
 
   static String imgSvarLogo146x288 = '$imagePath/img_svar_logo_146x288.png';
-
 
 // Phonems Level Screen - One images
   static String imgImage83 = '$imagePath/img_image_83.png';
@@ -215,37 +216,37 @@ static String next = '$imagePath/next_button.png';
   static String imgTreeGreen400102x88 =
       '$imagePath/img_tree_green_400_102x88.png';
 
-static String imgMascot = '$imagePath/img_mascot.png';
+  static String imgMascot = '$imagePath/img_mascot.png';
 
-static String playBtn = '$imagePath/Play_BTN.png';
+  static String playBtn = '$imagePath/Play_BTN.png';
 
-static String settingsBtn = '$imagePath/Settings_BTN.png';  
+  static String settingsBtn = '$imagePath/Settings_BTN.png';
 
   static String imgUnionCyanA100 = '$imagePath/img_union_cyan_a100.png';
 
   static String imgUnionCyanA10071x110 =
       '$imagePath/img_union_cyan_a100_71x110.svg';
 
-static String imgUser = '$imagePath/img_user.svg';
+  static String imgUser = '$imagePath/img_user.svg';
 
-static String mainScreen = '$imagePath/main_screen.png';
+  static String mainScreen = '$imagePath/main_screen.png';
 
   static String imgArrowDown = '$imagePath/img_arrow_down.svg';
 
   static String imgArrowDownWhiteA70001 =
       '$imagePath/img_arrow_down_white_a700_01.svg';
 
-static String imgHomeBtn = '$imagePath/img_home_btn.png';
+  static String imgHomeBtn = '$imagePath/img_home_btn.png';
 
-static String imgBackBtn = '$imagePath/back_btn.png'; 
+  static String imgBackBtn = '$imagePath/back_btn.png';
 
-static String imgMenuBtn = '$imagePath/Menu_BTN.png';
-  
-static String imgMascot173x143 = '$imagePath/img_mascot_173x143.png';
+  static String imgMenuBtn = '$imagePath/Menu_BTN.png';
 
-static String imgMainInteraction = '$imagePath/main_interaction_screen.png';
+  static String imgMascot173x143 = '$imagePath/img_mascot_173x143.png';
 
-static String imgTelevisionWhiteA70001 =
+  static String imgMainInteraction = '$imagePath/main_interaction_screen.png';
+
+  static String imgTelevisionWhiteA70001 =
       '$imagePath/img_television_white_a700_01.svg';
 
   static String imgEllipse67 = '$imagePath/img_ellipse_67.svg';
@@ -281,9 +282,9 @@ static String imgTelevisionWhiteA70001 =
 
   static String imgEllipse39WhiteA70001 =
       '$imagePath/img_ellipse_39_white_a700_01.svg';
-  
+
   static String imgTipBtn = '$imagePath/Tip_BTN_ICNButton.png';
-  
+
   static String imgUserWhiteA7000119x18 =
       '$imagePath/img_user_white_a700_01_19x18.svg';
 

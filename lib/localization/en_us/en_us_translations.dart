@@ -6,8 +6,13 @@ final Map<String, String> enUs = {
 // Register Form Screen -Potratit V1 ( Child ) Screen
 "lbl_0": "0",
 "lbl_9312211596": "9312211596",
+"lbl_your_score":"Your Score",
+"lbl_coins_earned":"Coins Earned",
 "lbl_guardian": "Guardian",
 "lbl_next": "Next",
+"lbl_234":"234",
+"msg_score_multiplier":"Score Multiplier",
+"msg_increase_duration":"Increase duration by 25%",
 "lbl_send_otp": "Send OTP",
 "lbl_verify": "Verify",
 "msg_f_1_40_new_friends":

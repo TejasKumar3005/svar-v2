@@ -78,6 +78,7 @@ class CustomTextStyles {
         color: appTheme.gray90002,
         fontSize: 10.fSize,
         fontWeight: FontWeight.w800,
+        
       );
   static get labelMediumOnErrorContainer =>
       theme.textTheme.labelMedium!.copyWith(
