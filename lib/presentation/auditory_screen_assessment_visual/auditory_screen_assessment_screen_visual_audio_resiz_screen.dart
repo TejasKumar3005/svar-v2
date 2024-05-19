@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
+import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'models/auditory_screen_assessment_screen_visual_audio_resiz_model.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
@@ -32,6 +35,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
     super.initState();
   }
 
+  int sel = 0;
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -40,218 +45,37 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
         extendBodyBehindAppBar: true,
         backgroundColor: appTheme.gray300,
         body: Container(
-          width: SizeUtils.width,
-          height: SizeUtils.height,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
-            color: appTheme.gray300,
             image: DecorationImage(
-              image: fs.Svg(
-                ImageConstant.imgAuditoryScreen,
+              image: AssetImage(
+                ImageConstant.imgAuditorybg,
               ),
-              fit: BoxFit.contain,
+              fit: BoxFit.cover,
             ),
           ),
-          child: Container(
-            width: 768.h,
+          child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: 44.h,
-              vertical: 23.v,
+              horizontal: 20.h,
+              vertical: 10.v,
             ),
             child: Column(
               children: [
-                SizedBox(height: 17.v),
-                _buildAppBar(context),
+                AuditoryAppBar(context),
                 SizedBox(height: 56.v),
-                _buildOptionGRP(context)
+                _buildOptionGRP(context),
+                Spacer(),
+                Center(
+                  child: CustomImageView(
+                    imagePath: ImageConstant.imgNext,
+                  ),
+                ),
+                Spacer()
               ],
             ),
           ),
         ),
-        bottomNavigationBar: _buildNextBTNTextButton(context),
-      ),
-    );
-  }
-
-  /// Section Widget
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(right: 1.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(top: 1.v),
-            child: CustomIconButton(
-              height: 37.adaptSize,
-              width: 37.adaptSize,
-              padding: EdgeInsets.all(9.h),
-              decoration:
-                  IconButtonStyleHelper.gradientDeepOrangeToDeepOrangeTL18,
-              onTap: () {
-                onTapBtnArrowDown(context);
-              },
-              child: CustomImageView(
-                imagePath: ImageConstant.imgArrowDownWhiteA70001,
-              ),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 38.v,
-                width: 63.h,
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        margin: EdgeInsets.only(left: 18.h),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 3.h,
-                          vertical: 2.v,
-                        ),
-                        decoration: AppDecoration.fillOrange30002.copyWith(
-                          borderRadius: BorderRadiusStyle.roundedBorder5,
-                        ),
-                        child: Container(
-                          width: 37.h,
-                          padding: EdgeInsets.symmetric(horizontal: 6.h),
-                          decoration: AppDecoration.fillYellow90002.copyWith(
-                            borderRadius: BorderRadiusStyle.roundedBorder5,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(height: 1.v),
-                              Text(
-                                "lbl_0_16".tr,
-                                style: theme.textTheme.labelSmall,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    CustomImageView(
-                      imagePath: ImageConstant.imgStar101,
-                      height: 38.adaptSize,
-                      width: 38.adaptSize,
-                      radius: BorderRadius.circular(
-                        1.h,
-                      ),
-                      alignment: Alignment.centerLeft,
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                height: 36.v,
-                width: 125.h,
-                margin: EdgeInsets.only(
-                  left: 9.h,
-                  top: 1.v,
-                ),
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        margin: EdgeInsets.only(
-                          left: 18.h,
-                          top: 8.v,
-                          bottom: 8.v,
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 2.h,
-                          vertical: 1.v,
-                        ),
-                        decoration: AppDecoration.fillPink.copyWith(
-                          borderRadius: BorderRadiusStyle.roundedBorder5,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(bottom: 1.v),
-                              padding: EdgeInsets.symmetric(horizontal: 21.h),
-                              decoration: AppDecoration.fillPink30001.copyWith(
-                                borderRadius: BorderRadiusStyle.roundedBorder5,
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(height: 1.v),
-                                  Text(
-                                    "lbl_0_10000".tr,
-                                    style: theme.textTheme.labelSmall,
-                                  )
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                left: 4.h,
-                                bottom: 1.v,
-                              ),
-                              child: Text(
-                                "lbl2".tr,
-                                style: theme.textTheme.labelMedium,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    CustomImageView(
-                      imagePath: ImageConstant.imgCandy1,
-                      height: 36.adaptSize,
-                      width: 36.adaptSize,
-                      radius: BorderRadius.circular(
-                        18.h,
-                      ),
-                      alignment: Alignment.centerLeft,
-                    )
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 22.h,
-                  top: 1.v,
-                ),
-                child: CustomIconButton(
-                  height: 37.adaptSize,
-                  width: 37.adaptSize,
-                  padding: EdgeInsets.all(3.h),
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgHomeBtn,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 8.h,
-                  top: 1.v,
-                ),
-                child: CustomIconButton(
-                  height: 37.adaptSize,
-                  width: 37.adaptSize,
-                  padding: EdgeInsets.all(3.h),
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgFullvolBtn,
-                  ),
-                ),
-              )
-            ],
-          )
-        ],
       ),
     );
   }
@@ -264,41 +88,101 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            padding: EdgeInsets.all(1.h),
-            decoration: AppDecoration.outlineBlack9001.copyWith(
-              borderRadius: BorderRadiusStyle.roundedBorder15,
-            ),
+              height: 192.v,
+              width: MediaQuery.of(context).size.width * 0.4,
+              padding: EdgeInsets.all(1.h),
+              decoration: AppDecoration.outlineBlack9001.copyWith(
+                borderRadius: BorderRadiusStyle.roundedBorder15,
+              ),
+              child: CustomImageView(
+                imagePath: ImageConstant.imgClap,
+                radius: BorderRadiusStyle.roundedBorder15,
+              )),
+          Container(
+            height: 192.v,
+            width: MediaQuery.of(context).size.width * 0.4,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: 1.v),
-                Container(
-                  height: 192.v,
-                  width: 312.h,
-                  decoration: AppDecoration.fillCyan.copyWith(
-                    borderRadius: BorderRadiusStyle.roundedBorder15,
-                  ),
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgGroupBlack90001192x312,
-                    height: 192.v,
-                    width: 312.h,
-                    radius: BorderRadius.circular(
-                      16.h,
+                Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      sel = 0;
+                    });
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    height: 80.v,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
+                    decoration: AppDecoration.outlineBlack.copyWith(
+                        border: Border.all(
+                          width: sel == 0 ? 2.3.h : 1.3.h,
+                          color:
+                              sel == 0 ? appTheme.green900 : appTheme.black900,
+                        ),
+                        borderRadius: BorderRadiusStyle.roundedBorder10),
+                    child: Row(
+                      children: [
+                        CustomImageView(
+                          height: 55.v,
+                          width: 55.h,
+                          fit: BoxFit.contain,
+                          imagePath: ImageConstant.imgPlayBtn,
+                        ),
+                        Spacer(),
+                        CustomImageView(
+                          height: 65.v,
+                          fit: BoxFit.contain,
+                          width:
+                              (MediaQuery.of(context).size.width * 0.4 - 80.h),
+                          imagePath: ImageConstant.imgSpectrum,
+                        )
+                      ],
                     ),
-                    alignment: Alignment.center,
                   ),
-                )
+                ),
+                Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      sel = 1;
+                    });
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    height: 80.v,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
+                    decoration: AppDecoration.outlineBlack9003.copyWith(
+                        border: Border.all(
+                          width: sel == 1 ? 2.3.h : 1.3.h,
+                          color:
+                              sel == 1 ? appTheme.green900 : appTheme.black900,
+                        ),
+                        borderRadius: BorderRadiusStyle.roundedBorder10),
+                    child: Row(
+                      children: [
+                        CustomImageView(
+                          height: 55.v,
+                          width: 55.h,
+                          fit: BoxFit.contain,
+                          imagePath: ImageConstant.imgPlayBtn,
+                        ),
+                        Spacer(),
+                        CustomImageView(
+                          height: 65.v,
+                          fit: BoxFit.contain,
+                          width:
+                              (MediaQuery.of(context).size.width * 0.4 - 80.h),
+                          imagePath: ImageConstant.imgSpectrum,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Spacer()
               ],
-            ),
-          ),
-          CustomImageView(
-            imagePath: ImageConstant.imgOptionGrp,
-            height: 168.v,
-            width: 325.h,
-            margin: EdgeInsets.only(
-              top: 13.v,
-              bottom: 17.v,
             ),
           )
         ],

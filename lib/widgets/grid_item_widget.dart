@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/widgets/grid_item_model.dart.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -31,7 +32,6 @@ class GridItemWidget extends StatelessWidget {
       child: Container(
         height: 150.v,
         width: 118.h,
-    
         decoration: AppDecoration.outlineWhiteA700015.copyWith(
           borderRadius: BorderRadiusStyle.roundedBorder20,
         ),
@@ -68,8 +68,6 @@ class GridItemWidget extends StatelessWidget {
                 ),
               ],
             ),
-          
-          
             Align(
               alignment: Alignment.topLeft,
               child: CustomImageView(
@@ -79,9 +77,7 @@ class GridItemWidget extends StatelessWidget {
                 fit: BoxFit.contain,
                 alignment: Alignment.topLeft,
               ),
-            )
-            
-            ,
+            ),
           ],
         ),
       ),

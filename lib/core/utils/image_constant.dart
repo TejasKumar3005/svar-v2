@@ -1,18 +1,23 @@
 class ImageConstant {
 // Image folder path
   static String imagePath = 'assets/images';
-
+  static String imgArrowLeftYellow = "$imagePath/leftarrow.png";
+  static String imgArrowRightGreen = "$imagePath/rightarrow.png";
 // Welcome Screen Potrait images
   static String imgEllipse176 = '$imagePath/img_ellipse_176.png';
   static String imgMenuBTn = '$imagePath/menu_btn.png';
   static String imgProfileBg = '$imagePath/bg_user_profile.png';
   static String imgMascotBGProfile = '$imagePath/mascot_bg_profile.png';
   static String imgShine = '$imagePath/shine.png';
-
+  static String imgAuditorybg = '$imagePath/auditory_bg.png';
   static String imgEllipse177 = '$imagePath/img_ellipse_177.png';
-
+  static String imgSpectrum = '$imagePath/spectrum.png';
+  static String imgClap = '$imagePath/clap.png';
+  static String imgReplayBtn = '$imagePath/replay_btn.png';
   static String imgEllipse175 = '$imagePath/img_ellipse_175.png';
   static String imgCoin = '$imagePath/coin.png';
+  static String imgNext = '$imagePath/Next_BTN.png';
+  static String imgPlayBtn = '$imagePath/BigPlay_BTN.png';
 // Log IN / Sign UP Screen Potrait images
   static String imgEllipse176253x430 = '$imagePath/img_ellipse_176_253x430.png';
 
@@ -20,7 +25,7 @@ class ImageConstant {
 
   static String imgEllipse175291x430 = '$imagePath/img_ellipse_175_291x430.png';
 
-static String next = '$imagePath/next_button.png';
+  static String next = '$imagePath/next_button.png';
 
   static String imgLock = '$imagePath/img_lock.png';
 
@@ -293,8 +298,6 @@ static String next = '$imagePath/next_button.png';
 
   static String imgAuditoryScreenCyanA400 =
       '$imagePath/img_auditory_screen_cyan_a400.svg';
-
-  static String imgSpectrum = '$imagePath/img_spectrum.svg';
 
   static String imgGroup7 = '$imagePath/img_group_7.png';
 

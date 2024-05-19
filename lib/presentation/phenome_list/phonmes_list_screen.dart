@@ -1,3 +1,4 @@
+import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_provider.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:flutter/material.dart';
@@ -136,7 +137,12 @@ Widget _buildGrid(BuildContext context) {
               GridItemModel model =
                   provider.phonmesListModelObj.gridItemList[index];
               return Align(
-                child: GridItemWidget(model),
+                child: GestureDetector(
+                  onTap: (){
+                      PhonmesListModel().onTapCharacter(context, model.widget!);
+          Navigator.pushNamed(context, AppRoutes.lingLearningScreen);
+                  },
+                  child: GridItemWidget(model)),
               );
             },
           );

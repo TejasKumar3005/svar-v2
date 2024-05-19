@@ -143,7 +143,7 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                initialRoute: AppRoutes.userProfileScreen,
+                initialRoute: AppRoutes.auditoryScreenVisualLearningScreenResizedScreen,
                 routes: AppRoutes.routes,
                 // home: PhonmesListScreen(),
               );
@@ -154,3 +154,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+

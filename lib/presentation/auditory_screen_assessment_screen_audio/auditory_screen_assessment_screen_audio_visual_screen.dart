@@ -1,3 +1,4 @@
+import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'models/auditory_screen_assessment_screen_audio_visual_model.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
@@ -58,7 +59,7 @@ class AuditoryScreenAssessmentScreenAudioVisualScreenState
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildAppBar(context),
+                AuditoryAppBar(context),
                 SizedBox(height: 42.v),
                 CustomImageView(
                   imagePath: ImageConstant.imgSpectrum,

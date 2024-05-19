@@ -29,7 +29,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
   @override
   Widget build(BuildContext context) {
     LingLearningProvider lingLearningProvider =
-        Provider.of<LingLearningProvider>(context, listen: false);
+        context.watch<LingLearningProvider>();
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -57,12 +57,10 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            CustomImageView(
-                              imagePath: ImageConstant.imgImage85,
-                              height: 250.v,
-                              width: 195.h,
-                              fit: BoxFit.contain,
-                            ),
+                            Text(
+                    lingLearningProvider.selectedCharacter,
+                    style: theme.textTheme.displayLarge!.copyWith(fontSize: 45),
+                  ),
                             SizedBox(height: 27.v),
                             GestureDetector(
                               onTap: () {

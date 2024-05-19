@@ -104,8 +104,8 @@ class AppRoutes {
         welcomeScreen: WelcomeScreen.builder,
         phonemsLevelScreenTwoScreen: PhonemsLevelScreenTwoScreen.builder,
         phonemsLevelScreenOneScreen: PhonemsLevelScreenOneScreen.builder,
-// auditoryScreenAssessmentScreenAudioVisualResizedScreen:
-// AuditoryScreenAssessmentScreenAudioVisualResizedScreen.builder,
+auditoryScreenAssessmentScreenAudioVisualResizedScreen:
+AuditoryScreenAssessmentScreenAudioVisualOneScreen.builder,
         auditoryScreenAssessmentScreenVisualAudioResizScreen:
             AuditoryScreenAssessmentScreenVisualAudioResizScreen.builder,
         auditoryScreenVisualLearningScreenResizedScreen:
