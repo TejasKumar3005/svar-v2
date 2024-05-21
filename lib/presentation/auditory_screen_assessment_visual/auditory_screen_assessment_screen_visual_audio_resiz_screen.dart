@@ -39,6 +39,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
 
   @override
   Widget build(BuildContext context) {
+    var provider =
+        context.watch<AuditoryScreenAssessmentScreenVisualAudioResizProvider>();
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -64,7 +66,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
               children: [
                 AuditoryAppBar(context),
                 SizedBox(height: 56.v),
-                _buildOptionGRP(context),
+                _buildOptionGRP(context, provider),
                 Spacer(),
                 Center(
                   child: CustomImageView(
@@ -81,7 +83,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
   }
 
   /// Section Widget
-  Widget _buildOptionGRP(BuildContext context) {
+  Widget _buildOptionGRP(BuildContext context,
+      AuditoryScreenAssessmentScreenVisualAudioResizProvider provider) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.h),
       child: Row(
@@ -106,9 +109,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 Spacer(),
                 GestureDetector(
                   onTap: () {
-                    setState(() {
-                      sel = 0;
-                    });
+                    provider.setSelected(0);
                   },
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.4,
@@ -117,9 +118,10 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                         EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
                     decoration: AppDecoration.outlineBlack.copyWith(
                         border: Border.all(
-                          width: sel == 0 ? 2.3.h : 1.3.h,
-                          color:
-                              sel == 0 ? appTheme.green900 : appTheme.black900,
+                          width: provider.sel == 0 ? 2.3.h : 1.3.h,
+                          color: provider.sel == 0
+                              ? appTheme.green900
+                              : appTheme.black900,
                         ),
                         borderRadius: BorderRadiusStyle.roundedBorder10),
                     child: Row(
@@ -145,9 +147,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 Spacer(),
                 GestureDetector(
                   onTap: () {
-                    setState(() {
-                      sel = 1;
-                    });
+                    provider.setSelected(1);
                   },
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.4,
@@ -156,9 +156,10 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                         EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
                     decoration: AppDecoration.outlineBlack9003.copyWith(
                         border: Border.all(
-                          width: sel == 1 ? 2.3.h : 1.3.h,
-                          color:
-                              sel == 1 ? appTheme.green900 : appTheme.black900,
+                          width: provider.sel == 1 ? 2.3.h : 1.3.h,
+                          color: provider.sel == 1
+                              ? appTheme.green900
+                              : appTheme.black900,
                         ),
                         borderRadius: BorderRadiusStyle.roundedBorder10),
                     child: Row(

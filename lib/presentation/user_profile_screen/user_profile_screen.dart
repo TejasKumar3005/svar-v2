@@ -36,7 +36,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           padding: EdgeInsets.symmetric(
-            horizontal: 10.h,
+            horizontal: 5.h,
             vertical: 10.v,
           ),
           decoration: AppDecoration.fillGray.copyWith(

@@ -56,8 +56,8 @@ class RegisterFormScreenPotratitV1ChildScreenState
         backgroundColor: appTheme.orange100,
         resizeToAvoidBottomInset: false,
         body: Container(
-          width: SizeUtils.width,
-          height: SizeUtils.height,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
             color: appTheme.orange100,
             image: DecorationImage(
@@ -89,28 +89,21 @@ class RegisterFormScreenPotratitV1ChildScreenState
                         children: [
                          Padding(
                             padding: EdgeInsets.only(left: 1.h),
-                            child: CustomIconButton(
+                            child: CustomImageView(
                               height: 38.adaptSize,
-                              width: 38.adaptSize,
-                              
-                            
-                              child: CustomImageView(
-                                imagePath: ImageConstant.imgBackBtn,
-                              ),
+                            width: 38.adaptSize,
+                            fit: BoxFit.contain,
+                              imagePath: ImageConstant.imgBackBtn,
                             ),
                           ),
+                          SizedBox(width: 10.h,),
                           Padding(
                             padding: EdgeInsets.only(left: 1.h),
-                            child: CustomIconButton(
-                              height: 38.adaptSize,
-                              width: 38.adaptSize,
-                      
-                                onTap: () {
-                                onTapBtnHomeBTN(context);
-                              },
-                              child: CustomImageView(
-                                imagePath: ImageConstant.imgHomeBtn,
-                              ),
+                            child: CustomImageView(
+                                height: 38.adaptSize,
+                            width: 38.adaptSize,
+                            fit: BoxFit.contain,
+                              imagePath: ImageConstant.imgHomeBtn,
                             ),
                           )
                         ],

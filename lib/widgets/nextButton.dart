@@ -4,16 +4,20 @@ import 'package:svar_new/widgets/custom_outlined_button.dart';
 
 Widget buildNext(BuildContext context) {
     return Stack(
-      children:[ Align(
+      children:[ 
+        
+        Align(
         alignment: Alignment.centerRight,
-        child: CustomOutlinedButton(
+        child: Container(
           width: 113.h,
-          text: "lbl_next".tr,
-          buttonStyle: CustomButtonStyles.none,
-          decoration: CustomButtonStyles.gradientDeepOrangeToOrangeDecoration,
-          onPressed: () {
-            
-          },
+          padding: EdgeInsets.symmetric(horizontal: 10.h,vertical: 5.v),
+          decoration: AppDecoration.outlineWhiteDeepOrangeA200.copyWith(borderRadius: BorderRadiusStyle.roundedBorder15),
+          child: Center(
+            child: Text(
+               "lbl_next".tr,
+               style: theme.textTheme.headlineMedium!.copyWith(color: Colors.white),
+            ),
+          ),
         ),
       ),
       Positioned(

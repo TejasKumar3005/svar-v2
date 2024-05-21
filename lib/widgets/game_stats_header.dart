@@ -106,7 +106,7 @@ class AppStatsHeader extends StatelessWidget {
         Spacer(),
         Container(
           height: 19.v,
-          width: 90.h,
+          width: 80.h,
           margin: EdgeInsets.symmetric(vertical: 9.v),
           child: Stack(
             alignment: Alignment.centerRight,
@@ -165,7 +165,7 @@ class AppStatsHeader extends StatelessWidget {
         ),
         Container(
           height: 19.v,
-          width: 90.h,
+          width: 80.h,
           margin: EdgeInsets.only(
             left: 17.h,
             top: 9.v,
@@ -297,7 +297,7 @@ class AppStatsHeader extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(left: 10.h),
+          padding: EdgeInsets.only(left: 5.h),
           child: CustomImageView(
             imagePath: ImageConstant.imgMenuBTn,
           ),

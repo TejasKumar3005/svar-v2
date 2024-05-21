@@ -9,14 +9,19 @@ import '../models/auditory_screen_assessment_screen_visual_audio_resiz_model.dar
 
 // ignore_for_file: must_be_immutable
 class AuditoryScreenAssessmentScreenVisualAudioResizProvider
-extends ChangeNotifier {
-AuditoryScreenAssessmentScreenVisualAudioResizModel
-auditoryScreenAssessmentScreenVisualAudioResizModelObj =
-AuditoryScreenAssessmentScreenVisualAudioResizModel();
+    extends ChangeNotifier {
+  AuditoryScreenAssessmentScreenVisualAudioResizModel
+      auditoryScreenAssessmentScreenVisualAudioResizModelObj =
+      AuditoryScreenAssessmentScreenVisualAudioResizModel();
 
-@override
-void dispose() {
-super.dispose();
-}
-}
+  int sel = 0;
+  void setSelected(int s) {
+    sel = s;
+    notifyListeners();
+  }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+}
