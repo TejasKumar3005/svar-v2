@@ -58,9 +58,10 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                    lingLearningProvider.selectedCharacter,
-                    style: theme.textTheme.displayLarge!.copyWith(fontSize: 45),
-                  ),
+                              lingLearningProvider.selectedCharacter,
+                              style: theme.textTheme.displayLarge!
+                                  .copyWith(fontSize: 45),
+                            ),
                             SizedBox(height: 27.v),
                             GestureDetector(
                               onTap: () {
@@ -77,32 +78,39 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                             ),
                             SizedBox(height: 19.v)
                           ],
-                          
                         ),
-                        
                       ),
-
                     ],
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgProtaganist1,
-                    height: 300.v,
-                    width: 200.h,
-                    alignment: Alignment.bottomRight,
-                    margin: EdgeInsets.only(right: 103.h),
+                
+              ]),
+
+              Align(
+                  alignment: Alignment.bottomRight, // Adjust this as needed
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        right: 20.h, bottom: 5.h), // Adjust padding as needed
+                    child: CustomImageView(
+                      imagePath: ImageConstant.imgProtaganist1,
+                      height: 420.v,
+                      width: 200.h,
+                    ),
                   ),
                 ),
-                 CustomImageView(
-                        imagePath: ImageConstant.imgTipBtn,
-                        height: 60.v,
-                        width: 60.h,
-                        alignment: Alignment.bottomRight,
-                        margin: EdgeInsets.only(right: 50.h, bottom: 10.h),
-                      )
-              ]),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      right: 1.h, bottom: 3.h), // Adjust padding as needed
+                  child: CustomImageView(
+                    height: 60.adaptSize,
+                    width: 60.adaptSize,
+                    fit: BoxFit.contain,
+                    imagePath: ImageConstant.imgTipBtn,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -120,37 +128,33 @@ class LingLearningScreenState extends State<LingLearningScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CustomIconButton(
-            height: 37.adaptSize,
-            width: 37.adaptSize,
-            padding: EdgeInsets.all(9.h),
-            decoration:
-                IconButtonStyleHelper.gradientDeepOrangeToDeepOrangeTL18,
-            onTap: () {
-              onTapBtnArrowDown(context);
-            },
+          Padding(
+            padding: EdgeInsets.only(left: 1.h),
             child: CustomImageView(
+              height: 38.adaptSize,
+              width: 38.adaptSize,
+              fit: BoxFit.contain,
               imagePath: ImageConstant.imgBackBtn,
             ),
           ),
           Spacer(),
-          CustomIconButton(
-            height: 37.adaptSize,
-            width: 37.adaptSize,
-            padding: EdgeInsets.all(3.h),
+          Padding(
+            padding: EdgeInsets.only(left: 1.h),
             child: CustomImageView(
+              height: 38.adaptSize,
+              width: 38.adaptSize,
+              fit: BoxFit.contain,
               imagePath: ImageConstant.imgHomeBtn,
             ),
           ),
+          SizedBox(width: 5),
           Padding(
-            padding: EdgeInsets.only(left: 4.h),
-            child: CustomIconButton(
-              height: 37.adaptSize,
-              width: 37.adaptSize,
-              padding: EdgeInsets.all(3.h),
-              child: CustomImageView(
-                imagePath: ImageConstant.imgFullvolBtn,
-              ),
+            padding: EdgeInsets.only(left: 1.h),
+            child: CustomImageView(
+              height: 38.adaptSize,
+              width: 38.adaptSize,
+              fit: BoxFit.contain,
+              imagePath: ImageConstant.imgFullvolBtn,
             ),
           )
         ],
