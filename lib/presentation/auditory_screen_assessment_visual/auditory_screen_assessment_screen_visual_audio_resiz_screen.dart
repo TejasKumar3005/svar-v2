@@ -32,7 +32,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
   }
 
   int sel = 0;
-
+  
   @override
   Widget build(BuildContext context) {
     var provider =
