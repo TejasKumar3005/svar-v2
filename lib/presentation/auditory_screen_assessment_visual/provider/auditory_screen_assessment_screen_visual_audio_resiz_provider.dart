@@ -13,10 +13,26 @@ class AuditoryScreenAssessmentScreenVisualAudioResizProvider
   AuditoryScreenAssessmentScreenVisualAudioResizModel
       auditoryScreenAssessmentScreenVisualAudioResizModelObj =
       AuditoryScreenAssessmentScreenVisualAudioResizModel();
+  List<String> optionFigures = ["", ""];
+
+  void setOptionFigures(List<String> fig) {
+    optionFigures = fig;
+    notifyListeners();
+  }
+
+  List optStrings1 = ["", ""];
+  List optStrings2 = ["", ""];
 
   int sel = 0;
   void setSelected(int s) {
     sel = s;
+    notifyListeners();
+  }
+
+  String quizType = "voice";
+
+  void setQuizType(String q) {
+    quizType = q;
     notifyListeners();
   }
 

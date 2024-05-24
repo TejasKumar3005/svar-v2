@@ -3,6 +3,7 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/custom_outlined_button.dart';
 
 Widget buildNext(BuildContext context) {
+  
     return Stack(
       children:[ 
         
@@ -33,4 +34,5 @@ Widget buildNext(BuildContext context) {
       )
       ]
     );
+
   }

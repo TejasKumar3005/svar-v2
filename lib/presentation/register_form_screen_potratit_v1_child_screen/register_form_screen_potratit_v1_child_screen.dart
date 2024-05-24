@@ -47,7 +47,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
 
   @override
   Widget build(BuildContext context) {
-    // final ctrl = context.watch<AuthConroller>();
+    final ctrl = context.watch<AuthConroller>();
     final textCtrl = context.watch<RegisterFormScreenPotratitV1ChildProvider>();
     return SafeArea(
       child: Scaffold(
@@ -396,219 +396,40 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                               })),
                                     ),
 
-                                    // Container(
-                                    //   height: 20.v,
-                                    //   width: 13.h,
-                                    //   margin: EdgeInsets.only(top: 2.v),
-                                    //   child: Stack(
-                                    //     alignment: Alignment.centerLeft,
-                                    //     children: [
-                                    //       Align(
-                                    //         alignment: Alignment.topCenter,
-                                    //         child: Container(
-                                    //           height: 15.v,
-                                    //           width: 13.h,
-                                    //           margin: EdgeInsets.only(top: 1.v),
-                                    //           child: CustomTextFormField(
-                                    //             width: 13.h,
-                                    //             hintText: "lbl_0".tr,
-                                    //             borderDecoration:
-                                    //                 OutlineInputBorder(
-                                    //                     borderSide: BorderSide(
-                                    //                         width: 1.h,
-                                    //                         strokeAlign:
-                                    //                             strokeAlignOutside,
-                                    //                         color: appTheme
-                                    //                             .orangeA200),
-                                    //                     borderRadius:
-                                    //                         BorderRadius.all(
-                                    //                             Radius.circular(
-                                    //                                 3.h))),
-                                    //           ),
-                                    //         ),
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                    // Container(
-                                    //   height: 20.v,
-                                    //   width: 15.h,
-                                    //   margin: EdgeInsets.only(
-                                    //     left: 4.h,
-                                    //     top: 2.v,
-                                    //   ),
-                                    //   child: Stack(
-                                    //     alignment: Alignment.centerLeft,
-                                    //     children: [
-                                    //       Align(
-                                    //         alignment: Alignment.topCenter,
-                                    //         child: Container(
-                                    //           height: 15.v,
-                                    //           width: 13.h,
-                                    //           margin: EdgeInsets.only(top: 1.v),
-                                    //           child: CustomTextFormField(
-                                    //             width: 13.h,
-                                    //             hintText: "lbl_0".tr,
-                                    //             borderDecoration:
-                                    //                 OutlineInputBorder(
-                                    //                     borderSide: BorderSide(
-                                    //                         width: 1.h,
-                                    //                         strokeAlign:
-                                    //                             strokeAlignOutside,
-                                    //                         color: appTheme
-                                    //                             .orangeA200),
-                                    //                     borderRadius:
-                                    //                         BorderRadius.all(
-                                    //                             Radius.circular(
-                                    //                                 3.h))),
-                                    //           ),
-                                    //         ),
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                    // Container(
-                                    //   height: 20.v,
-                                    //   width: 14.h,
-                                    //   margin: EdgeInsets.only(
-                                    //     left: 4.h,
-                                    //     top: 2.v,
-                                    //   ),
-                                    //   child: Stack(
-                                    //     alignment: Alignment.centerLeft,
-                                    //     children: [
-                                    //       Align(
-                                    //         alignment: Alignment.topCenter,
-                                    //         child: Container(
-                                    //           height: 15.v,
-                                    //           width: 13.h,
-                                    //           margin: EdgeInsets.only(top: 1.v),
-                                    //           child: CustomTextFormField(
-                                    //             width: 13.h,
-                                    //             hintText: "lbl_0".tr,
-                                    //             borderDecoration:
-                                    //                 OutlineInputBorder(
-                                    //                     borderSide: BorderSide(
-                                    //                         width: 1.h,
-                                    //                         strokeAlign:
-                                    //                             strokeAlignOutside,
-                                    //                         color: appTheme
-                                    //                             .orangeA200),
-                                    //                     borderRadius:
-                                    //                         BorderRadius.all(
-                                    //                             Radius.circular(
-                                    //                                 3.h))),
-                                    //           ),
-                                    //         ),
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                    // Container(
-                                    //   height: 20.v,
-                                    //   width: 15.h,
-                                    //   margin: EdgeInsets.only(
-                                    //     left: 4.h,
-                                    //     top: 2.v,
-                                    //   ),
-                                    //   child: Stack(
-                                    //     alignment: Alignment.centerLeft,
-                                    //     children: [
-                                    //       Align(
-                                    //         alignment: Alignment.topCenter,
-                                    //         child: Container(
-                                    //           height: 15.v,
-                                    //           width: 13.h,
-                                    //           margin: EdgeInsets.only(top: 1.v),
-                                    //           child: CustomTextFormField(
-                                    //             width: 13.h,
-                                    //             hintText: "lbl_0".tr,
-                                    //             borderDecoration:
-                                    //                 OutlineInputBorder(
-                                    //                     borderSide: BorderSide(
-                                    //                         width: 1.h,
-                                    //                         strokeAlign:
-                                    //                             strokeAlignOutside,
-                                    //                         color: appTheme
-                                    //                             .orangeA200),
-                                    //                     borderRadius:
-                                    //                         BorderRadius.all(
-                                    //                             Radius.circular(
-                                    //                                 3.h))),
-                                    //           ),
-                                    //         ),
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
-                                    // Container(
-                                    //   height: 20.v,
-                                    //   width: 14.h,
-                                    //   margin: EdgeInsets.only(
-                                    //     left: 4.h,
-                                    //     top: 2.v,
-                                    //   ),
-                                    //   child: Stack(
-                                    //     alignment: Alignment.centerLeft,
-                                    //     children: [
-                                    //       Align(
-                                    //         alignment: Alignment.topCenter,
-                                    //         child: Container(
-                                    //           height: 15.v,
-                                    //           width: 13.h,
-                                    //           margin: EdgeInsets.only(top: 1.v),
-                                    //           child: CustomTextFormField(
-                                    //             width: 13.h,
-                                    //             hintText: "lbl_0".tr,
-                                    //             borderDecoration:
-                                    //                 OutlineInputBorder(
-                                    //                     borderSide: BorderSide(
-                                    //                         width: 1.h,
-                                    //                         strokeAlign:
-                                    //                             strokeAlignOutside,
-                                    //                         color: appTheme
-                                    //                             .orangeA200),
-                                    //                     borderRadius:
-                                    //                         BorderRadius.all(
-                                    //                             Radius.circular(
-                                    //                                 3.h))),
-                                    //           ),
-                                    //         ),
-                                    //       ),
-                                    //     ],
-                                    //   ),
-                                    // ),
+                                    
                                     GestureDetector(
                                       onTap: () {
-                                        // AuthConroller authConroller =
-                                        //     AuthConroller(context: context);
-                                        // if (ctrl.optId != null) {
-                                        //   authConroller
-                                        //       .registerWithPhone("")
-                                        //       .then((value) => {
-                                        //             authConroller
-                                        //                 .registeruser(UserModel(
-                                        //                     name: textCtrl
-                                        //                         .namePlaceholderController
-                                        //                         .text,
-                                        //                     email: textCtrl
-                                        //                         .emailController
-                                        //                         .text,
-                                        //                     mobile: textCtrl
-                                        //                         .phoneNumberController
-                                        //                         .text,
-                                        //                     gameStats: GameStatsModel(
-                                        //                         gifts: [],
-                                        //                         progressScore:
-                                        //                             0.0,
-                                        //                         badges_earned: [],
-                                        //                         levels_on: [],
-                                        //                         exercises: [],
-                                        //                         current_level:
-                                        //                             0)))
-                                        //                 .then((value) => {})
-                                        //           });
-                                        // }
+                                        AuthConroller authConroller =
+                                            AuthConroller(context: context);
+                                        if (ctrl.optId != null) {
+                                          
+                                          authConroller
+                                              .registerWithPhone(textCtrl.otpController.text.toString())
+                                              .then((value) => {
+                                                    authConroller
+                                                        .registeruserWithEmail(UserModel(
+                                                            name: textCtrl
+                                                                .namePlaceholderController
+                                                                .text,
+                                                            email: textCtrl
+                                                                .emailController
+                                                                .text,
+                                                                password: textCtrl.passwordController.text,
+                                                            mobile: textCtrl
+                                                                .phoneNumberController
+                                                                .text,
+                                                            gameStats: GameStatsModel(
+                                                                gifts: [],
+                                                                progressScore:
+                                                                    0.0,
+                                                                badges_earned: [],
+                                                                levels_on: [],
+                                                                exercises: [],
+                                                                current_level:
+                                                                    0)))
+                                                        .then((value) => {})
+                                                  });
+                                        }
                                       },
                                       child: Container(
                                         width: 35.h,
@@ -681,8 +502,12 @@ class RegisterFormScreenPotratitV1ChildScreenState
       selector: (context, provider) => provider.namePlaceholderController,
       builder: (context, namePlaceholderController, child) {
         return CustomTextFormField(
+        
           controller: namePlaceholderController,
-          hintText: "msg_rakesh_ramji_rastogi".tr,
+          hintText: "name".tr,
+
+            autofocus: false,
+      
         );
       },
     );
@@ -696,8 +521,8 @@ class RegisterFormScreenPotratitV1ChildScreenState
       builder: (context, addressGrpController, child) {
         return CustomTextFormField(
           controller: addressGrpController,
-          hintText: "msg_f_1_40_new_friends".tr,
-          hintStyle: CustomTextStyles.labelLarge12,
+          hintText: "address".tr,
+        
         );
       },
     );
@@ -711,7 +536,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
       builder: (context, emailController, child) {
         return CustomTextFormField(
           controller: emailController,
-          hintText: "msg_rakeshramjirast".tr,
+          hintText: "email".tr,
           textInputType: TextInputType.emailAddress,
           validator: (value) {
             if (value == null || (!isValidEmail(value, isRequired: true))) {
@@ -738,6 +563,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
             // textInputAction: TextInputAction.done,
             alignment: Alignment.topCenter,
             obscureText: true,
+            hintText: "password",
           );
         },
       ),

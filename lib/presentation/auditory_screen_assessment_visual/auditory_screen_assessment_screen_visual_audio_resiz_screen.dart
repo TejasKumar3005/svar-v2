@@ -1,9 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:svar_new/widgets/auditoryAppbar.dart';
-import 'package:svar_new/widgets/custom_icon_button.dart';
-import 'models/auditory_screen_assessment_screen_visual_audio_resiz_model.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/auditory_screen_assessment_screen_visual_audio_resiz_provider.dart';
@@ -101,7 +97,135 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 imagePath: ImageConstant.imgClap,
                 radius: BorderRadiusStyle.roundedBorder15,
               )),
-          Container(
+          buildDynamicOptions(provider.quizType, provider)
+        ],
+      ),
+    );
+  }
+
+  Widget buildDynamicOptions(String quizType,
+      AuditoryScreenAssessmentScreenVisualAudioResizProvider provider) {
+    switch (quizType) {
+      case "VOICE":
+        return Row();
+      case "FIG_TO_WORD":
+        return Container(
+          height: 192.v,
+          width: MediaQuery.of(context).size.width * 0.4,
+          child: Row(
+            children: [
+              Container(
+                
+                    height: 130.v,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
+                    decoration: AppDecoration.outlineBlack9003.copyWith(
+                      color: appTheme.deepOrangeA200,
+                        border: Border.all(
+                          width: provider.sel == 1 ? 2.3.h : 1.3.h,
+                          color: provider.sel == 1
+                              ? appTheme.green900
+                              : appTheme.black900,
+                          
+                        ),
+                        image: DecorationImage(image: AssetImage("assets/images/radial_ray_orange.png"),fit:BoxFit.cover),
+                        borderRadius: BorderRadiusStyle.roundedBorder10),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(provider.optStrings1[0],style: theme.textTheme.labelMedium,),
+                              SizedBox(height: 8.v,),
+                              Text(provider.optStrings1[1],style: theme.textTheme.labelSmall,),
+                            ],
+                          ),
+                        ),
+                      
+              ),
+              Container(
+                
+                    height: 130.v,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
+                    decoration: AppDecoration.outlineBlack9003.copyWith(
+                      color: appTheme.teal90001,
+                        border: Border.all(
+                          width: provider.sel == 1 ? 2.3.h : 1.3.h,
+                          color: provider.sel == 1
+                              ? appTheme.green900
+                              : appTheme.black900,
+                          
+                        ),
+                        image: DecorationImage(image: AssetImage("assets/images/radial_ray_green.png"),fit:BoxFit.cover),
+                        borderRadius: BorderRadiusStyle.roundedBorder10),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(provider.optStrings2[0],style: theme.textTheme.labelMedium,),
+                              SizedBox(height: 8.v,),
+                              Text(provider.optStrings2[1],style: theme.textTheme.labelSmall,),
+                            ],
+                          ),
+                        ),
+                      
+              ),
+            ],
+          ),
+        );  
+      case "WORD_TO_FIG":
+        return Container(
+          height: 192.v,
+          width: MediaQuery.of(context).size.width * 0.4,
+          child: Row(
+            children: [
+              Container(
+                
+                    height: 130.v,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
+                    decoration: AppDecoration.outlineBlack9003.copyWith(
+                        border: Border.all(
+                          width: provider.sel == 1 ? 2.3.h : 1.3.h,
+                          color: provider.sel == 1
+                              ? appTheme.green900
+                              : appTheme.black900,
+                          
+                        ),
+                        image: DecorationImage(image: AssetImage("assets/images/radial_ray_yellow.png"),fit:BoxFit.cover),
+                        borderRadius: BorderRadiusStyle.roundedBorder10),
+                        child: Center(
+                          child: Image.network(provider.optionFigures[0],fit: BoxFit.contain,height: 70.v,width: 50.v,),
+                        ),
+                      
+              ),
+              Container(
+                
+                    height: 130.v,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
+                    decoration: AppDecoration.outlineBlack9003.copyWith(
+                        border: Border.all(
+                          width: provider.sel == 1 ? 2.3.h : 1.3.h,
+                          color: provider.sel == 1
+                              ? appTheme.green900
+                              : appTheme.black900,
+                          
+                        ),
+                        image: DecorationImage(image: AssetImage("assets/images/radial_ray_yellow.png"),fit:BoxFit.cover),
+                        borderRadius: BorderRadiusStyle.roundedBorder10),
+                        child: Center(
+                          child: Image.network(provider.optionFigures[1],fit: BoxFit.contain,height: 70.v,width: 50.v,),
+                        ),
+                      
+              ),
+            ],
+          ),
+        );
+      default:
+        return Container(
             height: 192.v,
             width: MediaQuery.of(context).size.width * 0.4,
             child: Column(
@@ -184,11 +308,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 ),
                 Spacer()
               ],
-            ),
-          )
-        ],
-      ),
-    );
+            ));
+    }
   }
 
   /// Section Widget

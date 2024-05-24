@@ -20,9 +20,9 @@ class AuthConroller extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future phoneVerification(String phone) async {
+  Future<bool> phoneVerification(String phone) async {
     try {
-      firebaseAuth.verifyPhoneNumber(
+      await firebaseAuth.verifyPhoneNumber(
           phoneNumber: phone,
           timeout: Duration(seconds: 120),
           verificationCompleted: (AuthCredential authCredential) {},
@@ -36,18 +36,23 @@ class AuthConroller extends ChangeNotifier {
             ));
           },
           codeAutoRetrievalTimeout: (String timeout) {});
+
+      return true;
     } catch (e) {
       ScaffoldMessenger.of(context!).showSnackBar(const SnackBar(
         content: Text("Something went wrong"),
         backgroundColor: Colors.red,
       ));
+
+      return false;
     }
   }
 
   Future registerWithPhone(String sms) async {
     try {
-      firebaseAuth.signInWithCredential(PhoneAuthProvider.credential(
-          verificationId: optId!, smsCode: sms));
+      
+      await firebaseAuth.signInWithCredential(
+          PhoneAuthProvider.credential(verificationId: optId!, smsCode: sms));
     } catch (e) {
       ScaffoldMessenger.of(context!).showSnackBar(const SnackBar(
         content: Text("Something went wrong"),
@@ -56,35 +61,37 @@ class AuthConroller extends ChangeNotifier {
     }
   }
 
-  Future<bool> registeruser(UserModel model) async {
+  Future<bool> registeruserWithEmail(UserModel model) async {
     try {
-      if (currentPostion != null) {
-        User? user = (await firebaseAuth.createUserWithEmailAndPassword(
-                email: model.email!, password: model.password!))
-            .user;
-        if (user != null) {
-          await UserData(uid: user.uid, buildContext: context!)
-              .saveUserData(model);
+      // if (currentPostion != null) {
+      //   User? user = (await firebaseAuth.createUserWithEmailAndPassword(
+      //           email: model.email!, password: model.password!))
+      //       .user;
+      //   if (user != null) {
+      //     await UserData(uid: user.uid, buildContext: context!)
+      //         .saveUserData(model);
 
-          return true;
-        }
-        return false;
-      } else {
-        getCurrentPosition(context!).then((value) async {
-          if (value) {
-            User? user = (await firebaseAuth.createUserWithEmailAndPassword(
-                    email: model.email!, password: model.password!))
-                .user;
-            if (user != null) {
-              await UserData(uid: user.uid, buildContext: context!)
-                  .saveUserData(model);
+      //     return true;
+      //   }
+      //   return false;
+      // } else {
+      // getCurrentPosition(context!).then((value) async {
+      //   if (value) {
+      User? user = (await firebaseAuth.createUserWithEmailAndPassword(
+              email: model.email!, password: model.password!))
+          .user;
+      if (user != null) {
+        await UserData(uid: user.uid, buildContext: context!)
+            .saveUserData(model);
 
-              return true;
-            }
-          }
-        });
-        return false;
+        return true;
       }
+
+      return false;
+      // }
+      // });
+      // return false;
+      // }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
         content: Text(e.toString()),
@@ -109,7 +116,8 @@ class AuthConroller extends ChangeNotifier {
       } else {
         getCurrentPosition(context!).then((value) async {
           if (value) {
-            await UserData(uid: uid, buildContext: context!).saveUserData(model);
+            await UserData(uid: uid, buildContext: context!)
+                .saveUserData(model);
 
             return true;
           }
@@ -157,15 +165,15 @@ class AuthConroller extends ChangeNotifier {
         return false;
       }
       final GoogleSignInAuthentication? authentication =
-          await googleUser?.authentication;
+          await googleUser.authentication;
 
       if (authentication == null) {
         return false;
       }
 
       final credential = GoogleAuthProvider.credential(
-          accessToken: authentication?.accessToken,
-          idToken: authentication?.idToken);
+          accessToken: authentication.accessToken,
+          idToken: authentication.idToken);
 
       if (credential == null) {
         return false;
@@ -273,7 +281,7 @@ class AuthConroller extends ChangeNotifier {
     if (!hasPermission) return false;
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) {
-      currentPostion = position;
+      setCurrPos(position);
       return true;
     }).catchError((e) {
       return false;
