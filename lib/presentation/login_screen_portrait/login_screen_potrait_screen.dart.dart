@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:svar_new/presentation/login_screen_portrait/login_screen_potrait_provider.dart.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/core/utils/validation_functions.dart';
@@ -35,117 +36,75 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var provider = context.watch<LoginScreenPotraitProvider>();
     return SafeArea(
       child: Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
         resizeToAvoidBottomInset: false,
         body: Container(
-          width: SizeUtils.width,
-          height: SizeUtils.height,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment(0.52, 0.33),
-              end: Alignment(1, 0.61),
-              colors: [
-                appTheme.gray5003,
-                appTheme.cyan200,
-                appTheme.lightBlueA200
-              ],
-            ),
+            image: DecorationImage(
+                image: AssetImage("assets/images/BG.png"), fit: BoxFit.fill),
           ),
           child: Form(
             key: _formKey,
-            child: SizedBox(
-              width: double.maxFinite,
-              child: SingleChildScrollView(
-                child: Column(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Row(
                   children: [
-                    _buildClose(context),
-                    _buildEmail(context),
-                    SizedBox(height: 13.v),
-                    SizedBox(
-                      height: 537.v,
-                      width: double.maxFinite,
-                      child: Stack(
-                        alignment: Alignment.topRight,
-                        children: [
-                          CustomImageView(
-                            imagePath: ImageConstant.imgTree,
-                            height: 191.v,
-                            width: 109.h,
-                            alignment: Alignment.topLeft,
-                            margin: EdgeInsets.only(top: 11.v),
-                          ),
-                          CustomImageView(
-                            imagePath: ImageConstant.imgTreeGreen400,
-                            height: 118.v,
-                            width: 68.h,
-                            alignment: Alignment.topRight,
-                            margin: EdgeInsets.only(top: 81.v),
-                          ),
-                          CustomImageView(
-                            imagePath: ImageConstant.imgTreeGreen400102x88,
-                            height: 102.v,
-                            width: 88.h,
-                            alignment: Alignment.topRight,
-                            margin: EdgeInsets.only(
-                              top: 109.v,
-                              right: 110.h,
-                            ),
-                          ),
-                          CustomImageView(
-                            imagePath: ImageConstant.imgEllipse1761,
-                            height: 253.v,
-                            width: 430.h,
-                            alignment: Alignment.bottomCenter,
-                            margin: EdgeInsets.only(bottom: 111.v),
-                          ),
-                          CustomImageView(
-                            imagePath: ImageConstant.imgEllipse1771,
-                            height: 286.v,
-                            width: 164.h,
-                            alignment: Alignment.bottomRight,
-                            margin: EdgeInsets.only(bottom: 78.v),
-                          ),
-                          CustomImageView(
-                            imagePath: ImageConstant.imgEllipse1751,
-                            height: 291.v,
-                            width: 430.h,
-                            alignment: Alignment.bottomCenter,
-                          ),
-                          CustomImageView(
-                            imagePath: ImageConstant.imgMascot,
-                            height: 231.v,
-                            width: 191.h,
-                            alignment: Alignment.topRight,
-                            margin: EdgeInsets.only(
-                              top: 69.v,
-                              right: 24.h,
-                            ),
-                          ),
-                          CustomOutlinedButton(
-                            width: 216.h,
-                            text: "lbl_log_in".tr,
-                            leftIcon: Container(
-                              margin: EdgeInsets.only(right: 30.h),
-                              child: CustomImageView(
-                                imagePath: ImageConstant.imgShineWhiteA70001,
-                                height: 12.v,
-                                width: 23.h,
-                              ),
-                            ),
-                            buttonStyle: CustomButtonStyles.none,
-                            decoration: CustomButtonStyles
-                                .gradientPrimaryToLightGreenDecoration,
-                            alignment: Alignment.topCenter,
-                          )
-                        ],
-                      ),
-                    )
+                    CustomImageView(
+                      imagePath: ImageConstant.imgBackBtn,
+                    ),
+                    Spacer()
                   ],
                 ),
-              ),
+                Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    CustomImageView(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: 110.v,
+                      fit: BoxFit.contain,
+                      imagePath: ImageConstant.imgSvarLogo,
+                    ),
+                    SizedBox(
+                      height: 90.v,
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        children: [
+                          Field(
+                            50.h,
+                            "email",
+                            provider.emailController
+                          ),
+                          SizedBox(
+                            height: 15.v,
+                          ),
+                          Field(50.h, 'password',provider.editTextController),
+                          SizedBox(
+                            height: 15.v,
+                          ),
+                          CustomImageView(
+                            imagePath: ImageConstant.imgLoginBTn,
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            height: 60.h,
+                            fit: BoxFit.contain,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(),
+                  ],
+                )
+              ],
             ),
           ),
         ),
@@ -153,70 +112,71 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
     );
   }
 
-  /// Section Widget
-  Widget _buildClose(BuildContext context) {
-    return SizedBox(
-      width: double.maxFinite,
+  Widget Field(
+      double height, String name, TextEditingController controller) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.85,
+      height: height,
+      decoration: BoxDecoration(
+          color: appTheme.whiteA70001,
+          borderRadius: BorderRadius.circular(height / 2)),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 95.v,
-            width: 62.h,
-            margin: EdgeInsets.only(
-              top: 18.v,
-              bottom: 118.v,
-            ),
-            child: Stack(
-              alignment: Alignment.topRight,
-              children: [
-                CustomImageView(
-                  imagePath: ImageConstant.imgCloseCyanA100,
-                  height: 95.v,
-                  width: 59.h,
-                  alignment: Alignment.centerLeft,
-                  onTap: () {
-                    onTapImgClose(context);
-                  },
+            height: height,
+            width: 60.h,
+            decoration: BoxDecoration(
+                color: appTheme.whiteA70001,
+                border: Border.all(
+                  color: appTheme.orangeA200,
+                  width: 4.h,
+                  strokeAlign: strokeAlignOutside,
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: 10.v),
-                  child: CustomIconButton(
-                    height: 37.adaptSize,
-                    width: 37.adaptSize,
-                    padding: EdgeInsets.all(9.h),
-                    decoration: IconButtonStyleHelper
-                        .gradientDeepOrangeToDeepOrangeTL18,
-                    alignment: Alignment.topRight,
-                    child: CustomImageView(
-                      imagePath: ImageConstant.imgArrowDown,
-                    ),
-                  ),
-                )
-              ],
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(height / 2),
+                    bottomLeft: Radius.circular(height / 2))),
+            child: Center(
+              child: CustomImageView(
+                height: 40.v,
+                width: 40.h,
+                fit: BoxFit.contain,
+                imagePath: "assets/images/$name.png",
+              ),
             ),
           ),
-          Container(
-            height: 232.v,
-            width: 363.h,
-            margin: EdgeInsets.only(left: 5.h),
-            child: Stack(
-              alignment: Alignment.bottomLeft,
-              children: [
-                CustomImageView(
-                  imagePath: ImageConstant.imgUnion,
-                  height: 90.v,
-                  width: 195.h,
-                  alignment: Alignment.topRight,
-                ),
-                CustomImageView(
-                  imagePath: ImageConstant.imgSvarLogo,
-                  height: 150.v,
-                  width: 295.h,
-                  alignment: Alignment.bottomLeft,
-                )
-              ],
+          Expanded(
+            child: Container(
+              height: height,
+              decoration: BoxDecoration(
+                  color: appTheme.whiteA70001,
+                  border: Border.all(
+                    color: appTheme.orangeA200,
+                    width: 4.h,
+                    strokeAlign: strokeAlignOutside,
+                  ),
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(height / 2),
+                      bottomRight: Radius.circular(height / 2))),
+              child: TextFormField(
+                keyboardType: TextInputType.emailAddress,
+                // controller: emailController,
+                obscureText: name=="password",
+                decoration: InputDecoration(
+                    hintText: name.tr,
+                    hintStyle: TextStyle(color: Colors.grey),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 5.h).copyWith(bottom: 15.v)),
+
+                validator: (value) {
+                  if (value == null ||
+                      (!isValidEmail(value, isRequired: true))) {
+                    return "err_msg_please_enter_valid_email".tr;
+                  }
+                  return null;
+                },
+              ),
             ),
           )
         ],
@@ -226,107 +186,102 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
 
   /// Section Widget
   Widget _buildEmail(BuildContext context) {
-    return SizedBox(
-      height: 207.v,
-      width: 412.h,
-      child: Stack(
-        alignment: Alignment.topLeft,
-        children: [
-          CustomImageView(
-            imagePath: ImageConstant.imgUnionCyanA100,
-            height: 159.v,
-            width: 157.h,
-            alignment: Alignment.topRight,
+    return Stack(
+      alignment: Alignment.topLeft,
+      children: [
+        CustomImageView(
+          imagePath: ImageConstant.imgUnionCyanA100,
+          height: 159.v,
+          width: 157.h,
+          alignment: Alignment.topRight,
+        ),
+        CustomImageView(
+          imagePath: ImageConstant.imgUnionCyanA10071x110,
+          height: 71.v,
+          width: 110.h,
+          alignment: Alignment.topLeft,
+          margin: EdgeInsets.only(top: 21.v),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 28.h),
+          child: Selector<LoginScreenPotraitProvider, TextEditingController?>(
+            selector: (context, provider) => provider.emailController,
+            builder: (context, emailController, child) {
+              return CustomTextFormField(
+                width: 337.h,
+                controller: emailController,
+                hintText: "msg_rakeshramjirast2".tr,
+                hintStyle: CustomTextStyles.titleMediumTeal90003,
+                textInputType: TextInputType.emailAddress,
+                alignment: Alignment.centerLeft,
+                prefix: Container(
+                  margin: EdgeInsets.fromLTRB(12.h, 12.v, 22.h, 14.v),
+                  child: CustomImageView(
+                    imagePath: ImageConstant.imgLock,
+                    height: 16.v,
+                    width: 21.h,
+                  ),
+                ),
+                prefixConstraints: BoxConstraints(
+                  maxHeight: 44.v,
+                ),
+                validator: (value) {
+                  if (value == null ||
+                      (!isValidEmail(value, isRequired: true))) {
+                    return "err_msg_please_enter_valid_email".tr;
+                  }
+                  return null;
+                },
+                contentPadding: EdgeInsets.only(
+                  top: 9.v,
+                  right: 22.h,
+                  bottom: 9.v,
+                ),
+                borderDecoration: TextFormFieldStyleHelper.underLineOrangeA,
+                filled: false,
+              );
+            },
           ),
-          CustomImageView(
-            imagePath: ImageConstant.imgUnionCyanA10071x110,
-            height: 71.v,
-            width: 110.h,
-            alignment: Alignment.topLeft,
-            margin: EdgeInsets.only(top: 21.v),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 28.h),
-            child: Selector<LoginScreenPotraitProvider, TextEditingController?>(
-              selector: (context, provider) => provider.emailController,
-              builder: (context, emailController, child) {
-                return CustomTextFormField(
-                  width: 337.h,
-                  controller: emailController,
-                  hintText: "msg_rakeshramjirast2".tr,
-                  hintStyle: CustomTextStyles.titleMediumTeal90003,
-                  textInputType: TextInputType.emailAddress,
+        ),
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: Container(
+            height: 82.v,
+            width: 337.h,
+            margin: EdgeInsets.only(left: 28.h),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Align(
                   alignment: Alignment.centerLeft,
-                  prefix: Container(
-                    margin: EdgeInsets.fromLTRB(12.h, 12.v, 22.h, 14.v),
-                    child: CustomImageView(
-                      imagePath: ImageConstant.imgLock,
-                      height: 16.v,
-                      width: 21.h,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 57.h),
+                    child: Text(
+                      "lbl".tr,
+                      style: CustomTextStyles.displayLargeNunitoTeal90003,
                     ),
                   ),
-                  prefixConstraints: BoxConstraints(
-                    maxHeight: 44.v,
-                  ),
-                  validator: (value) {
-                    if (value == null ||
-                        (!isValidEmail(value, isRequired: true))) {
-                      return "err_msg_please_enter_valid_email".tr;
-                    }
-                    return null;
+                ),
+                Selector<LoginScreenPotraitProvider, TextEditingController?>(
+                  selector: (context, provider) => provider.editTextController,
+                  builder: (context, editTextController, child) {
+                    return CustomTextFormField(
+                      width: 337.h,
+                      controller: editTextController,
+                      textInputAction: TextInputAction.done,
+                      alignment: Alignment.center,
+                      obscureText: true,
+                      borderDecoration:
+                          TextFormFieldStyleHelper.underLineOrangeA,
+                      filled: false,
+                    );
                   },
-                  contentPadding: EdgeInsets.only(
-                    top: 9.v,
-                    right: 22.h,
-                    bottom: 9.v,
-                  ),
-                  borderDecoration: TextFormFieldStyleHelper.underLineOrangeA,
-                  filled: false,
-                );
-              },
+                )
+              ],
             ),
           ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Container(
-              height: 82.v,
-              width: 337.h,
-              margin: EdgeInsets.only(left: 28.h),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 57.h),
-                      child: Text(
-                        "lbl".tr,
-                        style: CustomTextStyles.displayLargeNunitoTeal90003,
-                      ),
-                    ),
-                  ),
-                  Selector<LoginScreenPotraitProvider, TextEditingController?>(
-                    selector: (context, provider) =>
-                        provider.editTextController,
-                    builder: (context, editTextController, child) {
-                      return CustomTextFormField(
-                        width: 337.h,
-                        controller: editTextController,
-                        textInputAction: TextInputAction.done,
-                        alignment: Alignment.center,
-                        obscureText: true,
-                        borderDecoration:
-                            TextFormFieldStyleHelper.underLineOrangeA,
-                        filled: false,
-                      );
-                    },
-                  )
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 

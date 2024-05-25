@@ -3,6 +3,9 @@ class ImageConstant {
   static String imagePath = 'assets/images';
   static String imgArrowLeftYellow = "$imagePath/leftarrow.png";
   static String imgArrowRightGreen = "$imagePath/rightarrow.png";
+  
+  static String imgLoginBTn = "$imagePath/login_btn.png";
+  static String imgSignUpBTn = "$imagePath/signup_btn.png";
 // Welcome Screen Potrait images
   static String imgEllipse176 = '$imagePath/img_ellipse_176.png';
   static String imgMenuBTn = '$imagePath/menu_btn.png';

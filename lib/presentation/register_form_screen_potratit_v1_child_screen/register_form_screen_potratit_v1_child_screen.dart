@@ -260,7 +260,10 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                         textCtrl
                                                             .phoneNumberController
                                                             .text)
-                                                    .then((value) => {});
+                                                    .then((value) => {
+                                                      
+
+                                                    });
                                               },
                                               child: Container(
                                                 width: 39.h,
@@ -427,7 +430,9 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                                 exercises: [],
                                                                 current_level:
                                                                     0)))
-                                                        .then((value) => {})
+                                                        .then((value) => {
+                                                          
+                                                        })
                                                   });
                                         }
                                       },

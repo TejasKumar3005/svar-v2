@@ -29,14 +29,14 @@ class AuthConroller extends ChangeNotifier {
           verificationFailed: (FirebaseAuthException authexception) {},
           codeSent: (String verificationId, int? vid) {
             optId = verificationId;
-            notifyListeners();
-            ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
+            
+          
+          },
+          codeAutoRetrievalTimeout: (String timeout) {});
+    ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
               content: Text("code sent to " + phone),
               backgroundColor: Colors.green,
             ));
-          },
-          codeAutoRetrievalTimeout: (String timeout) {});
-
       return true;
     } catch (e) {
       ScaffoldMessenger.of(context!).showSnackBar(const SnackBar(
@@ -53,7 +53,13 @@ class AuthConroller extends ChangeNotifier {
       
       await firebaseAuth.signInWithCredential(
           PhoneAuthProvider.credential(verificationId: optId!, smsCode: sms));
-    } catch (e) {
+    } on FirebaseAuthException catch (e){
+        ScaffoldMessenger.of(context!).showSnackBar( SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ));
+    }
+    catch (e) {
       ScaffoldMessenger.of(context!).showSnackBar(const SnackBar(
         content: Text("Something went wrong"),
         backgroundColor: Colors.red,
