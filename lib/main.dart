@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:svar_new/core/utils/firebaseoptions.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
 import 'package:svar_new/database/authentication.dart';
@@ -11,15 +12,10 @@ import 'package:svar_new/database/authentication.dart';
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   // if (kIsWeb) {
   //   await Firebase.initializeApp(
-  //       options: FirebaseOptions(
-  //           apiKey: "AIzaSyD3G0hz8_giNyVHxtnbF5LYamc9jSWEmqA",
-  //           appId: "1:710506752632:android:770249a634598bd5099b8d",
-  //           messagingSenderId: "346602804482",
-  //           projectId:  "svar-ad8e4",
-  //           storageBucket: "svar-ad8e4.appspot.com"
-  //           )
+  //       options: Options().options
             
   //           );
   // } else {
@@ -141,7 +137,7 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                initialRoute: AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen,
+                initialRoute: AppRoutes.lingSoundAssessmentScreen,
                 routes: AppRoutes.routes,
                 // home: PhonmesListScreen(),
               );

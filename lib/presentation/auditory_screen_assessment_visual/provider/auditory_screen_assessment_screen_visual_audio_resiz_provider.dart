@@ -29,7 +29,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizProvider
     notifyListeners();
   }
 
-  String quizType = "voice";
+  String quizType = "VOICE";
 
   void setQuizType(String q) {
     quizType = q;
