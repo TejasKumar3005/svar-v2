@@ -2,6 +2,7 @@ import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/auditory_screen_assessment_screen_visual_audio_resiz_provider.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 
 class AuditoryScreenAssessmentScreenVisualAudioResizScreen
     extends StatefulWidget {
@@ -64,9 +65,11 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 _buildOptionGRP(context, provider),
                 Spacer(),
                 Center(
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgNext,
-                  ),
+                  child: CustomButton(
+                        type: ButtonType.Next,
+                        onPressed: () {
+                          
+                        }),
                 ),
                 Spacer()
               ],
@@ -131,12 +134,11 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                         borderRadius: BorderRadiusStyle.roundedBorder10),
                     child: Row(
                       children: [
-                        CustomImageView(
-                          height: 55.v,
-                          width: 55.h,
-                          fit: BoxFit.contain,
-                          imagePath: ImageConstant.imgPlayBtn,
-                        ),
+                        CustomButton(
+                        type: ButtonType.ImagePlay,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
                         Spacer(),
                         CustomImageView(
                           height: 65.v,
@@ -169,12 +171,11 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                         borderRadius: BorderRadiusStyle.roundedBorder10),
                     child: Row(
                       children: [
-                        CustomImageView(
-                          height: 55.v,
-                          width: 55.h,
-                          fit: BoxFit.contain,
-                          imagePath: ImageConstant.imgPlayBtn,
-                        ),
+                        CustomButton(
+                        type: ButtonType.ImagePlay,
+                        onPressed: () {
+                          
+                        }),
                         Spacer(),
                         CustomImageView(
                           height: 65.v,
@@ -332,75 +333,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
     }
   }
 
-  /// Section Widget
-  Widget _buildNextBTNTextButton(BuildContext context) {
-    return Container(
-      width: 87.h,
-      margin: EdgeInsets.only(
-        left: 349.h,
-        right: 330.h,
-        bottom: 45.v,
-      ),
-      decoration: AppDecoration.gradientGreenToLightGreen.copyWith(
-        borderRadius: BorderRadiusStyle.roundedBorder10,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomImageView(
-                  imagePath: ImageConstant.imgEllipse39,
-                  height: 3.v,
-                  width: 4.h,
-                  margin: EdgeInsets.only(bottom: 5.v),
-                ),
-                CustomImageView(
-                  imagePath: ImageConstant.imgUserWhiteA700019x9,
-                  height: 9.v,
-                  width: 8.h,
-                  radius: BorderRadius.circular(
-                    4.h,
-                  ),
-                )
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(right: 11.h),
-            child: Row(
-              children: [
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 1.v),
-                  decoration: AppDecoration.outlineBlack900,
-                  child: Text(
-                    "lbl_next2".tr.toUpperCase(),
-                    style: theme.textTheme.titleMedium,
-                  ),
-                ),
-                CustomImageView(
-                  imagePath: ImageConstant.imgArrowLeft,
-                  height: 17.v,
-                  width: 18.h,
-                  margin: EdgeInsets.only(left: 8.h),
-                )
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
 
-  /// Navigates to the auditoryScreenAssessmentScreenAudioVisualResizedScreen when the action is triggered.
-  onTapBtnArrowDown(BuildContext context) {
-    NavigatorService.pushNamed(
-      AppRoutes.auditoryScreenAssessmentScreenAudioVisualResizedScreen,
-    );
-  }
+
+  
 }

@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/main_interaction_provider.dart';
 import 'package:flutter/services.dart';
+import 'package:svar_new/widgets/custom_button.dart';
+
 
 class MainInteractionScreen extends StatefulWidget {
   const MainInteractionScreen({Key? key})

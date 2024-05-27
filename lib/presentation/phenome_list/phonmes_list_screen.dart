@@ -6,7 +6,7 @@ import 'package:svar_new/presentation/phenome_list/phonmes_list_provider.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/widgets/grid_item_model.dart';
 import 'package:svar_new/widgets/grid_item_widget.dart';
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 
 class PhonmesListScreen extends StatefulWidget {
   const PhonmesListScreen({Key? key}) : super(key: key);
@@ -33,7 +33,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
     final size = MediaQuery.of(context).size;
     final isLandscape = size.width > size.height;
     final padding = isLandscape
-        ? EdgeInsets.symmetric(horizontal: size.width * 0.05, vertical: size.height * 0.05)
+        ? EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.05)
         : EdgeInsets.symmetric(horizontal: 29.h, vertical: 20.v);
 
     return SafeArea(
@@ -71,12 +71,9 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(width: 20.h),
-                            AutoSizeText(
+                            Text(
                               "msg_let_s_learn_phonemes".tr.toUpperCase(),
                               style: theme.textTheme.headlineMedium,
-                              maxLines: 1,
-                              minFontSize: 8,
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
@@ -98,18 +95,14 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CustomImageView(
-          height: 37.5.adaptSize,
-          width: 37.5.adaptSize,
-          fit: BoxFit.contain,
-          imagePath: ImageConstant.imgBackBtn,
-        ),
-        CustomImageView(
-          height: 37.5.adaptSize,
-          width: 37.5.adaptSize,
-          fit: BoxFit.contain,
-          imagePath: ImageConstant.imgMenuBtn,
-        ),
+        CustomButton(
+          type: ButtonType.Back, onPressed: () {
+          Navigator.pop(context);
+        }),
+        CustomButton(
+          type: ButtonType.Menu, onPressed: () {
+          Navigator.pop(context);
+        }),
       ],
     );
   }
@@ -131,7 +124,6 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                 crossAxisCount: crossAxisCount,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
-                childAspectRatio: 1.0, // Ensuring square grid items
               ),
               itemCount: provider.phonmesListModelObj.gridItemList.length,
               itemBuilder: (context, index) {
@@ -142,16 +134,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                       PhonmesListModel().onTapCharacter(context, model.widget!);
                       Navigator.pushNamed(context, AppRoutes.lingLearningScreen);
                     },
-                    child: GridItemWidget(
-                      model: model,
-                      child: AutoSizeText(
-                        model.text,
-                        style: theme.textTheme.bodyLarge,
-                        maxLines: 1,
-                        minFontSize: 8,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                    child: GridItemWidget(model),
                   ),
                 );
               },

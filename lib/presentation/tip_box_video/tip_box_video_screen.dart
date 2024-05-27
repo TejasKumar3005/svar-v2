@@ -3,6 +3,7 @@ import 'models/tip_box_video_model.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/tip_box_video_provider.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 
 class TipBoxVideoScreen extends StatefulWidget {
   const TipBoxVideoScreen({Key? key})
@@ -120,32 +121,29 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
             children: [
               Padding(
                 padding: EdgeInsets.only(left: 1.h),
-                child: CustomImageView(
-                  height: 38.adaptSize,
-                  width: 38.adaptSize,
-                  fit: BoxFit.contain,
-                  imagePath: ImageConstant.imgBackBtn,
-                ),
+                child: CustomButton(
+                    type: ButtonType.Back,
+                    onPressed: () {
+                      NavigatorService.pushNamed( AppRoutes.lingLearningScreen);
+                    }),
               ),
               Spacer(),
               Padding(
                 padding: EdgeInsets.only(left: 1.h),
-                child: CustomImageView(
-                  height: 38.adaptSize,
-                  width: 38.adaptSize,
-                  fit: BoxFit.contain,
-                  imagePath: ImageConstant.imgReplayBtn,
-                ),
+                child:  CustomButton(
+                type: ButtonType.Replay,
+                onPressed: () {
+                  
+                }),
               ),
               SizedBox(width: 5),
               Padding(
                 padding: EdgeInsets.only(left: 1.h),
-                child: CustomImageView(
-                  height: 38.adaptSize,
-                  width: 38.adaptSize,
-                  fit: BoxFit.contain,
-                  imagePath: ImageConstant.imgFullvolBtn,
-                ),
+                child:  CustomButton(
+                type: ButtonType.FullVolume,
+                onPressed: () {
+                  
+                }),
               )
             ],
           ),

@@ -6,6 +6,7 @@ import 'package:svar_new/widgets/custom_text_form_field.dart';
 import 'package:svar_new/widgets/custom_outlined_button.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 
 class LoginScreenPotraitScreen extends StatefulWidget {
   const LoginScreenPotraitScreen({Key? key})
@@ -57,9 +58,13 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
               children: [
                 Row(
                   children: [
-                    CustomImageView(
-                      imagePath: ImageConstant.imgBackBtn,
-                    ),
+                    CustomButton(
+                        type: ButtonType.Back,
+                        onPressed: () {
+                          NavigatorService.pushNamed(
+                            AppRoutes.logInSignUpScreenPotraitScreen,
+                          );
+                        }),
                     Spacer()
                   ],
                 ),
@@ -92,12 +97,13 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                           SizedBox(
                             height: 15.v,
                           ),
-                          CustomImageView(
-                            imagePath: ImageConstant.imgLoginBTn,
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            height: 60.h,
-                            fit: BoxFit.contain,
-                          ),
+                          CustomButton(
+                        type: ButtonType.Login,
+                        onPressed: () {
+                          NavigatorService.pushNamed(
+                            AppRoutes.loginScreenPotraitScreen,
+                          );
+                        }),
                         ],
                       ),
                     ),
