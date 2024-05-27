@@ -123,7 +123,7 @@ class LingSoundAssessmentScreenState extends State<LingSoundAssessmentScreen> {
                   fit: BoxFit.cover),
               borderRadius: BorderRadiusStyle.roundedBorder10),
           child: Image(
-              image: AssetImage("assets/images/clap_vector.png"),
+              image: AssetImage("assets/images/girlspeaking.png"),
               fit: BoxFit.cover),
         ),
         Container(
@@ -136,7 +136,7 @@ class LingSoundAssessmentScreenState extends State<LingSoundAssessmentScreen> {
                   fit: BoxFit.cover),
               borderRadius: BorderRadiusStyle.roundedBorder10),
           child: Image(
-              image: AssetImage("assets/images/clap_vector.png"),
+              image: AssetImage("assets/images/bus.png"),
               fit: BoxFit.cover),
         ),
       ],

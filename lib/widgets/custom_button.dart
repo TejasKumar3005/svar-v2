@@ -56,8 +56,8 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.ImagePlay:
         imagePath = ImageConstant.imgPlayBtn;
-        width = 55;
-        height = 55;
+        width = 50;
+        height = 50;
         break;
       case ButtonType.ArrowLeftYellow:
         imagePath = ImageConstant.imgArrowLeftYellow;
@@ -76,8 +76,8 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.Back:
         imagePath = ImageConstant.imgBackBtn;
-        width = 55;
-        height = 55;
+        width = 35;
+        height = 35;
         break;
       case ButtonType.SignUp:
         imagePath = ImageConstant.imgSignUpBTn;
@@ -86,8 +86,8 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.Home:
         imagePath = ImageConstant.imgHomeBtn;
-        width = 55;
-        height = 55;
+        width = 35;
+        height = 35;
         break;
       case ButtonType.Next:
         imagePath = ImageConstant.imgNextBtn;
@@ -96,24 +96,24 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.Replay:
         imagePath = ImageConstant.imgReplayBtn;
-        width = 55;
-        height = 55;
+        width = 35;
+        height = 35;
         break;
       case ButtonType.FullVolume:
         imagePath = ImageConstant.imgFullvolBtn;
-        width = 55;
-        height = 55;
+        width = 35;
+        height = 35;
         break;
 
       case ButtonType.Menu:
         imagePath = ImageConstant.imgMenuBtn;
-        width = 55;
-        height = 55;
+        width = 35;
+        height = 35;
         break;
       case ButtonType.Tip:
         imagePath = ImageConstant.imgTipBtn;
-        width = 55;
-        height = 55;
+        width = 35;
+        height = 35;
         break;
       // Add cases for more button types here
     }

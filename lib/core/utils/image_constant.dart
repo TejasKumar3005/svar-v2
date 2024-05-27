@@ -138,11 +138,13 @@ class ImageConstant {
 
   static String imgAudioSection = '$imagePath/img_audio_section.svg';
 
-  static String imgOptn1 = '$imagePath/img_optn_1.svg';
+  static String imgOpt1 = '$imagePath/img_optn_1.svg';
 
-  static String imgOptn2 = '$imagePath/img_optn_2.svg';
+  static String imgOpt2 = '$imagePath/img_optn_2.png';
 
-  static String imgOpt21 = '$imagePath/img_opt_2_1.png';
+  static String imgOpt3  = '$imagePath/girlspeaking.png';
+
+  static String imgOpt4 = '$imagePath/bus.png';
 
   static String imgImage84128x135 = '$imagePath/img_image_84_128x135.png';
 
