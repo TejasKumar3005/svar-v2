@@ -1,3 +1,6 @@
+import 'package:flutter_svg/flutter_svg.dart';
+
+
 class ImageConstant {
 // Image folder path
   static String imagePath = 'assets/images';
@@ -28,7 +31,7 @@ class ImageConstant {
 
   static String imgEllipse175291x430 = '$imagePath/img_ellipse_175_291x430.png';
 
-  static String next = '$imagePath/next_button.png';
+  static String next = '$imagePath/next_button.svg';
 
   static String imgLock = '$imagePath/img_lock.png';
 
@@ -248,7 +251,7 @@ class ImageConstant {
 
   static String imgHomeBtn = '$imagePath/img_home_btn.png';
 
-  static String imgBackBtn = '$imagePath/back_btn.png';
+  static String imgBackBtn = '$imagePath/back_btn.svg';
 
   static String imgMenuBtn = '$imagePath/Menu_BTN.png';
 
