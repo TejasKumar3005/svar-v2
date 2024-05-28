@@ -76,7 +76,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                       width: MediaQuery.of(context).size.width * 0.8,
                       height: 110.v,
                       fit: BoxFit.contain,
-                      imagePath: ImageConstant.imgSvarLogo,
+                      imagePath: ImageConstant.imgSvaLogo,
                     ),
                     SizedBox(
                       height: 90.v,

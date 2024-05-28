@@ -8,6 +8,7 @@ import 'package:svar_new/core/utils/firebaseoptions.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
 import 'package:svar_new/database/authentication.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 void main() async {
@@ -148,3 +149,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+

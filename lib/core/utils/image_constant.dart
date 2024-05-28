@@ -4,11 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 class ImageConstant {
 // Image folder path
   static String imagePath = 'assets/images';
-  static String imgArrowLeftYellow = "$imagePath/leftarrow.png";
-  static String imgArrowRightGreen = "$imagePath/rightarrow.png";
+  static String imgArrowLeftYellow = "$imagePath/svg/LeftArrow_BTN_IconButton.svg";
+  static String imgArrowRightGreen = "$imagePath/svg/RightArrow_BTN_IconButton.svg";
   
-  static String imgLoginBTn = "$imagePath/login_btn.png";
-  static String imgSignUpBTn = "$imagePath/signup_btn.png";
+  static String imgLoginBTn = "$imagePath/svg/Log In_BTN_IconButton.svg";
+  static String imgSignUpBTn = "$imagePath/svg/Sign Up_BTN_IconButton.svg";
 // Welcome Screen Potrait images
   static String imgEllipse176 = '$imagePath/img_ellipse_176.png';
   static String imgMenuBTn = '$imagePath/menu_btn.png';
@@ -19,11 +19,11 @@ class ImageConstant {
   static String imgEllipse177 = '$imagePath/img_ellipse_177.png';
   static String imgSpectrum = '$imagePath/spectrum.png';
   static String imgClap = '$imagePath/clap.png';
-  static String imgReplayBtn = '$imagePath/replay_btn.png';
+  static String imgReplayBtn = '$imagePath/svg/Replay.svg';
   static String imgEllipse175 = '$imagePath/img_ellipse_175.png';
   static String imgCoin = '$imagePath/coin.png';
   static String imgNext = '$imagePath/Next_BTN.png';
-  static String imgPlayBtn = '$imagePath/BigPlay_BTN.png';
+  static String imgPlayBtn = '$imagePath/svg/BigPlay_BTN_IconButton.svg';
 // Log IN / Sign UP Screen Potrait images
   static String imgEllipse176253x430 = '$imagePath/img_ellipse_176_253x430.png';
 
@@ -43,7 +43,7 @@ class ImageConstant {
 
   static String imgShineWhiteA70001 = '$imagePath/img_shine_white_a700_01.svg';
 
-  static String imgNextBtn = '$imagePath/Next_BTN.png';
+  static String imgNextBtn = '$imagePath/svg/Next_BTN_TextButton.svg';
 
   static String imgRegisterFormScreen =
       '$imagePath/img_register_form_screen.png';
@@ -220,7 +220,7 @@ class ImageConstant {
 
   static String imgUnion = '$imagePath/img_union.png';
 
-  static String imgSvarLogo = '$imagePath/img_svar_logo.png';
+  static String imgSvaLogo = '$imagePath/svg/Sva_Logo.svg';
 
   static String imgTree = '$imagePath/img_tree.png';
 
@@ -231,9 +231,9 @@ class ImageConstant {
 
   static String imgMascot = '$imagePath/img_mascot.png';
 
-  static String playBtn = '$imagePath/Play_BTN.png';
+  static String playBtn = '$imagePath/svg/Play_BTN_IconButton.svg';
 
-  static String settingsBtn = '$imagePath/Settings_BTN.png';
+  static String settingsBtn = '$imagePath/svg/Settings_BTN_IconButton.svg';
 
   static String imgUnionCyanA100 = '$imagePath/img_union_cyan_a100.png';
 
@@ -249,11 +249,11 @@ class ImageConstant {
   static String imgArrowDownWhiteA70001 =
       '$imagePath/img_arrow_down_white_a700_01.svg';
 
-  static String imgHomeBtn = '$imagePath/img_home_btn.png';
+  static String imgHomeBtn = '$imagePath/svg/Home_BTN_IconButton.svg';
 
-  static String imgBackBtn = '$imagePath/back_btn.svg';
+  static String imgBackBtn = '$imagePath/svg/back_btn.svg';
 
-  static String imgMenuBtn = '$imagePath/Menu_BTN.png';
+  static String imgMenuBtn = '$imagePath/svg/Menu_BTN_IconButton.svg';
 
   static String imgMascot173x143 = '$imagePath/img_mascot_173x143.png';
 
@@ -272,7 +272,7 @@ class ImageConstant {
 
   static String imgCandy1 = '$imagePath/img_candy_1.png';
 
-  static String imgFullvolBtn = '$imagePath/FullVol_BTN_IconButton.png';
+  static String imgFullvolBtn = '$imagePath/svg/Fullvol.svg';
 
   static String imgEllipse39 = '$imagePath/img_ellipse_39.svg';
 
@@ -296,7 +296,7 @@ class ImageConstant {
   static String imgEllipse39WhiteA70001 =
       '$imagePath/img_ellipse_39_white_a700_01.svg';
 
-  static String imgTipBtn = '$imagePath/Tip_BTN_ICNButton.png';
+  static String imgTipBtn = '$imagePath/svg/Tip_BTN_ICNButton.svg';
 
   static String imgUserWhiteA7000119x18 =
       '$imagePath/img_user_white_a700_01_19x18.svg';

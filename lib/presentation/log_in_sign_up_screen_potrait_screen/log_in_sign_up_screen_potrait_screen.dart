@@ -6,6 +6,7 @@ import 'package:svar_new/core/app_export.dart';
 import 'provider/log_in_sign_up_screen_potrait_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
+
 class LogInSignUpScreenPotraitScreen extends StatefulWidget {
   const LogInSignUpScreenPotraitScreen({Key? key})
       : super(
@@ -70,7 +71,7 @@ class LogInSignUpScreenPotraitScreenState
                     width: MediaQuery.of(context).size.width*0.8,
                     height: 110.v,
                     fit: BoxFit.contain,
-                    imagePath: ImageConstant.imgSvarLogo,),
+                    imagePath: ImageConstant.imgSvaLogo,),
                       SizedBox(
                       height: 100.v,
                     ),
