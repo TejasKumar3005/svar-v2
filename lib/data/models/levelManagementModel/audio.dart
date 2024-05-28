@@ -2,46 +2,32 @@ import 'dart:core';
 /*
     Similar to visual representation
  */
-class AudioToVisual
+class ImageToAudio
 {
-  final String input_audio_url;
-  final List<String> option_image_url;
-  final String output_ref;
+  final String image_url; 
+  final List<String> audio_list_url;
+  final String correct_audio_url;
 
-  AudioToVisual._({required this.input_audio_url , required this.option_image_url , required this.output_ref});
-  factory AudioToVisual.fromMap(Map<String , dynamic> json){
-    return AudioToVisual._(
-        input_audio_url: json["input_audio_url"],
-        option_image_url: json["option_image_url"],
-        output_ref: json["output_ref"]
-    );
-  }
-
-}
-
-class AudioToAudioMicro
-{
-  final String input_audio_url;
-  final String output_text;
-  AudioToAudioMicro._({required this.input_audio_url , required this.output_text});
-  factory AudioToAudioMicro.fromMap(Map<String , dynamic> json){
-   return AudioToAudioMicro._(
-       input_audio_url: json["input_audio_url"],
-       output_text: json["output_text"]
-   );
+  ImageToAudio._({required this.image_url , required this.audio_list_url , required this.correct_audio_url});
+  factory ImageToAudio.fromJson(Map<String , dynamic> json){
+    return ImageToAudio._(
+      image_url: json["image_url"], 
+      audio_list_url:List<String>.from( json["audio_list_url"] ), 
+      correct_audio_url: json["correct_audio_url"]);
   }
 }
-class AudioAudioOpt
+
+class AudioToImage
 {
-  final String input_audio_url;
-  final List<String> option_audio_url;
-  final String output_ref;
-  AudioAudioOpt._({required this.input_audio_url , required this.option_audio_url , required this.output_ref});
-  factory AudioAudioOpt.fromMap(Map<String , dynamic> json){
-    return AudioAudioOpt._(
-        input_audio_url: json["input_audio_url"],
-        option_audio_url: json["option_audio_url"],
-        output_ref: json["output_ref"]
-    );
+  final String audio_url; 
+  final List<String> image_url_list;
+  final String correct_image_url;
+  AudioToImage._({required this.audio_url , required this.image_url_list , required this.correct_image_url});
+  factory AudioToImage.fromJson(Map<String , dynamic> json){
+    return AudioToImage._(
+      audio_url: json["audio_url"], 
+      image_url_list: List<String>.from(json["image_url_list"]), 
+      correct_image_url: json["correct_image_url"]
+      );
   }
 }
