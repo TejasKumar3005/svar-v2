@@ -29,6 +29,7 @@ dependencies:
   tflite_flutter: ^0.10.4
   country_code_picker: ^3.0.0
   carousel_slider: ^4.2.1
+  audioplayers: ^6.0.0
 dev_dependencies: 
   flutter_test: 
     sdk: flutter

@@ -107,7 +107,7 @@ class AppRoutes {
 auditoryScreenAssessmentScreenAudioVisualResizedScreen:
 AuditoryScreenAssessmentScreenAudioVisualOneScreen.builder,
         auditoryScreenAssessmentScreenVisualAudioResizScreen:
-            AuditoryScreenAssessmentScreenVisualAudioResizScreen.builder,
+            AuditoryScreenAssessmentScreenVisualAudioResizScreen.builder, // will have to change the route to learning pathway
         auditoryScreenVisualLearningScreenResizedScreen:
             AuditoryScreenVisualLearningScreenResizedScreen.builder,
         lingSoundAssessmentScreen: LingSoundAssessmentScreen.builder,
@@ -128,5 +128,6 @@ AuditoryScreenAssessmentScreenAudioVisualOneScreen.builder,
         appNavigationScreen: AppNavigationScreen.builder,
         initialRoute: LoadingScreen.builder,
         userProfileScreen:UserProfileScreen.builder
+
       };
 }

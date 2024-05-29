@@ -1,12 +1,17 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/auditory_screen_assessment_screen_visual_audio_resiz_provider.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 
 class AuditoryScreenAssessmentScreenVisualAudioResizScreen
     extends StatefulWidget {
-  const AuditoryScreenAssessmentScreenVisualAudioResizScreen({Key? key})
-      : super(
+      final String type;
+    
+  const AuditoryScreenAssessmentScreenVisualAudioResizScreen({Key? key , required String this.type, })
+      : 
+      super(
           key: key,
         );
 
@@ -14,20 +19,29 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreen
   AuditoryScreenAssessmentScreenVisualAudioResizScreenState createState() =>
       AuditoryScreenAssessmentScreenVisualAudioResizScreenState();
 
-  static Widget builder(BuildContext context) {
+  static Widget builder(BuildContext context , String type) {
     return ChangeNotifierProvider(
       create: (context) =>
           AuditoryScreenAssessmentScreenVisualAudioResizProvider(),
-      child: AuditoryScreenAssessmentScreenVisualAudioResizScreen(),
+      child: AuditoryScreenAssessmentScreenVisualAudioResizScreen(type: type,),
     );
   }
+  
+ 
+
 }
 
 class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
     extends State<AuditoryScreenAssessmentScreenVisualAudioResizScreen> {
+  late final String type;
+  final AudioPlayer audioPlayer = AudioPlayer();
+  void playAudio(String url) {
+    audioPlayer.play(url as Source);
+  }
   @override
   void initState() {
     super.initState();
+    type = widget.type;
   }
 
   int sel = 0;
@@ -36,6 +50,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
   Widget build(BuildContext context) {
     var provider =
         context.watch<AuditoryScreenAssessmentScreenVisualAudioResizProvider>();
+    provider.setQuizType(type);
+
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -61,12 +77,14 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
               children: [
                 AuditoryAppBar(context),
                 SizedBox(height: 56.v),
-                _buildOptionGRP(context, provider),
+                _buildOptionGRP(context, provider , type),
                 Spacer(),
                 Center(
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgNext,
-                  ),
+                  child: CustomButton(
+                        type: ButtonType.Next,
+                        onPressed: () {
+                          
+                        }),
                 ),
                 Spacer()
               ],
@@ -79,7 +97,9 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
 
   /// Section Widget
   Widget _buildOptionGRP(BuildContext context,
-      AuditoryScreenAssessmentScreenVisualAudioResizProvider provider) {
+      AuditoryScreenAssessmentScreenVisualAudioResizProvider provider , String type) {
+        dynamic screen_data_obj = provider.getScreeValue(type);
+  
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.h),
       child: Row(
@@ -93,17 +113,17 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 borderRadius: BorderRadiusStyle.roundedBorder15,
               ),
               child: CustomImageView(
-                imagePath: ImageConstant.imgClap,
+                imagePath: screen_data_obj.getImageUrl,                   //  ImageConstant.imgClap,
                 radius: BorderRadiusStyle.roundedBorder15,
               )),
-          buildDynamicOptions(provider.quizType, provider)
+          buildDynamicOptions(provider.quizType, provider , screen_data_obj)
         ],
       ),
     );
   }
 
   Widget buildDynamicOptions(String quizType,
-      AuditoryScreenAssessmentScreenVisualAudioResizProvider provider) {
+      AuditoryScreenAssessmentScreenVisualAudioResizProvider provider , dynamic screen_data_obj ) {
     switch (quizType) {
       case "VOICE":
         return Container(
@@ -115,6 +135,12 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 GestureDetector(
                   onTap: () {
                     provider.setSelected(0);
+                    if (screen_data_obj.getCorrectOutput().toString() == screen_data_obj.getAudioList[0]){
+                      // push the widget which will shown after success
+                //      Navigator.push(context, null);
+                    }else{
+                      // push the widget which will shown after failure
+                    }
                   },
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.4,
@@ -131,12 +157,12 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                         borderRadius: BorderRadiusStyle.roundedBorder10),
                     child: Row(
                       children: [
-                        CustomImageView(
-                          height: 55.v,
-                          width: 55.h,
-                          fit: BoxFit.contain,
-                          imagePath: ImageConstant.imgPlayBtn,
-                        ),
+                        CustomButton(
+                        type: ButtonType.ImagePlay,
+                        onPressed: () {
+                          playAudio(screen_data_obj.getAudioList[0]);
+                          // Navigator.pop(context);
+                        }),
                         Spacer(),
                         CustomImageView(
                           height: 65.v,
@@ -153,6 +179,12 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 GestureDetector(
                   onTap: () {
                     provider.setSelected(1);
+                    if (screen_data_obj.getCorrectOutput().toString() == screen_data_obj.getAudioList[1]){
+                      // push the widget which will shown after success
+                //      Navigator.push(context, null);
+                    }else{
+                      // push the widget which will shown after failure
+                    }
                   },
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.4,
@@ -169,12 +201,11 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                         borderRadius: BorderRadiusStyle.roundedBorder10),
                     child: Row(
                       children: [
-                        CustomImageView(
-                          height: 55.v,
-                          width: 55.h,
-                          fit: BoxFit.contain,
-                          imagePath: ImageConstant.imgPlayBtn,
-                        ),
+                        CustomButton(
+                        type: ButtonType.ImagePlay,
+                        onPressed: () {
+                          playAudio(screen_data_obj.getAudioList[0]);
+                        }),
                         Spacer(),
                         CustomImageView(
                           height: 65.v,
@@ -209,7 +240,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                     ),
                     image: DecorationImage(
                         image:
-                            AssetImage("assets/images/radial_ray_orange.png"),
+                           AssetImage("assets/images/radial_ray_orange.png"),
                         fit: BoxFit.cover),
                     borderRadius: BorderRadiusStyle.roundedBorder10),
                 child: Center(
@@ -217,16 +248,34 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        provider.optStrings1[0],
+                      GestureDetector(
+                        onTap: () {
+                          if(screen_data_obj.getCorrectOutput == screen_data_obj.getTextList[0]){
+                            // success widget push
+                          }else{
+                            // failure widget push 
+                          }
+                        },
+                        child: Text(
+                        screen_data_obj.getTextList[0],
                         style: theme.textTheme.labelMedium,
+                      ),
                       ),
                       SizedBox(
                         height: 8.v,
                       ),
-                      Text(
-                        provider.optStrings1[1],
-                        style: theme.textTheme.labelSmall,
+                      GestureDetector(
+                        onTap: () {
+                          if(screen_data_obj.getCorrectOutput == screen_data_obj.getTextList[1]){
+                            // success widget push
+                          }else{
+                            // failure widget push 
+                          }
+                        },
+                        child: Text(
+                        screen_data_obj.getTextList[1],
+                        style: theme.textTheme.labelMedium,
+                      ),
                       ),
                     ],
                   ),
@@ -252,16 +301,34 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        provider.optStrings2[0],
+                      GestureDetector(
+                        onTap: () {
+                          if(screen_data_obj.getCorrectOutput == screen_data_obj.getTextList[2]){
+                            // success widget push
+                          }else{
+                            // failure widget push 
+                          }
+                        },
+                        child: Text(
+                        screen_data_obj.getTextList[2],
                         style: theme.textTheme.labelMedium,
+                      ),
                       ),
                       SizedBox(
                         height: 8.v,
                       ),
-                      Text(
-                        provider.optStrings2[1],
-                        style: theme.textTheme.labelSmall,
+                      GestureDetector(
+                        onTap: () {
+                          if(screen_data_obj.getCorrectOutput == screen_data_obj.getTextList[3]){
+                            // success widget push
+                          }else{
+                            // failure widget push 
+                          }
+                        },
+                        child: Text(
+                        screen_data_obj.getTextList[3],
+                        style: theme.textTheme.labelMedium,
+                      ),
                       ),
                     ],
                   ),
@@ -292,11 +359,20 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                         fit: BoxFit.cover),
                     borderRadius: BorderRadiusStyle.roundedBorder10),
                 child: Center(
-                  child: Image.network(
-                    provider.optionFigures[0],
-                    fit: BoxFit.contain,
-                    height: 70.v,
-                    width: 50.v,
+                  child: GestureDetector(
+                    onTap: () {
+                      if(screen_data_obj.getCorrectOutput == screen_data_obj.getImageUrlList[0]){
+                        // success widget loader 
+                      }else {
+                        // failure widget loader 
+                      }
+                    },
+                    child: Image.network(
+                        screen_data_obj.getImageUrlList[0],
+                        fit: BoxFit.contain,
+                        height: 70.v,
+                        width: 50.v,
+                  ),
                   ),
                 ),
               ),
@@ -316,11 +392,20 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                         fit: BoxFit.cover),
                     borderRadius: BorderRadiusStyle.roundedBorder10),
                 child: Center(
-                  child: Image.network(
-                    provider.optionFigures[1],
-                    fit: BoxFit.contain,
-                    height: 70.v,
-                    width: 50.v,
+                  child: GestureDetector(
+                    onTap: () {
+                      if(screen_data_obj.getCorrectOutput == screen_data_obj.getImageUrlList[0]){
+                        // success widget loader 
+                      }else {
+                        // failure widget loader 
+                      }
+                    },
+                    child: Image.network(
+                        screen_data_obj.getImageUrlList[1],
+                        fit: BoxFit.contain,
+                        height: 70.v,
+                        width: 50.v,
+                  ),
                   ),
                 ),
               ),
@@ -332,75 +417,4 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
     }
   }
 
-  /// Section Widget
-  Widget _buildNextBTNTextButton(BuildContext context) {
-    return Container(
-      width: 87.h,
-      margin: EdgeInsets.only(
-        left: 349.h,
-        right: 330.h,
-        bottom: 45.v,
-      ),
-      decoration: AppDecoration.gradientGreenToLightGreen.copyWith(
-        borderRadius: BorderRadiusStyle.roundedBorder10,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomImageView(
-                  imagePath: ImageConstant.imgEllipse39,
-                  height: 3.v,
-                  width: 4.h,
-                  margin: EdgeInsets.only(bottom: 5.v),
-                ),
-                CustomImageView(
-                  imagePath: ImageConstant.imgUserWhiteA700019x9,
-                  height: 9.v,
-                  width: 8.h,
-                  radius: BorderRadius.circular(
-                    4.h,
-                  ),
-                )
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(right: 11.h),
-            child: Row(
-              children: [
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 1.v),
-                  decoration: AppDecoration.outlineBlack900,
-                  child: Text(
-                    "lbl_next2".tr.toUpperCase(),
-                    style: theme.textTheme.titleMedium,
-                  ),
-                ),
-                CustomImageView(
-                  imagePath: ImageConstant.imgArrowLeft,
-                  height: 17.v,
-                  width: 18.h,
-                  margin: EdgeInsets.only(left: 8.h),
-                )
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  /// Navigates to the auditoryScreenAssessmentScreenAudioVisualResizedScreen when the action is triggered.
-  onTapBtnArrowDown(BuildContext context) {
-    NavigatorService.pushNamed(
-      AppRoutes.auditoryScreenAssessmentScreenAudioVisualResizedScreen,
-    );
-  }
 }
