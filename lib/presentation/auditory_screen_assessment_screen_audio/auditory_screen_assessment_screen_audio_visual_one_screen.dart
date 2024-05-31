@@ -1,9 +1,12 @@
-import 'package:svar_new/widgets/custom_icon_button.dart';
+// import 'package:svar_new/widgets/custom_icon_button.dart';
+import 'dart:io';
+
 import 'models/auditory_screen_assessment_screen_audio_visual_one_model.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
+// import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/auditory_screen_assessment_screen_audio_visual_one_provider.dart';
+import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 
 class AuditoryScreenAssessmentScreenAudioVisualOneScreen
     extends StatefulWidget {
@@ -33,20 +36,22 @@ class AuditoryScreenAssessmentScreenAudioVisualOneScreenState
 
   @override
   Widget build(BuildContext context) {
+    final width =  MediaQuery.of(context).size.width;
+    final height =  MediaQuery.of(context).size.height;
     return SafeArea(
       child: Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
         backgroundColor: appTheme.gray300,
         body: Container(
-          width: SizeUtils.width,
-          height: SizeUtils.height,
+          // width: SizeUtils.width,
+          // height: SizeUtils.height,
+          width: width,
+          height: height,
           decoration: BoxDecoration(
             color: appTheme.gray300,
             image: DecorationImage(
-              image: fs.Svg(
-                ImageConstant.imgAuditoryScreenCyanA400,
-              ),
+              image: AssetImage(ImageConstant.imgAuditoryScreen),
               fit: BoxFit.cover,
             ),
           ),
@@ -307,7 +312,11 @@ class AuditoryScreenAssessmentScreenAudioVisualOneScreenState
                         child: Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: 45.h,
-                            vertical: 16.v,
+                            vertical: 10.v,
+                          ),
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 5.h, 
+                            vertical: 10.v
                           ),
                           decoration: BoxDecoration(
                             image: DecorationImage(
@@ -359,7 +368,7 @@ class AuditoryScreenAssessmentScreenAudioVisualOneScreenState
                               Align(
                                 alignment: Alignment.topCenter,
                                 child: Padding(
-                                  padding: EdgeInsets.only(top: 7.v),
+                                  padding: EdgeInsets.only(top: 10.v),
                                   child: Text(
                                     "lbl_patang".tr,
                                     style: theme.textTheme.headlineLarge,
@@ -380,7 +389,7 @@ class AuditoryScreenAssessmentScreenAudioVisualOneScreenState
                     ],
                   ),
                 ),
-                SizedBox(height: 17.v),
+                SizedBox(height: 15.v),
                 Container(
                   width: 111.h,
                   margin: EdgeInsets.symmetric(horizontal: 126.h),
@@ -408,8 +417,8 @@ class AuditoryScreenAssessmentScreenAudioVisualOneScreenState
                               margin: EdgeInsets.only(bottom: 6.v),
                             ),
                             CustomImageView(
-                              imagePath: ImageConstant.imgUserWhiteA7000110x9,
-                              height: 10.v,
+                              imagePath: ImageConstant.imgEllipse39WhiteA70001,   //imgUserWhiteA7000110x9
+                              height: 15.v,
                               width: 9.h,
                               radius: BorderRadius.circular(
                                 4.h,
@@ -426,6 +435,7 @@ class AuditoryScreenAssessmentScreenAudioVisualOneScreenState
                             margin: EdgeInsets.only(
                               top: 2.v,
                               bottom: 1.v,
+                           
                             ),
                             decoration: AppDecoration.outlineBlack900,
                             child: Text(
@@ -437,7 +447,7 @@ class AuditoryScreenAssessmentScreenAudioVisualOneScreenState
                             imagePath: ImageConstant.imgUserWhiteA7000119x18,
                             height: 19.v,
                             width: 18.h,
-                            margin: EdgeInsets.only(left: 8.h),
+                            margin: EdgeInsets.only(left: 5.h),
                           ),
                         ],
                       ),
