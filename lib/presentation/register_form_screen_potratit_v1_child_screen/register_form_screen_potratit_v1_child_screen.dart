@@ -4,6 +4,7 @@ import 'package:svar_new/data/models/game_statsModel.dart';
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/database/authentication.dart';
 import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_screen/methods.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/widgets/custom_text_form_field.dart';
 import 'package:svar_new/core/utils/validation_functions.dart';
@@ -13,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/register_form_screen_potratit_v1_child_provider.dart';
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:svar_new/widgets/custom_button.dart';
 
 class RegisterFormScreenPotratitV1ChildScreen extends StatefulWidget {
   const RegisterFormScreenPotratitV1ChildScreen({Key? key})
@@ -105,24 +105,14 @@ class RegisterFormScreenPotratitV1ChildScreenState
                           SizedBox(
                             width: 10.h,
                           ),
-                            child: CustomButton(
-                        type: ButtonType.Back,
-                        onPressed: () {
-                          NavigatorService.pushNamed(
-                            AppRoutes.logInSignUpScreenPotraitScreen,
-                          );
-                        }),
-                          ),
-                          SizedBox(width: 10.h,),
                           Padding(
                             padding: EdgeInsets.only(left: 1.h),
-                            child: CustomButton(
-                        type: ButtonType.Home,
-                        onPressed: () {
-                          NavigatorService.pushNamed(
-                            AppRoutes.welcomeScreenPotraitScreen,
-                          );
-                        }),
+                            child: CustomImageView(
+                              height: 38.adaptSize,
+                              width: 38.adaptSize,
+                              fit: BoxFit.contain,
+                              imagePath: ImageConstant.imgHomeBtn,
+                            ),
                           )
                         ],
                       ),
@@ -459,7 +449,15 @@ class RegisterFormScreenPotratitV1ChildScreenState
                             ],
                           ),
                           SizedBox(height: 22.v),
-                          buildNext(context)
+                          textCtrl.loading
+                              ? CircularProgressIndicator(
+                                  color: appTheme.deepOrange200,
+                                )
+                              : CustomButton(type: ButtonType.Next, onPressed: () {
+                            RegisterFormMethods methods =
+                                RegisterFormMethods(context: context);
+                            methods.RegisterUser();
+                          },)
                         ],
                       ),
                     ),
