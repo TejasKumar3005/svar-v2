@@ -109,8 +109,8 @@ class AppRoutes {
         phonemsLevelScreenOneScreen: PhonemsLevelScreenOneScreen.builder,
         auditoryScreenAssessmentScreenAudioVisualResizedScreen:
             AuditoryScreenAssessmentScreenAudioVisualOneScreen.builder,
-        auditoryScreenAssessmentScreenVisualAudioResizScreen:
-            AuditoryScreenAssessmentScreenVisualAudioResizScreen.builder, // will have to change the route to learning pathway
+        // auditoryScreenAssessmentScreenVisualAudioResizScreen:
+        //     AuditoryScreenAssessmentScreenVisualAudioResizScreen.builder, // will have to change the route to learning pathway
         auditoryScreenVisualLearningScreenResizedScreen:
             AuditoryScreenVisualLearningScreenResizedScreen.builder,
         lingSoundAssessmentScreen: LingSoundAssessmentScreen.builder,
