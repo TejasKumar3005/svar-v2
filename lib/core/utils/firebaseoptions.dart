@@ -2,12 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 
 class Options {
   FirebaseOptions options = FirebaseOptions(
-      apiKey: "AIzaSyBPP45pnYg4jUeAQTlwBtpe3eBl8vAafew",
-      authDomain: "svar-v2.firebaseapp.com",
-      databaseURL: "https://svar-v2-default-rtdb.firebaseio.com",
-      projectId: "svar-v2",
-      storageBucket: "svar-v2.appspot.com",
-      messagingSenderId: "997360122640",
-      appId: "1:997360122640:web:135c1c52031f4f88678395",
-      measurementId: "G-GKMV4J46KT");
+      apiKey: "AIzaSyBO_ie7IMB82HbFgT90Rz6JOz35iUVz55M",
+      authDomain: "svar-v2-4f0f4.firebaseapp.com",
+      projectId: "svar-v2-4f0f4",
+      storageBucket: "svar-v2-4f0f4.appspot.com",
+      messagingSenderId: "628827446185",
+      appId: "1:628827446185:web:951f546cf62d94092742b8",
+      measurementId: "G-V50ECXEL5P");
 }

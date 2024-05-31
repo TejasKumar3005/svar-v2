@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:svar_new/core/utils/firebaseoptions.dart';
+import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/auditory_screen_assessment_screen_audio_visual_one_screen.dart';
+import 'package:svar_new/presentation/auditory_screen_assessment_visual/auditory_screen_assessment_screen_visual_audio_screen.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
 import 'package:svar_new/database/authentication.dart';
@@ -14,14 +16,14 @@ var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // if (kIsWeb) {
-  //   await Firebase.initializeApp(
-  //       options: Options().options
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: Options().options
             
-  //           );
-  // } else {
-  //   await Firebase.initializeApp();
-  // }
+            );
+  } else {
+    await Firebase.initializeApp();
+  }
 
   Future.wait([
     SystemChrome.setPreferredOrientations([
@@ -138,7 +140,7 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                initialRoute: AppRoutes.lingSoundAssessmentScreen,
+                initialRoute: AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
                 // home: PhonmesListScreen(),
               );

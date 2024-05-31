@@ -1,14 +1,13 @@
 {
   "project_info": {
-    "project_number": "997360122640",
-    "firebase_url": "https://svar-v2-default-rtdb.firebaseio.com",
-    "project_id": "svar-v2",
-    "storage_bucket": "svar-v2.appspot.com"
+    "project_number": "628827446185",
+    "project_id": "svar-v2-4f0f4",
+    "storage_bucket": "svar-v2-4f0f4.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:997360122640:android:e78467e931fd3ac7678395",
+        "mobilesdk_app_id": "1:628827446185:android:26b6edc1bf404f642742b8",
         "android_client_info": {
           "package_name": "com.svarnew.app"
         }
@@ -16,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyA77jnl05evYD6BIzPDGevMnbrWecVbKQU"
+          "current_key": "AIzaSyCsw3JRR349LXtLEVO02Jea5VNmh6v8AoQ"
         }
       ],
       "services": {

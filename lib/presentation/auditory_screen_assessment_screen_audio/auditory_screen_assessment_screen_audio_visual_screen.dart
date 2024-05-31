@@ -48,13 +48,13 @@ class AuditoryScreenAssessmentScreenAudioVisualScreenState
               image: fs.Svg(
                 ImageConstant.imgAuditoryScreen,
               ),
-              fit: BoxFit.contain,
+              fit: BoxFit.cover,
             ),
           ),
           child: Container(
             width: 768.h,
             padding: EdgeInsets.symmetric(
-              horizontal: 44.h,
+              horizontal: 80.h,
               vertical: 39.v,
             ),
             child: Column(
@@ -82,186 +82,7 @@ class AuditoryScreenAssessmentScreenAudioVisualScreenState
     );
   }
 
-  /// Section Widget
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(right: 1.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(top: 1.v),
-            child: CustomIconButton(
-              height: 37.adaptSize,
-              width: 37.adaptSize,
-              padding: EdgeInsets.all(9.h),
-              decoration:
-                  IconButtonStyleHelper.gradientDeepOrangeToDeepOrangeTL18,
-              child: CustomImageView(
-                imagePath: ImageConstant.imgArrowDownWhiteA7000137x37,
-              ),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 38.v,
-                width: 63.h,
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        margin: EdgeInsets.only(left: 18.h),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 3.h,
-                          vertical: 2.v,
-                        ),
-                        decoration: AppDecoration.fillOrange30002.copyWith(
-                          borderRadius: BorderRadiusStyle.roundedBorder5,
-                        ),
-                        child: Container(
-                          width: 37.h,
-                          padding: EdgeInsets.symmetric(horizontal: 6.h),
-                          decoration: AppDecoration.fillYellow90002.copyWith(
-                            borderRadius: BorderRadiusStyle.roundedBorder5,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(height: 1.v),
-                              Text(
-                                "lbl_0_16".tr,
-                                style: theme.textTheme.labelSmall,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    CustomImageView(
-                      imagePath: ImageConstant.imgStar105,
-                      height: 38.adaptSize,
-                      width: 38.adaptSize,
-                      radius: BorderRadius.circular(
-                        1.h,
-                      ),
-                      alignment: Alignment.centerLeft,
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                height: 36.v,
-                width: 125.h,
-                margin: EdgeInsets.only(
-                  left: 9.h,
-                  top: 1.v,
-                ),
-                child: Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Container(
-                        margin: EdgeInsets.only(
-                          left: 18.h,
-                          top: 8.v,
-                          bottom: 8.v,
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 2.h,
-                          vertical: 1.v,
-                        ),
-                        decoration: AppDecoration.fillPink.copyWith(
-                          borderRadius: BorderRadiusStyle.roundedBorder5,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(bottom: 1.v),
-                              padding: EdgeInsets.symmetric(horizontal: 21.h),
-                              decoration: AppDecoration.fillPink30001.copyWith(
-                                borderRadius: BorderRadiusStyle.roundedBorder5,
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(height: 1.v),
-                                  Text(
-                                    "lbl_0_10000".tr,
-                                    style: theme.textTheme.labelSmall,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                left: 4.h,
-                                bottom: 1.v,
-                              ),
-                              child: Text(
-                                "lbl2".tr,
-                                style: theme.textTheme.labelMedium,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    CustomImageView(
-                      imagePath: ImageConstant.imgCandy36x36,
-                      height: 36.adaptSize,
-                      width: 36.adaptSize,
-                      radius: BorderRadius.circular(
-                        18.h,
-                      ),
-                      alignment: Alignment.centerLeft,
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 22.h,
-                  top: 1.v,
-                ),
-                child: CustomIconButton(
-                  height: 37.adaptSize,
-                  width: 37.adaptSize,
-                  padding: EdgeInsets.all(3.h),
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgSettingsWhiteA70001,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 8.h,
-                  top: 1.v,
-                ),
-                child: CustomIconButton(
-                  height: 37.adaptSize,
-                  width: 37.adaptSize,
-                  padding: EdgeInsets.all(3.h),
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgSoundBtn,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+  
 
   /// Section Widget
   Widget _buildPaani(BuildContext context) {
