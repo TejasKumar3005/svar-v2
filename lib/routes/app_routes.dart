@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/auditory_screen_assessment_screen_audio_visual_one_screen.dart';
+import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/auditory_screen_assessment_screen_audio_visual_resized_screen.dart.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/auditory_screen_assessment_screen_audio_visual_screen.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_visual/auditory_screen_assessment_screen_visual_audio_resiz_screen.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_visual/auditory_screen_assessment_screen_visual_audio_screen.dart';
@@ -44,7 +45,8 @@ class AppRoutes {
   static const String loadingScreen = '/loading_screen';
 
   static const String welcomeScreen = '/welcome_screen';
-
+  static const String auditoryScreenAssessmentScreenAudioVisualResizScreen =
+      "/auditory_screen_assessment_audio_visual_resiz_screen";
   static const String phonemsLevelScreenTwoScreen =
       '/phonems_level_screen_two_screen';
 
@@ -93,6 +95,7 @@ class AppRoutes {
   static const String userProfileScreen = '/user_profile';
 
   static Map<String, WidgetBuilder> get routes => {
+    auditoryScreenAssessmentScreenAudioVisualResizScreen:AuditoryScreenAssessmentScreenAudioVisualResizScreen.builder,
         welcomeScreenPotraitScreen: WelcomeScreenPotraitScreen.builder,
         logInSignUpScreenPotraitScreen: LogInSignUpScreenPotraitScreen.builder,
         loginScreenPotraitScreen: LoginScreenPotraitScreen.builder,
@@ -104,8 +107,8 @@ class AppRoutes {
         welcomeScreen: WelcomeScreen.builder,
         phonemsLevelScreenTwoScreen: PhonemsLevelScreenTwoScreen.builder,
         phonemsLevelScreenOneScreen: PhonemsLevelScreenOneScreen.builder,
-auditoryScreenAssessmentScreenAudioVisualResizedScreen:
-AuditoryScreenAssessmentScreenAudioVisualOneScreen.builder,
+        auditoryScreenAssessmentScreenAudioVisualResizedScreen:
+            AuditoryScreenAssessmentScreenAudioVisualOneScreen.builder,
         auditoryScreenAssessmentScreenVisualAudioResizScreen:
             AuditoryScreenAssessmentScreenVisualAudioResizScreen.builder,
         auditoryScreenVisualLearningScreenResizedScreen:
@@ -127,6 +130,6 @@ AuditoryScreenAssessmentScreenAudioVisualOneScreen.builder,
         tipBoxVideoScreen: TipBoxVideoScreen.builder,
         appNavigationScreen: AppNavigationScreen.builder,
         initialRoute: LoadingScreen.builder,
-        userProfileScreen:UserProfileScreen.builder
+        userProfileScreen: UserProfileScreen.builder
       };
 }
