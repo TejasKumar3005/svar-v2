@@ -1,3 +1,5 @@
+import 'dart:js_util';
+
 import 'package:flutter/material.dart';
 import '../../../core/app_export.dart';
 import '../models/register_form_screen_potratit_v1_child_model.dart';
@@ -19,6 +21,23 @@ class RegisterFormScreenPotratitV1ChildProvider extends ChangeNotifier {
   TextEditingController otpController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController guardianController = TextEditingController();
+  bool loading = false;
+  bool otpSent = false;
+  bool otpsending = false;
+  void changeState() {
+    loading = !loading;
+    notifyListeners();
+  }
+
+  void changeOtpSending() {
+    otpsending = !otpsending;
+    notifyListeners();
+  }
+
+  void changeOtpSent(bool sent) {
+    otpSent = sent;
+    notifyListeners();
+  }
 
   RegisterFormScreenPotratitV1ChildModel
       registerFormScreenPotratitV1ChildModelObj =

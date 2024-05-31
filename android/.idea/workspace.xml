@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2b41d672-9a84-4e6f-8114-09b2253c55d7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../lib/database/authentication.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/database/authentication.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/database/userController.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/database/userController.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/presentation/log_in_sign_up_screen_potrait_screen/log_in_sign_up_screen_potrait_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/presentation/log_in_sign_up_screen_potrait_screen/log_in_sign_up_screen_potrait_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/presentation/login_screen_portrait/login_screen_potrait_model.dart.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/presentation/login_screen_portrait/login_screen_potrait_provider.dart.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/presentation/login_screen_portrait/login_screen_potrait_screen.dart.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/presentation/register_form_screen_potratit_v1_child_screen/provider/register_form_screen_potratit_v1_child_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/presentation/register_form_screen_potratit_v1_child_screen/provider/register_form_screen_potratit_v1_child_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/presentation/register_form_screen_potratit_v1_child_screen/register_form_screen_potratit_v1_child_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/presentation/register_form_screen_potratit_v1_child_screen/register_form_screen_potratit_v1_child_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/routes/app_routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/routes/app_routes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../lib/theme/app_decoration.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../lib/theme/app_decoration.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../svar_v2.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../svar_v2.iml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="2hE23J4FNZedykhN4rubl2v535V" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2b41d672-9a84-4e6f-8114-09b2253c55d7" name="Changes" comment="" />
+      <created>1717144716544</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1717144716544</updated>
+    </task>
+    <servers />
+  </component>
+</project>

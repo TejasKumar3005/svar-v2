@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:svar_new/data/models/game_statsModel.dart';
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/database/authentication.dart';
+import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_screen/methods.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/widgets/custom_text_form_field.dart';
 import 'package:svar_new/core/utils/validation_functions.dart';
@@ -47,7 +48,6 @@ class RegisterFormScreenPotratitV1ChildScreenState
 
   @override
   Widget build(BuildContext context) {
-    final ctrl = context.watch<AuthConroller>();
     final textCtrl = context.watch<RegisterFormScreenPotratitV1ChildProvider>();
     return SafeArea(
       child: Scaffold(
@@ -87,22 +87,30 @@ class RegisterFormScreenPotratitV1ChildScreenState
                       alignment: Alignment.centerLeft,
                       child: Row(
                         children: [
-                         Padding(
+                          Padding(
                             padding: EdgeInsets.only(left: 1.h),
-                            child: CustomImageView(
-                              height: 38.adaptSize,
-                            width: 38.adaptSize,
-                            fit: BoxFit.contain,
-                              imagePath: ImageConstant.imgBackBtn,
+                            child: GestureDetector(
+                              onTap: () {
+                                NavigatorService.pushNamedAndRemoveUntil(
+                                    AppRoutes.logInSignUpScreenPotraitScreen);
+                              },
+                              child: CustomImageView(
+                                height: 38.adaptSize,
+                                width: 38.adaptSize,
+                                fit: BoxFit.contain,
+                                imagePath: ImageConstant.imgBackBtn,
+                              ),
                             ),
                           ),
-                          SizedBox(width: 10.h,),
+                          SizedBox(
+                            width: 10.h,
+                          ),
                           Padding(
                             padding: EdgeInsets.only(left: 1.h),
                             child: CustomImageView(
-                                height: 38.adaptSize,
-                            width: 38.adaptSize,
-                            fit: BoxFit.contain,
+                              height: 38.adaptSize,
+                              width: 38.adaptSize,
+                              fit: BoxFit.contain,
                               imagePath: ImageConstant.imgHomeBtn,
                             ),
                           )
@@ -252,18 +260,11 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                             ),
                                             GestureDetector(
                                               onTap: () {
-                                                AuthConroller authConroller =
-                                                    AuthConroller(
+                                                RegisterFormMethods methods =
+                                                    RegisterFormMethods(
                                                         context: context);
-                                                authConroller
-                                                    .phoneVerification("+91" +
-                                                        textCtrl
-                                                            .phoneNumberController
-                                                            .text)
-                                                    .then((value) => {
-                                                      
 
-                                                    });
+                                                methods.sendOtp();
                                               },
                                               child: Container(
                                                 width: 39.h,
@@ -273,19 +274,35 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                   horizontal: 4.h,
                                                   vertical: 2.v,
                                                 ),
-                                                decoration: AppDecoration
-                                                    .outlineOrangeA2001
-                                                    .copyWith(
-                                                  borderRadius:
-                                                      BorderRadiusStyle
-                                                          .roundedBorder5,
-                                                ),
-                                                child: Text(
-                                                  "lbl_send_otp".tr,
-                                                  style: CustomTextStyles
-                                                      .nunitoteal90003ExtraBold,
-                                                      
-                                                ),
+                                                decoration: textCtrl.otpsending
+                                                    ? null
+                                                    : textCtrl.otpSent
+                                                        ? AppDecoration
+                                                            .outlineGreen
+                                                            .copyWith(
+                                                            borderRadius:
+                                                                BorderRadiusStyle
+                                                                    .roundedBorder5,
+                                                          )
+                                                        : AppDecoration
+                                                            .outlineOrangeA2001
+                                                            .copyWith(
+                                                            borderRadius:
+                                                                BorderRadiusStyle
+                                                                    .roundedBorder5,
+                                                          ),
+                                                child: textCtrl.otpsending
+                                                    ? Center(
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                        color: appTheme
+                                                            .deepOrange200,
+                                                      ))
+                                                    : Text(
+                                                        "lbl_send_otp".tr,
+                                                        style: CustomTextStyles
+                                                            .nunitoteal90003ExtraBold,
+                                                      ),
                                               ),
                                             )
                                           ],
@@ -398,75 +415,51 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                 );
                                               })),
                                     ),
+                                    // GestureDetector(
+                                    //   onTap: () {
 
-                                    
-                                    GestureDetector(
-                                      onTap: () {
-                                        AuthConroller authConroller =
-                                            AuthConroller(context: context);
-                                        if (ctrl.optId != null) {
-                                          
-                                          authConroller
-                                              .registerWithPhone(textCtrl.otpController.text.toString())
-                                              .then((value) => {
-                                                    authConroller
-                                                        .registeruserWithEmail(UserModel(
-                                                            name: textCtrl
-                                                                .namePlaceholderController
-                                                                .text,
-                                                            email: textCtrl
-                                                                .emailController
-                                                                .text,
-                                                                password: textCtrl.passwordController.text,
-                                                            mobile: textCtrl
-                                                                .phoneNumberController
-                                                                .text,
-                                                            gameStats: GameStatsModel(
-                                                                gifts: [],
-                                                                progressScore:
-                                                                    0.0,
-                                                                badges_earned: [],
-                                                                levels_on: [],
-                                                                exercises: [],
-                                                                current_level:
-                                                                    0)))
-                                                        .then((value) => {
-                                                          
-                                                        })
-                                                  });
-                                        }
-                                      },
-                                      child: Container(
-                                        width: 35.h,
-                                        margin: EdgeInsets.only(
-                                          left: 22.h,
-                                          top: 2.v,
-                                          bottom: 5.v,
-                                        ),
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 5.h,
-                                          vertical: 1.v,
-                                        ),
-                                        decoration: AppDecoration
-                                            .outlineOrangeA2001
-                                            .copyWith(
-                                          borderRadius:
-                                              BorderRadiusStyle.roundedBorder5,
-                                        ),
-                                        child: Text(
-                                          "lbl_verify".tr,
-                                          style:
-                                              CustomTextStyles.nunitoteal90003,
-                                        ),
-                                      ),
-                                    )
+                                    //   },
+                                    //   child: Container(
+                                    //     width: 35.h,
+                                    //     margin: EdgeInsets.only(
+                                    //       left: 22.h,
+                                    //       top: 2.v,
+                                    //       bottom: 5.v,
+                                    //     ),
+                                    //     padding: EdgeInsets.symmetric(
+                                    //       horizontal: 5.h,
+                                    //       vertical: 1.v,
+                                    //     ),
+                                    //     decoration: AppDecoration
+                                    //         .outlineOrangeA2001
+                                    //         .copyWith(
+                                    //       borderRadius:
+                                    //           BorderRadiusStyle.roundedBorder5,
+                                    //     ),
+                                    //     child: Text(
+                                    //       "lbl_verify".tr,
+                                    //       style:
+                                    //           CustomTextStyles.nunitoteal90003,
+                                    //     ),
+                                    //   ),
+                                    // )
                                   ],
                                 ),
                               )
                             ],
                           ),
                           SizedBox(height: 22.v),
-                          buildNext(context)
+                          GestureDetector(
+                              onTap: () {
+                                RegisterFormMethods methods =
+                                    RegisterFormMethods(context: context);
+                                methods.RegisterUser();
+                              },
+                              child: textCtrl.loading
+                                  ? CircularProgressIndicator(
+                                      color: appTheme.deepOrange200,
+                                    )
+                                  : buildNext(context))
                         ],
                       ),
                     ),
@@ -507,12 +500,9 @@ class RegisterFormScreenPotratitV1ChildScreenState
       selector: (context, provider) => provider.namePlaceholderController,
       builder: (context, namePlaceholderController, child) {
         return CustomTextFormField(
-        
           controller: namePlaceholderController,
           hintText: "name".tr,
-
-            autofocus: false,
-      
+          autofocus: false,
         );
       },
     );
@@ -527,7 +517,6 @@ class RegisterFormScreenPotratitV1ChildScreenState
         return CustomTextFormField(
           controller: addressGrpController,
           hintText: "address".tr,
-        
         );
       },
     );
@@ -576,7 +565,6 @@ class RegisterFormScreenPotratitV1ChildScreenState
   }
 
   /// Section Widget
-
 
   /// Navigates to the welcomeScreenPotraitScreen when the action is triggered.
   onTapBtnHomeBTN(BuildContext context) {

@@ -232,6 +232,7 @@ class AppDecoration {
           strokeAlign: strokeAlignOutside,
         ),
       );
+    
   static BoxDecoration get outlineOrangeA2001 => BoxDecoration(
         color: appTheme.gray5004,
         border: Border.all(
@@ -242,6 +243,25 @@ class AppDecoration {
         boxShadow: [
           BoxShadow(
             color: appTheme.deepOrangeA100,
+            spreadRadius: 2.h,
+            blurRadius: 2.h,
+            offset: Offset(
+              0,
+              2,
+            ),
+          ),
+        ],
+      );
+  static BoxDecoration get outlineGreen => BoxDecoration(
+        color: appTheme.gray5004,
+        border: Border.all(
+          color: appTheme.green900,
+          width: 1.h,
+          strokeAlign: strokeAlignOutside,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: appTheme.green300,
             spreadRadius: 2.h,
             blurRadius: 2.h,
             offset: Offset(

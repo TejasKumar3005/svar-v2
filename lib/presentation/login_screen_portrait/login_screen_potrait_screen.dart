@@ -1,11 +1,18 @@
+import 'dart:js';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
-import 'package:svar_new/presentation/login_screen_portrait/login_screen_potrait_provider.dart.dart';
+import 'package:svar_new/database/authentication.dart';
+import 'package:svar_new/presentation/login_screen_portrait/login-methods.dart';
+import 'package:svar_new/presentation/login_screen_portrait/login_screen_potrait_provider.dart';
+import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_screen/methods.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/core/utils/validation_functions.dart';
 import 'package:svar_new/widgets/custom_text_form_field.dart';
 import 'package:svar_new/widgets/custom_outlined_button.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/widgets/loading.dart';
 
 class LoginScreenPotraitScreen extends StatefulWidget {
   const LoginScreenPotraitScreen({Key? key})
@@ -37,6 +44,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
   @override
   Widget build(BuildContext context) {
     var provider = context.watch<LoginScreenPotraitProvider>();
+  
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -57,8 +65,14 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
               children: [
                 Row(
                   children: [
-                    CustomImageView(
-                      imagePath: ImageConstant.imgBackBtn,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).popAndPushNamed(
+                            AppRoutes.logInSignUpScreenPotraitScreen);
+                      },
+                      child: CustomImageView(
+                        imagePath: ImageConstant.imgBackBtn,
+                      ),
                     ),
                     Spacer()
                   ],
@@ -81,23 +95,30 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                       child: Column(
                         children: [
                           Field(
-                            50.h,
-                            "email",
-                            provider.emailController
-                          ),
+                              50.h, "email", provider.emailController, context),
                           SizedBox(
                             height: 15.v,
                           ),
-                          Field(50.h, 'password',provider.editTextController),
+                          Field(50.h, 'password', provider.passController,
+                              context),
                           SizedBox(
                             height: 15.v,
                           ),
-                          CustomImageView(
-                            imagePath: ImageConstant.imgLoginBTn,
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            height: 60.h,
-                            fit: BoxFit.contain,
-                          ),
+                          !provider.loading?
+                          GestureDetector(
+                            onTap: () {
+                              
+                              LoginFormMethods methods =
+                                  LoginFormMethods(context: context);
+                              methods.login();
+                            },
+                            child: CustomImageView(
+                              imagePath: ImageConstant.imgLoginBTn,
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              height: 60.h,
+                              fit: BoxFit.contain,
+                            ),
+                          ):CircularProgressIndicator(color: appTheme.deepOrange200,)
                         ],
                       ),
                     ),
@@ -112,8 +133,8 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
     );
   }
 
-  Widget Field(
-      double height, String name, TextEditingController controller) {
+  Widget Field(double height, String name, TextEditingController controller,
+      BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.85,
       height: height,
@@ -159,16 +180,16 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                       bottomRight: Radius.circular(height / 2))),
               child: TextFormField(
                 keyboardType: TextInputType.emailAddress,
-                // controller: emailController,
-                obscureText: name=="password",
+                controller: controller,
+                obscureText: name == "password",
                 decoration: InputDecoration(
                     hintText: name.tr,
                     hintStyle: TextStyle(color: Colors.grey),
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5.h).copyWith(bottom: 15.v)),
-
+                    contentPadding: EdgeInsets.symmetric(horizontal: 5.h)
+                        .copyWith(bottom: 15.v)),
                 validator: (value) {
                   if (value == null ||
                       (!isValidEmail(value, isRequired: true))) {
@@ -263,7 +284,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                   ),
                 ),
                 Selector<LoginScreenPotraitProvider, TextEditingController?>(
-                  selector: (context, provider) => provider.editTextController,
+                  selector: (context, provider) => provider.passController,
                   builder: (context, editTextController, child) {
                     return CustomTextFormField(
                       width: 337.h,
@@ -274,6 +295,13 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                       borderDecoration:
                           TextFormFieldStyleHelper.underLineOrangeA,
                       filled: false,
+                      validator: (value) {
+                        if (value == null || (value.length < 6)) {
+                          return "password must be atleast 6 characters long"
+                              .tr;
+                        }
+                        return null;
+                      },
                     );
                   },
                 )

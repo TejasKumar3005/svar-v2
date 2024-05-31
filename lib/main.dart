@@ -1,4 +1,5 @@
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +17,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (kIsWeb) {
-    await Firebase.initializeApp(
-        options: Options().options
-            
-            );
+    await Firebase.initializeApp(options: Options().options);
   } else {
     await Firebase.initializeApp();
   }
@@ -108,9 +106,10 @@ Iterable<Locale> locals = [
 ];
 
 class MyApp extends StatelessWidget {
+  FirebaseAuth auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
-    return Sizer(
+    return Sizer( 
       builder: (context, orientation, deviceType) {
         return MultiProvider(
           providers: [
@@ -120,9 +119,7 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
               create: (context) => UserDataProvider(),
             ),
-            ChangeNotifierProvider(
-              create: (context) => AuthConroller(),
-            ),
+          
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
@@ -139,8 +136,10 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                initialRoute: AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                initialRoute:auth.currentUser!=null? AppRoutes
+                    .loginScreenPotraitScreen:AppRoutes.logInSignUpScreenPotraitScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
+                
                 // home: PhonmesListScreen(),
               );
             },

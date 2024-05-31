@@ -15,53 +15,60 @@ class UserData {
   Future saveUserData(UserModel userModel) async {
     Provider.of<UserDataProvider>(buildContext, listen: false)
         .setUser(userModel);
-    return await userCollection
-        .doc(uid)
-        .set(userModel.toJson(), SetOptions(merge: true));
-  }
- Future updateUserInfo(Map<String, dynamic> map) async {
-  
-     await userCollection.doc(uid).set(map);
-    
-    
-
-  }
-   Future<UserModel> getUserData() async {
-    UserModel userModel = UserModel(
-        p_name: "",
-        name: "",
-        password: "",
-        email: "",
-        uid: "",
-        imageUrl: "",
-        age: "",
-        timeStamp: "",
-        access_token: "",
-        gift_purchase_history: [],
-        gameStats: GameStatsModel(
-            gifts: [],
-            progressScore: 0.0,
-            badges_earned: [],
-            levels_on: [],
-            exercises: [],
-            current_level: 0));
-    DocumentSnapshot documentSnapshot = await userCollection.doc(uid).get();
-    Map<String, dynamic> map = {};
-    if (documentSnapshot.data() != null) {
-      Map<String, dynamic> map =
-          documentSnapshot.data()! as Map<String, dynamic>;
-     userModel= userModel.fromJson(map);
-      // userModel.gameStats.levels_on = await loadJsonFromAsset().then((value) => value.map((e) => Level.fromJson(e)).toList());
-      Provider.of<UserDataProvider>(buildContext, listen: false)
-        .setUser(userModel);
-      return userModel.fromJson(map);
-      // Do something with the map
-    } else {
-      print('Document snapshot data is null.');
-      return userModel;
-      // Handle the case where data is null
+    try {
+      await userCollection
+          .doc(uid)
+          .set(userModel.toJson(), SetOptions(merge: true));
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(buildContext).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ));
     }
+  }
 
+  Future updateUserInfo(Map<String, dynamic> map) async {
+    await userCollection.doc(uid).set(map);
+  }
+
+  Future<bool> getUserData() async {
+    try {
+      UserModel userModel = UserModel(
+          p_name: "",
+          name: "",
+          password: "",
+          email: "",
+          uid: "",
+          imageUrl: "",
+          age: "",
+          timeStamp: "",
+          access_token: "",
+          gift_purchase_history: [],
+          gameStats: GameStatsModel(
+              gifts: [],
+              progressScore: 0.0,
+              badges_earned: [],
+              levels_on: [],
+              exercises: [],
+              current_level: 0));
+      DocumentSnapshot documentSnapshot = await userCollection.doc(uid).get();
+      Map<String, dynamic> map = {};
+      if (documentSnapshot.data() != null) {
+        Map<String, dynamic> map =
+            documentSnapshot.data()! as Map<String, dynamic>;
+        userModel = userModel.fromJson(map);
+        // userModel.gameStats.levels_on = await loadJsonFromAsset().then((value) => value.map((e) => Level.fromJson(e)).toList());
+        Provider.of<UserDataProvider>(buildContext, listen: false)
+            .setUser(userModel);
+        return true;
+      }
+      return true;
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(buildContext).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ));
+      return false;
+    }
   }
 }
-

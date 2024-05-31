@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'models/log_in_sign_up_screen_potrait_model.dart';
@@ -36,18 +37,16 @@ class LogInSignUpScreenPotraitScreenState
       child: Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
-        
         body: Container(
-          
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.symmetric(horizontal: 10.h,vertical:8.v),
+          padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
           decoration: BoxDecoration(
-            image: DecorationImage(image: AssetImage("assets/images/BG.png"),fit: BoxFit.fill),
-            
+            image: DecorationImage(
+                image: AssetImage("assets/images/BG.png"), fit: BoxFit.fill),
           ),
           child: Column(
-              mainAxisSize: MainAxisSize.max,
+            mainAxisSize: MainAxisSize.max,
             children: [
               Row(
                 children: [
@@ -57,49 +56,57 @@ class LogInSignUpScreenPotraitScreenState
                   Spacer()
                 ],
               ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                CustomImageView(
-                    width: MediaQuery.of(context).size.width*0.8,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  CustomImageView(
+                    width: MediaQuery.of(context).size.width * 0.8,
                     height: 110.v,
                     fit: BoxFit.contain,
-                    imagePath: ImageConstant.imgSvarLogo,),
-                      SizedBox(
-                      height: 100.v,
-                    ),
-                
+                    imagePath: ImageConstant.imgSvarLogo,
+                  ),
+                  SizedBox(
+                    height: 100.v,
+                  ),
                   Column(
                     children: [
-                      CustomImageView(
-                        imagePath: ImageConstant.imgLoginBTn,
-                        width: MediaQuery.of(context).size.width*0.7,
-                        height: 60.h,
-                        fit: BoxFit.contain,
+                      GestureDetector(
+                        onTap: () {
+                          NavigatorService.popAndPushNamed(
+                              AppRoutes.loginScreenPotraitScreen);
+                        },
+                        child: CustomImageView(
+                          imagePath: ImageConstant.imgLoginBTn,
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          height: 60.h,
+                          fit: BoxFit.contain,
+                        ),
                       ),
-                      SizedBox(height: 10.v,),
-                      CustomImageView(
-                        imagePath: ImageConstant.imgSignUpBTn,
-                        width: MediaQuery.of(context).size.width*0.7,
-                        height: 60.h,
-                        fit: BoxFit.contain,
+                      SizedBox(
+                        height: 10.v,
+                      ),
+                      GestureDetector(
+                          onTap: () {
+                          NavigatorService.popAndPushNamed(
+                              AppRoutes.registerFormScreenPotratitV1ChildScreen);
+                        },
+                        child: CustomImageView(
+                          imagePath: ImageConstant.imgSignUpBTn,
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          height: 60.h,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ],
                   ),
                   Container(),
-              ],
-            )
-              
-                  
+                ],
+              )
             ],
           ),
         ),
       ),
     );
   }
-
-
-
-  
 }
