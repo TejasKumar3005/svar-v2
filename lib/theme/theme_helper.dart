@@ -169,6 +169,7 @@ class PrimaryColors {
   Color get amber600 => Color(0XFFFBB400);
   Color get amber60001 => Color(0XFFFAB400);
   Color get amber900 => Color(0XFFFF7300);
+  Color get amber90001 => Color.fromARGB(255, 255, 188, 125);
 
 // AmberD
   Color get amber600D8 => Color(0XD8FBB500);

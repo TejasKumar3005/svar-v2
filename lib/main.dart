@@ -11,6 +11,7 @@ import 'package:svar_new/presentation/auditory_screen_assessment_visual/auditory
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
 import 'package:svar_new/database/authentication.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 void main() async {
@@ -149,3 +150,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+

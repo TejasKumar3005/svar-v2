@@ -1,6 +1,7 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/widgets.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
-import 'package:svar_new/widgets/grid_item_model.dart.dart';
+import 'package:svar_new/widgets/grid_item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 
@@ -39,11 +40,20 @@ class GridItemWidget extends StatelessWidget {
           alignment: Alignment.topCenter,
           children: [
             Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  gridItemModelObj.widget!,
-                  style: theme.textTheme.displayLarge!.copyWith(fontSize: 41),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: AutoSizeText(
+                    gridItemModelObj.widget!,
+                    style: theme.textTheme.bodyLarge!.copyWith(fontSize: 41),
+                    maxLines: 1,
+                    minFontSize: 8,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
+                SizedBox(height: 8.v),
                 Container(
                   height: 8.v,
                   width: 45.h,

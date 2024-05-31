@@ -5,6 +5,8 @@ import 'models/log_in_sign_up_screen_potrait_model.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/log_in_sign_up_screen_potrait_provider.dart';
+import 'package:svar_new/widgets/custom_button.dart';
+
 
 class LogInSignUpScreenPotraitScreen extends StatefulWidget {
   const LogInSignUpScreenPotraitScreen({Key? key})
@@ -50,9 +52,13 @@ class LogInSignUpScreenPotraitScreenState
             children: [
               Row(
                 children: [
-                  CustomImageView(
-                    imagePath: ImageConstant.imgBackBtn,
-                  ),
+                 CustomButton(
+                        type: ButtonType.Back,
+                        onPressed: () {
+                          NavigatorService.pushNamed(
+                            AppRoutes.welcomeScreenPotraitScreen,
+                          );
+                        }),
                   Spacer()
                 ],
               ),
@@ -64,40 +70,28 @@ class LogInSignUpScreenPotraitScreenState
                     width: MediaQuery.of(context).size.width * 0.8,
                     height: 110.v,
                     fit: BoxFit.contain,
-                    imagePath: ImageConstant.imgSvarLogo,
-                  ),
-                  SizedBox(
-                    height: 100.v,
-                  ),
+                    imagePath: ImageConstant.imgSvaLogo,),
+                      SizedBox(
+                      height: 100.v,
+                    ),
+                
                   Column(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          NavigatorService.popAndPushNamed(
-                              AppRoutes.loginScreenPotraitScreen);
-                        },
-                        child: CustomImageView(
-                          imagePath: ImageConstant.imgLoginBTn,
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          height: 60.h,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10.v,
-                      ),
-                      GestureDetector(
-                          onTap: () {
-                          NavigatorService.popAndPushNamed(
-                              AppRoutes.registerFormScreenPotratitV1ChildScreen);
-                        },
-                        child: CustomImageView(
-                          imagePath: ImageConstant.imgSignUpBTn,
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          height: 60.h,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
+                        CustomButton(
+                        type: ButtonType.Login,
+                        onPressed: () {
+                          NavigatorService.pushNamed(
+                            AppRoutes.loginScreenPotraitScreen,
+                          );
+                        }),
+                      SizedBox(height: 10.v,),
+                      CustomButton(
+                        type: ButtonType.SignUp,
+                        onPressed: () {
+                          NavigatorService.pushNamed(
+                            AppRoutes.registerFormScreenPotratitV1ChildScreen,
+                          );
+                        }),
                     ],
                   ),
                   Container(),

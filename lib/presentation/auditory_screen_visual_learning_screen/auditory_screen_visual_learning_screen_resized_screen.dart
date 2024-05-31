@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/auditory_screen_visual_learning_screen_resized_provider.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 
 class AuditoryScreenVisualLearningScreenResizedScreen extends StatefulWidget {
   const AuditoryScreenVisualLearningScreenResizedScreen({Key? key})
@@ -37,7 +37,7 @@ class AuditoryScreenVisualLearningScreenResizedScreenState
         body: Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.symmetric(horizontal: 15.h,vertical: 10.v),
+          padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 10.v),
           decoration: BoxDecoration(
             color: appTheme.whiteA70001,
             image: DecorationImage(
@@ -50,32 +50,21 @@ class AuditoryScreenVisualLearningScreenResizedScreenState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              
               _buildHomeBTN(context),
               Spacer(),
               Container(
-              
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CustomImageView(
-                        height: 40.adaptSize,
-                      width: 40.adaptSize,
-                      fit: BoxFit.contain,
-                      imagePath: ImageConstant.imgArrowLeftYellow,
-                    ),
-                    CustomImageView(
-                        height: 40.adaptSize,
-                      width: 40.adaptSize,
-                      fit: BoxFit.contain,
-                      imagePath: ImageConstant.imgArrowRightGreen,
-                    )
-                  
+                    CustomButton(
+                        type: ButtonType.ArrowLeftYellow, onPressed: () {}),
+                    CustomButton(
+                        type: ButtonType.ArrowRightGreen, onPressed: () {})
                   ],
                 ),
-              )
-                ,Spacer()
+              ),
+              Spacer()
             ],
           ),
         ),
@@ -88,40 +77,42 @@ class AuditoryScreenVisualLearningScreenResizedScreenState
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CustomImageView(
-          height: 37.v,
-          width: 37.h,
-          fit: BoxFit.contain,
-          imagePath: ImageConstant.imgHomeBtn,
-        ),
+        CustomButton(
+            type: ButtonType.Home,
+            onPressed: () {
+              NavigatorService.pushNamed(
+                AppRoutes.welcomeScreenPotraitScreen,
+              );
+            }),
         Spacer(),
         Container(
           height: 35.v,
           width: 120.h,
           padding: EdgeInsets.symmetric(horizontal: 10.h),
-          decoration: AppDecoration.fillDeepOrange.copyWith(
-            borderRadius: BorderRadiusStyle.roundedBorder10
-          ),
+          decoration: AppDecoration.fillDeepOrange
+              .copyWith(borderRadius: BorderRadiusStyle.roundedBorder10),
           child: Center(
-            child: Text("CLAPPING",
-            style: theme.textTheme.titleMedium,
-              
+            child: Text(
+              "CLAPPING",
+              style: theme.textTheme.titleMedium,
             ),
           ),
         ),
         Spacer(),
-        CustomImageView(
-            height: 37.v,
-          width: 37.h,
-          fit: BoxFit.contain,
-          imagePath: ImageConstant.imgReplayBtn,
-        ),
-        CustomImageView(
-            height: 37.v,
-          width: 37.h,
-          fit: BoxFit.contain,
-          imagePath: ImageConstant.imgFullvolBtn,
-        )
+        CustomButton(
+            type: ButtonType.Replay,
+            onPressed: () {
+              NavigatorService.pushNamed(
+                AppRoutes.registerFormScreenPotratitV1ChildScreen,
+              );
+            }),
+        CustomButton(
+            type: ButtonType.FullVolume,
+            onPressed: () {
+              NavigatorService.pushNamed(
+                AppRoutes.registerFormScreenPotratitV1ChildScreen,
+              );
+            })
       ],
     );
   }

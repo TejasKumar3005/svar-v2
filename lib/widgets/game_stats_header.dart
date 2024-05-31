@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 
 class AppStatsHeader extends StatelessWidget {
   final double per;
@@ -145,7 +146,7 @@ class AppStatsHeader extends StatelessWidget {
                 ),
               ),
               Positioned(
-                right:3.h,
+                right: 3.h,
                 child: Text(
                   "lbl2".tr,
                   style: theme.textTheme.labelMedium,
@@ -159,7 +160,6 @@ class AppStatsHeader extends StatelessWidget {
                   height: 21.v,
                 ),
               ),
-              
             ],
           ),
         ),
@@ -190,7 +190,7 @@ class AppStatsHeader extends StatelessWidget {
                   child: Container(
                     width: 90.h,
                     height: 19.v,
-                      margin: EdgeInsets.only(right: 5.h),
+                    margin: EdgeInsets.only(right: 5.h),
                     padding: EdgeInsets.symmetric(
                       horizontal: 9.h,
                       vertical: 1.v,
@@ -285,22 +285,23 @@ class AppStatsHeader extends StatelessWidget {
                   ),
                 ),
               ),
-                Positioned(
-                right:3.h,
+              Positioned(
+                right: 3.h,
                 child: Text(
                   "lbl2".tr,
                   style: theme.textTheme.labelMedium,
                 ),
               ),
-            
             ],
           ),
         ),
         Padding(
           padding: EdgeInsets.only(left: 5.h),
-          child: CustomImageView(
-            imagePath: ImageConstant.imgMenuBTn,
-          ),
+          child: CustomButton(
+              type: ButtonType.Menu,
+              onPressed: () {
+               
+              }),
         )
       ],
     );
