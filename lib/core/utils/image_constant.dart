@@ -131,10 +131,12 @@ class ImageConstant {
   static String imgOptionGrp = '$imagePath/img_option_grp.svg';
 
 // Auditory Screen ( Visual Learning Screen )Resized images
-  static String imgAuditoryScreen = '$imagePath/img_auditory_screen.png';
+  static String imgAuditoryScreen = '$imagePath/auditory_bg.png';
 
   static String imgHomeBtnWhiteA70001 =
       '$imagePath/img_home_btn_white_a700_01.png';
+
+      
 
 // Ling Sound Assessment Screen images
   static String imgStar102 = '$imagePath/img_star_10_2.svg';
@@ -304,8 +306,8 @@ class ImageConstant {
   static String imgUserWhiteA7000110x9 =
       '$imagePath/img_user_white_a700_01_10x9.svg';
 
-  static String imgAuditoryScreenCyanA400 =
-      '$imagePath/img_auditory_screen_cyan_a400.svg';
+  static String imgAuditoryScreenBackground =
+      '$imagePath/auditory_bg.png'; //img_auditory_screen_cyan_a400.svg
 
   static String imgGroup7 = '$imagePath/img_group_7.png';
 

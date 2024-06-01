@@ -1,3 +1,5 @@
+import 'dart:js';
+
 import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/auditory_screen_assessment_screen_audio_visual_one_screen.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/auditory_screen_assessment_screen_audio_visual_screen.dart';
@@ -107,7 +109,7 @@ class AppRoutes {
 auditoryScreenAssessmentScreenAudioVisualResizedScreen:
 AuditoryScreenAssessmentScreenAudioVisualOneScreen.builder,
         auditoryScreenAssessmentScreenVisualAudioResizScreen:
-            AuditoryScreenAssessmentScreenVisualAudioResizScreen.builder,
+            AuditoryScreenAssessmentScreenVisualAudioResizScreen.builder, // will have to change the route to learning pathway
         auditoryScreenVisualLearningScreenResizedScreen:
             AuditoryScreenVisualLearningScreenResizedScreen.builder,
         lingSoundAssessmentScreen: LingSoundAssessmentScreen.builder,
@@ -128,5 +130,7 @@ AuditoryScreenAssessmentScreenAudioVisualOneScreen.builder,
         appNavigationScreen: AppNavigationScreen.builder,
         initialRoute: LoadingScreen.builder,
         userProfileScreen:UserProfileScreen.builder
+
       };
 }
+

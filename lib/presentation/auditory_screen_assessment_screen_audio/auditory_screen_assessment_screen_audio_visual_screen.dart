@@ -48,13 +48,13 @@ class AuditoryScreenAssessmentScreenAudioVisualScreenState
               image: fs.Svg(
                 ImageConstant.imgAuditoryScreen,
               ),
-              fit: BoxFit.contain,
+              fit: BoxFit.cover,
             ),
           ),
           child: Container(
             width: 768.h,
             padding: EdgeInsets.symmetric(
-              horizontal: 44.h,
+              horizontal: 80.h,
               vertical: 39.v,
             ),
             child: Column(

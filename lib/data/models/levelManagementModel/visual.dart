@@ -1,58 +1,81 @@
 import 'dart:core';
-/*
-
-    There can be two ways of learning representation (for now) => ref from figma design (section - underneath of level diagram)
-      01. Text To Visual
-              There will be an image of with some text and there will be some images options related to text and it must matched with one option
-      02. Visual To Audio
-              There will be an image , and child has to speak.
-              Here , there can be two section mainly
-                    -- there will be audio provided
-                    -- child has to speak something
- */
-
-class VisualToVisual
+class ImageToAudio
 {
-    final String input_image_url;
-    final List<String> options_images_urls;
-    final String output_ref;
+  final String image_url;
+  final List<String> audio_url_list;
+  final String correct_audio_url;
 
-    VisualToVisual._({required this.input_image_url , required this.options_images_urls , required this.output_ref});
-    factory VisualToVisual.fromJson(Map<String , dynamic> json)
-    {
-        return VisualToVisual._(
-            input_image_url: json["input_image_url"],
-            options_images_urls: json["options_images_urls"],
-            output_ref: json["output_ref"]
-        );
+  ImageToAudio._({required this.image_url ,required this.audio_url_list ,required this.correct_audio_url});
+
+  factory ImageToAudio.fromJson(Map<String,dynamic> json){
+    return ImageToAudio._(
+      image_url: json["image_url"], 
+      audio_url_list: List<String>.from(json["audio_url_list"]), 
+      correct_audio_url: json["correct_audio_url"]
+      );
+  }
+    String getImageUrl(){
+      return image_url;
     }
-}
-class VisualToAudioEmbed
-{
-    final String input_image_url;
-    final String option_audio_url;
-    final String output_ref;
-
-    VisualToAudioEmbed._({required this.input_image_url , required this.option_audio_url , required this.output_ref});
-    factory VisualToAudioEmbed.fromMap(Map<String , dynamic> json){
-        return VisualToAudioEmbed._(
-            input_image_url: json["input_image_url"],
-            option_audio_url: json["option_audio_url"],
-            output_ref: json["output_ref"]
-        );
+   List< String> getAudioList(){
+      return audio_url_list;
+    }
+    String getCorrectOutput(){
+      return correct_audio_url;
     }
 }
 
-class VisualToAudioMicro
-{
-    final String input_url;
-    final String input_image_text;
 
-    VisualToAudioMicro._({required this.input_url , required this.input_image_text});
-    factory VisualToAudioMicro.fromMap(Map<String , dynamic >json){
-        return VisualToAudioMicro._(
-            input_url: json["input_url"],
-            input_image_text: json["input_image_text"]
-        );
-    }
+
+class WordToFiG
+{
+  final String image_url;
+  final List<String> image_url_list;
+  final String correct_image_url;
+  WordToFiG._({required this.correct_image_url , required this.image_url , required this.image_url_list});
+  factory WordToFiG.fromJson(Map<String , dynamic> json) 
+  {
+    return WordToFiG._(
+      correct_image_url: json["correct_image_url"], 
+      image_url: json["image_url"], 
+      image_url_list: json["image_url_list"]);
+  }
+
+  String getImageUrl(){
+    return image_url;
+  }
+  String getCorrectOutput()
+  {
+    return correct_image_url;
+  }
+  List<String> getImageUrlList(){
+    return image_url_list;
+  }
+}
+
+
+class FigToWord
+{
+  final String image_url;
+  final List<String> text_list;
+  final String correct_text;
+  FigToWord._({required this.text_list ,required this.image_url ,required this.correct_text});
+  factory FigToWord.fromJson(Map<String , dynamic> json)
+  {
+    return FigToWord._(
+      text_list: json["text_list"], 
+      image_url: json["image_url"], 
+      correct_text: json["correct_text"]);
+  }
+  String getImageUrl(){
+    return image_url;
+  }
+  String getCorrectOutput(){
+    return correct_text;
+  }
+  List<String> getTextList()
+  {
+    return text_list;
+  }
+
 }
