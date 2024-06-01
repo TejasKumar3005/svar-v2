@@ -14,47 +14,68 @@ class ImageToAudio
       correct_audio_url: json["correct_audio_url"]
       );
   }
-  String get getImageUrl=> image_url;
-  String get getCorrectOutput => correct_audio_url;
-  List<String> get getAudioList => audio_url_list;
-
+    String getImageUrl(){
+      return image_url;
+    }
+   List< String> getAudioList(){
+      return audio_url_list;
+    }
+    String getCorrectOutput(){
+      return correct_audio_url;
+    }
 }
 
-class WordToFiG 
-{
-  final String image_url; 
-  final List<String> text_list;
-  final String correct_text;
 
-  WordToFiG._({required this.image_url , required this.text_list , required this.correct_text}) ;
-  factory WordToFiG.fromJson(Map<String , dynamic> json)
+
+class WordToFiG
+{
+  final String image_url;
+  final List<String> image_url_list;
+  final String correct_image_url;
+  WordToFiG._({required this.correct_image_url , required this.image_url , required this.image_url_list});
+  factory WordToFiG.fromJson(Map<String , dynamic> json) 
   {
     return WordToFiG._(
+      correct_image_url: json["correct_image_url"], 
       image_url: json["image_url"], 
-      text_list: List<String>.from(json["text_list"]),
-      correct_text: json["correct_text"]
-      );
+      image_url_list: json["image_url_list"]);
   }
-  String get getImageUrl => image_url;
-  String get getCorrectOutput => correct_text;
-  List<String> get getTextList => text_list;
+
+  String getImageUrl(){
+    return image_url;
+  }
+  String getCorrectOutput()
+  {
+    return correct_image_url;
+  }
+  List<String> getImageUrlList(){
+    return image_url_list;
+  }
 }
 
-class FigToWord 
+
+class FigToWord
 {
-  final String text; 
-  final List<String> image_url_list; 
-  final String correct_image_url; 
-  FigToWord._({required this.text , required this.image_url_list , required this.correct_image_url});
-  factory FigToWord.fromJson(Map<String , dynamic> json){
+  final String image_url;
+  final List<String> text_list;
+  final String correct_text;
+  FigToWord._({required this.text_list ,required this.image_url ,required this.correct_text});
+  factory FigToWord.fromJson(Map<String , dynamic> json)
+  {
     return FigToWord._(
-      text: json["text"], 
-      image_url_list: List<String>.from(json["image_url_list"]), 
-      correct_image_url: json["correct_image_url"]
-      );
+      text_list: json["text_list"], 
+      image_url: json["image_url"], 
+      correct_text: json["correct_text"]);
   }
-  String get getImageUrl => text;
-  String get getCorrectOutput => correct_image_url;
-  List<String> get getImageUrlList => image_url_list;
+  String getImageUrl(){
+    return image_url;
+  }
+  String getCorrectOutput(){
+    return correct_text;
+  }
+  List<String> getTextList()
+  {
+    return text_list;
+  }
 
 }

@@ -11,27 +11,47 @@ import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
 import 'package:svar_new/database/authentication.dart';
 
+Future<void> initializeFirebase() async {
+  const firebaseConfig = FirebaseOptions(
+ apiKey: "AIzaSyBO_ie7IMB82HbFgT90Rz6JOz35iUVz55M",
+  authDomain: "svar-v2-4f0f4.firebaseapp.com",
+  databaseURL: "https://svar-v2-4f0f4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "svar-v2-4f0f4",
+  storageBucket: "svar-v2-4f0f4.appspot.com",
+  messagingSenderId: "628827446185",
+  appId: "1:628827446185:web:951f546cf62d94092742b8",
+  measurementId: "G-V50ECXEL5P"
+);
+
+  await Firebase.initializeApp(
+    options: kIsWeb ? firebaseConfig : null,
+  );
+}
+
+
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  if (kIsWeb) {
-    await Firebase.initializeApp(
-        options: Options().options
+  // if (kIsWeb) {
+  //   await Firebase.initializeApp(
+  //       options: Options().options
             
-            );
-  } else {
-    await Firebase.initializeApp();
-  }
+  //           );
+  // } else {
+  //   await Firebase.initializeApp();
+  // }
 
-  Future.wait([
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]),
-    PrefUtils().init()
-  ]).then((value) {
-    runApp(MyApp());
-  });
+  // Future.wait([
+  //   SystemChrome.setPreferredOrientations([
+  //     DeviceOrientation.portraitUp,
+  //   ]),
+  //   PrefUtils().init()
+  // ]).then((value) {
+  //   initializeFirebase();
+  //   runApp(MyApp());
+  // });
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeFirebase();
+  runApp(MyApp());
 }
 
 Iterable<Locale> locals = [
