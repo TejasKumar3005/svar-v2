@@ -55,7 +55,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizProvider
     notifyListeners();
   }
   // there will be three conditions - VOICE , FIG_TO_WORD , WORD_TO_FIG
-  Object getScreeValue(String type) async{
+  dynamic getScreeValue(String type) async{
     if(type == "VOICE"){
       // getting data from database 
       // for now it is custom
