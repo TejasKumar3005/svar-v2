@@ -5,7 +5,7 @@ class ImageToAudio
   final List<String> audio_url_list;
   final String correct_audio_url;
 
-  ImageToAudio({required this.image_url ,required this.audio_url_list ,required this.correct_audio_url});
+  ImageToAudio._({required this.image_url ,required this.audio_url_list ,required this.correct_audio_url});
 
   factory ImageToAudio.fromJson(Map<String,dynamic> json){
     return ImageToAudio._(
@@ -32,7 +32,7 @@ class WordToFiG
   final String image_url;
   final List<String> image_url_list;
   final String correct_image_url;
-  WordToFiG({required this.correct_image_url , required this.image_url , required this.image_url_list});
+  WordToFiG._({required this.correct_image_url , required this.image_url , required this.image_url_list});
   factory WordToFiG.fromJson(Map<String , dynamic> json) 
   {
     return WordToFiG._(
@@ -60,7 +60,7 @@ class FigToWord
   final String image_url;
   final List<String> text_list;
   final String correct_text;
-  FigToWord({required this.text_list ,required this.image_url ,required this.correct_text});
+  FigToWord._({required this.text_list ,required this.image_url ,required this.correct_text});
   factory FigToWord.fromJson(Map<String , dynamic> json)
   {
     return FigToWord._(
