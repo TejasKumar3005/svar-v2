@@ -422,25 +422,11 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/auditory_screen_assessment_screen_visual_audio_resiz_provider.dart';
-import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
 class AuditoryScreenAssessmentScreenVisualAudioResizScreen
@@ -448,7 +434,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreen
       final String type = "FIG_TO_WORD";
 
   const AuditoryScreenAssessmentScreenVisualAudioResizScreen({Key? key })
-      : 
+      :
       super(
           key: key,
         );
@@ -512,7 +498,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                   child: CustomButton(
                         type: ButtonType.Next,
                         onPressed: () {
-                          
+
                         }),
                 ),
                 Spacer()
@@ -526,29 +512,56 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
 
   /// Section Widget
   Widget _buildOptionGRP(BuildContext context,
-      AuditoryScreenAssessmentScreenVisualAudioResizProvider provider , String type) {
-        dynamic screen_data_obj = provider.getScreeValue(type);
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 5.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-              height: 192.v,
-              width: MediaQuery.of(context).size.width * 0.4,
-              padding: EdgeInsets.all(1.h),
-              decoration: AppDecoration.outlineBlack9001.copyWith(
-                borderRadius: BorderRadiusStyle.roundedBorder15,
-              ),
-              child: CustomImageView(
-                imagePath:screen_data_obj.getImageUrl(),   // ImageConstant.imgClap,
-                radius: BorderRadiusStyle.roundedBorder15,
-              )),
-          buildDynamicOptions(provider.quizType, provider , screen_data_obj)
-        ],
-      ),
+      AuditoryScreenAssessmentScreenVisualAudioResizProvider provider, String type) {
+    return FutureBuilder<dynamic>(
+      future: provider.getScreeValue(type),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          debugPrint("error section entering ");
+          return Center(child: Text('Error: Error is produced here'));
+        } else if (snapshot.hasData) {
+          debugPrint("waiting for initialization");
+          var screenDataObj = snapshot.data;
+          debugPrint(screenDataObj.toString());
+
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 5.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 50.v,
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  padding: EdgeInsets.all(1.h),
+                  decoration: AppDecoration.outlineBlack9001.copyWith(
+                    borderRadius: BorderRadiusStyle.roundedBorder15,
+                  ),
+                  child:
+                  /* CustomImageView(
+                    imagePath: screenDataObj.getImageUrl(),   // Adjust this based on your data structure
+                    radius: BorderRadiusStyle.roundedBorder15,
+                  ),
+
+                   */
+                  Image.network(
+                    screenDataObj.getImageUrl(),
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                buildDynamicOptions(provider.quizType, provider, screenDataObj)
+              ],
+            ),
+          );
+        } else {
+          return Center(child: Text('No data found'));
+        }
+      },
     );
   }
+
+
 
   Widget buildDynamicOptions(String quizType,
       AuditoryScreenAssessmentScreenVisualAudioResizProvider provider , dynamic screen_data_obj ) {
@@ -681,7 +694,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                           if(screen_data_obj.getCorrectOutput == screen_data_obj.getTextList[0]){
                             // success widget push
                           }else{
-                            // failure widget push 
+                            // failure widget push
                           }
                         },
                         child: Text(
@@ -697,7 +710,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                           if(screen_data_obj.getCorrectOutput == screen_data_obj.getTextList[1]){
                             // success widget push
                           }else{
-                            // failure widget push 
+                            // failure widget push
                           }
                         },
                         child: Text(
@@ -734,7 +747,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                           if(screen_data_obj.getCorrectOutput == screen_data_obj.getTextList[2]){
                             // success widget push
                           }else{
-                            // failure widget push 
+                            // failure widget push
                           }
                         },
                         child: Text(
@@ -750,7 +763,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                           if(screen_data_obj.getCorrectOutput == screen_data_obj.getTextList[3]){
                             // success widget push
                           }else{
-                            // failure widget push 
+                            // failure widget push
                           }
                         },
                         child: Text(
@@ -790,9 +803,9 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                   child: GestureDetector(
                     onTap: () {
                       if(screen_data_obj.getCorrectOutput == screen_data_obj.getImageUrlList[0]){
-                        // success widget loader 
+                        // success widget loader
                       }else {
-                        // failure widget loader 
+                        // failure widget loader
                       }
                     },
                     child: Image.network(
@@ -823,9 +836,9 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                   child: GestureDetector(
                     onTap: () {
                       if(screen_data_obj.getCorrectOutput == screen_data_obj.getImageUrlList[1]){
-                        // success widget loader 
+                        // success widget loader
                       }else {
-                        // failure widget loader 
+                        // failure widget loader
                       }
                     },
                     child: Image.network(
@@ -844,8 +857,4 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
         return Row();
     }
   }
-
-
-
-  
 }
