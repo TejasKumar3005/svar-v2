@@ -32,6 +32,7 @@ dependencies:
   country_code_picker: ^3.0.0
   carousel_slider: ^4.2.1
   audioplayers: ^6.0.0
+  firebase_analytics: ^10.10.7
 dev_dependencies: 
   flutter_test: 
     sdk: flutter

@@ -480,7 +480,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
   Widget build(BuildContext context) {
     var provider =
         context.watch<AuditoryScreenAssessmentScreenVisualAudioResizProvider>();
-    provider.setQuizType("FIG_TO_WORD");
+  
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -848,6 +848,4 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
 
 
   
-}
-
 }

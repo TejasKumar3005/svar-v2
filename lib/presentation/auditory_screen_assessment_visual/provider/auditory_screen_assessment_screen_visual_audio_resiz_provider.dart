@@ -7,12 +7,6 @@ import '../../../core/app_export.dart';
 import '../../../data/models/levelManagementModel/visual.dart';
 import '../models/auditory_screen_assessment_screen_visual_audio_resiz_model.dart';
 
-/// A provider class for the AuditoryScreenAssessmentScreenVisualAudioResizScreen.
-///
-/// This provider manages the state of the AuditoryScreenAssessmentScreenVisualAudioResizScreen, including the
-/// current auditoryScreenAssessmentScreenVisualAudioResizModelObj
-
-// ignore_for_file: must_be_immutable
 class AuditoryScreenAssessmentScreenVisualAudioResizProvider
     extends ChangeNotifier {
   AuditoryScreenAssessmentScreenVisualAudioResizModel
@@ -33,8 +27,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizProvider
           .get();
 
       if (doc.exists) {
-        List<dynamic> data = doc.get('data');
-        dynamic da = data[0];
+        List<Map<String, dynamic>> data = doc.get('data');
+        Map<String, dynamic> da = data[0];
         debugPrint('data fetched is  $da ');
         return data[0];
       } else {
@@ -44,18 +38,24 @@ class AuditoryScreenAssessmentScreenVisualAudioResizProvider
      return null;
     }
   } 
+
   int sel = 0;
+
   void setSelected(int s) {
     sel = s;
     notifyListeners();
   }
+
   String quizType = "FIG_TO_WORD";
+
   void setQuizType(String q) {
     quizType = q;
     notifyListeners();
   }
+
   // there will be three conditions - VOICE , FIG_TO_WORD , WORD_TO_FIG
-  Object getScreeValue(String type) async{
+
+  dynamic getScreeValue(String type) async{
     if(type == "VOICE"){
       // getting data from database 
       // for now it is custom
@@ -87,6 +87,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizProvider
     }
     return null;
   }
+
+  
   @override
   void dispose() {
     super.dispose();
