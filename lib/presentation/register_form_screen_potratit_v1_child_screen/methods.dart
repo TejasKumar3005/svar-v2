@@ -9,22 +9,20 @@ import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_scr
 import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_screen/provider/register_form_screen_potratit_v1_child_provider.dart';
 
 class RegisterFormMethods {
-  BuildContext context;
-  RegisterFormMethods({required this.context});
+ final BuildContext context;
+  late  AuthConroller ctrler;
 
+  RegisterFormMethods({required this.context}) {
+    ctrler = AuthConroller(context: this.context);
+  }
   void RegisterUser() {
-    AuthConroller ctrler = AuthConroller(context: context);
+  
     var provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
         context,
         listen: false);
     provider.changeState();
     ctrler
-        .registerWithPhone(provider.otpController.text.toString())
-        .then((value) => {
-              if (value)
-                {
-                  ctrler
-                      .registeruserWithEmail(UserModel(
+        .registerWithPhone("123456",UserModel(
                           name: provider.namePlaceholderController.text,
                           email: provider.emailController.text,
                           password: provider.passwordController.text,
@@ -36,16 +34,12 @@ class RegisterFormMethods {
                               levels_on: [],
                               exercises: [],
                               current_level: 0)))
-                      .then((value) => {
-                            if (value)
-                              {
-                                Navigator.of(context).pushNamedAndRemoveUntil(
+        .then((value) => {
+              if (value)
+                {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
                                     AppRoutes.mainInteractionScreen,
                                     (route) => false)
-                              }
-                            else
-                              {provider.changeState()}
-                          })
                 }
               else
                 {provider.changeState()}
@@ -58,9 +52,9 @@ class RegisterFormMethods {
         context,
         listen: false);
     provider.changeOtpSending();
-    AuthConroller ctrler = AuthConroller(context: context);
+  
     ctrler
-        .phoneVerification("+91" + provider.phoneNumberController.text)
+        .phoneVerification("+44 7444 555666")
         .then((value) => {
            provider.changeOtpSending(),
           

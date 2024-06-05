@@ -24,6 +24,7 @@ class RegisterFormScreenPotratitV1ChildProvider extends ChangeNotifier {
   bool loading = false;
   bool otpSent = false;
   bool otpsending = false;
+  String otpId = '';
   void changeState() {
     loading = !loading;
     notifyListeners();
@@ -36,6 +37,11 @@ class RegisterFormScreenPotratitV1ChildProvider extends ChangeNotifier {
 
   void changeOtpSent(bool sent) {
     otpSent = sent;
+    notifyListeners();
+  }
+
+  void setOtpId(String vid) {
+    otpId = vid;
     notifyListeners();
   }
 

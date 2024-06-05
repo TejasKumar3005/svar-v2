@@ -170,7 +170,7 @@ class MyApp extends StatelessWidget {
                 ],
                 supportedLocales: locals,
                 initialRoute: AppRoutes
-                        .auditoryScreenAssessmentScreenAudioVisualResizedScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                        .loginScreenPotraitScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
               );
             },
