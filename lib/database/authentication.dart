@@ -26,9 +26,9 @@ class AuthConroller {
 
   Future<bool> phoneVerification(String phone) async {
     try {
-        var provider =
-                Provider.of<RegisterFormScreenPotratitV1ChildProvider>(context!,
-                    listen: false);
+      var provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
+          context!,
+          listen: false);
       await firebaseAuth.verifyPhoneNumber(
           phoneNumber: phone,
           timeout: Duration(seconds: 120),
@@ -41,7 +41,8 @@ class AuthConroller {
             ));
           },
           codeSent: (String verificationId, int? resendingtoken) {
-            optId = verificationId;
+            print(verificationId + "-------vid");
+            provider.setOtpId(verificationId);
             rtoken = resendingtoken;
             provider.changeOtpSent(true);
             ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
@@ -49,9 +50,7 @@ class AuthConroller {
               backgroundColor: Colors.green,
             ));
           },
-          codeAutoRetrievalTimeout: (String verificationId) {
-            optId = verificationId;
-          });
+          codeAutoRetrievalTimeout: (String verificationId) {});
 
       return true;
     } on FirebaseAuthException catch (e) {
@@ -63,54 +62,77 @@ class AuthConroller {
     }
   }
 
-  Future<bool> resendOtp(String phone) async {
+  Future<bool> registerWithPhone(String sms, UserModel model) async {
     try {
-      if (rtoken != null) {
-        var provider =
-                Provider.of<RegisterFormScreenPotratitV1ChildProvider>(context!,
-                    listen: false);
-      await firebaseAuth.verifyPhoneNumber(
-          phoneNumber: phone,
-          timeout: Duration(seconds: 120),
-          verificationCompleted: (AuthCredential authCredential) async {},
-          verificationFailed: (FirebaseAuthException authexception) {
-            provider.changeOtpSent(false);
-            ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-              content: Text(authexception.message.toString()),
-              backgroundColor: Colors.red,
-            ));
-          },
-          forceResendingToken: rtoken,
-          codeSent: (String verificationId, int? resendingtoken) {
-            optId = verificationId;
-            rtoken = resendingtoken;
-            provider.changeOtpSent(true);
-            ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-              content: Text("code sent to " + phone),
-              backgroundColor: Colors.green,
-            ));
-          },
-          codeAutoRetrievalTimeout: (String verificationId) {
-            optId = verificationId;
-          });
-
-      return true;
+      var provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
+          context!,
+          listen: false);
+      var otpId = provider.otpId;
+      if (otpId=="") {
+        print("optId is null");
+        return false;
       }
-      return false;
+      UserCredential userCredential = await firebaseAuth.signInWithCredential(
+          PhoneAuthProvider.credential(verificationId: otpId, smsCode: sms));
+      if (userCredential.user != null) {
+        print(
+            "User signed in successfully with UID: ${userCredential.user!.uid}");
+
+        // Save user data
+        await UserData(uid: userCredential.user!.uid, buildContext: context!)
+            .saveUserData(model);
+        print("User data saved successfully");
+
+        return true;
+      } else {
+        print("User credential is null");
+        return false;
+      }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
         content: Text(e.toString()),
         backgroundColor: Colors.red,
       ));
+
+      return false;
+    } catch (e) {
+      // Handle any other exceptions
+      print("Exception: $e");
+      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
+        content: Text("An error occurred: $e"),
+        backgroundColor: Colors.red,
+      ));
       return false;
     }
   }
-
-  Future<bool> registerWithPhone(String sms) async {
+  Future<bool> loginWithPhone(String sms, UserModel model) async {
     try {
-      await firebaseAuth.signInWithCredential(
-          PhoneAuthProvider.credential(verificationId: optId!, smsCode: sms));
-      return true;
+      var provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
+          context!,
+          listen: false);
+      var otpId = provider.otpId;
+      if (otpId=="") {
+        print("optId is null");
+        return false;
+      }
+      UserCredential userCredential = await firebaseAuth.signInWithCredential(
+          PhoneAuthProvider.credential(verificationId: otpId, smsCode: sms));
+          
+      if (userCredential.user != null) {
+        print(
+            "User signed in successfully with UID: ${userCredential.user!.uid}");
+
+        // Save user data
+        await UserData(
+                uid: userCredential.user!.uid, buildContext: context!)
+            .getUserData();
+        print("User data saved successfully");
+
+        return true;
+      } else {
+        
+        return false;
+      }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
         content: Text(e.toString()),
@@ -118,8 +140,18 @@ class AuthConroller {
       ));
 
       return false;
+    } catch (e) {
+      // Handle any other exceptions
+      print("Exception: $e");
+      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
+        content: Text("An error occurred: $e"),
+        backgroundColor: Colors.red,
+      ));
+      return false;
     }
   }
+
+  
 
   Future<bool> registeruserWithEmail(UserModel model) async {
     try {
@@ -332,5 +364,46 @@ class AuthConroller {
       return false;
     });
     return false;
+  }
+
+  Future<bool> resendOtp(String phone) async {
+    try {
+      if (rtoken != null) {
+        var provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
+            context!,
+            listen: false);
+        await firebaseAuth.verifyPhoneNumber(
+            phoneNumber: phone,
+            timeout: Duration(seconds: 120),
+            verificationCompleted: (AuthCredential authCredential) async {},
+            verificationFailed: (FirebaseAuthException authexception) {
+              provider.changeOtpSent(false);
+              ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
+                content: Text(authexception.message.toString()),
+                backgroundColor: Colors.red,
+              ));
+            },
+            forceResendingToken: rtoken,
+            codeSent: (String verificationId, int? resendingtoken) {
+              optId = verificationId;
+              rtoken = resendingtoken;
+              provider.changeOtpSent(true);
+              ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
+                content: Text("code sent to " + phone),
+                backgroundColor: Colors.green,
+              ));
+            },
+            codeAutoRetrievalTimeout: (String verificationId) {});
+
+        return true;
+      }
+      return false;
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ));
+      return false;
+    }
   }
 }
