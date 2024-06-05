@@ -1,4 +1,4 @@
-import 'dart:js';
+// import 'dart:js';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
@@ -168,6 +168,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
           Expanded(
             child: Container(
               height: height,
+              alignment: Alignment.center, 
               decoration: BoxDecoration(
                   color: appTheme.whiteA70001,
                   border: Border.all(
@@ -182,14 +183,16 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                 keyboardType: TextInputType.emailAddress,
                 controller: controller,
                 obscureText: name == "password",
+                style: TextStyle(color: Colors.black, fontSize: 22.h),
                 decoration: InputDecoration(
                     hintText: name.tr,
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintStyle: TextStyle(color: Colors.grey, fontSize: 22.h),
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(horizontal: 5.h)
-                        .copyWith(bottom: 15.v)),
+                        // .copyWith(bottom: 15.v)
+                        ),
                 validator: (value) {
                   if (value == null ||
                       (!isValidEmail(value, isRequired: true))) {

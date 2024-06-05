@@ -22,7 +22,7 @@ final Map<String, String> enUs = {
 "msg_rakeshramjirast": "rakeshramjirastogiontherocks@gmail.com",
 
 // Main Interaction Screen Screen
-"lbl3": "\$", "lbl_10": "10", "lbl_10000_10000": "10000/10000",
+"lbl3": "\$", "lbl_10": "10", "lbl_10000_10000": "100/100",
 "lbl_2500_10000": "2500 / 10000",
 
 // Exit Screen Screen
