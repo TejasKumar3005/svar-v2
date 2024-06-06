@@ -169,8 +169,8 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                initialRoute: AppRoutes
-                        .loginScreenPotraitScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                initialRoute: auth.currentUser==null? AppRoutes
+                        .registerFormScreenPotratitV1ChildScreen:AppRoutes.mainInteractionScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
               );
             },
