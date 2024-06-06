@@ -207,89 +207,97 @@ class AppStatsHeader extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned(
-                left: 8.h,
-                child: SizedBox(
-                  height: 19.v,
-                  width: 17.h,
-                  child: Stack(
-                    alignment: Alignment.centerLeft,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: SizedBox(
-                          height: 17.v,
-                          width: 13.h,
-                          child: Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: [
-                              CustomImageView(
-                                imagePath: ImageConstant.imgUserDeepOrange600,
-                                width: 13.h,
-                                alignment: Alignment.center,
-                              ),
-                              CustomImageView(
-                                imagePath:
-                                    ImageConstant.imgSettingsDeepOrange700,
-                                height: 11.v,
-                                alignment: Alignment.bottomCenter,
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: SizedBox(
-                          height: 19.v,
-                          width: 16.h,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              CustomImageView(
-                                imagePath: ImageConstant.imgClose,
-                                width: 16.h,
-                                alignment: Alignment.center,
-                              ),
-                              Align(
-                                alignment: Alignment.center,
-                                child: SizedBox(
-                                  height: 16.v,
-                                  width: 11.h,
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      CustomImageView(
-                                        imagePath:
-                                            ImageConstant.imgCloseYellow90003,
-                                        width: 11.h,
-                                        alignment: Alignment.center,
-                                      ),
-                                      Align(
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          "lbl3".tr,
-                                          style: CustomTextStyles
-                                              .labelMediumYellow500,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   left: 8.h,
+              //   child: SizedBox(
+              //     height: 19.v,
+              //     width: 17.h,
+              //     child: Stack(
+              //       alignment: Alignment.centerLeft,
+              //       children: [
+              //         Align(
+              //           alignment: Alignment.centerRight,
+              //           child: SizedBox(
+              //             height: 17.v,
+              //             width: 13.h,
+              //             child: Stack(
+              //               alignment: Alignment.bottomCenter,
+              //               children: [
+              //                 // CustomImageView(
+              //                 //   imagePath: ImageConstant.imgUserDeepOrange600,
+              //                 //   width: 13.h,
+              //                 //   alignment: Alignment.center,
+              //                 // ),
+              //                 // CustomImageView(
+              //                 //   imagePath:
+              //                 //       ImageConstant.imgSettingsDeepOrange700,
+              //                 //   height: 11.v,
+              //                 //   alignment: Alignment.bottomCenter,
+              //                 // )
+              //               ],
+              //             ),
+              //           ),
+              //         ),
+              //         Align(
+              //           alignment: Alignment.centerLeft,
+              //           child: SizedBox(
+              //             height: 19.v,
+              //             width: 16.h,
+              //             child: Stack(
+              //               alignment: Alignment.center,
+              //               children: [
+              //                 CustomImageView(
+              //                   imagePath: ImageConstant.imgClose,
+              //                   width: 16.h,
+              //                   alignment: Alignment.center,
+              //                 ),
+              //                 Align(
+              //                   alignment: Alignment.center,
+              //                   child: SizedBox(
+              //                     height: 16.v,
+              //                     width: 11.h,
+              //                     child: Stack(
+              //                       alignment: Alignment.center,
+              //                       children: [
+              //                         CustomImageView(
+              //                           imagePath:
+              //                               ImageConstant.imgCloseYellow90003,
+              //                           width: 11.h,
+              //                           alignment: Alignment.center,
+              //                         ),
+              //                         Align(
+              //                           alignment: Alignment.center,
+              //                           child: Text(
+              //                             "lbl3".tr,
+              //                             style: CustomTextStyles
+              //                                 .labelMediumYellow500,
+              //                           ),
+              //                         )
+              //                       ],
+              //                     ),
+              //                   ),
+              //                 )
+              //               ],
+              //             ),
+              //           ),
+              //         )
+              //       ],
+              //     ),
+              //   ),
+              // ),
               Positioned(
                 right: 3.h,
                 child: Text(
                   "lbl2".tr,
                   style: theme.textTheme.labelMedium,
+                ),
+              ),
+              Positioned(
+                left: 5.h,
+                child: CustomImageView(
+                  imagePath: ImageConstant.imgCoinSvg,
+                  width: 20.h,
+                  height: 21.v,
                 ),
               ),
             ],

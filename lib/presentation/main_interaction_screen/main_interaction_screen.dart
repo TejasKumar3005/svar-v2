@@ -44,10 +44,10 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
   @override
   void dispose() {
     // Reset the orientation when the screen is disposed
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+    // SystemChrome.setPreferredOrientations([
+    //   DeviceOrientation.portraitUp,
+    //   DeviceOrientation.portraitDown,
+    // ]);
     super.dispose();
   }
 
@@ -149,7 +149,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
-        height: 156.v,
+        height: MediaQuery.of(context).size.height * 0.7,
         width: MediaQuery.of(context).size.width * 0.9,
         child: CarouselSlider(
           items: [
@@ -217,8 +217,8 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
             autoPlay: true,
             autoPlayCurve: Curves.decelerate,
             enlargeCenterPage: true,
-            enlargeFactor: 0.2,
-            viewportFraction: 0.5,
+            enlargeFactor: 0.5,
+            viewportFraction: 0.4,
             autoPlayAnimationDuration: const Duration(milliseconds: 800),
           ),
         ),
