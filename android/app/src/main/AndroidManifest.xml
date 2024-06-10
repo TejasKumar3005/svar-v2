@@ -1,15 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.svarnew.app">
-    <!-- io.flutter.app.FlutterApplication is an android.app.Application that
-         calls FlutterMain.startInitialization(this); in its onCreate method.
-         In most cases you can leave this as-is, but you if you want to provide
-         additional functionality it is fine to subclass or reimplement
-         FlutterApplication and put your custom class here. -->
+    
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
 
     <application
         android:label="svar_new"
@@ -23,10 +15,7 @@
             android:usesCleartextTraffic="true"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
-            <!-- Specifies an Android theme to apply to this Activity as soon as
-                 the Android process has started. This theme is visible to the user
-                 while the Flutter UI initializes. After that, this theme continues
-                 to determine the Window background behind the Flutter UI. -->
+            
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
@@ -50,7 +39,7 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-            <receiver
+            <!-- <receiver
             android:name=".MyDeviceAdminReceiver"
               android:exported="true"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
@@ -60,6 +49,6 @@
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>
-        </receiver>
+        </receiver> -->
     </application>
 </manifest>
