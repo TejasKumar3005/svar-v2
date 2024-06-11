@@ -1,6 +1,5 @@
-
-
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:svar_new/database/authentication.dart';
 import 'package:svar_new/presentation/login_screen_portrait/login-methods.dart';
@@ -39,12 +38,14 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   }
 
   @override
   Widget build(BuildContext context) {
     var provider = context.watch<LoginScreenPotraitProvider>();
-  
+
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -94,31 +95,39 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                       alignment: Alignment.center,
                       child: Column(
                         children: [
-                          Field(
-                              50.h, "email", provider.emailController, context),
+                          Field(50.h, "phone", provider.emailController,
+                              context, provider),
                           SizedBox(
                             height: 15.v,
                           ),
-                          Field(50.h, 'password', provider.passController,
-                              context),
+                          provider.otpsent
+                              ? Field(50.h, 'otp', provider.passController,
+                                  context, provider)
+                              : Container(),
                           SizedBox(
                             height: 15.v,
                           ),
-                          !provider.loading?
-                          GestureDetector(
-                            onTap: () {
-                              
-                              LoginFormMethods methods =
-                                  LoginFormMethods(context: context);
-                              methods.login();
-                            },
-                            child: CustomImageView(
-                              imagePath: ImageConstant.imgLoginBTn,
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              height: 60.h,
-                              fit: BoxFit.contain,
-                            ),
-                          ):CircularProgressIndicator(color: appTheme.deepOrange200,)
+                          provider.otpsent
+                              ? !provider.loading
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        LoginFormMethods methods =
+                                            LoginFormMethods(context: context);
+                                        methods.login();
+                                      },
+                                      child: CustomImageView(
+                                        imagePath: ImageConstant.imgLoginBTn,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.7,
+                                        height: 60.h,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    )
+                                  : CircularProgressIndicator(
+                                      color: appTheme.deepOrange200,
+                                    )
+                              : Container()
                         ],
                       ),
                     ),
@@ -134,7 +143,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
   }
 
   Widget Field(double height, String name, TextEditingController controller,
-      BuildContext context) {
+      BuildContext context, LoginScreenPotraitProvider provider) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.85,
       height: height,
@@ -168,7 +177,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
           Expanded(
             child: Container(
               height: height,
-              alignment: Alignment.center, 
+              alignment: Alignment.center,
               decoration: BoxDecoration(
                   color: appTheme.whiteA70001,
                   border: Border.all(
@@ -182,23 +191,46 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
               child: TextFormField(
                 keyboardType: TextInputType.emailAddress,
                 controller: controller,
-                obscureText: name == "password",
                 style: TextStyle(color: Colors.black, fontSize: 22.h),
                 decoration: InputDecoration(
                     hintText: name.tr,
+                    suffixIcon: name == "phone"
+                        ? (provider.sending
+                            ? CircularProgressIndicator()
+                            : GestureDetector(
+                              onTap: (){
+                                if(!provider.otpsent){
+                                  
+                                LoginFormMethods methods =
+                                            LoginFormMethods(context: context);
+                                        methods.sendOtp();
+                                }
+                              },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                      provider.otpsent
+                                          ? "ötp sent"
+                                          : "lbl_send_otp".tr,
+                                      style: TextStyle(
+                                        color:provider.otpsent?appTheme.green900: appTheme.orangeA200,
+                                        fontSize: 15.fSize,
+                                        fontWeight: FontWeight.w800,
+                                      )),
+                                ),
+                              ))
+                        : Container(height: 0.001,width: 0.01,),
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 22.h),
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(horizontal: 5.h)
-                        // .copyWith(bottom: 15.v)
-                        ),
+                    // .copyWith(bottom: 15.v)
+                    ),
                 validator: (value) {
-                  if (value == null ||
-                      (!isValidEmail(value, isRequired: true))) {
-                    return "err_msg_please_enter_valid_email".tr;
+                  if(value==null || value==""){
+                    return "Please enter $name";
                   }
-                  return null;
                 },
               ),
             ),

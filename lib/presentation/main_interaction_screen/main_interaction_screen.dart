@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart.dart';
@@ -107,30 +108,43 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                 decoration: AppDecoration.outlineWhiteA.copyWith(
                   borderRadius: BorderRadiusStyle.roundedBorder20,
                 ),
-                child: GestureDetector(
-                  onTap: () {
-                    showQuitDialog(context);
-                  },
-                  child: Center(
-                    child: Container(
-                      height: 101.adaptSize,
-                      width: 101.adaptSize,
-                      padding: EdgeInsets.all(20.h),
-                      decoration: AppDecoration.outlineWhiteA.copyWith(
-                          color: AppDecoration.fillDeepOrange.color,
-                          borderRadius: BorderRadius.all(
-                              Radius.circular((101.adaptSize) / 2))),
-                      alignment: Alignment.center,
-                      child: Center(
-                        child: SvgPicture.asset(
-                          height: 45.adaptSize,
-                          width: 45.adaptSize,
-                          fit: BoxFit.contain,
-                         ImageConstant.imgPlayBtn,
+                child: Stack(
+                  children:[ 
+                  Positioned.fill(
+          child: ClipRRect(
+            borderRadius: BorderRadiusStyle.roundedBorder20,
+            child: SvgPicture.asset(
+              ImageConstant.thumbnailAuditory,
+              fit: BoxFit.fill, // Ensures the SVG covers the entire container
+            ),
+          ),
+        ),
+                    GestureDetector(
+                    onTap: () {
+                      showQuitDialog(context);
+                    },
+                    child: Center(
+                      child: Container(
+                        height: 101.adaptSize,
+                        width: 101.adaptSize,
+                        padding: EdgeInsets.all(20.h),
+                        decoration: AppDecoration.outlineWhiteA.copyWith(
+                            color: AppDecoration.fillDeepOrange.color,
+                        
+                            borderRadius: BorderRadius.all(
+                                Radius.circular((101.adaptSize) / 2))),
+                        alignment: Alignment.center,
+                        child: Center(
+                          child: SvgPicture.asset(
+                            height: 45.adaptSize,
+                            width: 45.adaptSize,
+                            fit: BoxFit.contain,
+                           ImageConstant.imgPlayBtn,
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ),]
                 ),
               ),
             ),
@@ -140,13 +154,26 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
               decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                 borderRadius: BorderRadiusStyle.roundedBorder20,
               ),
-              child: Center(
-                child: CustomImageView(
-                  height: 108.v,
-                  width: 134.h,
-                  fit: BoxFit.contain,
-                  imagePath: ImageConstant.imgLock,
-                ),
+              child: Stack(
+                children: [
+                    Positioned.fill(
+          child: ClipRRect(
+            borderRadius: BorderRadiusStyle.roundedBorder20,
+            child: SvgPicture.asset(
+              ImageConstant.thumbnailBarakhadi,
+              fit: BoxFit.fill, // Ensures the SVG covers the entire container
+            ),
+          ),
+        ),
+                //   Center(
+                //   child: CustomImageView(
+                //     height: 108.v,
+                //     width: 134.h,
+                //     fit: BoxFit.contain,
+                //     imagePath: ImageConstant.imgLock,
+                //   ),
+                // ),
+                ]
               ),
             ),
             Container(
@@ -154,6 +181,27 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
               height: 150.v,
               decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                 borderRadius: BorderRadiusStyle.roundedBorder20,
+              ),
+              child: Stack(
+                children: [
+                    Positioned.fill(
+          child: ClipRRect(
+            borderRadius: BorderRadiusStyle.roundedBorder20,
+            child: SvgPicture.asset(
+              ImageConstant.thumbnailPhonemes,
+              fit: BoxFit.fill, // Ensures the SVG covers the entire container
+            ),
+          ),
+        ),
+                //   Center(
+                //   child: CustomImageView(
+                //     height: 108.v,
+                //     width: 134.h,
+                //     fit: BoxFit.contain,
+                //     imagePath: ImageConstant.imgLock,
+                //   ),
+                // ),
+                ]
               ),
             )
           ],
@@ -162,8 +210,8 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
           options: CarouselOptions(
             autoPlay: true,
             autoPlayCurve: Curves.decelerate,
-            enlargeCenterPage: true,
-            enlargeFactor: 0.5,
+            enlargeCenterPage: false,
+        
             viewportFraction: 0.4,
             autoPlayAnimationDuration: const Duration(milliseconds: 800),
           ),

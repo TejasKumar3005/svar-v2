@@ -54,7 +54,7 @@ class RegisterFormMethods {
     provider.changeOtpSending();
   
     ctrler
-        .phoneVerification("+44 7444 555666")
+        .phoneVerification("+44 7444 555666",false)
         .then((value) => {
            provider.changeOtpSending(),
           

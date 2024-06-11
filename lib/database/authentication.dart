@@ -8,6 +8,7 @@ import 'package:svar_new/data/models/game_statsModel.dart';
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:svar_new/presentation/login_screen_portrait/login_screen_potrait_provider.dart';
 
 import '../core/app_export.dart';
 import '../presentation/register_form_screen_potratit_v1_child_screen/provider/register_form_screen_potratit_v1_child_provider.dart';
@@ -24,11 +25,15 @@ class AuthConroller {
   //   notifyListeners();
   // }
 
-  Future<bool> phoneVerification(String phone) async {
+  Future<bool> phoneVerification(String phone, bool login) async {
     try {
-      var provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
-          context!,
-          listen: false);
+      var provider;
+      if(login){
+        provider= Provider.of<LoginScreenPotraitProvider>(context!, listen: false);
+      }else{
+        provider= Provider.of<RegisterFormScreenPotratitV1ChildProvider>(context!, listen: false);
+      }
+      
       await firebaseAuth.verifyPhoneNumber(
           phoneNumber: phone,
           timeout: Duration(seconds: 120),
@@ -68,7 +73,7 @@ class AuthConroller {
           context!,
           listen: false);
       var otpId = provider.otpId;
-      if (otpId=="") {
+      if (otpId == "") {
         print("optId is null");
         return false;
       }
@@ -105,32 +110,31 @@ class AuthConroller {
       return false;
     }
   }
+
   Future<bool> loginWithPhone(String sms, UserModel model) async {
     try {
       var provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
           context!,
           listen: false);
       var otpId = provider.otpId;
-      if (otpId=="") {
+      if (otpId == "") {
         print("optId is null");
         return false;
       }
       UserCredential userCredential = await firebaseAuth.signInWithCredential(
           PhoneAuthProvider.credential(verificationId: otpId, smsCode: sms));
-          
+
       if (userCredential.user != null) {
         print(
             "User signed in successfully with UID: ${userCredential.user!.uid}");
 
         // Save user data
-        await UserData(
-                uid: userCredential.user!.uid, buildContext: context!)
+        await UserData(uid: userCredential.user!.uid, buildContext: context!)
             .getUserData();
         print("User data saved successfully");
 
         return true;
       } else {
-        
         return false;
       }
     } on FirebaseAuthException catch (e) {
@@ -150,8 +154,6 @@ class AuthConroller {
       return false;
     }
   }
-
-  
 
   Future<bool> registeruserWithEmail(UserModel model) async {
     try {
@@ -215,20 +217,35 @@ class AuthConroller {
     });
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<bool> login(String sms) async {
     try {
-      await firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
-      print(firebaseAuth.currentUser!.email);
-      if (firebaseAuth.currentUser != null) {
-        await UserData(
-                uid: firebaseAuth.currentUser!.uid, buildContext: context!)
-            .getUserData();
+      var provider = Provider.of<LoginScreenPotraitProvider>(
+          context!,
+          listen: false);
+      var otpId = provider.otpId;
+      if (otpId == "") {
+        print("optId is null");
+        return false;
       }
-      return true;
+      UserCredential userCredential = await firebaseAuth.signInWithCredential(
+          PhoneAuthProvider.credential(verificationId: otpId, smsCode: sms));
+    
+      if (userCredential.user != null) {
+        return true;
+      }
+      return false;
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text(e.message.toString()),
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ));
+
+      return false;
+    } catch (e) {
+      // Handle any other exceptions
+      print("Exception: $e");
+      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
+        content: Text("An error occurred: $e"),
         backgroundColor: Colors.red,
       ));
       return false;

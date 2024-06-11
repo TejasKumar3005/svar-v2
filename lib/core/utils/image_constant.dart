@@ -2,8 +2,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 
 class ImageConstant {
+
+
 // Image folder path
   static String imagePath = 'assets/images';
+
+  static String thumbnailAuditory = '$imagePath/svg/Auditory.svg';
+  static String thumbnailPhonemes = '$imagePath/svg/Phonemes.svg';
+  static String thumbnailBarakhadi = '$imagePath/svg/Barakhadi.svg';
+
   static String imgCoinSvg = '$imagePath/svg/Simple_Coin.svg';
   static String imgArrowLeftYellow = "$imagePath/svg/LeftArrow_BTN_IconButton.svg";
   static String imgArrowRightGreen = "$imagePath/svg/RightArrow_BTN_IconButton.svg";
