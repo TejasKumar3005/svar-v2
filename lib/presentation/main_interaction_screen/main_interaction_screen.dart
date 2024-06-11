@@ -121,7 +121,9 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
         ),
                     GestureDetector(
                     onTap: () {
-                      showQuitDialog(context);
+                    NavigatorService.pushNamed(
+                      AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen,
+                    );
                     },
                     child: Center(
                       child: Container(
@@ -148,60 +150,75 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                 ),
               ),
             ),
-            Container(
-              width: 300.h,
-              height: 150.v,
-              decoration: AppDecoration.gradientRedToWhiteA.copyWith(
-                borderRadius: BorderRadiusStyle.roundedBorder20,
+            GestureDetector(
+              onTap: (){
+                NavigatorService.pushNamed(
+                  AppRoutes.lingLearningScreen,
+                );
+              },
+              child: Container(
+                width: 300.h,
+                height: 150.v,
+                decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+                  borderRadius: BorderRadiusStyle.roundedBorder20,
+                ),
+                child: Stack(
+                  children: [
+                      Positioned.fill(
+                        child: ClipRRect(
+              borderRadius: BorderRadiusStyle.roundedBorder20,
+              child: SvgPicture.asset(
+                ImageConstant.thumbnailBarakhadi,
+                fit: BoxFit.fill, // Ensures the SVG covers the entire container
               ),
-              child: Stack(
-                children: [
-                    Positioned.fill(
-          child: ClipRRect(
-            borderRadius: BorderRadiusStyle.roundedBorder20,
-            child: SvgPicture.asset(
-              ImageConstant.thumbnailBarakhadi,
-              fit: BoxFit.fill, // Ensures the SVG covers the entire container
-            ),
-          ),
-        ),
-                //   Center(
-                //   child: CustomImageView(
-                //     height: 108.v,
-                //     width: 134.h,
-                //     fit: BoxFit.contain,
-                //     imagePath: ImageConstant.imgLock,
-                //   ),
-                // ),
-                ]
+                        ),
+                      ),
+                  //   Center(
+                  //   child: CustomImageView(
+                  //     height: 108.v,
+                  //     width: 134.h,
+                  //     fit: BoxFit.contain,
+                  //     imagePath: ImageConstant.imgLock,
+                  //   ),
+                  // ),
+                  ]
+                ),
               ),
             ),
-            Container(
-              width: 300.h,
-              height: 150.v,
-              decoration: AppDecoration.gradientRedToWhiteA.copyWith(
-                borderRadius: BorderRadiusStyle.roundedBorder20,
+            GestureDetector(
+              onTap: () {
+                NavigatorService.pushNamed(
+                  AppRoutes.phonemsLevelScreenOneScreen,
+                );
+              
+              },
+              child: Container(
+                width: 300.h,
+                height: 150.v,
+                decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+                  borderRadius: BorderRadiusStyle.roundedBorder20,
+                ),
+                child: Stack(
+                  children: [
+                      Positioned.fill(
+                        child: ClipRRect(
+              borderRadius: BorderRadiusStyle.roundedBorder20,
+              child: SvgPicture.asset(
+                ImageConstant.thumbnailPhonemes,
+                fit: BoxFit.fill, // Ensures the SVG covers the entire container
               ),
-              child: Stack(
-                children: [
-                    Positioned.fill(
-          child: ClipRRect(
-            borderRadius: BorderRadiusStyle.roundedBorder20,
-            child: SvgPicture.asset(
-              ImageConstant.thumbnailPhonemes,
-              fit: BoxFit.fill, // Ensures the SVG covers the entire container
-            ),
-          ),
-        ),
-                //   Center(
-                //   child: CustomImageView(
-                //     height: 108.v,
-                //     width: 134.h,
-                //     fit: BoxFit.contain,
-                //     imagePath: ImageConstant.imgLock,
-                //   ),
-                // ),
-                ]
+                        ),
+                      ),
+                  //   Center(
+                  //   child: CustomImageView(
+                  //     height: 108.v,
+                  //     width: 134.h,
+                  //     fit: BoxFit.contain,
+                  //     imagePath: ImageConstant.imgLock,
+                  //   ),
+                  // ),
+                  ]
+                ),
               ),
             )
           ],
