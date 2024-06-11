@@ -34,6 +34,7 @@ Future<User?> initializeFirebaseAuth() async {
 
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 void main() async {
+  
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
     await Firebase.initializeApp(options: Options().options);
