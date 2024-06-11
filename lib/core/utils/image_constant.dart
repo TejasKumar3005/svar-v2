@@ -58,31 +58,31 @@ class ImageConstant {
   static String imgFather = '$imagePath/img_father.png';
 
 // Main Interaction Screen images
-  static String imgUserYellow700 = '$imagePath/img_user_yellow_700.svg';
+  static String imgAvatar = '$imagePath/svg/Avatar.svg';
 
-  static String imgBarcode = '$imagePath/img_barcode.svg';
+  static String imgBarcode = '$imagePath/svg/img_barcode.svg';
 
   static String imgStar14 = '$imagePath/img_star_14.svg';
 
   static String imgCandy31x31 = '$imagePath/img_candy_31x31.png';
 
   static String imgUserDeepOrange600 =
-      '$imagePath/img_user_deep_orange_600.svg';
+      '$imagePath/img_user_deep_orange_600.png';
 
   static String imgSettingsDeepOrange700 =
-      '$imagePath/img_settings_deep_orange_700.svg';
+      '$imagePath/img_settings_deep_orange_700.png';
 
-  static String imgClose = '$imagePath/img_close.svg';
+  static String imgClose = '$imagePath/img_close.png';
 
-  static String imgCloseYellow90003 = '$imagePath/img_close_yellow_900_03.svg';
+  static String imgCloseYellow90003 = '$imagePath/img_close_yellow_900_03.png';
 
-  static String imgUserYellow500 = '$imagePath/img_user_yellow_500.svg';
+  static String imgUserYellow500 = '$imagePath/img_user_yellow_500.png';
 
-  static String imgCloseWhiteA70001 = '$imagePath/img_close_white_a700_01.svg';
+  static String imgCloseWhiteA70001 = '$imagePath/img_close_white_a700_01.png';
 
-  static String imgUserWhiteA70001 = '$imagePath/img_user_white_a700_01.svg';
+  static String imgUserWhiteA70001 = '$imagePath/img_user_white_a700_01.png';
 
-  static String imgLocation = '$imagePath/img_location.svg';
+  static String imgLocation = '$imagePath/img_location.png';
 
 // Exit Screen images
   static String imgBgGreen500 = '$imagePath/img_bg_green_500.svg';

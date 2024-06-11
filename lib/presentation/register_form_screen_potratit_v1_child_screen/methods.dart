@@ -38,7 +38,7 @@ class RegisterFormMethods {
               if (value)
                 {
                   Navigator.of(context).pushNamedAndRemoveUntil(
-                                    AppRoutes.mainInteractionScreen,
+                                    AppRoutes.loadingScreen,
                                     (route) => false)
                 }
               else

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
@@ -13,12 +14,13 @@ class AppStatsHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        CustomImageView(
-          imagePath: ImageConstant.imgUserYellow700,
-          height: 38.adaptSize,
+        SvgPicture.asset(
+                ImageConstant.imgAvatar,
+                
+                height: 38.adaptSize,
           width: 38.adaptSize,
-          onTap: () {},
-        ),
+              ),
+      
         Container(
           height: 31.v,
           width: 140.h,
@@ -38,11 +40,10 @@ class AppStatsHeader extends StatelessWidget {
                   decoration: AppDecoration.outlineOrangeA700.copyWith(
                     borderRadius: BorderRadiusStyle.roundedBorder5,
                   ),
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgBarcode,
+                  child: SvgPicture.asset(
+                    ImageConstant.imgBarcode,
                     height: 10.v,
-                    fit: BoxFit.cover,
-                    radius: BorderRadius.all(Radius.circular(5.v)),
+                    fit: BoxFit.contain,
                     width: (130 * (per / 100)).h,
                     alignment: Alignment.centerLeft,
                   ),
@@ -58,13 +59,11 @@ class AppStatsHeader extends StatelessWidget {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      CustomImageView(
-                        imagePath: ImageConstant.imgStar14,
+                      SvgPicture.asset(
+                        ImageConstant.imgStar14,
                         height: 26.adaptSize,
                         width: 26.adaptSize,
-                        radius: BorderRadius.circular(
-                          1.h,
-                        ),
+                        
                         alignment: Alignment.center,
                       ),
                       Align(

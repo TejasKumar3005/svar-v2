@@ -33,9 +33,11 @@ Future<User?> initializeFirebaseAuth() async {
 }
 
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
 void main() async {
-  
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+
   if (kIsWeb) {
     await Firebase.initializeApp(options: Options().options);
   } else {
@@ -170,8 +172,10 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                initialRoute: auth.currentUser==null? AppRoutes
-                        .registerFormScreenPotratitV1ChildScreen:AppRoutes.mainInteractionScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                initialRoute: auth.currentUser == null
+                    ? AppRoutes.registerFormScreenPotratitV1ChildScreen
+                    : AppRoutes
+                        .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
               );
             },

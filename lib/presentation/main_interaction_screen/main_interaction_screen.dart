@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
@@ -74,12 +75,12 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
               children: [
                 Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 5.h,
+                    horizontal: 10.h,
                   ),
                   child: AppStatsHeader(per: 40),
                 ),
                 Spacer(),
-                SizedBox(height: 19.v),
+              
                 carouselSlider(context),
               ],
             ),
@@ -89,74 +90,19 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
     );
   }
 
-  /// Section Widget
-  Widget _buildUser(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.only(left: 204.h),
-        child: IntrinsicWidth(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: 178.v,
-                width: 361.h,
-                padding: EdgeInsets.symmetric(vertical: 32.v),
-                decoration: AppDecoration.outlineWhiteA.copyWith(
-                  borderRadius: BorderRadiusStyle.roundedBorder20,
-                ),
-                child: CustomIconButton(
-                  height: 101.adaptSize,
-                  width: 101.adaptSize,
-                  padding: EdgeInsets.all(20.h),
-                  decoration: AppDecoration.outlineWhiteA.copyWith(
-                      color: AppDecoration.fillDeepOrange.color,
-                      borderRadius: BorderRadius.all(
-                          Radius.circular((101.adaptSize) / 2))),
-                  alignment: Alignment.center,
-                  onTap: () {
-                    onTapBtnUser(context);
-                  },
-                  child: Center(
-                    child: CustomImageView(
-                      imagePath: ImageConstant.imgUserWhiteA70001,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                width: 281.h,
-                height: 156.v,
-                margin: EdgeInsets.only(
-                  left: 21.h,
-                  top: 11.v,
-                  bottom: 11.v,
-                ),
-                decoration: AppDecoration.gradientRedToWhiteA.copyWith(
-                  borderRadius: BorderRadiusStyle.roundedBorder20,
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget carouselSlider(BuildContext context) {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
         height: MediaQuery.of(context).size.height * 0.7,
-        width: MediaQuery.of(context).size.width * 0.9,
+        width: MediaQuery.of(context).size.width * 0.95,
         child: CarouselSlider(
           items: [
             ClipRect(
               child: Container(
-                width: 281.h,
-                height: 156.v,
+                width: 300.h,
+                height: 150.v,
                 // padding: EdgeInsets.symmetric(vertical: 32.v),
                 decoration: AppDecoration.outlineWhiteA.copyWith(
                   borderRadius: BorderRadiusStyle.roundedBorder20,
@@ -176,11 +122,11 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                               Radius.circular((101.adaptSize) / 2))),
                       alignment: Alignment.center,
                       child: Center(
-                        child: CustomImageView(
+                        child: SvgPicture.asset(
                           height: 45.adaptSize,
                           width: 45.adaptSize,
                           fit: BoxFit.contain,
-                          imagePath: ImageConstant.imgUserWhiteA70001,
+                         ImageConstant.imgPlayBtn,
                         ),
                       ),
                     ),
@@ -189,8 +135,8 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
               ),
             ),
             Container(
-              width: 281.h,
-              height: 156.v,
+              width: 300.h,
+              height: 150.v,
               decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                 borderRadius: BorderRadiusStyle.roundedBorder20,
               ),
@@ -204,8 +150,8 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
               ),
             ),
             Container(
-              width: 281.h,
-              height: 156.v,
+              width: 300.h,
+              height: 150.v,
               decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                 borderRadius: BorderRadiusStyle.roundedBorder20,
               ),

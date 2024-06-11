@@ -7,20 +7,20 @@ import 'package:svar_new/providers/userDataProvider.dart';
 
 class UserData {
   final String? uid;
-  BuildContext buildContext;
-  UserData({this.uid, required this.buildContext});
+  BuildContext? buildContext;
+  UserData({this.uid,  this.buildContext});
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection("users");
 
   Future saveUserData(UserModel userModel) async {
-    Provider.of<UserDataProvider>(buildContext, listen: false)
+    Provider.of<UserDataProvider>(buildContext!, listen: false)
         .setUser(userModel);
     try {
       await userCollection
           .doc(uid)
           .set(userModel.toJson(), SetOptions(merge: true));
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
         content: Text(e.toString()),
         backgroundColor: Colors.red,
       ));
@@ -58,13 +58,13 @@ class UserData {
             documentSnapshot.data()! as Map<String, dynamic>;
         userModel = userModel.fromJson(map);
         // userModel.gameStats.levels_on = await loadJsonFromAsset().then((value) => value.map((e) => Level.fromJson(e)).toList());
-        Provider.of<UserDataProvider>(buildContext, listen: false)
+        Provider.of<UserDataProvider>(buildContext!, listen: false)
             .setUser(userModel);
         return true;
       }
       return true;
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
         content: Text(e.toString()),
         backgroundColor: Colors.red,
       ));

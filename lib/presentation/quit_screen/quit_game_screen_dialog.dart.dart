@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
@@ -22,7 +24,7 @@ void showQuitDialog(BuildContext context) {
 
 Widget QuitDialog(BuildContext context) {
   return Container(
-    width: MediaQuery.of(context).size.width*0.8,
+    width: MediaQuery.of(context).size.width * 0.8,
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
@@ -83,14 +85,13 @@ Widget QuitDialog(BuildContext context) {
                                   children: [
                                     SizedBox(
                                       width: 55.h,
-                                      
                                       child: Text(
                                         "lbl_don_t_leave".tr,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.center,
-                                        style:
-                                            CustomTextStyles.titleSmallTeal90001,
+                                        style: CustomTextStyles
+                                            .titleSmallTeal90001,
                                       ),
                                     ),
                                     SizedBox(
@@ -133,11 +134,11 @@ Widget QuitDialog(BuildContext context) {
                             ),
                             SizedBox(height: 22.v),
                             SizedBox(
-                              width: 170
-                              .h,
+                              width: 170.h,
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Expanded(
                                     child: GestureDetector(
@@ -164,14 +165,15 @@ Widget QuitDialog(BuildContext context) {
                                             Opacity(
                                               opacity: 0.62,
                                               child: CustomImageView(
-                                                imagePath:
-                                                    ImageConstant.imgExitBtnShine,
+                                                imagePath: ImageConstant
+                                                    .imgExitBtnShine,
                                                 height: 9.v,
                                                 width: 76.h,
                                                 radius: BorderRadius.circular(
                                                   4.h,
                                                 ),
-                                                margin: EdgeInsets.only(top: 1.v),
+                                                margin:
+                                                    EdgeInsets.only(top: 1.v),
                                               ),
                                             ),
                                             SizedBox(height: 1.v),
@@ -200,6 +202,16 @@ Widget QuitDialog(BuildContext context) {
                                         //     .then((value) => {if(value){
                                         //       Navigator.of(context).pop()
                                         //     }});
+                                        SystemNavigator.pop();
+                                        // FirebaseAuth.instance
+                                        //     .signOut()
+                                        //     .then((value) => {
+                                        //           Navigator.of(context)
+                                        //               .pushNamedAndRemoveUntil(
+                                        //                   AppRoutes
+                                        //                       .registerFormScreenPotratitV1ChildScreen,
+                                        //                   (route) => false)
+                                        //         });
                                       },
                                       child: Container(
                                         margin: EdgeInsets.only(right: 5.h),
@@ -221,14 +233,15 @@ Widget QuitDialog(BuildContext context) {
                                             Opacity(
                                               opacity: 0.62,
                                               child: CustomImageView(
-                                                imagePath:
-                                                    ImageConstant.imgExitBtnShine,
+                                                imagePath: ImageConstant
+                                                    .imgExitBtnShine,
                                                 height: 9.v,
                                                 width: 76.h,
                                                 radius: BorderRadius.circular(
                                                   4.h,
                                                 ),
-                                                margin: EdgeInsets.only(top: 1.v),
+                                                margin:
+                                                    EdgeInsets.only(top: 1.v),
                                               ),
                                             ),
                                             SizedBox(height: 1.v),

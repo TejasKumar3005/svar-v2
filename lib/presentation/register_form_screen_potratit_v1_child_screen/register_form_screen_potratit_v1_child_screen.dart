@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:svar_new/data/models/game_statsModel.dart';
 import 'package:svar_new/data/models/userModel.dart';
@@ -44,6 +45,10 @@ class RegisterFormScreenPotratitV1ChildScreenState
   @override
   void initState() {
     super.initState();
+      SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown
+    ]);
   }
 
   @override
@@ -149,14 +154,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    CustomImageView(
-                                      imagePath: ImageConstant.imgSettings,
-                                      width: 10.h,
-                                      margin: EdgeInsets.only(
-                                        top: 4.v,
-                                        bottom: 1.v,
-                                      ),
-                                    ),
+                                
                                     Padding(
                                       padding: EdgeInsets.only(left: 4.h),
                                       child: SizedBox(
