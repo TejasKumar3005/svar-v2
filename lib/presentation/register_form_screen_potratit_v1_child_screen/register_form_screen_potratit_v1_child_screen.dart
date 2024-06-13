@@ -45,10 +45,8 @@ class RegisterFormScreenPotratitV1ChildScreenState
   @override
   void initState() {
     super.initState();
-      SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown
-    ]);
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   }
 
   @override
@@ -154,7 +152,6 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                
                                     Padding(
                                       padding: EdgeInsets.only(left: 4.h),
                                       child: SizedBox(
@@ -250,19 +247,35 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                               phoneNumberController,
                                                           borderDecoration:
                                                               InputBorder.none,
+                                                              validator: (value){
+                                                                if(value!.length<10){
+                                                                  return "Please enter valid phone number";
+                                                                }else{
+                                                                  return null;
+                                                                }
+                                                              
+                                                              },
                                                           hintText:
                                                               "lbl_9312211596"
                                                                   .tr,
+                                                          contentPadding:
+                                                              EdgeInsets
+                                                                  .symmetric(
+                                                                      vertical:
+                                                                          4.v),
                                                         );
                                                       })),
                                             ),
                                             GestureDetector(
                                               onTap: () {
-                                                RegisterFormMethods methods =
-                                                    RegisterFormMethods(
-                                                        context: context);
+                                                
+                                              
+                                                  RegisterFormMethods methods =
+                                                      RegisterFormMethods(
+                                                          context: context);
 
-                                                methods.sendOtp();
+                                                  methods.sendOtp();
+                                                
                                               },
                                               child: Container(
                                                 width: 39.h,
@@ -270,7 +283,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                     bottom: 3.v),
                                                 padding: EdgeInsets.symmetric(
                                                   horizontal: 4.h,
-                                                  vertical: 2.v,
+                                                  vertical: 4.v,
                                                 ),
                                                 decoration: textCtrl.otpsending
                                                     ? null
@@ -410,6 +423,19 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                   borderDecoration:
                                                       InputBorder.none,
                                                   hintText: "otp".tr,
+                                                  validator: (String? value) {
+                                                    if (value == null ||
+                                                        value.isEmpty ||
+                                                        value.length < 6) {
+                                                      return "Please enter valid otp"
+                                                          .tr;
+                                                    } else {
+                                                      return null;
+                                                    }
+                                                  },
+                                                  contentPadding:
+                                                      EdgeInsets.symmetric(
+                                                          vertical: 4.v),
                                                 );
                                               })),
                                     ),
@@ -451,11 +477,27 @@ class RegisterFormScreenPotratitV1ChildScreenState
                               ? CircularProgressIndicator(
                                   color: appTheme.deepOrange200,
                                 )
-                              : CustomButton(type: ButtonType.Next, onPressed: () {
-                            RegisterFormMethods methods =
-                                RegisterFormMethods(context: context);
-                            methods.RegisterUser();
-                          },)
+                              : CustomButton(
+                                  type: ButtonType.Next,
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      if (textCtrl.otpSent == false) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content:
+                                              Text("Please send otp first".tr),
+                                          backgroundColor: Colors.red,
+                                        ));
+                                        return;
+                                      } else {
+                                        RegisterFormMethods methods =
+                                            RegisterFormMethods(
+                                                context: context);
+                                        methods.RegisterUser();
+                                      }
+                                    }
+                                  },
+                                )
                         ],
                       ),
                     ),
@@ -499,6 +541,14 @@ class RegisterFormScreenPotratitV1ChildScreenState
           controller: namePlaceholderController,
           hintText: "name".tr,
           autofocus: false,
+          contentPadding: EdgeInsets.symmetric(vertical: 4.v),
+          validator: (value){
+            if(value!.isEmpty){
+              return "Please enter name";
+            }else{
+              return null;
+            }
+          },
         );
       },
     );
@@ -513,6 +563,14 @@ class RegisterFormScreenPotratitV1ChildScreenState
         return CustomTextFormField(
           controller: addressGrpController,
           hintText: "address".tr,
+          contentPadding: EdgeInsets.symmetric(vertical: 4.v),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "err_msg_please_enter_valid_address".tr;
+            }
+            return null;
+          
+          },
         );
       },
     );
@@ -528,6 +586,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
           controller: emailController,
           hintText: "email".tr,
           textInputType: TextInputType.emailAddress,
+          contentPadding: EdgeInsets.symmetric(vertical: 4.v),
           validator: (value) {
             if (value == null || (!isValidEmail(value, isRequired: true))) {
               return "err_msg_please_enter_valid_email".tr;
@@ -554,6 +613,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
             alignment: Alignment.topCenter,
             obscureText: true,
             hintText: "password",
+            contentPadding: EdgeInsets.symmetric(vertical: 4.v),
           );
         },
       ),
