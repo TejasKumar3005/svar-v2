@@ -46,36 +46,36 @@ class GridItemWidget extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 8.0),
                   child: AutoSizeText(
                     gridItemModelObj.widget!,
-                    style: theme.textTheme.bodyLarge!.copyWith(fontSize: 41),
+                    style: theme.textTheme.bodyLarge!.copyWith(fontSize: 41, color: appTheme.whiteA70001),
                     maxLines: 1,
                     minFontSize: 8,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                   ),
                 ),
-                SizedBox(height: 8.v),
-                Container(
-                  height: 8.v,
-                  width: 45.h,
-                  decoration: BoxDecoration(
-                    color: appTheme.whiteA70001,
-                    borderRadius: BorderRadius.circular(
-                      5.h,
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                      5.h,
-                    ),
-                    child: LinearProgressIndicator(
-                      value: 0.39,
-                      backgroundColor: appTheme.whiteA70001,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        appTheme.teal90001,
-                      ),
-                    ),
-                  ),
-                ),
+                SizedBox(height: 2.v),
+              //   Container(
+              //     height: 10.v,
+              //     width: 45.h,
+              //     decoration: BoxDecoration(
+              //       color: appTheme.whiteA70001,
+              //       borderRadius: BorderRadius.circular(
+              //         5.h,
+              //       ),
+              //     ),
+              //     child: ClipRRect(
+              //       borderRadius: BorderRadius.circular(
+              //         5.h,
+              //       ),
+              //       child: LinearProgressIndicator(
+              //         value: 0.39,
+              //         backgroundColor: appTheme.whiteA70001,
+              //         valueColor: AlwaysStoppedAnimation<Color>(
+              //           appTheme.teal90001,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
               ],
             ),
             Align(

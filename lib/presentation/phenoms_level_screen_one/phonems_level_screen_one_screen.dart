@@ -84,6 +84,10 @@ class PhonemsLevelScreenOneScreenState
                   path: "assets/images/img_bush.png",
                   size: Size(80, 80),
                   repeatCountPerLevel: 0.5),
+              ImageParams(
+                path: "assets/images/svg/tree.svg",
+                size: Size(80, 80),
+                repeatCountPerLevel: 0.5,)
             ],
           // ),
         )
