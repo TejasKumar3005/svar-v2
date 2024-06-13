@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'models/log_in_sign_up_screen_potrait_model.dart';
@@ -31,6 +32,8 @@ class LogInSignUpScreenPotraitScreenState
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   }
 
   @override
@@ -50,18 +53,7 @@ class LogInSignUpScreenPotraitScreenState
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Row(
-                children: [
-                 CustomButton(
-                        type: ButtonType.Back,
-                        onPressed: () {
-                          NavigatorService.pushNamed(
-                            AppRoutes.welcomeScreenPotraitScreen,
-                          );
-                        }),
-                  Spacer()
-                ],
-              ),
+              
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 mainAxisSize: MainAxisSize.max,

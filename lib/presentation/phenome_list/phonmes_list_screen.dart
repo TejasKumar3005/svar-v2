@@ -78,7 +78,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 70.v),
+                      SizedBox(height: 10.v),
                       _buildGrid(context),
                     ],
                   ),
