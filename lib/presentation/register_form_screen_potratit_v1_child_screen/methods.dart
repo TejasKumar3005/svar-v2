@@ -22,7 +22,7 @@ class RegisterFormMethods {
         listen: false);
     provider.changeState();
     ctrler
-        .registerWithPhone("123456",UserModel(
+        .registeruserWithEmail(UserModel(
                           name: provider.namePlaceholderController.text,
                           email: provider.emailController.text,
                           password: provider.passwordController.text,

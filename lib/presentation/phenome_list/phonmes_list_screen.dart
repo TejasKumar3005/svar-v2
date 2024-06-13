@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_provider.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
@@ -33,7 +34,8 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
     final size = MediaQuery.of(context).size;
     final isLandscape = size.width > size.height;
     final padding = isLandscape
-        ? EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.05)
+        ? EdgeInsets.symmetric(
+            horizontal: size.width * 0.1, vertical: size.height * 0.05)
         : EdgeInsets.symmetric(horizontal: 29.h, vertical: 20.v);
 
     return SafeArea(
@@ -62,7 +64,8 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                       _buildAppBar(context),
                       SizedBox(height: 2.v),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 33.h, vertical: 8.v),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 33.h, vertical: 8.v),
                         decoration: AppDecoration.fillAmber.copyWith(
                           borderRadius: BorderRadiusStyle.roundedBorder27,
                         ),
@@ -96,13 +99,15 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         CustomButton(
-          type: ButtonType.Back, onPressed: () {
-          Navigator.pop(context);
-        }),
+            type: ButtonType.Back,
+            onPressed: () {
+              Navigator.pop(context);
+            }),
         CustomButton(
-          type: ButtonType.Menu, onPressed: () {
-          Navigator.pop(context);
-        }),
+            type: ButtonType.Menu,
+            onPressed: () {
+              Navigator.pop(context);
+            }),
       ],
     );
   }
@@ -127,17 +132,22 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
               ),
               itemCount: provider.phonmesListModelObj.gridItemList.length,
               itemBuilder: (context, index) {
-                GridItemModel model = provider.phonmesListModelObj.gridItemList[index];
-                return Align(
-                  child: GestureDetector(
-                    onTap: () {
-                      PhonmesListModel().onTapCharacter(context, model.widget!);
-                      print("hi");
-                      Navigator.pushNamed(context, AppRoutes.lingLearningScreen);
-                    },
-                    child: GridItemWidget(model),
-                  ),
-                );
+                GridItemModel model =
+                    provider.phonmesListModelObj.gridItemList[index];
+                return Consumer<LingLearningProvider>(
+                    builder: (context, provider, child) {
+                  return Align(
+                    child: GestureDetector(
+                      onTap: () {
+                    
+                            provider.setSelectedCharacter(model.widget!);
+                        Navigator.pushNamed(
+                            context, AppRoutes.lingLearningScreen);
+                      },
+                      child: GridItemWidget(model),
+                    ),
+                  );
+                });
               },
             );
           },

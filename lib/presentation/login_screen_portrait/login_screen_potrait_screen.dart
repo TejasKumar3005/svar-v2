@@ -100,22 +100,23 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                           SizedBox(
                             height: 15.v,
                           ),
-                          provider.otpsent
-                              ? Field(50.h, 'otp', provider.passController,
-                                  context, provider)
-                              : Container(),
+                         Field(50.h, 'email', provider.passController,
+                                  context, provider),
+                              
                           SizedBox(
                             height: 15.v,
                           ),
-                          provider.otpsent
-                              ? !provider.loading
-                                  ? GestureDetector(
+                          
+                               GestureDetector(
                                       onTap: () {
+                                        if(_formKey.currentState!.validate() && !provider.loading){
+
                                         LoginFormMethods methods =
                                             LoginFormMethods(context: context);
                                         methods.login();
+                                        }
                                       },
-                                      child: CustomImageView(
+                                      child: provider.loading? CircularProgressIndicator():CustomImageView(
                                         imagePath: ImageConstant.imgLoginBTn,
                                         width:
                                             MediaQuery.of(context).size.width *
@@ -124,10 +125,8 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                                         fit: BoxFit.contain,
                                       ),
                                     )
-                                  : CircularProgressIndicator(
-                                      color: appTheme.deepOrange200,
-                                    )
-                              : Container()
+                                  
+                              
                         ],
                       ),
                     ),
@@ -194,32 +193,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                 style: TextStyle(color: Colors.black, fontSize: 22.h),
                 decoration: InputDecoration(
                     hintText: name.tr,
-                    suffixIcon: name == "phone"
-                        ? (provider.sending
-                            ? CircularProgressIndicator()
-                            : GestureDetector(
-                              onTap: (){
-                                if(!provider.otpsent){
-                                  
-                                LoginFormMethods methods =
-                                            LoginFormMethods(context: context);
-                                        methods.sendOtp();
-                                }
-                              },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                      provider.otpsent
-                                          ? "ötp sent"
-                                          : "lbl_send_otp".tr,
-                                      style: TextStyle(
-                                        color:provider.otpsent?appTheme.green900: appTheme.orangeA200,
-                                        fontSize: 15.fSize,
-                                        fontWeight: FontWeight.w800,
-                                      )),
-                                ),
-                              ))
-                        : Container(height: 0.001,width: 0.01,),
+                  
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 22.h),
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,

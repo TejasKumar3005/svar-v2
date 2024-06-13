@@ -18,7 +18,7 @@ class LoginFormMethods {
         Provider.of<LoginScreenPotraitProvider>(context, listen: false);
     provider.changeState();
     ctrler
-        .login( "123456")
+        .login(provider.emailController.text.toString(),provider.passController.text.toString())
         .then((value) => {
               if (value)
                 {
