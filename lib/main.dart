@@ -11,6 +11,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/analytics/screen-tracking.dart';
 import 'package:svar_new/core/utils/firebaseoptions.dart';
+import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
 
@@ -154,6 +155,7 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
               create: (context) => UserDataProvider(),
             ),
+            ChangeNotifierProvider(create: (context) => LingLearningProvider())
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
