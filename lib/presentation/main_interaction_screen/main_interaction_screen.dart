@@ -107,19 +107,9 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                 // padding: EdgeInsets.symmetric(vertical: 32.v),
                 decoration: AppDecoration.outlineWhiteA.copyWith(
                   borderRadius: BorderRadiusStyle.roundedBorder20,
+                  image: DecorationImage(image: AssetImage(ImageConstant.thumbnailAuditory), fit: BoxFit.fill)
                 ),
-                child: Stack(
-                  children:[ 
-                  Positioned.fill(
-          child: ClipRRect(
-            borderRadius: BorderRadiusStyle.roundedBorder20,
-            child: SvgPicture.asset(
-              ImageConstant.thumbnailAuditory,
-              fit: BoxFit.fill, // Ensures the SVG covers the entire container
-            ),
-          ),
-        ),
-                    GestureDetector(
+                child:GestureDetector(
                     onTap: () {
                     NavigatorService.pushNamed(
                       AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen,
@@ -146,8 +136,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                         ),
                       ),
                     ),
-                  ),]
-                ),
+                  ),
               ),
             ),
             GestureDetector(
@@ -161,28 +150,9 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                 height: 150.v,
                 decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                   borderRadius: BorderRadiusStyle.roundedBorder20,
+                  image: DecorationImage(image: AssetImage(ImageConstant.thumbnailBarakhadi), fit: BoxFit.fill)
                 ),
-                child: Stack(
-                  children: [
-                      Positioned.fill(
-                        child: ClipRRect(
-              borderRadius: BorderRadiusStyle.roundedBorder20,
-              child: SvgPicture.asset(
-                ImageConstant.thumbnailBarakhadi,
-                fit: BoxFit.fill, // Ensures the SVG covers the entire container
-              ),
-                        ),
-                      ),
-                  //   Center(
-                  //   child: CustomImageView(
-                  //     height: 108.v,
-                  //     width: 134.h,
-                  //     fit: BoxFit.contain,
-                  //     imagePath: ImageConstant.imgLock,
-                  //   ),
-                  // ),
-                  ]
-                ),
+              
               ),
             ),
             GestureDetector(
@@ -197,28 +167,9 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                 height: 150.v,
                 decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                   borderRadius: BorderRadiusStyle.roundedBorder20,
+                  image: DecorationImage(image: AssetImage(ImageConstant.thumbnailPhonemes), fit: BoxFit.fill)
                 ),
-                child: Stack(
-                  children: [
-                      Positioned.fill(
-                        child: ClipRRect(
-              borderRadius: BorderRadiusStyle.roundedBorder20,
-              child: SvgPicture.asset(
-                ImageConstant.thumbnailPhonemes,
-                fit: BoxFit.fill, // Ensures the SVG covers the entire container
-              ),
-                        ),
-                      ),
-                  //   Center(
-                  //   child: CustomImageView(
-                  //     height: 108.v,
-                  //     width: 134.h,
-                  //     fit: BoxFit.contain,
-                  //     imagePath: ImageConstant.imgLock,
-                  //   ),
-                  // ),
-                  ]
-                ),
+              
               ),
             )
           ],

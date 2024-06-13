@@ -131,5 +131,6 @@ final Map<String, String> enUs = {
 
 // Validation Error String
 "err_msg_please_enter_valid_email": "Please enter valid email",
+"err_msg_please_enter_valid_address": "Please enter valid Address",
 };
 
