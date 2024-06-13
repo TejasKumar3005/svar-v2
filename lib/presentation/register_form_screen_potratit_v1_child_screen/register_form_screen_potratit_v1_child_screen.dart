@@ -41,6 +41,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
   TextEditingController phoneCtrl = TextEditingController();
   List<String> list = <String>["Guardian", "Mother", "Father"];
   String dropdownValue = "Guardian";
+  bool hide = true;
 
   @override
   void initState() {
@@ -105,7 +106,6 @@ class RegisterFormScreenPotratitV1ChildScreenState
                               ),
                             ),
                           ),
-                        
                         ],
                       ),
                     ),
@@ -236,14 +236,14 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                               phoneNumberController,
                                                           borderDecoration:
                                                               InputBorder.none,
-                                                              validator: (value){
-                                                                if(value!.length<10){
-                                                                  return "Please enter valid phone number";
-                                                                }else{
-                                                                  return null;
-                                                                }
-                                                              
-                                                              },
+                                                          validator: (value) {
+                                                            if (value!.length <
+                                                                10) {
+                                                              return "Please enter valid phone number";
+                                                            } else {
+                                                              return null;
+                                                            }
+                                                          },
                                                           hintText:
                                                               "lbl_9312211596"
                                                                   .tr,
@@ -255,56 +255,55 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                         );
                                                       })),
                                             ),
-                                            GestureDetector(
-                                              onTap: () {
-                                                
-                                              
-                                                  RegisterFormMethods methods =
-                                                      RegisterFormMethods(
-                                                          context: context);
+                                            // GestureDetector(
+                                            //   onTap: () {
 
-                                                  methods.sendOtp();
-                                                
-                                              },
-                                              child: Container(
-                                                width: 39.h,
-                                                margin: EdgeInsets.only(
-                                                    bottom: 3.v),
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: 4.h,
-                                                  vertical: 4.v,
-                                                ),
-                                                decoration: textCtrl.otpsending
-                                                    ? null
-                                                    : textCtrl.otpSent
-                                                        ? AppDecoration
-                                                            .outlineGreen
-                                                            .copyWith(
-                                                            borderRadius:
-                                                                BorderRadiusStyle
-                                                                    .roundedBorder5,
-                                                          )
-                                                        : AppDecoration
-                                                            .outlineOrangeA2001
-                                                            .copyWith(
-                                                            borderRadius:
-                                                                BorderRadiusStyle
-                                                                    .roundedBorder5,
-                                                          ),
-                                                child: textCtrl.otpsending
-                                                    ? Center(
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                        color: appTheme
-                                                            .deepOrange200,
-                                                      ))
-                                                    : Text(
-                                                        "lbl_send_otp".tr,
-                                                        style: CustomTextStyles
-                                                            .nunitoteal90003ExtraBold,
-                                                      ),
-                                              ),
-                                            )
+                                            //       RegisterFormMethods methods =
+                                            //           RegisterFormMethods(
+                                            //               context: context);
+
+                                            //       methods.sendOtp();
+
+                                            //   },
+                                            //   child: Container(
+                                            //     width: 39.h,
+                                            //     margin: EdgeInsets.only(
+                                            //         bottom: 3.v),
+                                            //     padding: EdgeInsets.symmetric(
+                                            //       horizontal: 4.h,
+                                            //       vertical: 4.v,
+                                            //     ),
+                                            //     decoration: textCtrl.otpsending
+                                            //         ? null
+                                            //         : textCtrl.otpSent
+                                            //             ? AppDecoration
+                                            //                 .outlineGreen
+                                            //                 .copyWith(
+                                            //                 borderRadius:
+                                            //                     BorderRadiusStyle
+                                            //                         .roundedBorder5,
+                                            //               )
+                                            //             : AppDecoration
+                                            //                 .outlineOrangeA2001
+                                            //                 .copyWith(
+                                            //                 borderRadius:
+                                            //                     BorderRadiusStyle
+                                            //                         .roundedBorder5,
+                                            //               ),
+                                            //     child: textCtrl.otpsending
+                                            //         ? Center(
+                                            //             child:
+                                            //                 CircularProgressIndicator(
+                                            //             color: appTheme
+                                            //                 .deepOrange200,
+                                            //           ))
+                                            //         : Text(
+                                            //             "lbl_send_otp".tr,
+                                            //             style: CustomTextStyles
+                                            //                 .nunitoteal90003ExtraBold,
+                                            //           ),
+                                            //   ),
+                                            // )
                                           ],
                                         ),
                                       ),
@@ -384,81 +383,81 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                   ],
                                 ),
                               ),
-                              Container(
-                                margin: EdgeInsets.symmetric(vertical: 12.v),
-                                padding: EdgeInsets.symmetric(horizontal: 6.h),
-                                decoration:
-                                    AppDecoration.outlineOrangeA200.copyWith(
-                                  borderRadius:
-                                      BorderRadiusStyle.roundedBorder5,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    SizedBox(
-                                      width: 110.h,
-                                      child: Padding(
-                                          padding: EdgeInsets.only(left: 19.h),
-                                          child: Selector<
-                                                  RegisterFormScreenPotratitV1ChildProvider,
-                                                  TextEditingController?>(
-                                              selector: (context, provider) =>
-                                                  provider.otpController,
-                                              builder: (context, otpController,
-                                                  child) {
-                                                return CustomTextFormField(
-                                                  controller: otpController,
-                                                  borderDecoration:
-                                                      InputBorder.none,
-                                                  hintText: "otp".tr,
-                                                  validator: (String? value) {
-                                                    if (value == null ||
-                                                        value.isEmpty ||
-                                                        value.length < 6) {
-                                                      return "Please enter valid otp"
-                                                          .tr;
-                                                    } else {
-                                                      return null;
-                                                    }
-                                                  },
-                                                  contentPadding:
-                                                      EdgeInsets.symmetric(
-                                                          vertical: 4.v),
-                                                );
-                                              })),
-                                    ),
-                                    // GestureDetector(
-                                    //   onTap: () {
+                              // Container(
+                              //   margin: EdgeInsets.symmetric(vertical: 12.v),
+                              //   padding: EdgeInsets.symmetric(horizontal: 6.h),
+                              //   decoration:
+                              //       AppDecoration.outlineOrangeA200.copyWith(
+                              //     borderRadius:
+                              //         BorderRadiusStyle.roundedBorder5,
+                              //   ),
+                              //   child: Row(
+                              //     mainAxisAlignment: MainAxisAlignment.center,
+                              //     crossAxisAlignment: CrossAxisAlignment.end,
+                              //     children: [
+                              //       SizedBox(
+                              //         width: 110.h,
+                              //         child: Padding(
+                              //             padding: EdgeInsets.only(left: 19.h),
+                              //             child: Selector<
+                              //                     RegisterFormScreenPotratitV1ChildProvider,
+                              //                     TextEditingController?>(
+                              //                 selector: (context, provider) =>
+                              //                     provider.otpController,
+                              //                 builder: (context, otpController,
+                              //                     child) {
+                              //                   return CustomTextFormField(
+                              //                     controller: otpController,
+                              //                     borderDecoration:
+                              //                         InputBorder.none,
+                              //                     hintText: "otp".tr,
+                              //                     validator: (String? value) {
+                              //                       if (value == null ||
+                              //                           value.isEmpty ||
+                              //                           value.length < 6) {
+                              //                         return "Please enter valid otp"
+                              //                             .tr;
+                              //                       } else {
+                              //                         return null;
+                              //                       }
+                              //                     },
+                              //                     contentPadding:
+                              //                         EdgeInsets.symmetric(
+                              //                             vertical: 4.v),
+                              //                   );
+                              //                 })),
+                              //       ),
+                              //       // GestureDetector(
+                              //       //   onTap: () {
 
-                                    //   },
-                                    //   child: Container(
-                                    //     width: 35.h,
-                                    //     margin: EdgeInsets.only(
-                                    //       left: 22.h,
-                                    //       top: 2.v,
-                                    //       bottom: 5.v,
-                                    //     ),
-                                    //     padding: EdgeInsets.symmetric(
-                                    //       horizontal: 5.h,
-                                    //       vertical: 1.v,
-                                    //     ),
-                                    //     decoration: AppDecoration
-                                    //         .outlineOrangeA2001
-                                    //         .copyWith(
-                                    //       borderRadius:
-                                    //           BorderRadiusStyle.roundedBorder5,
-                                    //     ),
-                                    //     child: Text(
-                                    //       "lbl_verify".tr,
-                                    //       style:
-                                    //           CustomTextStyles.nunitoteal90003,
-                                    //     ),
-                                    //   ),
-                                    // )
-                                  ],
-                                ),
-                              )
+                              //       //   },
+                              //       //   child: Container(
+                              //       //     width: 35.h,
+                              //       //     margin: EdgeInsets.only(
+                              //       //       left: 22.h,
+                              //       //       top: 2.v,
+                              //       //       bottom: 5.v,
+                              //       //     ),
+                              //       //     padding: EdgeInsets.symmetric(
+                              //       //       horizontal: 5.h,
+                              //       //       vertical: 1.v,
+                              //       //     ),
+                              //       //     decoration: AppDecoration
+                              //       //         .outlineOrangeA2001
+                              //       //         .copyWith(
+                              //       //       borderRadius:
+                              //       //           BorderRadiusStyle.roundedBorder5,
+                              //       //     ),
+                              //       //     child: Text(
+                              //       //       "lbl_verify".tr,
+                              //       //       style:
+                              //       //           CustomTextStyles.nunitoteal90003,
+                              //       //     ),
+                              //       //   ),
+                              //       // )
+                              //     ],
+                              //   ),
+                              // )
                             ],
                           ),
                           SizedBox(height: 22.v),
@@ -470,20 +469,11 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                   type: ButtonType.Next,
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
-                                      if (textCtrl.otpSent == false) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                          content:
-                                              Text("Please send otp first".tr),
-                                          backgroundColor: Colors.red,
-                                        ));
-                                        return;
-                                      } else {
+                                    
                                         RegisterFormMethods methods =
                                             RegisterFormMethods(
                                                 context: context);
                                         methods.RegisterUser();
-                                      }
                                     }
                                   },
                                 )
@@ -531,10 +521,10 @@ class RegisterFormScreenPotratitV1ChildScreenState
           hintText: "name".tr,
           autofocus: false,
           contentPadding: EdgeInsets.symmetric(vertical: 4.v),
-          validator: (value){
-            if(value!.isEmpty){
+          validator: (value) {
+            if (value!.isEmpty) {
               return "Please enter name";
-            }else{
+            } else {
               return null;
             }
           },
@@ -558,7 +548,6 @@ class RegisterFormScreenPotratitV1ChildScreenState
               return "err_msg_please_enter_valid_address".tr;
             }
             return null;
-          
           },
         );
       },
@@ -598,9 +587,20 @@ class RegisterFormScreenPotratitV1ChildScreenState
           return CustomTextFormField(
             width: 137.h,
             controller: passwordController,
+            suffix: GestureDetector(
+              onTap: (){
+                setState(() {
+                  hide = !hide;
+                });
+              },
+              child: Icon(
+                hide?Icons.visibility:Icons.visibility_off,
+                color: appTheme.orangeA200,
+              ),
+            ),
             // textInputAction: TextInputAction.done,
             alignment: Alignment.topCenter,
-            obscureText: true,
+            obscureText: hide,
             hintText: "password",
             contentPadding: EdgeInsets.symmetric(vertical: 4.v),
           );

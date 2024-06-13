@@ -217,18 +217,12 @@ class AuthConroller {
     });
   }
 
-  Future<bool> login(String sms) async {
+  Future<bool> login(String email,String password) async {
     try {
-      var provider = Provider.of<LoginScreenPotraitProvider>(
-          context!,
-          listen: false);
-      var otpId = provider.otpId;
-      if (otpId == "") {
-        print("optId is null");
-        return false;
-      }
-      UserCredential userCredential = await firebaseAuth.signInWithCredential(
-          PhoneAuthProvider.credential(verificationId: otpId, smsCode: sms));
+      
+      
+      UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(
+          email: email,password: password);
     
       if (userCredential.user != null) {
         return true;
