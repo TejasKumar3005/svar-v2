@@ -142,7 +142,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
             GestureDetector(
               onTap: (){
                 NavigatorService.pushNamed(
-                  AppRoutes.lingLearningScreen,
+                  AppRoutes.phonmesListScreen,
                 );
               },
               child: Container(
@@ -178,8 +178,9 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
           options: CarouselOptions(
             autoPlay: true,
             autoPlayCurve: Curves.decelerate,
-            enlargeCenterPage: false,
-        
+            enlargeCenterPage: true,
+            enlargeFactor: 0.5,
+
             viewportFraction: 0.4,
             autoPlayAnimationDuration: const Duration(milliseconds: 800),
           ),

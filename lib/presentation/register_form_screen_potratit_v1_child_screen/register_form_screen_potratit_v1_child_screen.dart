@@ -105,18 +105,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                               ),
                             ),
                           ),
-                          SizedBox(
-                            width: 10.h,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 1.h),
-                            child: CustomImageView(
-                              height: 38.adaptSize,
-                              width: 38.adaptSize,
-                              fit: BoxFit.contain,
-                              imagePath: ImageConstant.imgHomeBtn,
-                            ),
-                          )
+                        
                         ],
                       ),
                     ),
