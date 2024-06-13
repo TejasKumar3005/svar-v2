@@ -132,6 +132,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                   child: GestureDetector(
                     onTap: () {
                       PhonmesListModel().onTapCharacter(context, model.widget!);
+                      print("hi");
                       Navigator.pushNamed(context, AppRoutes.lingLearningScreen);
                     },
                     child: GridItemWidget(model),
