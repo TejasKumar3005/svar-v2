@@ -56,20 +56,20 @@ class PhonemsLevelScreenOneScreenState
             pathColor: appTheme.amber90001,
             shadowColor: appTheme.brown100,
             currentLevelImage: ImageParams(
-              path: "assets/images/img_image_83.png",
-              size: Size(44.v, 54.h),
+              path: "assets/images/Current_LVL.png",
+              size: Size(104.v, 104.h),
               onTap: (int level) {
               },
             ),
             lockedLevelImage: ImageParams(
-              path: "assets/images/img_image_83.png",
-              size: Size(44.v, 54.h),
+              path: "assets/images/Locked_LVL.png",
+              size: Size(104.v, 104.h),
               onTap: (int level) {
               },
             ),
             completedLevelImage: ImageParams(
-              path: "assets/images/img_image_83.png",
-              size: Size(44.v, 54.h),
+              path: "assets/images/Complete_LVL.png",
+              size: Size(104.v, 104.h),
               onTap: (int level) {
               },
             ),
@@ -78,14 +78,14 @@ class PhonemsLevelScreenOneScreenState
             //   size: Size(60, 60),
             // ),
             dashLengthFactor: 0.01,
-            pathStrokeWidth: 2.h,
+            pathStrokeWidth: 10.h,
             bgImagesToBePaintedRandomly: [
               ImageParams(
                   path: "assets/images/img_bush.png",
                   size: Size(80, 80),
                   repeatCountPerLevel: 0.5),
               ImageParams(
-                path: "assets/images/svg/tree.svg",
+                path: "assets/images/img_tree.png",
                 size: Size(80, 80),
                 repeatCountPerLevel: 0.5,)
             ],
