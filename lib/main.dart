@@ -44,7 +44,7 @@ void main() async {
   } else {
     await Firebase.initializeApp();
   }
-
+  
   final AnalyticsService analyticsService = AnalyticsService();
   await analyticsService.logOpenApp();
 

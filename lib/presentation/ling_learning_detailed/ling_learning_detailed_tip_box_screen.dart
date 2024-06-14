@@ -187,6 +187,7 @@ class LingLearningDetailedTipBoxScreenState extends State<LingLearningDetailedTi
     bool done = await context.read<LingLearningDetailedTipBoxProvider>().toggleRecording(context);
     if (done) {
       Directory tempDir = await getTemporaryDirectory();
+      print("hereafewfwef");
       String tempPath = tempDir.path;
       String path = '$tempPath/audio.wav';
       var ans = await sendWavFile(path, model.typeTxt.value);

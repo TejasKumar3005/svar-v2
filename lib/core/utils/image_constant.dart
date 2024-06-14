@@ -22,7 +22,7 @@ class ImageConstant {
   static String imgMenuBTn = '$imagePath/menu_btn.png';
   static String imgProfileBg = '$imagePath/bg_user_profile.png';
   static String imgMascotBGProfile = '$imagePath/mascot_bg_profile.png';
-  static String imgShine = '$imagePath/shine.png';
+  static String imgShine = '$imagePath/svg/Shine.svg';
   static String imgAuditorybg = '$imagePath/auditory_bg.png';
   static String imgEllipse177 = '$imagePath/img_ellipse_177.png';
   static String imgSpectrum = '$imagePath/spectrum.png';
