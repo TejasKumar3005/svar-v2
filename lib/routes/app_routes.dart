@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/auditory_screen_assessment_screen_audio_visual_one_screen.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/auditory_screen_assessment_screen_audio_visual_resized_screen.dart.dart';
@@ -47,8 +45,8 @@ class AppRoutes {
   static const String loadingScreen = '/loading_screen';
 
   static const String welcomeScreen = '/welcome_screen';
-  static const String auditoryScreenAssessmentScreenAudioVisualResizScreen =
-      "/auditory_screen_assessment_audio_visual_resiz_screen";
+  // static const String auditoryScreenAssessmentScreenAudioVisualResizScreen =
+  //     "/auditory_screen_assessment_audio_visual_resiz_screen";
   static const String phonemsLevelScreenTwoScreen =
       '/phonems_level_screen_two_screen';
 
@@ -58,8 +56,8 @@ class AppRoutes {
   static const String auditoryScreenAssessmentScreenAudioVisualResizedScreen =
       '/auditory_screen_assessment_screen_audio_visual_resized_screen';
 
-  static const String auditoryScreenAssessmentScreenVisualAudioResizScreen =
-      '/auditory_screen_assessment_screen_visual_audio_resiz_screen';
+  // static const String auditoryScreenAssessmentScreenVisualAudioResizScreen =
+  //     '/auditory_screen_assessment_screen_visual_audio_resiz_screen';
 
   static const String auditoryScreenVisualLearningScreenResizedScreen =
       '/auditory_screen_visual_learning_screen_resized_screen';
@@ -97,7 +95,7 @@ class AppRoutes {
   static const String userProfileScreen = '/user_profile';
 
   static Map<String, WidgetBuilder> get routes => {
-    auditoryScreenAssessmentScreenAudioVisualResizScreen:AuditoryScreenAssessmentScreenAudioVisualResizScreen.builder,
+        // auditoryScreenAssessmentScreenAudioVisualResizScreen:AuditoryScreenAssessmentScreenAudioVisualResizScreen.builder,
         welcomeScreenPotraitScreen: WelcomeScreenPotraitScreen.builder,
         logInSignUpScreenPotraitScreen: LogInSignUpScreenPotraitScreen.builder,
         loginScreenPotraitScreen: LoginScreenPotraitScreen.builder,
@@ -111,8 +109,8 @@ class AppRoutes {
         phonemsLevelScreenOneScreen: PhonemsLevelScreenOneScreen.builder,
         auditoryScreenAssessmentScreenAudioVisualResizedScreen:
             AuditoryScreenAssessmentScreenAudioVisualOneScreen.builder,
-        auditoryScreenAssessmentScreenVisualAudioResizScreen:
-            AuditoryScreenAssessmentScreenVisualAudioResizScreen.builder, // will have to change the route to learning pathway
+        // auditoryScreenAssessmentScreenVisualAudioResizScreen:
+        //     AuditoryScreenAssessmentScreenVisualAudioResizScreen.builder, // will have to change the route to learning pathway
         auditoryScreenVisualLearningScreenResizedScreen:
             AuditoryScreenVisualLearningScreenResizedScreen.builder,
         lingSoundAssessmentScreen: LingSoundAssessmentScreen.builder,
@@ -132,8 +130,6 @@ class AppRoutes {
         tipBoxVideoScreen: TipBoxVideoScreen.builder,
         appNavigationScreen: AppNavigationScreen.builder,
         initialRoute: LoadingScreen.builder,
-        userProfileScreen:UserProfileScreen.builder
-
+        userProfileScreen: UserProfileScreen.builder
       };
 }
-

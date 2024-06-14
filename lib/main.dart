@@ -44,7 +44,7 @@ void main() async {
   } else {
     await Firebase.initializeApp();
   }
-  
+
   final AnalyticsService analyticsService = AnalyticsService();
   await analyticsService.logOpenApp();
 
@@ -155,7 +155,7 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
               create: (context) => UserDataProvider(),
             ),
-            ChangeNotifierProvider(create: (context) => LingLearningProvider())
+            ChangeNotifierProvider(create: (context) => LingLearningProvider()),
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
@@ -176,7 +176,8 @@ class MyApp extends StatelessWidget {
                 supportedLocales: locals,
                 initialRoute: auth.currentUser == null
                     ? AppRoutes.tipBoxVideoScreen
-                        : AppRoutes.loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                    : AppRoutes
+                        .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
               );
             },
