@@ -11,6 +11,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/analytics/screen-tracking.dart';
 import 'package:svar_new/core/utils/firebaseoptions.dart';
+import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/provider/auditory_screen_assessment_screen_audio_visual_provider.dart';
+import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/provider/auditory_screen_assessment_screen_audio_visual_resized_provider.dart';
+import 'package:svar_new/presentation/auditory_screen_assessment_visual/provider/auditory_screen_assessment_screen_visual_audio_resiz_provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
@@ -156,19 +159,12 @@ class MyApp extends StatelessWidget {
               create: (context) => UserDataProvider(),
             ),
             ChangeNotifierProvider(create: (context) => LingLearningProvider()),
-               ChangeNotifierProvider(
-                create: (context) =>
-                    AuditoryScreenAssessmentScreenAudioVisualOneProvider()),
             ChangeNotifierProvider(
                 create: (context) =>
-                    AuditoryScreenAssessmentScreenVisualAudioProvider()),
-            ChangeNotifierProvider(
-              create: (context) =>
-                  AuditoryScreenAssessmentScreenVisualAudioResizProvider(),
-            ),
+                    AuditoryScreenAssessmentScreenAudioVisualProvider()),
             ChangeNotifierProvider(
                 create: (context) =>
-                    AuditoryScreenAssessmentScreenAudioVisualResizedProvider())
+                    AuditoryScreenAssessmentScreenVisualAudioResizProvider())
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
@@ -188,11 +184,9 @@ class MyApp extends StatelessWidget {
                 ],
                 supportedLocales: locals,
                 initialRoute: auth.currentUser == null
-                    ? AppRoutes.logInSignUpScreenPotraitScreen
+                    ? AppRoutes.tipBoxVideoScreen
                     : AppRoutes
                         .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
-                    // ? AppRoutes.logInSignUpScreenPotraitScreen
-                    //     : AppRoutes.loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
               );
             },
