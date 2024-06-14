@@ -36,7 +36,9 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
   @override
   Widget build(BuildContext context) {
     var userprovider = context.watch<UserDataProvider>();
+    print(userprovider.parentaltips);
     var levelprovider = context.watch<LingLearningProvider>();
+    print(levelprovider.selectedCharacter);
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -47,40 +49,45 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
                 image: AssetImage("assets/images/tip_vdo.png"),
                 fit: BoxFit.fill),
           ),
-          child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 74.h,
-              vertical: 53.v,
-            ),
-            decoration: AppDecoration.outlineBlack9006.copyWith(
-              borderRadius: BorderRadiusStyle.roundedBorder1,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildAppBar(context),
-                Text(
-                  "msg_parental_tip_box".tr,
-                  style: CustomTextStyles.headlineLargeBlack,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildAppBar(context),
+              Text(
+                "msg_parental_tip_box".tr,
+                style: CustomTextStyles.headlineLargeBlack,
+              ),
+              SizedBox(height: 12.v),
+              Image(
+                image: NetworkImage(
+                  userprovider.parentaltips[levelprovider.selectedCharacter] !=
+                          null
+                      ? userprovider
+                              .parentaltips[levelprovider.selectedCharacter]
+                          ["image"]
+                      : "",
                 ),
-                SizedBox(height: 12.v),
-                Image(image: NetworkImage(userprovider.parentaltips[levelprovider.selectedCharacter]!.image,),  height: 219.v,
-                  width: 492.h,fit: BoxFit.contain,),
-                
-                Container(
-                  width: 593.h,
-                  child: Text(
-                    userprovider.parentaltips[levelprovider.selectedCharacter]!.tips,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: CustomTextStyles.titleMediumNunitoSansTeal900,
-                  ),
+                height: 219.v,
+                width: 492.h,
+                fit: BoxFit.contain,
+              ),
+              Container(
+                width: 593.h,
+                child: Text(
+                  userprovider.parentaltips[levelprovider.selectedCharacter] !=
+                          null
+                      ? userprovider
+                          .parentaltips[levelprovider.selectedCharacter]["tips"]
+                      : "tips",
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: CustomTextStyles.titleMediumNunitoSansTeal900,
                 ),
-                SizedBox(height: 2.v)
-              ],
-            ),
+              ),
+              SizedBox(height: 2.v)
+            ],
           ),
         ),
       ),
@@ -89,39 +96,36 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
 
   /// Section Widget
   Widget _buildAppBar(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: GestureDetector(
-        onTap: () {
-          onTapAppBar(context);
-        },
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(29.h, 36.v, 24.h, 358.v),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 1.h),
-                child: CustomButton(
-                    type: ButtonType.Back,
-                    onPressed: () {
-                      NavigatorService.pushNamed(AppRoutes.lingLearningScreen);
-                    }),
-              ),
-              Spacer(),
-              Padding(
-                padding: EdgeInsets.only(left: 1.h),
-                child: CustomButton(type: ButtonType.Replay, onPressed: () {}),
-              ),
-              SizedBox(width: 5),
-              Padding(
-                padding: EdgeInsets.only(left: 1.h),
-                child:
-                    CustomButton(type: ButtonType.FullVolume, onPressed: () {}),
-              )
-            ],
-          ),
+    return GestureDetector(
+      onTap: () {
+        onTapAppBar(context);
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 20.v),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 1.h),
+              child: CustomButton(
+                  type: ButtonType.Back,
+                  onPressed: () {
+                    NavigatorService.pushNamed(AppRoutes.lingLearningScreen);
+                  }),
+            ),
+            Spacer(),
+            Padding(
+              padding: EdgeInsets.only(left: 1.h),
+              child: CustomButton(type: ButtonType.Replay, onPressed: () {}),
+            ),
+            SizedBox(width: 5),
+            Padding(
+              padding: EdgeInsets.only(left: 1.h),
+              child:
+                  CustomButton(type: ButtonType.FullVolume, onPressed: () {}),
+            )
+          ],
         ),
       ),
     );

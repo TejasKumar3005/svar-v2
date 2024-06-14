@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 
 Widget circularScore() {
   return Container(
@@ -84,7 +85,11 @@ Widget circularScore() {
             gradientColors: [Color(0xFFFFBD5A),Color(0xFFF0884A), Color(0xFFFF5F00)], // Gradient colors
             strokeWidth: 10.0, // Width of the stroke
           ),
-            
+            Row(
+              children: [
+                CustomButton(type: ButtonType.Next, onPressed: (){})
+              ],
+            )
           ],
         ),
       ],
