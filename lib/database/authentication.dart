@@ -300,14 +300,15 @@ class AuthConroller {
             access_token: credential.accessToken.toString(),
             subscription_status: "NO",
             mobile: "",
-            gift_purchase_history: [],
-            gameStats: GameStatsModel(
-                gifts: [],
-                progressScore: 0.0,
-                badges_earned: [],
-                levels_on: [],
-                exercises: [],
-                current_level: 0));
+            // gift_purchase_history: [],
+            // gameStats: GameStatsModel(
+            //     gifts: [],
+            //     progressScore: 0.0,
+            //     badges_earned: [],
+            //     levels_on: [],
+            //     exercises: [],
+            //     current_level: 0)
+                );
         // UserDatabase(uid: userCredential.user!.uid!).saveUserData(userModel);
         // UserDatabase(uid: userCredential.user!.uid!).getUserData();
         return userModel;

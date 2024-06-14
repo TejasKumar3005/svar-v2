@@ -36,15 +36,28 @@ class LoadingScreenState extends State<LoadingScreen>
     ]);
   }
 
-  void getUserData(BuildContext context) {
-    UserData userData = UserData(uid: FirebaseAuth.instance.currentUser!.uid,buildContext: context);
-    userData.getUserData().then((value) => {
-          if (value)
-            {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  AppRoutes.mainInteractionScreen, (route) => false)
-            }
-        });
+  void getUserData(BuildContext context) async{
+   try {
+    UserData userData = UserData(
+      uid: FirebaseAuth.instance.currentUser!.uid,
+      buildContext: context,
+    );
+
+    // Run both futures concurrently and wait for both to complete
+    await Future.wait([
+      userData.getUserData(),
+      userData.getParentalTip(),
+    ]);
+
+    // Navigate after both functions are complete
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      AppRoutes.mainInteractionScreen, 
+      (route) => false,
+    );
+  } catch (error) {
+    // Handle any exceptions that occur during the process
+    print('Error occurred: $error');
+  }
   }
 
   @override

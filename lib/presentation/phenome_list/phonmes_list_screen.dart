@@ -34,7 +34,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
     final isLandscape = size.width > size.height;
     final padding = isLandscape
         ? EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.05)
-        : EdgeInsets.symmetric(horizontal: 29.h, vertical: 20.v);
+        : EdgeInsets.symmetric(horizontal: size.width * 0.07, vertical: size.height * 0.03);
 
     return SafeArea(
       child: Scaffold(
@@ -55,14 +55,14 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(height: 5.v),
+                SizedBox(height: size.height * 0.01),
                 Expanded(
                   child: Column(
                     children: [
                       _buildAppBar(context),
-                      SizedBox(height: 2.v),
+                      SizedBox(height: size.height * 0.02),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 33.h, vertical: 8.v),
+                        padding: EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.01),
                         decoration: AppDecoration.fillAmber.copyWith(
                           borderRadius: BorderRadiusStyle.roundedBorder27,
                         ),
@@ -70,15 +70,19 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(width: 20.h),
-                            Text(
-                              "msg_let_s_learn_phonemes".tr.toUpperCase(),
-                              style: theme.textTheme.headlineMedium,
+                            SizedBox(width: size.width * 0.05),
+                            Expanded(
+                              child: Text(
+                                "msg_let_s_learn_phonemes".tr.toUpperCase(),
+                                style: theme.textTheme.headlineMedium,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 10.v),
+                      SizedBox(height: size.height * 0.02),
                       _buildGrid(context),
                     ],
                   ),
@@ -96,13 +100,17 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         CustomButton(
-          type: ButtonType.Back, onPressed: () {
-          Navigator.pop(context);
-        }),
+          type: ButtonType.Back,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         CustomButton(
-          type: ButtonType.Menu, onPressed: () {
-          Navigator.pop(context);
-        }),
+          type: ButtonType.Menu,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ],
     );
   }
@@ -122,8 +130,8 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
               shrinkWrap: true,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
+                crossAxisSpacing: size.width * 0.02,
+                mainAxisSpacing: size.height * 0.02,
               ),
               itemCount: provider.phonmesListModelObj.gridItemList.length,
               itemBuilder: (context, index) {
@@ -131,7 +139,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                 return Align(
                   child: GestureDetector(
                     onTap: () {
-                      PhonmesListModel().onTapCharacter(context, model.widget!);
+                      PhonmesListModel().onTapCharacter(context, model.character!);
                       Navigator.pushNamed(context, AppRoutes.lingLearningScreen);
                     },
                     child: GridItemWidget(model),

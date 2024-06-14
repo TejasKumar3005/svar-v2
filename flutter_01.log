@@ -1,0 +1,96 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter run --machine --start-paused -d chrome --devtools-server-address http://127.0.0.1:9100/ --target /Users/anurag1104/Desktop/svar-v2/lib/main.dart
+
+## exception
+
+FileSystemException: FileSystemException: readInto failed, path = '/Users/anurag1104/Desktop/svar-v2/.dart_tool/version' (OS Error: Operation canceled, errno = 89)
+
+```
+#0      _RandomAccessFile.readIntoSync (dart:io/file_impl.dart:835:7)
+#1      _File.readAsBytesSync (dart:io/file_impl.dart:593:35)
+#2      _File.readAsStringSync (dart:io/file_impl.dart:624:18)
+#3      ForwardingFile.readAsStringSync (package:file/src/forwarding/forwarding_file.dart:99:16)
+#4      ErrorHandlingFile.readAsStringSync.<anonymous closure> (package:flutter_tools/src/base/error_handling_io.dart:217:22)
+#5      _runSync (package:flutter_tools/src/base/error_handling_io.dart:587:14)
+#6      ErrorHandlingFile.readAsStringSync (package:flutter_tools/src/base/error_handling_io.dart:216:12)
+#7      _DefaultPub.get (package:flutter_tools/src/dart/pub.dart:302:21)
+#8      FlutterCommand.verifyThenRunCommand (package:flutter_tools/src/runner/flutter_command.dart:1724:17)
+<asynchronous suspension>
+#9      FlutterCommand.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command.dart:1394:27)
+<asynchronous suspension>
+#10     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:153:19)
+<asynchronous suspension>
+#11     CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+<asynchronous suspension>
+#12     FlutterCommandRunner.runCommand.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:372:9)
+<asynchronous suspension>
+#13     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:153:19)
+<asynchronous suspension>
+#14     FlutterCommandRunner.runCommand (package:flutter_tools/src/runner/flutter_command_runner.dart:308:5)
+<asynchronous suspension>
+#15     run.<anonymous closure>.<anonymous closure> (package:flutter_tools/runner.dart:130:9)
+<asynchronous suspension>
+#16     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:153:19)
+<asynchronous suspension>
+#17     main (package:flutter_tools/executable.dart:93:3)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[!] Flutter (Channel stable, 3.22.0, on macOS 14.5 23F79 darwin-arm64, locale en-IN)
+    • Flutter version 3.22.0 on channel stable at /Users/anurag1104/Downloads/flutter 
+    ! The flutter binary is not on your path. Consider adding /Users/anurag1104/Downloads/flutter /bin to your path.
+    ! The dart binary is not on your path. Consider adding /Users/anurag1104/Downloads/flutter /bin to your path.
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision 5dcb86f68f (5 weeks ago), 2024-05-09 07:39:20 -0500
+    • Engine revision f6344b75dc
+    • Dart version 3.4.0
+    • DevTools version 2.34.3
+    • If those were intentional, you can disregard the above warnings; however it is recommended to use "git" directly to perform update checks and upgrades.
+
+[✓] Android toolchain - develop for Android devices (Android SDK version 34.0.0)
+    • Android SDK at /Users/anurag1104/Library/Android/sdk
+    • Platform android-34, build-tools 34.0.0
+    • Java binary at: /Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java
+    • Java version OpenJDK Runtime Environment (build 17.0.9+0-17.0.9b1087.7-11185874)
+    • All Android licenses accepted.
+
+[!] Xcode - develop for iOS and macOS
+    ✗ Xcode installation is incomplete; a full installation is necessary for iOS and macOS development.
+      Download at: https://developer.apple.com/xcode/
+      Or install Xcode via the App Store.
+      Once installed, run:
+        sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+        sudo xcodebuild -runFirstLaunch
+    • CocoaPods version 1.14.3
+
+[✓] Chrome - develop for the web
+    • Chrome at /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+
+[✓] Android Studio (version 2023.2)
+    • Android Studio at /Applications/Android Studio.app/Contents
+    • Flutter plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/9212-flutter
+    • Dart plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/6351-dart
+    • Java version OpenJDK Runtime Environment (build 17.0.9+0-17.0.9b1087.7-11185874)
+
+[✓] VS Code (version 1.87.2)
+    • VS Code at /Users/anurag1104/Downloads/Visual Studio Code.app/Contents
+    • Flutter extension version 3.90.0
+
+[✓] Connected device (2 available)
+    • macOS (desktop) • macos  • darwin-arm64   • macOS 14.5 23F79 darwin-arm64
+    • Chrome (web)    • chrome • web-javascript • Google Chrome 125.0.6422.142
+
+[✓] Network resources
+    • All expected network resources are available.
+
+! Doctor found issues in 2 categories.
+```

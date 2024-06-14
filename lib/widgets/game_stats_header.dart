@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
 class AppStatsHeader extends StatelessWidget {
@@ -11,16 +12,15 @@ class AppStatsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var provider = context.watch<UserDataProvider>();
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SvgPicture.asset(
-                ImageConstant.imgAvatar,
-                
-                height: 38.adaptSize,
+          ImageConstant.imgAvatar,
+          height: 38.adaptSize,
           width: 38.adaptSize,
-              ),
-      
+        ),
         Container(
           height: 31.v,
           width: 140.h,
@@ -63,13 +63,12 @@ class AppStatsHeader extends StatelessWidget {
                         ImageConstant.imgStar14,
                         height: 26.adaptSize,
                         width: 26.adaptSize,
-                        
                         alignment: Alignment.center,
                       ),
                       Align(
                         alignment: Alignment.center,
                         child: Text(
-                          "lbl_10".tr,
+                          provider.userModel.auditory_current_level.toString(),
                           style: CustomTextStyles.nunitoWhiteA70001Black6,
                         ),
                       )
@@ -304,11 +303,7 @@ class AppStatsHeader extends StatelessWidget {
         ),
         Padding(
           padding: EdgeInsets.only(left: 5.h),
-          child: CustomButton(
-              type: ButtonType.Menu,
-              onPressed: () {
-               
-              }),
+          child: CustomButton(type: ButtonType.Menu, onPressed: () {}),
         )
       ],
     );

@@ -155,7 +155,7 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
               create: (context) => UserDataProvider(),
             ),
-            ChangeNotifierProvider(create: (context) => LingLearningProvider())
+            ChangeNotifierProvider(create: (context) => LingLearningProvider()),
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
@@ -175,8 +175,9 @@ class MyApp extends StatelessWidget {
                 ],
                 supportedLocales: locals,
                 initialRoute: auth.currentUser == null
-                    ? AppRoutes.logInSignUpScreenPotraitScreen
-                        : AppRoutes.loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                    ? AppRoutes.tipBoxVideoScreen
+                    : AppRoutes
+                        .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
               );
             },

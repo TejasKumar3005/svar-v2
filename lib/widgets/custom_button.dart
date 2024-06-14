@@ -17,6 +17,7 @@ enum ButtonType {
   FullVolume,
   Menu,
   Tip,
+  Mic,
   // Add more button types as needed
 }
 
@@ -119,6 +120,12 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.Tip:
         imagePath = ImageConstant.imgTipBtn;
+        width = 35;
+        height = 35;
+        isSvg = true;
+        break;
+      case ButtonType.Mic:  
+        imagePath = ImageConstant.micBtn;
         width = 35;
         height = 35;
         isSvg = true;

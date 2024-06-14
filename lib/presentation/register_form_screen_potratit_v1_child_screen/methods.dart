@@ -27,13 +27,12 @@ class RegisterFormMethods {
                           email: provider.emailController.text,
                           password: provider.passwordController.text,
                           mobile: provider.phoneNumberController.text,
-                          gameStats: GameStatsModel(
-                              gifts: [],
-                              progressScore: 0.0,
-                              badges_earned: [],
-                              levels_on: [],
-                              exercises: [],
-                              current_level: 0)))
+                          address: provider.addressGrpController.text,
+                          phoneme_current_level: 0,
+                          auditory_current_level: 0,
+                          score: 0,
+                          
+                        ))
         .then((value) => {
               if (value)
                 {

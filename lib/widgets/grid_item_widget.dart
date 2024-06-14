@@ -5,7 +5,6 @@ import 'package:svar_new/widgets/grid_item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 
-// ignore: must_be_immutable
 class GridItemWidget extends StatelessWidget {
   GridItemWidget(
     this.gridItemModelObj, {
@@ -28,67 +27,77 @@ class GridItemWidget extends StatelessWidget {
           color: appTheme.whiteA70001,
           width: 3.h,
         ),
-        borderRadius: BorderRadiusStyle.roundedBorder20,
+        borderRadius: BorderRadiusStyle.roundedBorder10,
       ),
       child: Container(
-        height: 150.v,
-        width: 118.h,
         decoration: AppDecoration.outlineWhiteA700015.copyWith(
-          borderRadius: BorderRadiusStyle.roundedBorder20,
+          borderRadius: BorderRadiusStyle.roundedBorder10,
         ),
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            double fontSize = constraints.maxWidth * 0.5;
+            double progressHeight = constraints.maxHeight * 0.1;
+            double progressWidth = constraints.maxWidth * 0.8;
+            double gapHeight = constraints.maxHeight * 0.05; // Dynamic gap
+
+            return Stack(
+              alignment: Alignment.topCenter,
               children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0),
-                  child: AutoSizeText(
-                    gridItemModelObj.widget!,
-                    style: theme.textTheme.bodyLarge!.copyWith(fontSize: 41, color: appTheme.whiteA70001),
-                    maxLines: 1,
-                    minFontSize: 8,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: AutoSizeText(
+                        gridItemModelObj.character!,
+                        style: theme.textTheme.bodyLarge!.copyWith(
+                          fontSize: fontSize, 
+                          color: appTheme.whiteA70001,
+                        ),
+                        maxLines: 1,
+                        minFontSize: 8,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(height: gapHeight), // Dynamic gap
+                    Container(
+                      height: progressHeight,
+                      width: progressWidth,
+                      decoration: BoxDecoration(
+                        color: appTheme.whiteA70001,
+                        borderRadius: BorderRadius.circular(
+                          progressHeight * 0.5,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          progressHeight * 0.5,
+                        ),
+                        child: LinearProgressIndicator(
+                          value: 0.39,
+                          backgroundColor: appTheme.whiteA70001,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            appTheme.teal90001,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: CustomImageView(
+                    imagePath: ImageConstant.imgShine,
+                    height: constraints.maxHeight * 0.20,
+                    width: constraints.maxWidth * 0.25,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.topLeft,
                   ),
                 ),
-                SizedBox(height: 2.v),
-              //   Container(
-              //     height: 10.v,
-              //     width: 45.h,
-              //     decoration: BoxDecoration(
-              //       color: appTheme.whiteA70001,
-              //       borderRadius: BorderRadius.circular(
-              //         5.h,
-              //       ),
-              //     ),
-              //     child: ClipRRect(
-              //       borderRadius: BorderRadius.circular(
-              //         5.h,
-              //       ),
-              //       child: LinearProgressIndicator(
-              //         value: 0.39,
-              //         backgroundColor: appTheme.whiteA70001,
-              //         valueColor: AlwaysStoppedAnimation<Color>(
-              //           appTheme.teal90001,
-              //         ),
-              //       ),
-              //     ),
-              //   ),
               ],
-            ),
-            Align(
-              alignment: Alignment.topLeft,
-              child: CustomImageView(
-                imagePath: ImageConstant.imgShine,
-                height: 23.v,
-                width: 30.h,
-                fit: BoxFit.contain,
-                alignment: Alignment.topLeft,
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
