@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
@@ -21,6 +20,10 @@ class LingLearningScreen extends StatefulWidget {
 }
 
 class LingLearningScreenState extends State<LingLearningScreen> {
+  final List<String> characters = [
+    'क', 'ख', 'ग', 'घ', 'च', 'छ', 'ज', 'झ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 'य', 'र', 'ल', 'व', 'श', 'ष', 'स', 'ह'
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -28,8 +31,11 @@ class LingLearningScreenState extends State<LingLearningScreen> {
 
   @override
   Widget build(BuildContext context) {
+    
     LingLearningProvider lingLearningProvider =
         context.watch<LingLearningProvider>();
+        print("1");
+        print(lingLearningProvider.selectedCharacter);
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -46,6 +52,42 @@ class LingLearningScreenState extends State<LingLearningScreen> {
               Column(
                 children: [
                   _buildAppBar(context),
+                  Expanded(
+                    child: GridView.builder(
+                      padding: EdgeInsets.all(16.0),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 5,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
+                      ),
+                      itemCount: characters.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            lingLearningProvider.setSelectedCharacter(characters[index]);
+                          },
+                          child: Card(
+                            elevation: 4,
+                            child: Center(
+                              child: Text(
+                                characters[index],
+                                style: TextStyle(fontSize: 24),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  if (lingLearningProvider.selectedCharacter.isNotEmpty)
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          lingLearningProvider.selectedCharacter,
+                          style: TextStyle(fontSize: 100),
+                        ),
+                      ),
+                    ),
                 ],
               ),
               Positioned(
@@ -78,8 +120,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
               Positioned(
                 right: 10,
                 bottom: 50,
-
-                child:Container(
+                child: Container(
                   height: 70,
                   width: 100,
                   child: CustomButton(
@@ -87,7 +128,6 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                     onPressed: () {},
                   ),
                 ),
-                
               ),
             ],
           ),
@@ -98,7 +138,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
 
   Widget _buildAppBar(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30,vertical: 30),
+      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -115,7 +155,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
               );
             },
           ),
-           SizedBox(width: 5,),
+          SizedBox(width: 5,),
           CustomButton(
             type: ButtonType.FullVolume,
             onPressed: () {},

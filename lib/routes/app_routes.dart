@@ -8,7 +8,7 @@ import 'package:svar_new/presentation/auditory_screen_assessment_visual/auditory
 import 'package:svar_new/presentation/auditory_screen_assessment_visual/auditory_screen_assessment_screen_visual_audio_screen.dart';
 import 'package:svar_new/presentation/auditory_screen_visual_learning_screen/auditory_screen_visual_learning_screen_resized_screen.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_screen.dart';
-import 'package:svar_new/presentation/ling_learning_detailed/ling_learning_detailed_tip_box_screen.dart.dart';
+import 'package:svar_new/presentation/ling_learning_detailed/ling_learning_detailed_tip_box_screen.dart';
 import 'package:svar_new/presentation/ling_learning_quick_tip/ling_learning_quick_tip_screen.dart.dart';
 import 'package:svar_new/presentation/ling_sound_assessment/ling_sound_assessment_screen.dart.dart';
 import 'package:svar_new/presentation/ling_sound_assessment_screen_correct/ling_sound_assessment_screen_correct_response_screen.dart.dart';

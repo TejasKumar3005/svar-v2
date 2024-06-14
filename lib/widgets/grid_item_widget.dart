@@ -45,7 +45,7 @@ class GridItemWidget extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0),
                   child: AutoSizeText(
-                    gridItemModelObj.widget!,
+                    gridItemModelObj.character!,
                     style: theme.textTheme.bodyLarge!.copyWith(fontSize: 41, color: appTheme.whiteA70001),
                     maxLines: 1,
                     minFontSize: 8,

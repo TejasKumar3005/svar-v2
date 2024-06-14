@@ -6,7 +6,7 @@ class ImageConstant {
 
 // Image folder path
   static String imagePath = 'assets/images';
-
+  static String micBtn = '$imagePath/svg/Mic_BTN_ICNButton.svg';
   static String thumbnailAuditory = '$imagePath/Auditory.png';
   static String thumbnailPhonemes = '$imagePath/Phonemes.png';
   static String thumbnailBarakhadi = '$imagePath/Barakhadi.jpg';

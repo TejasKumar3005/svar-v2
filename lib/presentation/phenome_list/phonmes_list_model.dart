@@ -6,44 +6,44 @@ import 'package:provider/provider.dart';
 
 
 class PhonmesListModel {
-List<GridItemModel> gridItemList = [
-  GridItemModel(widget: "क"),
-  GridItemModel(widget: "ख"),
-  GridItemModel(widget: "ग"),
-  GridItemModel(widget: "घ"),
-  GridItemModel(widget: "च"),
-  GridItemModel(widget: "छ"),
-  GridItemModel(widget: "ज"),
-  GridItemModel(widget: "झ"),
-  GridItemModel(widget: "ट"),
-  GridItemModel(widget: "ठ"),
-  GridItemModel(widget: "ड"),
-  GridItemModel(widget: "ढ"),
-  GridItemModel(widget: "ण"),
-  GridItemModel(widget: "त"),
-  GridItemModel(widget: "थ"),
-  GridItemModel(widget: "द"),
-  GridItemModel(widget: "ध"),
-  GridItemModel(widget: "न"),
-  GridItemModel(widget: "प"),
-  GridItemModel(widget: "फ"),
-  GridItemModel(widget: "ब"),
-  GridItemModel(widget: "भ"),
-  GridItemModel(widget: "म"),
-  GridItemModel(widget: "य"),
-  GridItemModel(widget: "र"),
-  GridItemModel(widget: "ल"),
-  GridItemModel(widget: "व"),
-  GridItemModel(widget: "श"),
-  GridItemModel(widget: "ष"),
-  GridItemModel(widget: "स"),
-  GridItemModel(widget: "ह"),
-];
-
+  List<GridItemModel> gridItemList = [
+    GridItemModel(character: 'क'),
+    GridItemModel(character: 'ख'),
+    GridItemModel(character: 'ग'),
+    GridItemModel(character: 'घ'),
+    GridItemModel(character: 'च'),
+    GridItemModel(character: 'छ'),
+    GridItemModel(character: 'ज'),
+    GridItemModel(character: 'झ'),
+    GridItemModel(character: 'ट'),
+    GridItemModel(character: 'ठ'),
+    GridItemModel(character: 'ड'),
+    GridItemModel(character: 'ढ'),
+    GridItemModel(character: 'ण'),
+    GridItemModel(character: 'त'),
+    GridItemModel(character: 'थ'),
+    GridItemModel(character: 'द'),
+    GridItemModel(character: 'ध'),
+    GridItemModel(character: 'न'),
+    GridItemModel(character: 'प'),
+    GridItemModel(character: 'फ'),
+    GridItemModel(character: 'ब'),
+    GridItemModel(character: 'भ'),
+    GridItemModel(character: 'म'),
+    GridItemModel(character: 'य'),
+    GridItemModel(character: 'र'),
+    GridItemModel(character: 'ल'),
+    GridItemModel(character: 'व'),
+    GridItemModel(character: 'श'),
+    GridItemModel(character: 'ष'),
+    GridItemModel(character: 'स'),
+    GridItemModel(character: 'ह'),
+  ];
 
   void onTapCharacter(BuildContext context, String character) {
     LingLearningProvider lingLearningProvider =
         Provider.of<LingLearningProvider>(context, listen: false);
     lingLearningProvider.setSelectedCharacter(character);
+    print(lingLearningProvider.selectedCharacter);
   }
 }
