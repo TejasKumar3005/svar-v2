@@ -111,9 +111,9 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                 ),
                 child:GestureDetector(
                     onTap: () {
-                    NavigatorService.pushNamed(
-                      AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen,
-                    );
+                    // NavigatorService.pushNamed(
+                    //   AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen,
+                    // );
                     },
                     child: Center(
                       child: Container(

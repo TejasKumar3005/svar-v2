@@ -175,11 +175,11 @@ class MyApp extends StatelessWidget {
                 ],
                 supportedLocales: locals,
                 initialRoute: auth.currentUser == null
-                    ? AppRoutes.tipBoxVideoScreen
+                    ? AppRoutes.logInSignUpScreenPotraitScreen
                     : AppRoutes
                         .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
-                    ? AppRoutes.logInSignUpScreenPotraitScreen
-                        : AppRoutes.loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                    // ? AppRoutes.logInSignUpScreenPotraitScreen
+                    //     : AppRoutes.loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
               );
             },
