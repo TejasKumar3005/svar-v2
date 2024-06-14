@@ -156,6 +156,19 @@ class MyApp extends StatelessWidget {
               create: (context) => UserDataProvider(),
             ),
             ChangeNotifierProvider(create: (context) => LingLearningProvider()),
+               ChangeNotifierProvider(
+                create: (context) =>
+                    AuditoryScreenAssessmentScreenAudioVisualOneProvider()),
+            ChangeNotifierProvider(
+                create: (context) =>
+                    AuditoryScreenAssessmentScreenVisualAudioProvider()),
+            ChangeNotifierProvider(
+              create: (context) =>
+                  AuditoryScreenAssessmentScreenVisualAudioResizProvider(),
+            ),
+            ChangeNotifierProvider(
+                create: (context) =>
+                    AuditoryScreenAssessmentScreenAudioVisualResizedProvider())
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
