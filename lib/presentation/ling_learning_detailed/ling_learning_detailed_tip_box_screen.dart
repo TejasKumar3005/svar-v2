@@ -206,6 +206,7 @@ class LingLearningDetailedTipBoxScreenState
     print(done);
     if (!provider.isRecording) {
       Directory tempDir = await getTemporaryDirectory();
+      print("hereafewfwef");
       String tempPath = tempDir.path;
       String path = '$tempPath/audio.wav';
       var ans = await sendWavFile(path, model.typeTxt.value);
