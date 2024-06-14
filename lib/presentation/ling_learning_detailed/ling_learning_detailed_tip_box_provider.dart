@@ -5,7 +5,7 @@ import 'dart:io';
 
 class LingLearningDetailedTipBoxProvider extends ChangeNotifier {
   FlutterSoundRecorder? _audioRecorder;
-  bool isRecording = true;
+  bool isRecording = false;
 
   LingLearningDetailedTipBoxProvider() {
     _audioRecorder = FlutterSoundRecorder();
@@ -13,21 +13,25 @@ class LingLearningDetailedTipBoxProvider extends ChangeNotifier {
   }
 
   Future<void> _initializeRecorder() async {
+    print("audio recorder initiliased");
     await _audioRecorder!.openAudioSession();
   }
 
   Future<bool> toggleRecording(BuildContext context) async {
     if (isRecording) {
       await stopRecording();
+
       return true;
     } else {
       await startRecording();
+
       return false;
     }
   }
 
   Future<void> startRecording() async {
     Directory tempDir = await getTemporaryDirectory();
+    print(tempDir);
     String path = '${tempDir.path}/audio.wav';
 
     await _audioRecorder!.startRecorder(

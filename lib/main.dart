@@ -178,6 +178,8 @@ class MyApp extends StatelessWidget {
                     ? AppRoutes.tipBoxVideoScreen
                     : AppRoutes
                         .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                    ? AppRoutes.logInSignUpScreenPotraitScreen
+                        : AppRoutes.loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
               );
             },

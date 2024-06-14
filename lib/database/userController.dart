@@ -14,7 +14,7 @@ class UserData {
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection("users");
 final CollectionReference tipsCollection =
-      FirebaseFirestore.instance.collection("parental_tips");
+      FirebaseFirestore.instance.collection("Parental Tips");
   Future saveUserData(UserModel userModel) async {
     Provider.of<UserDataProvider>(buildContext!, listen: false)
         .setUser(userModel);

@@ -32,8 +32,8 @@ class LingLearningQuickTipScreenState
     return SafeArea(
       child: Scaffold(
         body: SizedBox(
-          height: 432.v,
-          width: 768.h,
+          height:MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
           child: Stack(
             alignment: Alignment.bottomRight,
             children: [

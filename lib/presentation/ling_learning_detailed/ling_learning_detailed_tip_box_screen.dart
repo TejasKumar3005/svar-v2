@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:svar_new/presentation/ling_learning_detailed/ling_learning_detailed_tip_box_provider.dart';
+import 'package:svar_new/presentation/ling_learning_quick_tip/ling_learning_quick_tip_provider.dart.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:avatar_glow/avatar_glow.dart';
@@ -25,7 +26,8 @@ class LingLearningDetailedTipBoxScreen extends StatefulWidget {
   }
 }
 
-class LingLearningDetailedTipBoxScreenState extends State<LingLearningDetailedTipBoxScreen> {
+class LingLearningDetailedTipBoxScreenState
+    extends State<LingLearningDetailedTipBoxScreen> {
   AudioPlayer audioPlayer = AudioPlayer();
   var model;
 
@@ -37,7 +39,8 @@ class LingLearningDetailedTipBoxScreenState extends State<LingLearningDetailedTi
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<LingLearningDetailedTipBoxProvider>(context);
+    LingLearningDetailedTipBoxProvider provider =
+        context.watch<LingLearningDetailedTipBoxProvider>();
 
     return SafeArea(
       child: Scaffold(
@@ -79,7 +82,7 @@ class LingLearningDetailedTipBoxScreenState extends State<LingLearningDetailedTi
                         onPressed: () {
                           print("Microphone button pressed");
                           print(provider.isRecording);
-                          onTapMicrophonebutton(context);
+                          onTapMicrophonebutton(context, provider);
                         },
                       ),
                     ),
@@ -133,7 +136,9 @@ class LingLearningDetailedTipBoxScreenState extends State<LingLearningDetailedTi
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
+  Widget _buildAppBar(
+    BuildContext context,
+  ) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
       child: Row(
@@ -154,7 +159,9 @@ class LingLearningDetailedTipBoxScreenState extends State<LingLearningDetailedTi
               );
             },
           ),
-          SizedBox(width: 5,),
+          SizedBox(
+            width: 5,
+          ),
           CustomButton(
             type: ButtonType.FullVolume,
             onPressed: () {},
@@ -179,13 +186,25 @@ class LingLearningDetailedTipBoxScreenState extends State<LingLearningDetailedTi
       Map<String, dynamic> data = json.decode(body);
       return data['result'];
     } else {
-      throw Exception("Failed to send .wav file. Status code: ${response.statusCode}");
+      throw Exception(
+          "Failed to send .wav file. Status code: ${response.statusCode}");
     }
   }
 
-  onTapMicrophonebutton(BuildContext context) async {
-    bool done = await context.read<LingLearningDetailedTipBoxProvider>().toggleRecording(context);
-    if (done) {
+  onTapMicrophonebutton(
+      BuildContext context, LingLearningDetailedTipBoxProvider provider) async {
+    print("-------hello");
+    // if (provider.isRecording) {
+    //   await provider.stopRecording();
+    // } else {
+    //   await provider.startRecording();
+    // }
+
+    // print(provider.isRecording);
+    // }
+    bool done = await provider.toggleRecording(context);
+    print(done);
+    if (!provider.isRecording) {
       Directory tempDir = await getTemporaryDirectory();
       print("hereafewfwef");
       String tempPath = tempDir.path;
@@ -193,7 +212,8 @@ class LingLearningDetailedTipBoxScreenState extends State<LingLearningDetailedTi
       var ans = await sendWavFile(path, model.typeTxt.value);
       print(ans);
       model.result = ans;
-      Navigator.pushNamed(context, AppRoutes.lingLearningScreen, arguments: model);
+      Navigator.pushNamed(context, AppRoutes.lingLearningScreen,
+          arguments: model);
     }
   }
 }

@@ -12,10 +12,7 @@ class LingLearningScreen extends StatefulWidget {
   LingLearningScreenState createState() => LingLearningScreenState();
 
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => LingLearningProvider(),
-      child: LingLearningScreen(),
-    );
+    return LingLearningScreen();
   }
 }
 
