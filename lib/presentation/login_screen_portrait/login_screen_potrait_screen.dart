@@ -34,6 +34,7 @@ class LoginScreenPotraitScreen extends StatefulWidget {
 // ignore_for_file: must_be_immutable
 class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool hide = true;
 
   @override
   void initState() {
@@ -95,38 +96,35 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                       alignment: Alignment.center,
                       child: Column(
                         children: [
-                          Field(50.h, "phone", provider.emailController,
+                          Field(50.h, "email", provider.emailController,
                               context, provider),
                           SizedBox(
                             height: 15.v,
                           ),
-                         Field(50.h, 'email', provider.passController,
-                                  context, provider),
-                              
+                          Field(50.h, 'password', provider.passController,
+                              context, provider),
                           SizedBox(
                             height: 15.v,
                           ),
-                          
-                               GestureDetector(
-                                      onTap: () {
-                                        if(_formKey.currentState!.validate() && !provider.loading){
-
-                                        LoginFormMethods methods =
-                                            LoginFormMethods(context: context);
-                                        methods.login();
-                                        }
-                                      },
-                                      child: provider.loading? CircularProgressIndicator():CustomImageView(
-                                        imagePath: ImageConstant.imgLoginBTn,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.7,
-                                        height: 60.h,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    )
-                                  
-                              
+                          GestureDetector(
+                            onTap: () {
+                              if (_formKey.currentState!.validate() &&
+                                  !provider.loading) {
+                                LoginFormMethods methods =
+                                    LoginFormMethods(context: context);
+                                methods.login();
+                              }
+                            },
+                            child: provider.loading
+                                ? CircularProgressIndicator()
+                                : CustomImageView(
+                                    imagePath: ImageConstant.imgLoginBTn,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.7,
+                                    height: 60.h,
+                                    fit: BoxFit.contain,
+                                  ),
+                          )
                         ],
                       ),
                     ),
@@ -150,6 +148,8 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
           color: appTheme.whiteA70001,
           borderRadius: BorderRadius.circular(height / 2)),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             height: height,
@@ -165,11 +165,10 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                     topLeft: Radius.circular(height / 2),
                     bottomLeft: Radius.circular(height / 2))),
             child: Center(
-              child: CustomImageView(
-                height: 40.v,
-                width: 40.h,
-                fit: BoxFit.contain,
-                imagePath: "assets/images/$name.png",
+              child: Icon(
+                name == "email" ? Icons.email : Icons.lock,
+                color: appTheme.orangeA200,
+                size: 30.h,
               ),
             ),
           ),
@@ -187,25 +186,29 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(height / 2),
                       bottomRight: Radius.circular(height / 2))),
-              child: TextFormField(
-                keyboardType: TextInputType.emailAddress,
-                controller: controller,
-                style: TextStyle(color: Colors.black, fontSize: 22.h),
-                decoration: InputDecoration(
-                    hintText: name.tr,
-                  
-                    hintStyle: TextStyle(color: Colors.grey, fontSize: 22.h),
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5.h)
-                    // .copyWith(bottom: 15.v)
-                    ),
-                validator: (value) {
-                  if(value==null || value==""){
-                    return "Please enter $name";
-                  }
-                },
+              child: Center(
+                child: TextFormField(
+                  cursorHeight: height,
+                  keyboardType:name=="email"? TextInputType.emailAddress:TextInputType.visiblePassword,
+                  controller: controller,
+                  style: TextStyle(color: Colors.black, fontSize: 22.h),
+                  decoration: InputDecoration(
+                      hintText: name.tr,
+                      suffixIcon:
+                          name == "password" ?hide? Icon(Icons.visibility):Icon(Icons.visibility_off) : null,
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: 22.h),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 6.h)
+                      .copyWith(bottom: 15.v)
+                      ),
+                  validator: (value) {
+                    if (value == null || value == "") {
+                      return "Please enter $name";
+                    }
+                  },
+                ),
               ),
             ),
           )

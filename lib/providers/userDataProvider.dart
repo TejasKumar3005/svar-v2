@@ -13,17 +13,20 @@ class UserDataProvider extends ChangeNotifier {
         age: "",
         timeStamp: "",
         access_token: "",
-        gift_purchase_history: [],
-        gameStats: GameStatsModel(
-            gifts: [],
-            progressScore: 0.0,
-            badges_earned: [],
-            levels_on: [],
-            exercises: [],
-            current_level: 0));
+        
+      );
+
+  Map<String, dynamic> parentaltips = {};    
   
   void setUser(UserModel user) {
     userModel = user;
     notifyListeners();
   }
+
+  void setParentalTips(Map<String, dynamic> tips) {
+    parentaltips = tips;
+    notifyListeners();
+  }
+
+
 }
