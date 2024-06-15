@@ -14,7 +14,6 @@ import 'provider/main_interaction_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
-
 class MainInteractionScreen extends StatefulWidget {
   const MainInteractionScreen({Key? key})
       : super(
@@ -56,7 +55,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<MainInteractionProvider>(context, listen:false);
+    var provider = Provider.of<MainInteractionProvider>(context, listen: false);
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -92,8 +91,8 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
     );
   }
 
-
-  Widget carouselSlider(MainInteractionProvider provider, BuildContext context) {
+  Widget carouselSlider(
+      MainInteractionProvider provider, BuildContext context) {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
@@ -107,48 +106,50 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                 height: 150.v,
                 // padding: EdgeInsets.symmetric(vertical: 32.v),
                 decoration: AppDecoration.outlineWhiteA.copyWith(
-                  borderRadius: BorderRadiusStyle.roundedBorder20,
-                  image: DecorationImage(image: AssetImage(ImageConstant.thumbnailAuditory), fit: BoxFit.fill)
-                ),
-                child:GestureDetector(
-                    onTap: () {
-                      provider.setScreenInfo(0);
-                      // NavigatorService.pushNamed(
-                      //     AppRoutes.phonemsLevelScreenOneScreen,
-                      //     arguments: provider.val
-                      // );
+                    borderRadius: BorderRadiusStyle.roundedBorder20,
+                    image: DecorationImage(
+                        image: AssetImage(ImageConstant.thumbnailAuditory),
+                        fit: BoxFit.fill)),
+                child: GestureDetector(
+                  onTap: () {
+                    provider.setScreenInfo(0);
+                    NavigatorService.pushNamed(
+                        AppRoutes.phonemsLevelScreenOneScreen,
+                        arguments: provider.val);
                     // NavigatorService.pushNamed(
                     //   AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen,
                     // );
-                    Navigator.push(context, 
-                    MaterialPageRoute(builder: (context) => PhonemsLevelScreenOneScreen(val: 0)));
-                    },
-                    child: Center(
-                      child: Container(
-                        height: 101.adaptSize,
-                        width: 101.adaptSize,
-                        padding: EdgeInsets.all(20.h),
-                        decoration: AppDecoration.outlineWhiteA.copyWith(
-                            color: AppDecoration.fillDeepOrange.color,
-                        
-                            borderRadius: BorderRadius.all(
-                                Radius.circular((101.adaptSize) / 2))),
-                        alignment: Alignment.center,
-                        child: Center(
-                          child: SvgPicture.asset(
-                            height: 45.adaptSize,
-                            width: 45.adaptSize,
-                            fit: BoxFit.contain,
-                           ImageConstant.imgPlayBtn,
-                          ),
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) =>
+                    //             PhonemsLevelScreenOneScreen(val: 0)));
+                  },
+                  child: Center(
+                    child: Container(
+                      height: 101.adaptSize,
+                      width: 101.adaptSize,
+                      padding: EdgeInsets.all(20.h),
+                      decoration: AppDecoration.outlineWhiteA.copyWith(
+                          color: AppDecoration.fillDeepOrange.color,
+                          borderRadius: BorderRadius.all(
+                              Radius.circular((101.adaptSize) / 2))),
+                      alignment: Alignment.center,
+                      child: Center(
+                        child: SvgPicture.asset(
+                          height: 45.adaptSize,
+                          width: 45.adaptSize,
+                          fit: BoxFit.contain,
+                          ImageConstant.imgPlayBtn,
                         ),
                       ),
                     ),
                   ),
+                ),
               ),
             ),
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 NavigatorService.pushNamed(
                   AppRoutes.phonmesListScreen,
                 );
@@ -157,30 +158,32 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                 width: 300.h,
                 height: 150.v,
                 decoration: AppDecoration.gradientRedToWhiteA.copyWith(
-                  borderRadius: BorderRadiusStyle.roundedBorder20,
-                  image: DecorationImage(image: AssetImage(ImageConstant.thumbnailBarakhadi), fit: BoxFit.fill)
-                ),
-              
+                    borderRadius: BorderRadiusStyle.roundedBorder20,
+                    image: DecorationImage(
+                        image: AssetImage(ImageConstant.thumbnailBarakhadi),
+                        fit: BoxFit.fill)),
               ),
             ),
             GestureDetector(
               onTap: () {
                 provider.setScreenInfo(1);
-                // NavigatorService.pushNamed(
-                //   AppRoutes.phonemsLevelScreenOneScreen,
-                //   arguments: provider.val
-                // );
-                 Navigator.push(context, 
-                    MaterialPageRoute(builder: (context) => PhonemsLevelScreenOneScreen(val: 1)));
+                NavigatorService.pushNamed(
+                    AppRoutes.phonemsLevelScreenOneScreen,
+                    arguments: provider.val);
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) =>
+                //             PhonemsLevelScreenOneScreen(val: 1)));
               },
               child: Container(
                 width: 300.h,
                 height: 150.v,
                 decoration: AppDecoration.gradientRedToWhiteA.copyWith(
-                  borderRadius: BorderRadiusStyle.roundedBorder20,
-                  image: DecorationImage(image: AssetImage(ImageConstant.thumbnailPhonemes), fit: BoxFit.fill)
-                ),
-              
+                    borderRadius: BorderRadiusStyle.roundedBorder20,
+                    image: DecorationImage(
+                        image: AssetImage(ImageConstant.thumbnailPhonemes),
+                        fit: BoxFit.fill)),
               ),
             )
           ],
@@ -191,7 +194,6 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
             autoPlayCurve: Curves.decelerate,
             enlargeCenterPage: true,
             enlargeFactor: 0.5,
-
             viewportFraction: 0.4,
             autoPlayAnimationDuration: const Duration(milliseconds: 800),
           ),
