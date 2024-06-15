@@ -106,7 +106,7 @@ class AppRoutes {
         loadingScreen: LoadingScreen.builder,
         welcomeScreen: WelcomeScreen.builder,
         phonemsLevelScreenTwoScreen: PhonemsLevelScreenTwoScreen.builder,
-        // phonemsLevelScreenOneScreen: PhonemsLevelScreenOneScreen.builder,
+        phonemsLevelScreenOneScreen: PhonemsLevelScreenOneScreen.builder,
         auditoryScreenAssessmentScreenAudioVisualResizedScreen:
             AuditoryScreenAssessmentScreenAudioVisualOneScreen.builder,
         // auditoryScreenAssessmentScreenVisualAudioResizScreen:

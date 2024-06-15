@@ -8,9 +8,7 @@ import 'provider/phonems_level_screen_one_provider.dart';
 import 'package:svar_new/widgets/custom_level_map/level_map.dart';
 
 class PhonemsLevelScreenOneScreen extends StatefulWidget {
-  final int val;
-
-  const PhonemsLevelScreenOneScreen({Key? key , required this.val})
+  PhonemsLevelScreenOneScreen({Key? key})
       : super(
           key: key,
         );
@@ -18,15 +16,14 @@ class PhonemsLevelScreenOneScreen extends StatefulWidget {
   @override
   PhonemsLevelScreenOneScreenState createState() =>
       PhonemsLevelScreenOneScreenState();
-  // static Widget builder(BuildContext context) {
-  //   return ChangeNotifierProvider(
-  //     create: (context) {
-  //       PhonemsLevelScreenOneProvider();
-  //     },
-      
-  //     child: PhonemsLevelScreenOneScreen(),
-  //   );
-  // }
+  static Widget builder(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) {
+        PhonemsLevelScreenOneProvider();
+      },
+      child: PhonemsLevelScreenOneScreen(),
+    );
+  }
 }
 
 class PhonemsLevelScreenOneScreenState
@@ -38,6 +35,7 @@ class PhonemsLevelScreenOneScreenState
 
   @override
   Widget build(BuildContext context) {
+    final Object? val = ModalRoute.of(context)!.settings.arguments;
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -69,14 +67,19 @@ class PhonemsLevelScreenOneScreenState
               size: Size(104.v, 104.h),
               onTap: (int level) {
                 // taking level count from here and everything will be handled in AuditoryScreen class
-                if(widget.val == 0){
+                if (val == 0) {
                   debugPrint("auditory");
                   _handleAuditory(context, level);
-                }else if(widget.val == 1){
+                } else if (val == 1) {
                   debugPrint("in quizes level");
                   _handleLevel(context, level);
-                }else{
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Center(child: Text("data"),)));
+                } else {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Center(
+                                child: Text("data"),
+                              )));
                 }
               },
             ),
@@ -84,15 +87,16 @@ class PhonemsLevelScreenOneScreenState
               path: "assets/images/Locked_LVL.png",
               size: Size(104.v, 104.h),
               onTap: (int level) {
-                if(widget.val == 0){
+                if (val as int == 0) {
                   debugPrint("auditory");
-                  _handleAuditory(context , level);
-                }else if(widget.val == 1){
+                  _handleAuditory(context, level);
+                } else if (val == 1) {
                   debugPrint("in quizes level");
                   _handleLevel(context, level);
-                }else{
+                } else {
                   debugPrint("error zone");
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Text("data")));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Text("data")));
                 }
               },
             ),
@@ -106,16 +110,16 @@ class PhonemsLevelScreenOneScreenState
                 //         builder: (context) => AuditoryScreen(
                 //               level: level,
                 //             )));
-                if(widget.val == 0){
+                if (val == 0) {
                   debugPrint("auditory");
-                  _handleAuditory(context , level);
-                }else if(widget.val == 1){
-                   debugPrint("in quizes level");
+                  _handleAuditory(context, level);
+                } else if (val as int == 1) {
+                  debugPrint("in quizes level");
                   _handleLevel(context, level);
-                }else{
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Text("data")));
+                } else {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Text("data")));
                 }
-               
               },
             ),
             // pathEndImage: ImageParams(
@@ -132,7 +136,8 @@ class PhonemsLevelScreenOneScreenState
               ImageParams(
                 path: "assets/images/img_tree.png",
                 size: Size(80, 80),
-                repeatCountPerLevel: 0.5,)
+                repeatCountPerLevel: 0.5,
+              )
             ],
             // ),
           )),
@@ -464,15 +469,14 @@ class PhonemsLevelScreenOneScreenState
   }
 
   void _handleLevel(BuildContext context, int level) async {
-   
-
     try {
-       debugPrint("entering in level section");
+      debugPrint("entering in level section");
       final levelProvider =
           Provider.of<PhonemsLevelScreenOneProvider>(context, listen: false);
       final String type;
-          debugPrint("data fetching");
-      final Map<String, dynamic>? data = await levelProvider.fetchData(1, level);
+      debugPrint("data fetching");
+      final Map<String, dynamic>? data =
+          await levelProvider.fetchData(1, level);
       type = data!["type"];
       if (type == "video") {
         debugPrint("in video setion");
@@ -498,13 +502,14 @@ class PhonemsLevelScreenOneScreenState
         );
       }
     } catch (e) {
-       debugPrint("catch section");
+      debugPrint("catch section");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
       );
     }
   }
-    void _handleAuditory(BuildContext context, int level) async {
+
+  void _handleAuditory(BuildContext context, int level) async {
     final levelProvider =
         Provider.of<PhonemsLevelScreenOneProvider>(context, listen: false);
     final String type;
@@ -525,7 +530,6 @@ class PhonemsLevelScreenOneScreenState
       );
     }
   }
-
 
   Object retrieveObject(String type, Map<String, dynamic> data) {
     if (type == "ImageToAudio") {
