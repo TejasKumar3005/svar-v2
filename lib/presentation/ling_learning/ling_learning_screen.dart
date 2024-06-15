@@ -33,79 +33,79 @@ class LingLearningScreenState extends State<LingLearningScreen> {
     super.dispose();
   }
 
-void _playAudio(String character) {
-  // Map character to audio file
-  String audioPath = '';
-  switch (character) {
-    case 'क':
-      audioPath = 'assets/audio/ka.mp3';
-      break;
-    case 'ख':
-      audioPath = 'assets/audio/kha.mp3';
-      break;
-    case 'ग':
-      audioPath = 'assets/audio/ga.mp3';
-      break;
-    case 'घ':
-      audioPath = 'assets/audio/gha.mp3';
-      break;
-    case 'च':
-      audioPath = 'assets/audio/cha.mp3';
-      break;
-    case 'छ':
-      audioPath = 'assets/audio/chha.mp3';
-      break;
-    case 'ज':
-      audioPath = 'assets/audio/ja.mp3';
-      break;
-    case 'झ':
-      audioPath = 'assets/audio/jha.mp3';
-      break;
-    case 'ट':
-      audioPath = 'assets/audio/ta.mp3';
-      break;
-    case 'ठ':
-      audioPath = 'assets/audio/thaa.mp3';
-      break;
-    case 'ड':
-      audioPath = 'assets/audio/da.mp3';
-      break;
-    case 'ढ':
-      audioPath = 'assets/audio/dhaa.mp3';
-      break;
-    case 'त':
-      audioPath = 'assets/audio/tha.mp3';
-      break;
-    case 'थ':
-      audioPath = 'assets/audio/taa.mp3';
-      break;
-    case 'ध':
-      audioPath = 'assets/audio/dhha.mp3';
-      break;
-    case 'न':
-      audioPath = 'assets/audio/naa.mp3';
-      break;
-    case 'प':
-      audioPath = 'assets/audio/pa.mp3';
-      break;
-    case 'फ':
-      audioPath = 'assets/audio/pha.mp3';
-      break;
-    case 'ब':
-      audioPath = 'assets/audio/ba.mp3';
-      break;
-    case 'भ':
-      audioPath = 'assets/audio/bha.mp3';
-      break;
-    case 'म':
-      audioPath = 'assets/audio/ma.mp3';
-      break;
-    default:
-      audioPath = 'assets/audio/default.mp3';  // Ensure a default.mp3 file exists or handle this case appropriately
-  }
+// void _playAudio(String character) {
+//   // Map character to audio file
+//   String audioPath = '';
+//   switch (character) {
+//     case 'क':
+//       audioPath = 'assets/audio/ka.mp3';
+//       break;
+//     case 'ख':
+//       audioPath = 'assets/audio/kha.mp3';
+//       break;
+//     case 'ग':
+//       audioPath = 'assets/audio/ga.mp3';
+//       break;
+//     case 'घ':
+//       audioPath = 'assets/audio/gha.mp3';
+//       break;
+//     case 'च':
+//       audioPath = 'assets/audio/cha.mp3';
+//       break;
+//     case 'छ':
+//       audioPath = 'assets/audio/chha.mp3';
+//       break;
+//     case 'ज':
+//       audioPath = 'assets/audio/ja.mp3';
+//       break;
+//     case 'झ':
+//       audioPath = 'assets/audio/jha.mp3';
+//       break;
+//     case 'ट':
+//       audioPath = 'assets/audio/ta.mp3';
+//       break;
+//     case 'ठ':
+//       audioPath = 'assets/audio/thaa.mp3';
+//       break;
+//     case 'ड':
+//       audioPath = 'assets/audio/da.mp3';
+//       break;
+//     case 'ढ':
+//       audioPath = 'assets/audio/dhaa.mp3';
+//       break;
+//     case 'त':
+//       audioPath = 'assets/audio/tha.mp3';
+//       break;
+//     case 'थ':
+//       audioPath = 'assets/audio/taa.mp3';
+//       break;
+//     case 'ध':
+//       audioPath = 'assets/audio/dhha.mp3';
+//       break;
+//     case 'न':
+//       audioPath = 'assets/audio/naa.mp3';
+//       break;
+//     case 'प':
+//       audioPath = 'assets/audio/pa.mp3';
+//       break;
+//     case 'फ':
+//       audioPath = 'assets/audio/pha.mp3';
+//       break;
+//     case 'ब':
+//       audioPath = 'assets/audio/ba.mp3';
+//       break;
+//     case 'भ':
+//       audioPath = 'assets/audio/bha.mp3';
+//       break;
+//     case 'म':
+//       audioPath = 'assets/audio/ma.mp3';
+//       break;
+//     default:
+//       audioPath = 'assets/audio/default.mp3';  // Ensure a default.mp3 file exists or handle this case appropriately
+//   }
 
-  _audioPlayer.play(AssetSource(audioPath));
-}
+//   _audioPlayer.play(AssetSource(audioPath));
+// }
 
 
 
@@ -136,9 +136,9 @@ void _playAudio(String character) {
                 left: 80,
                 bottom: 100,
                 child: GestureDetector(
-                  onTap: () {
-                    _playAudio(lingLearningProvider.selectedCharacter);
-                  },
+                  // onTap: () {
+                  //   _playAudio(lingLearningProvider.selectedCharacter);
+                  // },
                   child: Text(
                     lingLearningProvider.selectedCharacter,
                     style: TextStyle(fontSize: 160),
