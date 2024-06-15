@@ -81,7 +81,6 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                   child: AppStatsHeader(per: 40),
                 ),
                 Spacer(),
-              
                 carouselSlider(context),
               ],
             ),
@@ -160,7 +159,6 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                 NavigatorService.pushNamed(
                   AppRoutes.phonemsLevelScreenOneScreen,
                 );
-              
               },
               child: Container(
                 width: 300.h,

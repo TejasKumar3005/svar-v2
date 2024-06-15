@@ -301,10 +301,10 @@ class AppStatsHeader extends StatelessWidget {
             ],
           ),
         ),
-        Padding(
-          padding: EdgeInsets.only(left: 5.h),
-          child: CustomButton(type: ButtonType.Menu, onPressed: () {}),
-        )
+        // Padding(
+        //   padding: EdgeInsets.only(left: 5.h),
+        //   child: CustomButton(type: ButtonType.Menu, onPressed: () {}),
+        // )
       ],
     );
   }

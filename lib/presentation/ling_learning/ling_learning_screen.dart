@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class LingLearningScreen extends StatefulWidget {
   const LingLearningScreen({Key? key}) : super(key: key);
@@ -17,22 +19,129 @@ class LingLearningScreen extends StatefulWidget {
 }
 
 class LingLearningScreenState extends State<LingLearningScreen> {
-  final List<String> characters = [
-    'क', 'ख', 'ग', 'घ', 'च', 'छ', 'ज', 'झ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 'त', 'थ', 'द', 'ध', 'न', 'प', 'फ', 'ब', 'भ', 'म', 'य', 'र', 'ल', 'व', 'श', 'ष', 'स', 'ह'
-  ];
+  late AudioPlayer _audioPlayer;
 
   @override
   void initState() {
     super.initState();
+    _audioPlayer = AudioPlayer();
   }
 
   @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  void _playAudio(String character) {
+  // Map character to audio file
+  String audioPath = '';
+  switch (character) {
+    case 'क':
+      audioPath = 'assets/audio/ka.mp3';
+      break;
+    case 'ख':
+      audioPath = 'assets/audio/kha.mp3';
+      break;
+    case 'ग':
+      audioPath = 'assets/audio/ga.mp3';
+      break;
+    case 'घ':
+      audioPath = 'assets/audio/gha.mp3';
+      break;
+    case 'च':
+      audioPath = 'assets/audio/cha.mp3';
+      break;
+    case 'छ':
+      audioPath = 'assets/audio/chha.mp3';
+      break;
+    case 'ज':
+      audioPath = 'assets/audio/ja.mp3';
+      break;
+    case 'झ':
+      audioPath = 'assets/audio/jha.mp3';
+      break;
+    case 'ट':
+      audioPath = 'assets/audio/ta.mp3';
+      break;
+    case 'ठ':
+      audioPath = 'assets/audio/tha.mp3';
+      break;
+    case 'ड':
+      audioPath = 'assets/audio/da.mp3';
+      break;
+    case 'ढ':
+      audioPath = 'assets/audio/dha.mp3';
+      break;
+    case 'ण':
+      audioPath = 'assets/audio/n.mp3';
+      break;
+    case 'त':
+      audioPath = 'assets/audio/ta.mp3';
+      break;
+    case 'थ':
+      audioPath = 'assets/audio/tha.mp3';
+      break;
+    case 'द':
+      audioPath = 'assets/audio/da.mp3';
+      break;
+    case 'ध':
+      audioPath = 'assets/audio/dha.mp3';
+      break;
+    case 'न':
+      audioPath = 'assets/audio/naa.mp3';
+      break;
+    case 'प':
+      audioPath = 'assets/audio/pa.mp3';
+      break;
+    case 'फ':
+      audioPath = 'assets/audio/pha.mp3';
+      break;
+    case 'ब':
+      audioPath = 'assets/audio/ba.mp3';
+      break;
+    case 'भ':
+      audioPath = 'assets/audio/bha.mp3';
+      break;
+    case 'म':
+      audioPath = 'assets/audio/ma.mp3';
+      break;
+    case 'य':
+      audioPath = 'assets/audio/ya.mp3';
+      break;
+    case 'र':
+      audioPath = 'assets/audio/ra.mp3';
+      break;
+    case 'ल':
+      audioPath = 'assets/audio/la.mp3';
+      break;
+    case 'व':
+      audioPath = 'assets/audio/va.mp3';
+      break;
+    case 'श':
+      audioPath = 'assets/audio/sha.mp3';
+      break;
+    case 'ष':
+      audioPath = 'assets/audio/shha.mp3';
+      break;
+    case 'स':
+      audioPath = 'assets/audio/sa.mp3';
+      break;
+    case 'ह':
+      audioPath = 'assets/audio/ha.mp3';
+      break;
+    default:
+      audioPath = 'assets/audio/default.mp3';
+  }
+
+  _audioPlayer.play(AssetSource(audioPath));
+}
+
+  @override
   Widget build(BuildContext context) {
-    
     LingLearningProvider lingLearningProvider =
         context.watch<LingLearningProvider>();
-        print("1");
-        print(lingLearningProvider.selectedCharacter);
+
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -49,59 +158,47 @@ class LingLearningScreenState extends State<LingLearningScreen> {
               Column(
                 children: [
                   _buildAppBar(context),
-                  Expanded(
-                    child: GridView.builder(
-                      padding: EdgeInsets.all(16.0),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 5,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                      ),
-                      itemCount: characters.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            lingLearningProvider.setSelectedCharacter(characters[index]);
-                          },
-                          child: Card(
-                            elevation: 4,
-                            child: Center(
-                              child: Text(
-                                characters[index],
-                                style: TextStyle(fontSize: 24),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  if (lingLearningProvider.selectedCharacter.isNotEmpty)
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          lingLearningProvider.selectedCharacter,
-                          style: TextStyle(fontSize: 100),
-                        ),
-                      ),
-                    ),
                 ],
               ),
               Positioned(
-                  left: 120,
-                  bottom: 60,
-                  child: Container(
-                    height: 50,
-                    width: 100,
-                    child: CustomButton(
-                      type: ButtonType.Next,
-                      onPressed: () {
-                        NavigatorService.pushNamed(
-                          AppRoutes.lingLearningQuickTipScreen,
-                        );
-                      },
+                left: 80,
+                bottom: 100,
+                child: GestureDetector(
+                  onTap: () {
+                    _playAudio(lingLearningProvider.selectedCharacter);
+                  },
+                  child: Text(
+                    lingLearningProvider.selectedCharacter,
+                    style: TextStyle(fontSize: 160),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 180,
+                bottom: 120,
+                child: AvatarGlow(
+                  endRadius: 90.0,
+                  glowColor: Colors.blue,
+                  duration: Duration(milliseconds: 2000),
+                  repeat: true,
+                  showTwoGlows: true,
+                  repeatPauseDuration: Duration(milliseconds: 100),
+                  child: Material(
+                    elevation: 8.0,
+                    shape: CircleBorder(),
+                    child: Container(
+                      height: 120,
+                      width: 120,
+                      child: CustomButton(
+                        type: ButtonType.Mic,
+                        onPressed: () {
+                          print("Microphone button pressed");
+                        },
+                      ),
                     ),
-                  )),
+                  ),
+                ),
+              ),
               Positioned(
                 right: 80,
                 bottom: 0,
@@ -122,7 +219,11 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                   width: 100,
                   child: CustomButton(
                     type: ButtonType.Tip,
-                    onPressed: () {},
+                    onPressed: () {
+                      NavigatorService.pushNamed(
+                        AppRoutes.tipBoxVideoScreen,
+                      );
+                    },
                   ),
                 ),
               ),
@@ -141,22 +242,13 @@ class LingLearningScreenState extends State<LingLearningScreen> {
         children: [
           CustomButton(
             type: ButtonType.Back,
-            onPressed: () {},
-          ),
-          Spacer(),
-          CustomButton(
-            type: ButtonType.Replay,
             onPressed: () {
               NavigatorService.pushNamed(
-                AppRoutes.welcomeScreenPotraitScreen,
+                AppRoutes.phonmesListScreen,
               );
             },
           ),
-          SizedBox(width: 5,),
-          CustomButton(
-            type: ButtonType.FullVolume,
-            onPressed: () {},
-          ),
+          Spacer(),
         ],
       ),
     );
