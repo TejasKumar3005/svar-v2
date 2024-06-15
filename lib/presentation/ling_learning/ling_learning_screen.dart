@@ -33,63 +33,57 @@ class LingLearningScreenState extends State<LingLearningScreen> {
     super.dispose();
   }
 
- void _playAudio(String character) {
+void _playAudio(String character) {
   // Map character to audio file
   String audioPath = '';
   switch (character) {
     case 'क':
-      audioPath = 'assets/audio/k.mp3';
+      audioPath = 'assets/audio/ka.mp3';
       break;
     case 'ख':
-      audioPath = 'assets/audio/kh.mp3';
+      audioPath = 'assets/audio/kha.mp3';
       break;
     case 'ग':
-      audioPath = 'assets/audio/g.mp3';
+      audioPath = 'assets/audio/ga.mp3';
       break;
     case 'घ':
-      audioPath = 'assets/audio/gh.mp3';
+      audioPath = 'assets/audio/gha.mp3';
       break;
     case 'च':
-      audioPath = 'assets/audio/ch.mp3';
+      audioPath = 'assets/audio/cha.mp3';
       break;
     case 'छ':
-      audioPath = 'assets/audio/chh.mp3';
+      audioPath = 'assets/audio/chha.mp3';
       break;
     case 'ज':
-      audioPath = 'assets/audio/j.mp3';
+      audioPath = 'assets/audio/ja.mp3';
       break;
     case 'झ':
-      audioPath = 'assets/audio/jh.mp3';
+      audioPath = 'assets/audio/jha.mp3';
       break;
     case 'ट':
-      audioPath = 'assets/audio/t.mp3';
-      break;
-    case 'ठ':
-      audioPath = 'assets/audio/th.mp3';
-      break;
-    case 'ड':
-      audioPath = 'assets/audio/d.mp3';
-      break;
-    case 'ढ':
-      audioPath = 'assets/audio/dh.mp3';
-      break;
-    case 'ण':
-      audioPath = 'assets/audio/n.mp3';
-      break;
-    case 'त':
       audioPath = 'assets/audio/ta.mp3';
       break;
-    case 'थ':
-      audioPath = 'assets/audio/tha.mp3';
+    case 'ठ':
+      audioPath = 'assets/audio/thaa.mp3';
       break;
-    case 'द':
+    case 'ड':
       audioPath = 'assets/audio/da.mp3';
       break;
+    case 'ढ':
+      audioPath = 'assets/audio/dhaa.mp3';
+      break;
+    case 'त':
+      audioPath = 'assets/audio/tha.mp3';
+      break;
+    case 'थ':
+      audioPath = 'assets/audio/taa.mp3';
+      break;
     case 'ध':
-      audioPath = 'assets/audio/dha.mp3';
+      audioPath = 'assets/audio/dhha.mp3';
       break;
     case 'न':
-      audioPath = 'assets/audio/na.mp3';
+      audioPath = 'assets/audio/naa.mp3';
       break;
     case 'प':
       audioPath = 'assets/audio/pa.mp3';
@@ -106,36 +100,13 @@ class LingLearningScreenState extends State<LingLearningScreen> {
     case 'म':
       audioPath = 'assets/audio/ma.mp3';
       break;
-    case 'य':
-      audioPath = 'assets/audio/ya.mp3';
-      break;
-    case 'र':
-      audioPath = 'assets/audio/ra.mp3';
-      break;
-    case 'ल':
-      audioPath = 'assets/audio/la.mp3';
-      break;
-    case 'व':
-      audioPath = 'assets/audio/va.mp3';
-      break;
-    case 'श':
-      audioPath = 'assets/audio/sha.mp3';
-      break;
-    case 'ष':
-      audioPath = 'assets/audio/shha.mp3';
-      break;
-    case 'स':
-      audioPath = 'assets/audio/sa.mp3';
-      break;
-    case 'ह':
-      audioPath = 'assets/audio/ha.mp3';
-      break;
     default:
-      audioPath = 'assets/audio/default.mp3';
+      audioPath = 'assets/audio/default.mp3';  // Ensure a default.mp3 file exists or handle this case appropriately
   }
 
   _audioPlayer.play(AssetSource(audioPath));
 }
+
 
 
   @override
