@@ -33,45 +33,45 @@ class LingLearningScreenState extends State<LingLearningScreen> {
     super.dispose();
   }
 
-  void _playAudio(String character) {
+ void _playAudio(String character) {
   // Map character to audio file
   String audioPath = '';
   switch (character) {
     case 'क':
-      audioPath = 'assets/audio/ka.mp3';
+      audioPath = 'assets/audio/k.mp3';
       break;
     case 'ख':
-      audioPath = 'assets/audio/kha.mp3';
+      audioPath = 'assets/audio/kh.mp3';
       break;
     case 'ग':
-      audioPath = 'assets/audio/ga.mp3';
+      audioPath = 'assets/audio/g.mp3';
       break;
     case 'घ':
-      audioPath = 'assets/audio/gha.mp3';
+      audioPath = 'assets/audio/gh.mp3';
       break;
     case 'च':
-      audioPath = 'assets/audio/cha.mp3';
+      audioPath = 'assets/audio/ch.mp3';
       break;
     case 'छ':
-      audioPath = 'assets/audio/chha.mp3';
+      audioPath = 'assets/audio/chh.mp3';
       break;
     case 'ज':
-      audioPath = 'assets/audio/ja.mp3';
+      audioPath = 'assets/audio/j.mp3';
       break;
     case 'झ':
-      audioPath = 'assets/audio/jha.mp3';
+      audioPath = 'assets/audio/jh.mp3';
       break;
     case 'ट':
-      audioPath = 'assets/audio/ta.mp3';
+      audioPath = 'assets/audio/t.mp3';
       break;
     case 'ठ':
-      audioPath = 'assets/audio/tha.mp3';
+      audioPath = 'assets/audio/th.mp3';
       break;
     case 'ड':
-      audioPath = 'assets/audio/da.mp3';
+      audioPath = 'assets/audio/d.mp3';
       break;
     case 'ढ':
-      audioPath = 'assets/audio/dha.mp3';
+      audioPath = 'assets/audio/dh.mp3';
       break;
     case 'ण':
       audioPath = 'assets/audio/n.mp3';
@@ -89,7 +89,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
       audioPath = 'assets/audio/dha.mp3';
       break;
     case 'न':
-      audioPath = 'assets/audio/naa.mp3';
+      audioPath = 'assets/audio/na.mp3';
       break;
     case 'प':
       audioPath = 'assets/audio/pa.mp3';
@@ -136,6 +136,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
 
   _audioPlayer.play(AssetSource(audioPath));
 }
+
 
   @override
   Widget build(BuildContext context) {
