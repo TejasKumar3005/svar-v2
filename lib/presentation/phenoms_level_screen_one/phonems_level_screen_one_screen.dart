@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_visual/auditory_screen_assessment_screen_visual_audio_resiz_screen.dart';
+import 'package:svar_new/presentation/main_interaction_screen/provider/main_interaction_provider.dart';
 import 'package:svar_new/presentation/phenoms_level_screen_one/video_player_screen.dart';
 import 'provider/phonems_level_screen_one_provider.dart';
 import 'package:svar_new/widgets/custom_level_map/level_map.dart';
 
 class PhonemsLevelScreenOneScreen extends StatefulWidget {
-  const PhonemsLevelScreenOneScreen({Key? key})
+  final int val;
+
+  const PhonemsLevelScreenOneScreen({Key? key , required this.val})
       : super(
           key: key,
         );
@@ -15,12 +18,15 @@ class PhonemsLevelScreenOneScreen extends StatefulWidget {
   @override
   PhonemsLevelScreenOneScreenState createState() =>
       PhonemsLevelScreenOneScreenState();
-  static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => PhonemsLevelScreenOneProvider(),
-      child: PhonemsLevelScreenOneScreen(),
-    );
-  }
+  // static Widget builder(BuildContext context) {
+  //   return ChangeNotifierProvider(
+  //     create: (context) {
+  //       PhonemsLevelScreenOneProvider();
+  //     },
+      
+  //     child: PhonemsLevelScreenOneScreen(),
+  //   );
+  // }
 }
 
 class PhonemsLevelScreenOneScreenState
@@ -63,14 +69,31 @@ class PhonemsLevelScreenOneScreenState
               size: Size(104.v, 104.h),
               onTap: (int level) {
                 // taking level count from here and everything will be handled in AuditoryScreen class
-                _handleLevel(context, level);
+                if(widget.val == 0){
+                  debugPrint("auditory");
+                  _handleAuditory(context, level);
+                }else if(widget.val == 1){
+                  debugPrint("in quizes level");
+                  _handleLevel(context, level);
+                }else{
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Center(child: Text("data"),)));
+                }
               },
             ),
             lockedLevelImage: ImageParams(
               path: "assets/images/Locked_LVL.png",
               size: Size(104.v, 104.h),
               onTap: (int level) {
-                _handleLevel(context, level);
+                if(widget.val == 0){
+                  debugPrint("auditory");
+                  _handleAuditory(context , level);
+                }else if(widget.val == 1){
+                  debugPrint("in quizes level");
+                  _handleLevel(context, level);
+                }else{
+                  debugPrint("error zone");
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Text("data")));
+                }
               },
             ),
             completedLevelImage: ImageParams(
@@ -83,7 +106,16 @@ class PhonemsLevelScreenOneScreenState
                 //         builder: (context) => AuditoryScreen(
                 //               level: level,
                 //             )));
-                _handleLevel(context, level);
+                if(widget.val == 0){
+                  debugPrint("auditory");
+                  _handleAuditory(context , level);
+                }else if(widget.val == 1){
+                   debugPrint("in quizes level");
+                  _handleLevel(context, level);
+                }else{
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Text("data")));
+                }
+               
               },
             ),
             // pathEndImage: ImageParams(
@@ -432,13 +464,18 @@ class PhonemsLevelScreenOneScreenState
   }
 
   void _handleLevel(BuildContext context, int level) async {
-    final levelProvider =
-        Provider.of<PhonemsLevelScreenOneProvider>(context, listen: false);
-    final String type;
+   
+
     try {
-      final Map<String, dynamic>? data = await levelProvider.fetchData(level);
+       debugPrint("entering in level section");
+      final levelProvider =
+          Provider.of<PhonemsLevelScreenOneProvider>(context, listen: false);
+      final String type;
+          debugPrint("data fetching");
+      final Map<String, dynamic>? data = await levelProvider.fetchData(1, level);
       type = data!["type"];
       if (type == "video") {
+        debugPrint("in video setion");
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -461,11 +498,34 @@ class PhonemsLevelScreenOneScreenState
         );
       }
     } catch (e) {
+       debugPrint("catch section");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
       );
     }
   }
+    void _handleAuditory(BuildContext context, int level) async {
+    final levelProvider =
+        Provider.of<PhonemsLevelScreenOneProvider>(context, listen: false);
+    final String type;
+    try {
+      final Map<String, dynamic>? data =
+          await levelProvider.fetchData(0, level);
+      type = data!["type"];
+      if (type == "video") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => VideoPlayerWidget(videoUrl: data["video"])),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
+
 
   Object retrieveObject(String type, Map<String, dynamic> data) {
     if (type == "ImageToAudio") {

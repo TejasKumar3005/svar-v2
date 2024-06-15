@@ -11,6 +11,12 @@ import '../models/main_interaction_model.dart';
 class MainInteractionProvider extends ChangeNotifier {
   MainInteractionModel mainInteractionModelObj = MainInteractionModel();
 
+  int? val;
+  void setScreenInfo(int x) {
+    val = x;
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     super.dispose();
