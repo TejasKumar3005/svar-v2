@@ -27,10 +27,12 @@ class PhonemsLevelScreenOneProvider extends ChangeNotifier {
   bool get loading => _loading;
   String? get ty => type;
 
-  Future<Map<String, dynamic>?> fetchData(int level) async {
+    Future<Map<String, dynamic>?> fetchData(
+      int val, int level) async {
+    String dbname = val == 1 ? "levels" : "Auditory";
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     DocumentSnapshot doc =
-        await firestore.collection("levels").doc("Level").get();
+        await firestore.collection(dbname).doc("Level").get();
     try {
       if (doc.exists) {
         Map<String, dynamic> data = doc.get("data") as Map<String, dynamic>;
@@ -49,6 +51,7 @@ class PhonemsLevelScreenOneProvider extends ChangeNotifier {
     }
     return null;
   }
+
 
   @override
   void dispose() {

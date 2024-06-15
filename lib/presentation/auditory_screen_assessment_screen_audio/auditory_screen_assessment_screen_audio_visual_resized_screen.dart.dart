@@ -124,8 +124,14 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                 if (widget.dtcontainer.getCorrectOutput() ==
                                     widget.dtcontainer.getImageUrlList()[0]) {
                                   // success
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Correct option choosen")),
+                        );
                                 } else {
                                   // failure
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Incorrect option choosen")),
+                        );
                                 }
                               },
                               child: CustomImageView(
@@ -155,10 +161,16 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                               child: GestureDetector(
                                 onTap: () {
                                   if (widget.dtcontainer.getCorrectOutput() ==
-                                      widget.dtcontainer.getImageUrlList()[0]) {
+                                      widget.dtcontainer.getImageUrlList()[1]) {
                                     // success
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Correct option choosen")),
+                        );
                                   } else {
                                     // failure
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Incorrect option choosen")),
+                        );
                                   }
                                 },
                                 child: CustomImageView(

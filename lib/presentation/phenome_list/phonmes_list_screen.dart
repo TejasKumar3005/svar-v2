@@ -102,15 +102,15 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
         CustomButton(
           type: ButtonType.Back,
           onPressed: () {
-            Navigator.pop(context);
+             Navigator.pushNamed(context, AppRoutes.mainInteractionScreen);
           },
         ),
-        CustomButton(
-          type: ButtonType.Menu,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        // CustomButton(
+        //   type: ButtonType.Menu,
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //   },
+        // ),
       ],
     );
   }

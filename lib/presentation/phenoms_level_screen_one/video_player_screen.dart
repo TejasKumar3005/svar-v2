@@ -42,13 +42,14 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     final halfWidth = size.width / 2;
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Video Player'),
-        ),
-        body: Center(
-            child: Container(
-          height: halfHeight,
-          width: halfWidth,
+      
+        body:Container(
+          color: Colors.black,
+          width: size.width,
+          height: size.height,
+
+        child:
+         Center(
           child: FutureBuilder(
             future: _initializeVideoPlayerFuture,
             builder: (context, snapshot) {
@@ -67,6 +68,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                         if (_isHovered)
                           Positioned(
                             child: FloatingActionButton(
+                              backgroundColor: Colors.cyan,
                               onPressed: () {
                                 setState(() {
                                   if (_controller.value.isPlaying) {

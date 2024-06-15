@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:svar_new/presentation/phenoms_level_screen_one/phonems_level_screen_one_screen.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
@@ -55,6 +56,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<MainInteractionProvider>(context, listen:false);
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -81,8 +83,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                   child: AppStatsHeader(per: 40),
                 ),
                 Spacer(),
-              
-                carouselSlider(context),
+                carouselSlider(provider, context),
               ],
             ),
           ),
@@ -92,7 +93,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
   }
 
 
-  Widget carouselSlider(BuildContext context) {
+  Widget carouselSlider(MainInteractionProvider provider, BuildContext context) {
     return Align(
       alignment: Alignment.center,
       child: SizedBox(
@@ -111,9 +112,16 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                 ),
                 child:GestureDetector(
                     onTap: () {
+                      provider.setScreenInfo(0);
+                      // NavigatorService.pushNamed(
+                      //     AppRoutes.phonemsLevelScreenOneScreen,
+                      //     arguments: provider.val
+                      // );
                     // NavigatorService.pushNamed(
                     //   AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen,
                     // );
+                    Navigator.push(context, 
+                    MaterialPageRoute(builder: (context) => PhonemsLevelScreenOneScreen(val: 0)));
                     },
                     child: Center(
                       child: Container(
@@ -157,10 +165,13 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
             ),
             GestureDetector(
               onTap: () {
-                NavigatorService.pushNamed(
-                  AppRoutes.phonemsLevelScreenOneScreen,
-                );
-              
+                provider.setScreenInfo(1);
+                // NavigatorService.pushNamed(
+                //   AppRoutes.phonemsLevelScreenOneScreen,
+                //   arguments: provider.val
+                // );
+                 Navigator.push(context, 
+                    MaterialPageRoute(builder: (context) => PhonemsLevelScreenOneScreen(val: 1)));
               },
               child: Container(
                 width: 300.h,

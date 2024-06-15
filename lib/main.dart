@@ -15,6 +15,8 @@ import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/pr
 import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/provider/auditory_screen_assessment_screen_audio_visual_resized_provider.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_visual/provider/auditory_screen_assessment_screen_visual_audio_resiz_provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
+import 'package:svar_new/presentation/main_interaction_screen/provider/main_interaction_provider.dart';
+import 'package:svar_new/presentation/phenoms_level_screen_one/provider/phonems_level_screen_one_provider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
 
@@ -164,7 +166,10 @@ class MyApp extends StatelessWidget {
                     AuditoryScreenAssessmentScreenAudioVisualProvider()),
             ChangeNotifierProvider(
                 create: (context) =>
-                    AuditoryScreenAssessmentScreenVisualAudioResizProvider())
+                    AuditoryScreenAssessmentScreenVisualAudioResizProvider()),
+                    ChangeNotifierProvider(create: (context)=> MainInteractionProvider(), 
+                    ), 
+            ChangeNotifierProvider(create: (context) => PhonemsLevelScreenOneProvider())
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
@@ -183,10 +188,11 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                initialRoute: auth.currentUser == null
-                    ? AppRoutes.tipBoxVideoScreen
-                    : AppRoutes
-                        .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                initialRoute: AppRoutes.mainInteractionScreen,
+                // initialRoute: auth.currentUser == null
+                //     ? AppRoutes.tipBoxVideoScreen
+                //     : AppRoutes
+                //         .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
               );
             },
