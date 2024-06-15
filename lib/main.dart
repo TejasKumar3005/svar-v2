@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -188,11 +187,11 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                initialRoute: AppRoutes.mainInteractionScreen,
-                // initialRoute: auth.currentUser == null
-                //     ? AppRoutes.tipBoxVideoScreen
-                //     : AppRoutes
-                //         .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                // initialRoute: AppRoutes.mainInteractionScreen,
+                initialRoute: auth.currentUser == null
+                    ? AppRoutes.logInSignUpScreenPotraitScreen
+                    : AppRoutes
+                        .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
               );
             },

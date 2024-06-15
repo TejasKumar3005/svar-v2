@@ -59,32 +59,41 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
                 style: CustomTextStyles.headlineLargeBlack,
               ),
               SizedBox(height: 12.v),
-              Image(
-                image: NetworkImage(
-                  userprovider.parentaltips[levelprovider.selectedCharacter] !=
-                          null
-                      ? userprovider
-                              .parentaltips[levelprovider.selectedCharacter]
-                          ["image"]
-                      : "",
+              Padding(
+                padding:  EdgeInsets.symmetric(horizontal: 30.h, vertical: 10.v),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                
+                Image(
+                  image: NetworkImage(
+                    userprovider.parentaltips[levelprovider.selectedCharacter] !=
+                            null
+                        ? userprovider
+                                .parentaltips[levelprovider.selectedCharacter]
+                            ["image"]
+                        : "",
+                  ),
+                  height: 219.v,
+                  width: MediaQuery.of(context).size.width * 0.45,
+                  fit: BoxFit.contain,
                 ),
-                height: 219.v,
-                width: 492.h,
-                fit: BoxFit.contain,
-              ),
-              Container(
-                width: 593.h,
-                child: Text(
-                  userprovider.parentaltips[levelprovider.selectedCharacter] !=
-                          null
-                      ? userprovider
-                          .parentaltips[levelprovider.selectedCharacter]["tips"]
-                      : "tips",
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: CustomTextStyles.titleMediumNunitoSansTeal900,
+                Container(
+                  height: 219.v,
+                  width:  MediaQuery.of(context).size.width * 0.45,
+                  child: Text(
+                    userprovider.parentaltips[levelprovider.selectedCharacter] !=
+                            null
+                        ? userprovider
+                            .parentaltips[levelprovider.selectedCharacter]["tips"]
+                        : "tips",
+                  
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: CustomTextStyles.titleMediumNunitoSansTeal900,
+                  ),
                 ),
+                ],),
               ),
               SizedBox(height: 2.v)
             ],
