@@ -8,11 +8,7 @@ import 'package:svar_new/widgets/custom_button.dart';
 
 class AuditoryScreenAssessmentScreenVisualAudioResizScreen
     extends StatefulWidget {
-  final String type;
-  final dynamic dtcontainer;
-
-  const AuditoryScreenAssessmentScreenVisualAudioResizScreen(
-      {Key? key, required String this.type, required this.dtcontainer})
+  const AuditoryScreenAssessmentScreenVisualAudioResizScreen({Key? key})
       : super(
           key: key,
         );
@@ -21,21 +17,17 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreen
   AuditoryScreenAssessmentScreenVisualAudioResizScreenState createState() =>
       AuditoryScreenAssessmentScreenVisualAudioResizScreenState();
 
-  static Widget builder(BuildContext context, {required String type}) {
+  static Widget builder(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) =>
           AuditoryScreenAssessmentScreenVisualAudioResizProvider(),
-      child: AuditoryScreenAssessmentScreenVisualAudioResizScreen(
-        type: type,
-        dtcontainer: null,
-      ),
+      child: AuditoryScreenAssessmentScreenVisualAudioResizScreen(),
     );
   }
 }
 
 class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
     extends State<AuditoryScreenAssessmentScreenVisualAudioResizScreen> {
-  late final String type;
   late AudioPlayer _player;
 
   Future<void> playAudio(String url) async {
@@ -56,7 +48,6 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
   @override
   void initState() {
     super.initState();
-    type = widget.type;
     _player = AudioPlayer();
   }
 
@@ -65,6 +56,9 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
   Widget build(BuildContext context) {
     var provider =
         context.watch<AuditoryScreenAssessmentScreenVisualAudioResizProvider>();
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    String type = obj[0] as String;
+    dynamic dtcontainer = obj[1] as dynamic;
 
     return type != "AudioToImage"
         ? SafeArea(
@@ -92,7 +86,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                       children: [
                         AuditoryAppBar(context),
                         SizedBox(height: 56.v),
-                        _buildOptionGRP(context, provider, type),
+                        _buildOptionGRP(context, provider, type, dtcontainer),
                         Spacer(),
                         Center(
                           child: CustomButton(
@@ -105,7 +99,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 )),
           )
         : AuditoryScreenAssessmentScreenAudioVisualResizScreen(
-            dtcontainer: widget.dtcontainer,
+            dtcontainer: dtcontainer,
           );
   }
 
@@ -113,7 +107,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
   Widget _buildOptionGRP(
       BuildContext context,
       AuditoryScreenAssessmentScreenVisualAudioResizProvider provider,
-      String type) {
+      String type,
+      dynamic dtcontainer) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.h),
       child: Row(
@@ -126,25 +121,27 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
               decoration: AppDecoration.outlineBlack9001.copyWith(
                 borderRadius: BorderRadiusStyle.roundedBorder15,
               ),
-              child: widget.type == "WordToFig"
+              child: type == "WordToFig"
                   ? Center(
                       child: Text(
-                      widget.dtcontainer.getImageUrl(),
+                      dtcontainer.getImageUrl(),
                       style: TextStyle(fontSize: 90),
                     ))
                   : CustomImageView(
-                      imagePath: widget.dtcontainer
-                          .getImageUrl(), //  ImageConstant.imgClap,
+                      imagePath:
+                          dtcontainer.getImageUrl(), //  ImageConstant.imgClap,
                       radius: BorderRadiusStyle.roundedBorder15,
                     )),
-          buildDynamicOptions(widget.type, provider)
+          buildDynamicOptions(type, provider, dtcontainer)
         ],
       ),
     );
   }
 
-  Widget buildDynamicOptions(String quizType,
-      AuditoryScreenAssessmentScreenVisualAudioResizProvider provider) {
+  Widget buildDynamicOptions(
+      String quizType,
+      AuditoryScreenAssessmentScreenVisualAudioResizProvider provider,
+      dynamic dtcontainer) {
     switch (quizType) {
       case "ImageToAudio":
         //debugPrint("entering in image to audio section!");
@@ -157,18 +154,18 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 GestureDetector(
                   onDoubleTap: () {
                     provider.setSelected(0);
-                    if (widget.dtcontainer.getCorrectOutput() ==
-                        widget.dtcontainer.getAudioList()[0]) {
+                    if (dtcontainer.getCorrectOutput() ==
+                        dtcontainer.getAudioList()[0]) {
                       // push the widget which will shown after success
                       //      Navigator.push(context, null);
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Correct option choosen")),
-                        );
+                        SnackBar(content: Text("Correct option choosen")),
+                      );
                     } else {
                       // push the widget which will shown after failure
-                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Incorrect option choosen")),
-                        );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Incorrect option choosen")),
+                      );
                     }
                   },
                   child: Container(
@@ -191,7 +188,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                             onPressed: () {
                               // debugPrint("audio is playing");
                               // debugPrint(widget.dtcontainer.getAudioList()[0]);
-                              playAudio(widget.dtcontainer.getAudioList()[0]);
+                              playAudio(dtcontainer.getAudioList()[0]);
                               // Navigator.pop(context);
                             }),
                         Spacer(),
@@ -210,18 +207,18 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 GestureDetector(
                   onDoubleTap: () {
                     provider.setSelected(1);
-                    if (widget.dtcontainer.getCorrectOutput().toString() ==
-                        widget.dtcontainer.getAudioList()[1]) {
+                    if (dtcontainer.getCorrectOutput().toString() ==
+                        dtcontainer.getAudioList()[1]) {
                       // push the widget which will shown after success
                       //      Navigator.push(context, null);
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Correct option choosen")),
-                        );
+                        SnackBar(content: Text("Correct option choosen")),
+                      );
                     } else {
                       // push the widget which will shown after failure
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Incorrect option choosen")),
-                        );
+                        SnackBar(content: Text("Incorrect option choosen")),
+                      );
                     }
                   },
                   child: Container(
@@ -244,7 +241,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                             onPressed: () {
                               // debugPrint("audio is playing");
                               // debugPrint(widget.dtcontainer.getAudioList()[1]);
-                              playAudio(widget.dtcontainer.getAudioList()[1]);
+                              playAudio(dtcontainer.getAudioList()[1]);
                             }),
                         Spacer(),
                         CustomImageView(
@@ -290,21 +287,22 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                     children: [
                       GestureDetector(
                         onTap: () {
-                          if (widget.dtcontainer.getCorrectOutput() ==
-                              widget.dtcontainer.getTextList()[0]) {
+                          if (dtcontainer.getCorrectOutput() ==
+                              dtcontainer.getTextList()[0]) {
                             // success widget push
                             ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Correct option choosen")),
-                        );
+                              SnackBar(content: Text("Correct option choosen")),
+                            );
                           } else {
                             // failure widget push
                             ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Incorrect option choosen")),
-                        );
+                              SnackBar(
+                                  content: Text("Incorrect option choosen")),
+                            );
                           }
                         },
                         child: Text(
-                          widget.dtcontainer.getTextList()[0],
+                          dtcontainer.getTextList()[0],
                           style: theme.textTheme.labelMedium,
                         ),
                       ),
@@ -334,21 +332,22 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                     children: [
                       GestureDetector(
                         onTap: () {
-                          if (widget.dtcontainer.getCorrectOutput() ==
-                              widget.dtcontainer.getTextList()[1]) {
+                          if (dtcontainer.getCorrectOutput() ==
+                              dtcontainer.getTextList()[1]) {
                             // success widget push
                             ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Correct option choosen")),
-                        );
+                              SnackBar(content: Text("Correct option choosen")),
+                            );
                           } else {
                             // failure widget push
                             ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Incorrect option choosen")),
-                        );
+                              SnackBar(
+                                  content: Text("Incorrect option choosen")),
+                            );
                           }
                         },
                         child: Text(
-                          widget.dtcontainer.getTextList()[1],
+                          dtcontainer.getTextList()[1],
                           style: theme.textTheme.labelMedium,
                         ),
                       ),
@@ -385,8 +384,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 child: Center(
                   child: GestureDetector(
                     onTap: () {
-                      if (widget.dtcontainer.getCorrectOutput() ==
-                          widget.dtcontainer.getImageUrlList()[0]) {
+                      if (dtcontainer.getCorrectOutput() ==
+                          dtcontainer.getImageUrlList()[0]) {
                         // success widget loader
                         debugPrint("correct option is choosen");
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -401,7 +400,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                       }
                     },
                     child: Image.network(
-                      widget.dtcontainer.getImageUrlList()[0],
+                      dtcontainer.getImageUrlList()[0],
                       fit: BoxFit.contain,
                       height: 70.v,
                       width: 50.v,
@@ -428,8 +427,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 child: Center(
                   child: GestureDetector(
                     onTap: () {
-                      if (widget.dtcontainer.getCorrectOutput() ==
-                          widget.dtcontainer.getImageUrlList()[1]) {
+                      if (dtcontainer.getCorrectOutput() ==
+                          dtcontainer.getImageUrlList()[1]) {
                         // success widget loader
                         debugPrint("correct option is choosen");
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -444,7 +443,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                       }
                     },
                     child: Image.network(
-                      widget.dtcontainer.getImageUrlList()[1],
+                      dtcontainer.getImageUrlList()[1],
                       fit: BoxFit.contain,
                       height: 70.v,
                       width: 50.v,

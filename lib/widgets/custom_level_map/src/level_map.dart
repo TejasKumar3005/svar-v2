@@ -15,9 +15,9 @@ class LevelMap extends StatelessWidget {
       LevelMapPainter levelMapPainter, BoxConstraints constraints) {
     List<Widget> children = [];
 
-    print("offsetPoints: ${levelMapPainter.getOffsetPoints()}");
+    // print("offsetPoints: ${levelMapPainter.getOffsetPoints()}");
     for (var offsetPoints in levelMapPainter.getOffsetPoints()) {
-      print("here");
+      //  print("here");
       children.add(
         Positioned(
             bottom:
@@ -38,7 +38,7 @@ class LevelMap extends StatelessWidget {
             )),
       );
     }
-    print("children: $children");
+    //print("children: $children");
     return children;
   }
 

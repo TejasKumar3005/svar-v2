@@ -45,8 +45,8 @@ class AppRoutes {
   static const String loadingScreen = '/loading_screen';
 
   static const String welcomeScreen = '/welcome_screen';
-  // static const String auditoryScreenAssessmentScreenAudioVisualResizScreen =
-  //     "/auditory_screen_assessment_audio_visual_resiz_screen";
+  static const String auditoryScreenAssessmentScreenAudioVisualResizScreen =
+      "/auditory_screen_assessment_audio_visual_resiz_screen";
   static const String phonemsLevelScreenTwoScreen =
       '/phonems_level_screen_two_screen';
 
@@ -56,8 +56,8 @@ class AppRoutes {
   static const String auditoryScreenAssessmentScreenAudioVisualResizedScreen =
       '/auditory_screen_assessment_screen_audio_visual_resized_screen';
 
-  // static const String auditoryScreenAssessmentScreenVisualAudioResizScreen =
-  //     '/auditory_screen_assessment_screen_visual_audio_resiz_screen';
+  static const String auditoryScreenAssessmentScreenVisualAudioResizScreen =
+      '/auditory_screen_assessment_screen_visual_audio_resiz_screen';
 
   static const String auditoryScreenVisualLearningScreenResizedScreen =
       '/auditory_screen_visual_learning_screen_resized_screen';
@@ -109,8 +109,9 @@ class AppRoutes {
         phonemsLevelScreenOneScreen: PhonemsLevelScreenOneScreen.builder,
         auditoryScreenAssessmentScreenAudioVisualResizedScreen:
             AuditoryScreenAssessmentScreenAudioVisualOneScreen.builder,
-        // auditoryScreenAssessmentScreenVisualAudioResizScreen:
-        //     AuditoryScreenAssessmentScreenVisualAudioResizScreen.builder, // will have to change the route to learning pathway
+        auditoryScreenAssessmentScreenVisualAudioResizScreen:
+            AuditoryScreenAssessmentScreenVisualAudioResizScreen
+                .builder, // will have to change the route to learning pathway
         auditoryScreenVisualLearningScreenResizedScreen:
             AuditoryScreenVisualLearningScreenResizedScreen.builder,
         lingSoundAssessmentScreen: LingSoundAssessmentScreen.builder,

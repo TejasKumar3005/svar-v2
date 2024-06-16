@@ -6,13 +6,13 @@ import '../utils/image_offset_extension.dart';
 import '../model/bg_image.dart';
 import '../model/images_to_paint.dart';
 
-class ImageOffset{
+class ImageOffset {
   final Offset offset;
   final ImageDetails imageDetails;
-  final int level ;
+  final int level;
   final void Function(int level) onTap;
- 
-  ImageOffset( this.offset,  this.imageDetails, this.level, this.onTap);
+
+  ImageOffset(this.offset, this.imageDetails, this.level, this.onTap);
 }
 
 class LevelMapPainter extends CustomPainter {
@@ -23,12 +23,12 @@ class LevelMapPainter extends CustomPainter {
   final Size size;
   List<ImageOffset> offsetPoints = [];
 
-
   /// Describes the fraction to reach next level.
   /// If the [LevelMapParams.currentLevel] is 6.5, [_nextLevelFraction] is 0.5.
   final double _nextLevelFraction;
 
-  LevelMapPainter({required this.params, this.imagesToPaint, required this.size})
+  LevelMapPainter(
+      {required this.params, this.imagesToPaint, required this.size})
       : _pathPaint = Paint()
           ..strokeWidth = params.pathStrokeWidth
           ..color = params.pathColor
@@ -38,16 +38,16 @@ class LevelMapPainter extends CustomPainter {
           ..color = params.shadowColor
           ..strokeCap = StrokeCap.round,
         _nextLevelFraction =
-            params.currentLevel.remainder(params.currentLevel.floor()){
-    print("LevelMapPainter constructor called");
+            params.currentLevel.remainder(params.currentLevel.floor()) {
+    //print("LevelMapPainter constructor called");
 
     // create a list of offset points
-        final double _centerWidth = size.width / 2;
+    final double _centerWidth = size.width / 2;
     double _p2_dx_VariationFactor =
         params.firstCurveReferencePointOffsetFactor!.dx;
     double _p2_dy_VariationFactor =
         params.firstCurveReferencePointOffsetFactor!.dy;
-for (int thisLevel = 0; thisLevel < params.levelCount; thisLevel++) {
+    for (int thisLevel = 0; thisLevel < params.levelCount; thisLevel++) {
       final Offset p1 = Offset(_centerWidth, -(thisLevel * params.levelHeight));
       final Offset p2 = getP2OffsetBasedOnCurveSide(thisLevel,
           _p2_dx_VariationFactor, _p2_dy_VariationFactor, _centerWidth);
@@ -55,38 +55,41 @@ for (int thisLevel = 0; thisLevel < params.levelCount; thisLevel++) {
           -((thisLevel * params.levelHeight) + params.levelHeight));
 
       if (imagesToPaint != null) {
-      final Offset _offsetToPaintImage = Offset(
-          _compute(0.5, p1.dx, p2.dx, p3.dx),
-          _compute(0.5, p1.dy, p2.dy, p3.dy));
-      ImageDetails imageDetails;
-      if(params.currentLevel ==  thisLevel + 1 ){ 
-        imageDetails = imagesToPaint!.currentLevelImage;
+        final Offset _offsetToPaintImage = Offset(
+            _compute(0.5, p1.dx, p2.dx, p3.dx),
+            _compute(0.5, p1.dy, p2.dy, p3.dy));
+        ImageDetails imageDetails;
+        if (params.currentLevel == thisLevel + 1) {
+          imageDetails = imagesToPaint!.currentLevelImage;
+        } else if (params.currentLevel > thisLevel + 1) {
+          imageDetails = imagesToPaint!.completedLevelImage;
+        } else {
+          imageDetails = imagesToPaint!.lockedLevelImage;
+        }
+        offsetPoints.add(ImageOffset(
+            _offsetToPaintImage.toBottomCenter(imageDetails.size),
+            imageDetails,
+            thisLevel + 1,
+            imageDetails.onTap));
+
+        //  print("offsetPoints added in constr: $offsetPoints");
+
+        // final double _curveFraction;
+        // final int _flooredCurrentLevel = params.currentLevel.floor();
+        // if (_flooredCurrentLevel == thisLevel && _nextLevelFraction <= 0.5) {
+        //   _curveFraction = 0.5 + _nextLevelFraction;
+        //   // _paintImage(canvas, imagesToPaint!.currentLevelImage, _offsetToPaintImage.toCenter(imageDetails.size));
+        // } else /*(_flooredCurrentLevel == thisLevel - 1 &&
+        //     _nextLevelFraction > 0.5)*/ {
+        //   _curveFraction = _nextLevelFraction - 0.5;
+        // }
+        // final Offset _offsetToPaintCurrentLevelImage = Offset(
+        //     _compute(_curveFraction, p1.dx, p2.dx, p3.dx),
+        //     _compute(_curveFraction, p1.dy, p2.dy, p3.dy));
+        // offsetPoints.add(ImageOffset(_offsetToPaintCurrentLevelImage.toBottomCenter(imagesToPaint!.currentLevelImage.size), imagesToPaint!.currentLevelImage, thisLevel ,imagesToPaint!.currentLevelImage.onTap));
+
+        // print("offsetPoints added in constr: $offsetPoints");
       }
-      else if (params.currentLevel > thisLevel +1 ) {
-        imageDetails = imagesToPaint!.completedLevelImage;
-      } else {
-        imageDetails = imagesToPaint!.lockedLevelImage;
-      }
-      offsetPoints.add(ImageOffset(_offsetToPaintImage.toBottomCenter(imageDetails.size), imageDetails, thisLevel + 1,imageDetails.onTap));
-      
-      print("offsetPoints added in constr: $offsetPoints");
-          
-      // final double _curveFraction;
-      // final int _flooredCurrentLevel = params.currentLevel.floor();
-      // if (_flooredCurrentLevel == thisLevel && _nextLevelFraction <= 0.5) {
-      //   _curveFraction = 0.5 + _nextLevelFraction;
-      //   // _paintImage(canvas, imagesToPaint!.currentLevelImage, _offsetToPaintImage.toCenter(imageDetails.size));
-      // } else /*(_flooredCurrentLevel == thisLevel - 1 &&
-      //     _nextLevelFraction > 0.5)*/ {
-      //   _curveFraction = _nextLevelFraction - 0.5;
-      // }
-      // final Offset _offsetToPaintCurrentLevelImage = Offset(
-      //     _compute(_curveFraction, p1.dx, p2.dx, p3.dx),
-      //     _compute(_curveFraction, p1.dy, p2.dy, p3.dy));
-      // offsetPoints.add(ImageOffset(_offsetToPaintCurrentLevelImage.toBottomCenter(imagesToPaint!.currentLevelImage.size), imagesToPaint!.currentLevelImage, thisLevel ,imagesToPaint!.currentLevelImage.onTap));
-      
-      // print("offsetPoints added in constr: $offsetPoints");
-    } 
 
       if (params.enableVariationBetweenCurves) {
         _p2_dx_VariationFactor = _p2_dx_VariationFactor +
@@ -95,11 +98,11 @@ for (int thisLevel = 0; thisLevel < params.levelCount; thisLevel++) {
             params.curveReferenceOffsetVariationForEachLevel[thisLevel].dy;
       }
     }
-            }
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
-    print("painting called");
+    // print("painting called");
     canvas.save();
     canvas.translate(0, size.height);
 
@@ -215,7 +218,7 @@ for (int thisLevel = 0; thisLevel < params.levelCount; thisLevel++) {
     //     imageDetails = imagesToPaint!.lockedLevelImage;
     //   }
     //   _paintImage(canvas, imageDetails, _offsetToPaintImage.toBottomCenter(imageDetails.size));
-      
+
     //   print("offsetPoints added: $offsetPoints");
     //       }
     //   final double _curveFraction;
@@ -233,7 +236,7 @@ for (int thisLevel = 0; thisLevel < params.levelCount; thisLevel++) {
     //       _compute(_curveFraction, p1.dx, p2.dx, p3.dx),
     //       _compute(_curveFraction, p1.dy, p2.dy, p3.dy));
     //   _paintImage(canvas, imagesToPaint!.currentLevelImage, _offsetToPaintCurrentLevelImage.toBottomCenter(imagesToPaint!.currentLevelImage.size));
-      
+
     //   print("offsetPoints added: $offsetPoints");
     // }
   }
@@ -254,7 +257,6 @@ for (int thisLevel = 0; thisLevel < params.levelCount; thisLevel++) {
   List<ImageOffset> getOffsetPoints() {
     return offsetPoints;
   }
-
 
   @override
   bool shouldRepaint(covariant LevelMapPainter oldDelegate) =>

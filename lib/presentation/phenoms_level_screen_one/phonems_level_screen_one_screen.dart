@@ -490,16 +490,20 @@ class PhonemsLevelScreenOneScreenState
         dtcontainer = retrieveObject(type, data);
         debugPrint("data is ");
         debugPrint(data.toString());
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  // StaticAuditoryScreen(type: type, dtcontainer: dtcontainer),
-                  AuditoryScreenAssessmentScreenVisualAudioResizScreen(
-                    type: type,
-                    dtcontainer: dtcontainer,
-                  )),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //       builder: (context) =>
+        //           // StaticAuditoryScreen(type: type, dtcontainer: dtcontainer),
+        //           AuditoryScreenAssessmentScreenVisualAudioResizScreen(
+        //             type: type,
+        //             dtcontainer: dtcontainer,
+        //           )),
+        // );
+        List<dynamic> lis = [type, dtcontainer];
+        NavigatorService.pushNamed(
+            AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen,
+            arguments: lis);
       }
     } catch (e) {
       debugPrint("catch section");

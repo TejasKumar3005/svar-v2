@@ -166,9 +166,11 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
                 create: (context) =>
                     AuditoryScreenAssessmentScreenVisualAudioResizProvider()),
-                    ChangeNotifierProvider(create: (context)=> MainInteractionProvider(), 
-                    ), 
-            ChangeNotifierProvider(create: (context) => PhonemsLevelScreenOneProvider())
+            ChangeNotifierProvider(
+              create: (context) => MainInteractionProvider(),
+            ),
+            ChangeNotifierProvider(
+                create: (context) => PhonemsLevelScreenOneProvider())
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
@@ -187,11 +189,11 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                // initialRoute: AppRoutes.mainInteractionScreen,
-                initialRoute: auth.currentUser == null
-                    ? AppRoutes.logInSignUpScreenPotraitScreen
-                    : AppRoutes
-                        .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                initialRoute: AppRoutes.mainInteractionScreen,
+                // initialRoute: auth.currentUser == null
+                //     ? AppRoutes.logInSignUpScreenPotraitScreen
+                //     : AppRoutes
+                //         .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
               );
             },
