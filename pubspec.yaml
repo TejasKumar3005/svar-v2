@@ -26,7 +26,6 @@ dependencies:
   flutter_sound: ^8.1.6
   app_settings: ^5.1.1
   http: ^0.13.6
-  tflite_flutter: ^0.10.4
   country_code_picker: ^3.0.0
   carousel_slider: ^4.2.1
   audioplayers: ^6.0.0
