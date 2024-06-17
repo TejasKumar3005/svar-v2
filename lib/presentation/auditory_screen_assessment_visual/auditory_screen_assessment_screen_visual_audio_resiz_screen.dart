@@ -265,7 +265,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
           child: Row(
             children: [
               Container(
-                height: 130.v,
+                height: 125.v,
                 padding: EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
                 decoration: AppDecoration.outlineBlack9003.copyWith(
                     color: appTheme.deepOrangeA200,
@@ -311,7 +311,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                 ),
               ),
               Container(
-                height: 130.v,
+                height: 125.v,
                 padding: EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
                 decoration: AppDecoration.outlineBlack9003.copyWith(
                     color: appTheme.teal90001,
@@ -367,7 +367,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
           child: Row(
             children: [
               Container(
-                height: 130.v,
+                height: 125.v,
                 padding: EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
                 decoration: AppDecoration.outlineBlack9003.copyWith(
                     border: Border.all(
@@ -402,15 +402,15 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                     child: Image.network(
                       dtcontainer.getImageUrlList()[0],
                       fit: BoxFit.contain,
-                      height: 70.v,
-                      width: 50.v,
+                      height: 60.v,
+                      width: 60.v,
                     ),
                   ),
                 ),
               ),
               Spacer(),
               Container(
-                height: 130.v,
+                height: 125.v,
                 padding: EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
                 decoration: AppDecoration.outlineBlack9003.copyWith(
                     border: Border.all(
@@ -445,8 +445,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                     child: Image.network(
                       dtcontainer.getImageUrlList()[1],
                       fit: BoxFit.contain,
-                      height: 70.v,
-                      width: 50.v,
+                      height: 60.v,
+                      width: 60.v,
                     ),
                   ),
                 ),
