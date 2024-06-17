@@ -5,6 +5,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:svar_new/presentation/phenoms_level_screen_one/phonems_level_screen_one_screen.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart.dart';
+import 'package:svar_new/providers/appUpdateProvider.dart';
+import 'package:svar_new/widgets/app-update-dialog.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'models/main_interaction_model.dart';
@@ -41,6 +43,11 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      var provider = Provider.of<AppUpdateProvider>(context, listen: false);
+      provider.checkForUpdate();
+      provider.setCallHandler();
+    });
   }
 
   @override
@@ -56,6 +63,13 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<MainInteractionProvider>(context, listen: false);
+    var providerAppUpdate =
+        Provider.of<AppUpdateProvider>(context, listen: false);
+    if (providerAppUpdate.dialogOpen) {
+      showDialog(
+        barrierDismissible: false,
+          context: context, builder: (BuildContext context) => UpdateDialog());
+    }
     return SafeArea(
       child: Scaffold(
         extendBody: true,

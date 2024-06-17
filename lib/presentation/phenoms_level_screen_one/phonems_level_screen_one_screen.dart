@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
-import 'package:svar_new/presentation/auditory_screen_assessment_visual/auditory_screen_assessment_screen_visual_audio_resiz_screen.dart';
-import 'package:svar_new/presentation/main_interaction_screen/provider/main_interaction_provider.dart';
 import 'package:svar_new/presentation/phenoms_level_screen_one/video_player_screen.dart';
 import 'provider/phonems_level_screen_one_provider.dart';
 import 'package:svar_new/widgets/custom_level_map/level_map.dart';

@@ -16,6 +16,7 @@ import 'package:svar_new/presentation/auditory_screen_assessment_visual/provider
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/main_interaction_screen/provider/main_interaction_provider.dart';
 import 'package:svar_new/presentation/phenoms_level_screen_one/provider/phonems_level_screen_one_provider.dart';
+import 'package:svar_new/providers/appUpdateProvider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
 
@@ -144,7 +145,7 @@ class MyApp extends StatelessWidget {
   FirebaseAuth auth = FirebaseAuth.instance;
   final AnalyticsService analyticsService;
   final ScreenTracking _screenTracking;
-
+  
   MyApp(this.analyticsService)
       : _screenTracking = ScreenTracking(analyticsService);
   @override
@@ -169,6 +170,7 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
               create: (context) => MainInteractionProvider(),
             ),
+            ChangeNotifierProvider(create: (context) => AppUpdateProvider()),
             ChangeNotifierProvider(
                 create: (context) => PhonemsLevelScreenOneProvider())
           ],
