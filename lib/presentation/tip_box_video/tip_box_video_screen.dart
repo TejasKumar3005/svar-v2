@@ -1,4 +1,4 @@
-import 'dart:html';
+
 
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
@@ -36,9 +36,8 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
   @override
   Widget build(BuildContext context) {
     var userprovider = context.watch<UserDataProvider>();
-    print(userprovider.parentaltips);
+  
     var levelprovider = context.watch<LingLearningProvider>();
-    print(levelprovider.selectedCharacter);
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -81,16 +80,19 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
                 Container(
                   height: 219.v,
                   width:  MediaQuery.of(context).size.width * 0.45,
-                  child: Text(
-                    userprovider.parentaltips[levelprovider.selectedCharacter] !=
-                            null
-                        ? userprovider
-                            .parentaltips[levelprovider.selectedCharacter]["tips"]
-                        : "tips",
-                  
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: CustomTextStyles.titleMediumNunitoSansTeal900,
+                  child: Center(
+                    child: Text(
+                      userprovider.parentaltips[levelprovider.selectedCharacter] !=
+                              null
+                          ? userprovider
+                              .parentaltips[levelprovider.selectedCharacter]["tips"]
+                          : "tips",
+                    maxLines: 10,
+                    
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: CustomTextStyles.titleMediumNunitoSansTeal900,
+                    ),
                   ),
                 ),
                 ],),

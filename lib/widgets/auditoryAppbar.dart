@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/widgets/custom_image_view.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
 Widget AuditoryAppBar(BuildContext context) {

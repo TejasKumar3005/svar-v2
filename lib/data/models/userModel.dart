@@ -1,4 +1,4 @@
-import 'package:svar_new/data/models/game_statsModel.dart';
+
 import 'package:svar_new/data/models/gift.dart';
 
 class UserModel {
