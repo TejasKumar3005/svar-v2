@@ -6,8 +6,6 @@ import 'package:svar_new/widgets/custom_button.dart';
 
 Widget circularScore() {
   return Container(
-    height: 200,
-    width: 200,
     padding: EdgeInsets.all(20),
     decoration: BoxDecoration(
         color: Color(0xFF30646E),
@@ -18,85 +16,94 @@ Widget circularScore() {
         )
     ),
     child: Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-                CustomImageView(
-                    height: 60,
-                    width: 60,
-                    imagePath: "assets/images/confetti.png",
-                    fit: BoxFit.contain,
-                ),
-                Text(
-                "Score",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                ),
-                ),
-                Transform.rotate(
-                    angle: -3.14 / 2,
-                  child: CustomImageView(
-                      height: 60,
-                      width: 60,
-                      imagePath: "assets/images/confetti.png",
-                      fit: BoxFit.contain,
-                  ),
-                ),
-            ],
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            CustomImageView(
+              height: 60,
+              width: 60,
+              imagePath: "assets/images/confetti.png",
+              fit: BoxFit.contain,
+            ),
+            SizedBox(width: 10), // Optional spacing
+            Text(
+              "Score",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(width: 10), // Optional spacing
+            Transform.rotate(
+              angle: 3.14 / 2,
+              child: CustomImageView(
+                height: 60,
+                width: 60,
+                imagePath: "assets/images/confetti.png",
+                fit: BoxFit.contain,
+              ),
+            ),
+          ],
         ),
+        SizedBox(height: 20), // Optional spacing
         Stack(
           children: <Widget>[
             Center(
               child: Container(
-                height: 200,
-                width: 200,
+                height: 150,
+                width: 150,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(100),
-                  border: Border.all(
-                    color: Color(0xFFC2C2C2),
-                    width: 6,
-                  )
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(
+                      color: Color(0xFFC2C2C2),
+                      width: 6,
+                    )
                 ),
-                child:Column(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                        CustomImageView(
-                            height: 70,
-                            width: 70,
-                            imagePath: "assets/images/done.png",
-                            fit: BoxFit.contain,
+                      CustomImageView(
+                        height: 70,
+                        width: 70,
+                        imagePath: "assets/images/done.png",
+                        fit: BoxFit.contain,
+                      ),
+                      Text(
+                        "75%",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                          Text(
-                "75%",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+                      ),
                     ],
-                ) 
+                  ),
+                ),
               ),
             ),
             GradientCircularProgress(
-            progress: 75, // Set your progress here
-            gradientColors: [Color(0xFFFFBD5A),Color(0xFFF0884A), Color(0xFFFF5F00)], // Gradient colors
-            strokeWidth: 10.0, // Width of the stroke
-          ),
-            Row(
-              children: [
-                CustomButton(type: ButtonType.Next, onPressed: (){})
-              ],
-            )
+              progress: 75, // Set your progress here
+              gradientColors: [Color(0xFFFFBD5A), Color(0xFFF0884A), Color(0xFFFF5F00)], // Gradient colors
+              strokeWidth: 10.0, // Width of the stroke
+            ),
           ],
         ),
+        // SizedBox(height: 20), // Optional spacing
+        // Row(
+        //   mainAxisSize: MainAxisSize.min,
+        //   children: [
+        //     CustomButton(type: ButtonType.Next, onPressed: () {}),
+        //   ],
+        // )
       ],
     ),
   );
 }
-
 
 class GradientCircularProgressPainter extends CustomPainter {
   final double progress;
@@ -134,7 +141,6 @@ class GradientCircularProgressPainter extends CustomPainter {
   }
 }
 
-
 class GradientCircularProgress extends StatelessWidget {
   final double progress;
   final List<Color> gradientColors;
@@ -149,7 +155,7 @@ class GradientCircularProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      size: Size(200.0, 200.0), // Size of the circular progress
+      size: Size(150.0, 150.0), // Size of the circular progress
       painter: GradientCircularProgressPainter(
         progress: progress,
         gradientColors: gradientColors,

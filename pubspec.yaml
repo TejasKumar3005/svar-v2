@@ -32,7 +32,9 @@ dependencies:
   path_provider: ^2.0.11
   firebase_analytics: ^10.10.7
   just_audio: ^0.9.38
-  video_player: ^2.8.7
+  permission_handler: ^11.3.1
+  video_player: ^2.8.3
+  chewie: ^1.8.0
 dev_dependencies: 
   flutter_test: 
     sdk: flutter

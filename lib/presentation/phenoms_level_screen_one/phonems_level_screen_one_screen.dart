@@ -483,7 +483,7 @@ class PhonemsLevelScreenOneScreenState
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => VideoPlayerWidget(videoUrl: data["video"])),
+              builder: (context) => VideoPlayerScreen(videoUrl: data["video"])),
         );
       } else {
         final Object dtcontainer;
@@ -525,7 +525,7 @@ class PhonemsLevelScreenOneScreenState
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => VideoPlayerWidget(videoUrl: data["video"])),
+              builder: (context) => VideoPlayerScreen(videoUrl: data["video"])),
         );
       }
     } catch (e) {
