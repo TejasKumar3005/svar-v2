@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:svar_new/providers/appUpdateProvider.dart';
+import 'package:svar_new/widgets/app-update-dialog.dart';
 import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'models/log_in_sign_up_screen_potrait_model.dart';
 import 'package:flutter/material.dart';
@@ -34,10 +36,22 @@ class LogInSignUpScreenPotraitScreenState
     super.initState();
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      var provider = Provider.of<AppUpdateProvider>(context, listen: false);
+      provider.checkForUpdate();
+      provider.setCallHandler();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    var providerAppUpdate =
+        Provider.of<AppUpdateProvider>(context, listen: false);
+    if (providerAppUpdate.dialogOpen) {
+      showDialog(
+        barrierDismissible: false,
+          context: context, builder: (BuildContext context) => UpdateDialog());
+    }
     return SafeArea(
       child: Scaffold(
         extendBody: true,
