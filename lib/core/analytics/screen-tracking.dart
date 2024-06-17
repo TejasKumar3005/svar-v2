@@ -1,6 +1,6 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
+
 import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
+
 import 'package:svar_new/core/analytics/analytics.dart';
 
 class ScreenTracking extends RouteObserver<PageRoute<dynamic>> {

@@ -142,11 +142,11 @@ Iterable<Locale> locals = [
 
 class MyApp extends StatelessWidget {
   FirebaseAuth auth = FirebaseAuth.instance;
-  final AnalyticsService _analyticsService;
+  final AnalyticsService analyticsService;
   final ScreenTracking _screenTracking;
 
-  MyApp(this._analyticsService)
-      : _screenTracking = ScreenTracking(_analyticsService);
+  MyApp(this.analyticsService)
+      : _screenTracking = ScreenTracking(analyticsService);
   @override
   Widget build(BuildContext context) {
     return Sizer(
@@ -189,7 +189,7 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: locals,
-                initialRoute: AppRoutes.mainInteractionScreen,
+                initialRoute: AppRoutes.logInSignUpScreenPotraitScreen,
                 // initialRoute: auth.currentUser == null
                 //     ? AppRoutes.logInSignUpScreenPotraitScreen
                 //     : AppRoutes

@@ -3,7 +3,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/data/models/game_statsModel.dart';
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 
