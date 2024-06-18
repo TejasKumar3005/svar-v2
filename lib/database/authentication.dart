@@ -168,10 +168,27 @@ class AuthConroller {
 
       return false;
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text(e.message.toString()),
-        backgroundColor: Colors.red,
-      ));
+    String errorMessage;
+    switch (e.code) {
+      case 'email-already-in-use':
+        errorMessage = "This email address is already in use by another account.";
+        break;
+      case 'invalid-email':
+        errorMessage = "This email address is not valid.";
+        break;
+      case 'operation-not-allowed':
+        errorMessage = "Email/password accounts are not enabled.";
+        break;
+      case 'weak-password':
+        errorMessage = "Password is too weak.";
+        break;
+      default:
+        errorMessage = "Something went wrong.";
+    }
+    ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
+      content: Text(errorMessage),
+      backgroundColor: Colors.red,
+    ));
       return false;
     } catch (e) {
       ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
@@ -227,11 +244,28 @@ class AuthConroller {
       }
       return false;
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+    String errorMessage;
+    switch (e.code) {
+      case 'invalid-email':
+        errorMessage = "Please enter valid credentials";
+        break;
+      case 'user-disabled':
+        errorMessage = " User account has been disabled.";
+        break;
+      case 'user-not-found':
+        errorMessage = "No user found with this email.";
+        break;
+      case 'wrong-password':
+        errorMessage = "Please enter valid credentials";
+        break;
+      default:
+        errorMessage = "Something went wrong!";
+    }
 
+    ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
+      content: Text(errorMessage),
+      backgroundColor: Colors.red,
+    ));
       return false;
     } catch (e) {
       // Handle any other exceptions

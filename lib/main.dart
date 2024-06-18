@@ -38,7 +38,7 @@ Future<User?> initializeFirebaseAuth() async {
   return completer.future;
 }
 
-var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
+final globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,7 +60,7 @@ void main() async {
     PrefUtils().init()
   ]).then((value) {
     initializeFirebaseAuth();
-    runApp(MyApp(analyticsService));
+    runApp(MyApp(analyticsService: analyticsService,));
   });
 // final AnalyticsService analyticsService = AnalyticsService();
 //   WidgetsFlutterBinding.ensureInitialized();
@@ -68,86 +68,21 @@ void main() async {
 //   runApp(MyApp(analyticsService));
 }
 
-Iterable<Locale> locals = [
-  Locale("af"),
-  Locale("am"),
-  Locale("ar"),
-  Locale("az"),
-  Locale("be"),
-  Locale("bg"),
-  Locale("bn"),
-  Locale("bs"),
-  Locale("ca"),
-  Locale("cs"),
-  Locale("da"),
-  Locale("de"),
-  Locale("el"),
-  Locale("en"),
-  Locale("es"),
-  Locale("et"),
-  Locale("fa"),
-  Locale("fi"),
-  Locale("fr"),
-  Locale("gl"),
-  Locale("ha"),
-  Locale("he"),
-  Locale("hi"),
-  Locale("hr"),
-  Locale("hu"),
-  Locale("hy"),
-  Locale("id"),
-  Locale("is"),
-  Locale("it"),
-  Locale("ja"),
-  Locale("ka"),
-  Locale("kk"),
-  Locale("km"),
-  Locale("ko"),
-  Locale("ku"),
-  Locale("ky"),
-  Locale("lt"),
-  Locale("lv"),
-  Locale("mk"),
-  Locale("ml"),
-  Locale("mn"),
-  Locale("ms"),
-  Locale("nb"),
-  Locale("nl"),
-  Locale("nn"),
-  Locale("no"),
-  Locale("pl"),
-  Locale("ps"),
-  Locale("pt"),
-  Locale("ro"),
-  Locale("ru"),
-  Locale("sd"),
-  Locale("sk"),
-  Locale("sl"),
-  Locale("so"),
-  Locale("sq"),
-  Locale("sr"),
-  Locale("sv"),
-  Locale("ta"),
-  Locale("tg"),
-  Locale("th"),
-  Locale("tk"),
-  Locale("tr"),
-  Locale("tt"),
-  Locale("uk"),
-  Locale("ug"),
-  Locale("ur"),
-  Locale("uz"),
-  Locale("vi"),
-  Locale("zh")
-];
+
 
 class MyApp extends StatelessWidget {
-  FirebaseAuth auth = FirebaseAuth.instance;
+final  FirebaseAuth auth = FirebaseAuth.instance;
   final AnalyticsService analyticsService;
   final ScreenTracking _screenTracking;
-  
-  MyApp(this.analyticsService)
-      : _screenTracking = ScreenTracking(analyticsService);
+   final NetworkInfo _networkInfo = NetworkInfo();
+
+  MyApp({required this.analyticsService})
+      : _screenTracking = ScreenTracking(analyticsService) {
+    _networkInfo.onConnectivityChanged.listen((ConnectivityResult result) {
+      final isConnected = result != ConnectivityResult.none;
+      showConnectivitySnackBar(isConnected,globalMessengerKey);
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Sizer(
@@ -185,12 +120,12 @@ class MyApp extends StatelessWidget {
                 navigatorObservers: [_screenTracking],
                 localizationsDelegates: [
                   AppLocalizationDelegate(),
-                  CountryLocalizations.delegate,
+                  // CountryLocalizations.delegate,
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
                 ],
-                supportedLocales: locals,
+                // supportedLocales: locals,
                 initialRoute: AppRoutes.logInSignUpScreenPotraitScreen,
                 // initialRoute: auth.currentUser == null
                 //     ? AppRoutes.logInSignUpScreenPotraitScreen
