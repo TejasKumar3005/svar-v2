@@ -1,9 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/provider/auditory_screen_assessment_screen_audio_visual_resized_provider.dart';
+import 'package:svar_new/presentation/auditory_screen_assessment_visual/animation_play.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 
 class AuditoryScreenAssessmentScreenAudioVisualResizScreen
@@ -33,6 +32,8 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreen
 class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
     extends State<AuditoryScreenAssessmentScreenAudioVisualResizScreen> {
   late AudioPlayer _player;
+  late bool _isGlowingA;
+  late bool _isGlowingB;
 
   Future<void> playAudio(String url) async {
     try {
@@ -41,6 +42,32 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
     } catch (e) {
       print('Error initializing player: $e');
     }
+  }
+
+  void _toggleGlowA() {
+    setState(() {
+      _isGlowingA = true;
+    });
+
+    // Revert the glow effect after 1 second
+    Future.delayed(Duration(seconds: 1), () {
+      setState(() {
+        _isGlowingA = false;
+      });
+    });
+  }
+
+  void _toggleGlowB() {
+    setState(() {
+      _isGlowingB = true;
+    });
+
+    // Revert the glow effect after 1 second
+    Future.delayed(Duration(seconds: 1), () {
+      setState(() {
+        _isGlowingB = false;
+      });
+    });
   }
 
   @override
@@ -53,14 +80,16 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
   void initState() {
     super.initState();
     _player = AudioPlayer();
+    _isGlowingA = false;
+    _isGlowingB = false;
   }
 
   int sel = 0;
 
   @override
   Widget build(BuildContext context) {
-    // var provider = context
-    //     .watch<AuditoryScreenAssessmentScreenAudioVisualResizedProvider>();
+    var provider = context
+        .watch<AuditoryScreenAssessmentScreenAudioVisualResizedProvider>();
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -107,31 +136,40 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                     Row(
                       children: [
                         Expanded(
-                          child: Container(
+                          child: AnimatedContainer(
+                            duration: Duration(seconds: 1),
                             height: 120.v,
                             decoration: AppDecoration.fillCyan.copyWith(
-                                border: Border.all(
-                                  color: appTheme.black900,
-                                  width: 2.adaptSize,
-                                ),
-                                image: DecorationImage(
-                                    image: AssetImage(
-                                        "assets/images/radial_ray_bluegreen.png")),
-                                borderRadius:
-                                    BorderRadiusStyle.roundedBorder10),
+                              border: Border.all(
+                                color: appTheme.black900,
+                                width: 2.adaptSize,
+                              ),
+                              image: DecorationImage(
+                                  image: AssetImage(
+                                      "assets/images/radial_ray_bluegreen.png")),
+                              borderRadius: BorderRadiusStyle.roundedBorder10,
+                              boxShadow: _isGlowingA
+                                  ? [
+                                      BoxShadow(
+                                        color: Color.fromARGB(255, 202, 1, 1)
+                                            .withOpacity(0.6),
+                                        spreadRadius: 10,
+                                        blurRadius: 5,
+                                      ),
+                                    ]
+                                  : [],
+                            ),
                             child: GestureDetector(
                               onTap: () {
                                 if (widget.dtcontainer.getCorrectOutput() ==
                                     widget.dtcontainer.getImageUrlList()[0]) {
                                   // success
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Correct option choosen")),
-                        );
+                                  provider.incrementLevelCount();
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          GifDisplayScreen()));
                                 } else {
-                                  // failure
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Incorrect option choosen")),
-                        );
+                                  _toggleGlowA();
                                 }
                               },
                               child: CustomImageView(
@@ -146,31 +184,42 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                           width: 50.h,
                         ),
                         Expanded(
-                          child: Container(
-                              height: 100.v,
+                          child: AnimatedContainer(
+                              duration: Duration(seconds: 1),
+                              height: 120.v,
                               decoration: AppDecoration.fillCyan.copyWith(
-                                  border: Border.all(
-                                    color: appTheme.black900,
-                                    width: 2.adaptSize,
-                                  ),
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                          "assets/images/radial_ray_bluegreen.png")),
-                                  borderRadius:
-                                      BorderRadiusStyle.roundedBorder10),
+                                border: Border.all(
+                                  color: appTheme.black900,
+                                  width: 2.adaptSize,
+                                ),
+                                image: DecorationImage(
+                                    image: AssetImage(
+                                        "assets/images/radial_ray_bluegreen.png")),
+                                borderRadius: BorderRadiusStyle.roundedBorder10,
+                                boxShadow: _isGlowingB
+                                    ? [
+                                        BoxShadow(
+                                          color: Color.fromARGB(255, 202, 1, 1)
+                                              .withOpacity(0.6),
+                                          spreadRadius: 10,
+                                          blurRadius: 5,
+                                        ),
+                                      ]
+                                    : [],
+                              ),
                               child: GestureDetector(
                                 onTap: () {
                                   if (widget.dtcontainer.getCorrectOutput() ==
                                       widget.dtcontainer.getImageUrlList()[1]) {
                                     // success
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Correct option choosen")),
-                        );
+                                    provider.incrementLevelCount();
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                GifDisplayScreen()));
                                   } else {
                                     // failure
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Incorrect option choosen")),
-                        );
+                                    _toggleGlowB();
                                   }
                                 },
                                 child: CustomImageView(
@@ -182,10 +231,6 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                         ),
                       ],
                     ),
-                    SizedBox(height: 50.v),
-                    CustomImageView(
-                      imagePath: ImageConstant.imgNextBtn,
-                    )
                   ],
                 ),
               ),
