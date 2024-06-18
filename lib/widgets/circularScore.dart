@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
-Widget circularScore() {
+Widget circularScore(String per) {
   return Container(
     padding: EdgeInsets.all(20),
     decoration: BoxDecoration(
@@ -75,7 +75,7 @@ Widget circularScore() {
                         fit: BoxFit.contain,
                       ),
                       Text(
-                        "75%",
+                        "${per}%",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

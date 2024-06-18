@@ -136,6 +136,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
     }
   }
 
+  String? result;
   @override
   Widget build(BuildContext context) {
     LingLearningProvider lingLearningProvider =
@@ -175,34 +176,38 @@ class LingLearningScreenState extends State<LingLearningScreen> {
               Positioned(
                 left: 180,
                 bottom: 120,
-                child: AvatarGlow(
-                  endRadius: 90.0,
-                  glowColor: Colors.blue,
-                  duration: Duration(milliseconds: 2000),
-                  repeat: true,
-                  showTwoGlows: true,
-                  repeatPauseDuration: Duration(milliseconds: 100),
-                  child: Material(
-                    elevation: 8.0,
-                    shape: CircleBorder(),
-                    child: Container(
-                      height: 120,
-                      width: 120,
-                      // child: circularScore(),
-                      child: CustomButton(
-                        type: ButtonType.Mic,
-                        onPressed: () async{
-                            bool permission = await requestPermissions();
-    print("----permission---"+permission.toString());
-    if (!permission) {
-      return;
-    }
-                          onTapMicrophonebutton(context, lingLearningProvider);
-                        },
-                      ),
-                    ),
-                  ),
-                ),
+                child: result == null
+                    ? AvatarGlow(
+                        endRadius: 90.0,
+                        glowColor: Colors.blue,
+                        duration: Duration(milliseconds: 2000),
+                        repeat: true,
+                        showTwoGlows: lingLearningProvider.isRecording,
+                        repeatPauseDuration: Duration(milliseconds: 100),
+                        child: Material(
+                          elevation: 8.0,
+                          shape: CircleBorder(),
+                          child: Container(
+                            height: 120,
+                            width: 120,
+                            // child: circularScore(),
+                            child: CustomButton(
+                              type: ButtonType.Mic,
+                              onPressed: () async {
+                                bool permission = await requestPermissions();
+                                print("----permission---" +
+                                    permission.toString());
+                                if (!permission) {
+                                  return;
+                                }
+                                onTapMicrophonebutton(
+                                    context, lingLearningProvider);
+                              },
+                            ),
+                          ),
+                        ),
+                      )
+                    : Container(),
               ),
               Positioned(
                 right: 80,
@@ -232,11 +237,13 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                   ),
                 ),
               ),
-              // Positioned(
-              //   left: MediaQuery.of(context).size.width *0.1,
-              //   bottom: 10,
-              //   child: circularScore(),
-              // )
+              result != null
+                  ? Positioned(
+                      left: MediaQuery.of(context).size.width * 0.1,
+                      bottom: 10,
+                      child: circularScore(result!),
+                    )
+                  : Container()
             ],
           ),
         ),
@@ -291,8 +298,13 @@ class LingLearningScreenState extends State<LingLearningScreen> {
       String body = await response.stream.bytesToString();
       print(body);
       Map<String, dynamic> data = json.decode(body);
+      setState(() {
+        result = data["result"].toString();
+      });
       return data['result'];
     } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Something went wrong")));
       throw Exception(
           "Failed to send .wav file. Status code: ${response.statusCode}");
     }
@@ -301,7 +313,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
   onTapMicrophonebutton(
       BuildContext context, LingLearningProvider provider) async {
     print("-------hello");
-  
+
     // if (provider.isRecording) {
     //   await provider.stopRecording();
     // } else {
@@ -311,7 +323,6 @@ class LingLearningScreenState extends State<LingLearningScreen> {
     // print(provider.isRecording);
     // }
     try {
-      
       bool done = await provider.toggleRecording(context);
       print(done);
       if (!provider.isRecording) {
