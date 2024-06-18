@@ -22,6 +22,7 @@ class LoginFormMethods {
         .then((value) => {
               if (value)
                 {
+                  provider.changeState(),
                   Navigator.of(context).pushNamedAndRemoveUntil(
                       AppRoutes.loadingScreen, (route) => false)
                 }else{

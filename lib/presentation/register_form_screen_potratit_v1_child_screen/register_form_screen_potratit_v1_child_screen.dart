@@ -10,6 +10,7 @@ import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/widgets/custom_text_form_field.dart';
 import 'package:svar_new/core/utils/validation_functions.dart';
 import 'package:svar_new/widgets/custom_outlined_button.dart';
+import 'package:svar_new/widgets/loading.dart';
 import 'models/register_form_screen_potratit_v1_child_model.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -53,6 +54,9 @@ class RegisterFormScreenPotratitV1ChildScreenState
   @override
   Widget build(BuildContext context) {
     final textCtrl = context.watch<RegisterFormScreenPotratitV1ChildProvider>();
+    if (textCtrl.loading) {
+      wheelLoadingDialog(context);
+    }
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -206,10 +210,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildEditText(context)
-                            
-                            ],
+                            children: [_buildEditText(context)],
                           ),
                           SizedBox(height: 22.v),
                           textCtrl.loading
@@ -269,14 +270,13 @@ class RegisterFormScreenPotratitV1ChildScreenState
             prefix: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: CustomImageView(
                     imagePath: ImageConstant.imgIndia,
                     width: 24.h,
-                      height: 23.v,
+                    height: 23.v,
                     fit: BoxFit.contain,
                     alignment: Alignment.center,
                   ),
@@ -301,7 +301,6 @@ class RegisterFormScreenPotratitV1ChildScreenState
               }
             },
             hintText: "lbl_9312211596".tr,
-          
           );
         },
         selector: (context, provider) => provider.phoneNumberController);
@@ -319,7 +318,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
           autofocus: false,
           prefix: Icon(
             Icons.person,
-              size: 25,
+            size: 25,
             color: appTheme.orangeA200,
           ),
           contentPadding: EdgeInsets.symmetric(vertical: 6.v, horizontal: 2.h),
@@ -345,7 +344,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
           controller: addressGrpController,
           prefix: Icon(
             Icons.location_on,
-              size: 25,
+            size: 25,
             color: appTheme.orangeA200,
           ),
           hintText: "address".tr,
@@ -372,7 +371,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
           hintText: "email".tr,
           textInputType: TextInputType.emailAddress,
           prefix: Icon(
-              size: 25,
+            size: 25,
             Icons.email,
             color: appTheme.orangeA200,
           ),

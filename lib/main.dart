@@ -126,11 +126,11 @@ final  FirebaseAuth auth = FirebaseAuth.instance;
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 // supportedLocales: locals,
-                initialRoute: AppRoutes.logInSignUpScreenPotraitScreen,
-                // initialRoute: auth.currentUser == null
-                //     ? AppRoutes.logInSignUpScreenPotraitScreen
-                //     : AppRoutes
-                //         .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                // initialRoute: AppRoutes.logInSignUpScreenPotraitScreen,
+                initialRoute: auth.currentUser == null
+                    ? AppRoutes.logInSignUpScreenPotraitScreen
+                    : AppRoutes
+                        .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
               );
             },

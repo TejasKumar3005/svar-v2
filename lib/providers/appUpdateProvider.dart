@@ -24,12 +24,12 @@ class AppUpdateProvider extends ChangeNotifier {
 
   Future<void> checkForUpdate() async {
     try {
-      dialogOpen = true;
       status = "Checking for updates...";
+      dialogOpen = true;
       await platform.invokeMethod('checkForUpdate');
 
     } on PlatformException catch (e) {
-      dialogOpen = true;
+      dialogOpen = false;
       status = "Failed to check for updates: ${e.message}";
       notifyListeners();
     }

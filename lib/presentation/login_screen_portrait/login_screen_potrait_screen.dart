@@ -35,6 +35,7 @@ class LoginScreenPotraitScreen extends StatefulWidget {
 class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool hide = true;
+  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
@@ -46,6 +47,15 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
   @override
   Widget build(BuildContext context) {
     var provider = context.watch<LoginScreenPotraitProvider>();
+   WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (provider.loading && _overlayEntry == null) {
+        _overlayEntry = createOverlayEntry(context);
+        Overlay.of(context)?.insert(_overlayEntry!);
+      } else if (!provider.loading && _overlayEntry != null) {
+        _overlayEntry?.remove();
+        _overlayEntry = null;
+      }
+    });
 
     return SafeArea(
       child: Scaffold(
@@ -115,9 +125,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                                 methods.login();
                               }
                             },
-                            child: provider.loading
-                                ? CircularProgressIndicator()
-                                : CustomImageView(
+                            child:CustomImageView(
                                     imagePath: ImageConstant.imgLoginBTn,
                                     width:
                                         MediaQuery.of(context).size.width * 0.7,
@@ -189,20 +197,24 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
               child: Center(
                 child: TextFormField(
                   cursorHeight: height,
-                  keyboardType:name=="email"? TextInputType.emailAddress:TextInputType.visiblePassword,
+                  keyboardType: name == "email"
+                      ? TextInputType.emailAddress
+                      : TextInputType.visiblePassword,
                   controller: controller,
                   style: TextStyle(color: Colors.black, fontSize: 22.h),
                   decoration: InputDecoration(
                       hintText: name.tr,
-                      suffixIcon:
-                          name == "password" ?hide? Icon(Icons.visibility):Icon(Icons.visibility_off) : null,
+                      suffixIcon: name == "password"
+                          ? hide
+                              ? Icon(Icons.visibility)
+                              : Icon(Icons.visibility_off)
+                          : null,
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 22.h),
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 6.h)
-                      .copyWith(bottom: 15.v)
-                      ),
+                          .copyWith(bottom: 15.v)),
                   validator: (value) {
                     if (value == null || value == "") {
                       return "Please enter $name";

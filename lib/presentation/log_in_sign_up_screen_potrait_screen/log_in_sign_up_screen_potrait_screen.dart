@@ -36,22 +36,22 @@ class LogInSignUpScreenPotraitScreenState
     super.initState();
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      var provider = Provider.of<AppUpdateProvider>(context, listen: false);
-      provider.checkForUpdate();
-      provider.setCallHandler();
-    });
+    //       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   var provider = Provider.of<AppUpdateProvider>(context, listen: false);
+    //   provider.checkForUpdate();
+    //   provider.setCallHandler();
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    var providerAppUpdate =
-        Provider.of<AppUpdateProvider>(context, listen: false);
-    if (providerAppUpdate.dialogOpen) {
-      showDialog(
-        barrierDismissible: false,
-          context: context, builder: (BuildContext context) => UpdateDialog());
-    }
+    // var providerAppUpdate =
+    //     Provider.of<AppUpdateProvider>(context, listen: false);
+    // if (providerAppUpdate.dialogOpen) {
+    //   showDialog(
+    //     barrierDismissible: false,
+    //       context: context, builder: (BuildContext context) => UpdateDialog());
+    // }
     return SafeArea(
       child: Scaffold(
         extendBody: true,

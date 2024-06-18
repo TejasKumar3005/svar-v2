@@ -260,8 +260,9 @@ class AuthConroller {
         break;
       default:
         errorMessage = "Something went wrong!";
-    }
 
+    }
+  
     ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
       content: Text(errorMessage),
       backgroundColor: Colors.red,

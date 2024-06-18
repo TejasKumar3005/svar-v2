@@ -44,7 +44,7 @@ class AppStatsHeader extends StatelessWidget {
                     ImageConstant.imgBarcode,
                     height: 10.v,
                     fit: BoxFit.contain,
-                    width: (130 * (per / 100)).h,
+                    width: (130 * (provider.userModel.auditory_current_level! / 10)).h,
                     alignment: Alignment.centerLeft,
                   ),
                 ),
@@ -136,7 +136,7 @@ class AppStatsHeader extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        "lbl_10000_10000".tr,
+                        provider.userModel.coins.toString(),
                         style: CustomTextStyles.nunitoWhiteA70001Bold,
                       ),
                     ),
@@ -198,7 +198,7 @@ class AppStatsHeader extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        "lbl_10000_10000".tr,
+                        provider.userModel.coins.toString(),
                         style: CustomTextStyles.nunitoWhiteA70001Bold,
                       ),
                     ),

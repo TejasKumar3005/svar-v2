@@ -58,6 +58,7 @@ void showConnectivitySnackBar(bool isConnected,GlobalKey<ScaffoldMessengerState>
     SnackBar(
       content: Text(message),
       backgroundColor: color,
+      
       duration: Duration(seconds: 2),
     ),
   );

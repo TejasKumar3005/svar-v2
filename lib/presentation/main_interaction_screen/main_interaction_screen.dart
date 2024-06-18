@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:svar_new/presentation/phenoms_level_screen_one/phonems_level_screen_one_screen.dart';
@@ -43,11 +44,11 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      var provider = Provider.of<AppUpdateProvider>(context, listen: false);
-      provider.checkForUpdate();
-      provider.setCallHandler();
-    });
+    // WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    //   var provider = Provider.of<AppUpdateProvider>(context, listen: false);
+    //   provider.checkForUpdate();
+    //   provider.setCallHandler();
+    // });
   }
 
   @override
@@ -65,11 +66,17 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
     var provider = Provider.of<MainInteractionProvider>(context, listen: false);
     var providerAppUpdate =
         Provider.of<AppUpdateProvider>(context, listen: false);
-    if (providerAppUpdate.dialogOpen) {
-      showDialog(
-        barrierDismissible: false,
-          context: context, builder: (BuildContext context) => UpdateDialog());
-    }
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if(!kIsWeb){
+
+    // if (providerAppUpdate.dialogOpen) {
+    //   showDialog(
+    //       barrierDismissible: false,
+    //       context: context,
+    //       builder: (BuildContext context) => UpdateDialog());
+    // }
+    //   }
+    // });
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -130,6 +137,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                     NavigatorService.pushNamed(
                         AppRoutes.phonemsLevelScreenOneScreen,
                         arguments: provider.val);
+
                     // NavigatorService.pushNamed(
                     //   AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen,
                     // );
@@ -138,6 +146,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                     //     MaterialPageRoute(
                     //         builder: (context) =>
                     //             PhonemsLevelScreenOneScreen(val: 0)));
+
                   },
                   child: Center(
                     child: Container(
