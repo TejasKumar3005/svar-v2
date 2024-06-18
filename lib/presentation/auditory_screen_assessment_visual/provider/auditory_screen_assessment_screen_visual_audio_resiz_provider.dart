@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../../core/app_export.dart';
 import '../../../data/models/levelManagementModel/visual.dart';
 import '../models/auditory_screen_assessment_screen_visual_audio_resiz_model.dart';
 
@@ -13,18 +11,14 @@ class AuditoryScreenAssessmentScreenVisualAudioResizProvider
       auditoryScreenAssessmentScreenVisualAudioResizModelObj =
       AuditoryScreenAssessmentScreenVisualAudioResizModel();
 
-
-
   Future<Map<String, dynamic>?> fetchDocument(String docname) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     String document = docname;
-  
+
     try {
-      DocumentSnapshot doc = await firestore
-          .collection('Level Management')
-          .doc(document)
-          .get();
+      DocumentSnapshot doc =
+          await firestore.collection('Level Management').doc(document).get();
 
       if (doc.exists) {
         List<Map<String, dynamic>> data = doc.get('data');
@@ -35,9 +29,32 @@ class AuditoryScreenAssessmentScreenVisualAudioResizProvider
         return null;
       }
     } catch (e) {
-     return null;
+      return null;
     }
-  } 
+  }
+
+  Future<void> incrementLevelCount() async {
+    try {
+      String? uid = FirebaseAuth.instance.currentUser?.uid;
+      DocumentReference userRef =
+          FirebaseFirestore.instance.collection('users').doc(uid);
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentSnapshot snapshot = await transaction.get(userRef);
+        if (snapshot.exists) {
+          int currentLevelCount = (snapshot.data()
+              as Map<String, dynamic>?)?['phoneme_current_level'];
+          int newLevelCount = currentLevelCount + 1;
+          transaction.update(userRef, {'phoneme_current_level': newLevelCount});
+        } else {
+          throw Exception('User not found!');
+        }
+      });
+
+      print('levelCount incremented successfully!');
+    } catch (e) {
+      print('Error incrementing levelCount: $e');
+    }
+  }
 
   int sel = 0;
 
@@ -54,44 +71,33 @@ class AuditoryScreenAssessmentScreenVisualAudioResizProvider
   }
 
   // there will be three conditions - VOICE , FIG_TO_WORD , WORD_TO_FIG
-  Future<dynamic> getScreeValue(String type) async{
-    if(type == "VOICE"){
-      // getting data from database 
+  Future<dynamic> getScreeValue(String type) async {
+    if (type == "VOICE") {
+      // getting data from database
       // for now it is custom
       Map<String, dynamic>? json;
-      await fetchDocument("ImageToAudio").then((value) =>
-      { json = value
-      });
+      await fetchDocument("ImageToAudio").then((value) => {json = value});
       debugPrint('response is $json.toString() 70');
       ImageToAudio image_to_audio = ImageToAudio.fromJson(json!);
       return image_to_audio;
-    }
-    else if(type == "WORD_TO_FIG"){
-     Map<String, dynamic>? json;
-     await fetchDocument("WordToFig").then((value) =>
-      { json = value
-      });
+    } else if (type == "WORD_TO_FIG") {
+      Map<String, dynamic>? json;
+      await fetchDocument("WordToFig").then((value) => {json = value});
       debugPrint('response is $json.toString() 79');
       WordToFiG word_to_fig = WordToFiG.fromJson(json!);
       return word_to_fig;
-    }
-    else if(type == "FIG_TO_WORD"){
+    } else if (type == "FIG_TO_WORD") {
       Map<String, dynamic>? json;
-      await fetchDocument("FigToWord").then((value) =>
-      { json = value
-      });
+      await fetchDocument("FigToWord").then((value) => {json = value});
       debugPrint('response is $json.toString() 91');
-      FigToWord fig_to_word = FigToWord.fromJson(json!);  
+      FigToWord fig_to_word = FigToWord.fromJson(json!);
       return fig_to_word;
     }
     return null;
   }
 
-  
   @override
   void dispose() {
     super.dispose();
   }
-
-
 }
