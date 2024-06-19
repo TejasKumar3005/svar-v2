@@ -34,6 +34,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
   late bool _isGlowingA;
   late bool _isGlowingB;
   late AudioPlayer _player;
+  late int leveltracker;
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
 
@@ -60,6 +61,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
     _player = AudioPlayer();
     _isGlowingA = false;
     _isGlowingB = false;
+    leveltracker = 0;
   }
 
   void _toggleGlowA() {
@@ -196,7 +198,13 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                             dtcontainer.getAudioList()[0]) {
                           // push the widget which will shown after success
                           //      Navigator.push(context, null);
-                          provider.incrementLevelCount(params);
+                          leveltracker = leveltracker + 1;
+                          if (leveltracker > 1) {
+                            provider.incrementLevelCount("completed");
+                          } else {
+                            provider.incrementLevelCount(params);
+                          }
+
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => GifDisplayScreen()));
                         } else {
@@ -261,7 +269,12 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                         if (dtcontainer.getCorrectOutput().toString() ==
                             dtcontainer.getAudioList()[1]) {
                           // push the widget which will shown after success
-                          provider.incrementLevelCount(params);
+                          leveltracker = leveltracker + 1;
+                          if (leveltracker > 1) {
+                            provider.incrementLevelCount("completed");
+                          } else {
+                            provider.incrementLevelCount(params);
+                          }
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => GifDisplayScreen()));
                         } else {
@@ -365,7 +378,12 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                           if (dtcontainer.getCorrectOutput() ==
                               dtcontainer.getTextList()[0]) {
                             // success widget push
-                            provider.incrementLevelCount(params);
+                            leveltracker = leveltracker + 1;
+                            if (leveltracker > 1) {
+                              provider.incrementLevelCount("completed");
+                            } else {
+                              provider.incrementLevelCount(params);
+                            }
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => GifDisplayScreen()));
                           } else {
@@ -420,7 +438,12 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                           if (dtcontainer.getCorrectOutput() ==
                               dtcontainer.getTextList()[1]) {
                             // success widget push
-                            provider.incrementLevelCount(params);
+                            leveltracker = leveltracker + 1;
+                            if (leveltracker > 1) {
+                              provider.incrementLevelCount("completed");
+                            } else {
+                              provider.incrementLevelCount(params);
+                            }
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => GifDisplayScreen()));
                           } else {
@@ -487,7 +510,12 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                             dtcontainer.getImageUrlList()[0]) {
                           // success widget loader
                           // debugPrint("correct option is choosen");
-                          provider.incrementLevelCount(params);
+                          leveltracker = leveltracker + 1;
+                          if (leveltracker > 1) {
+                            provider.incrementLevelCount("completed");
+                          } else {
+                            provider.incrementLevelCount(params);
+                          }
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -542,7 +570,12 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                           dtcontainer.getImageUrlList()[1]) {
                         // success widget loader
                         debugPrint("correct option is choosen");
-                        provider.incrementLevelCount(params);
+                        leveltracker = leveltracker + 1;
+                        if (leveltracker > 1) {
+                          provider.incrementLevelCount("completed");
+                        } else {
+                          provider.incrementLevelCount(params);
+                        }
                         Navigator.push(
                             context,
                             MaterialPageRoute(

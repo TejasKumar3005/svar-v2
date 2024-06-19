@@ -35,6 +35,7 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
   late AudioPlayer _player;
   late bool _isGlowingA;
   late bool _isGlowingB;
+  late int leveltracker;
 
   Future<void> playAudio(String url) async {
     try {
@@ -83,6 +84,7 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
     _player = AudioPlayer();
     _isGlowingA = false;
     _isGlowingB = false;
+    leveltracker = 0;
   }
 
   int sel = 0;
@@ -165,7 +167,12 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                 if (widget.dtcontainer.getCorrectOutput() ==
                                     widget.dtcontainer.getImageUrlList()[0]) {
                                   // success
-                                  provider.incrementLevelCount(widget.params);
+                                  leveltracker = leveltracker + 1;
+                                  if (leveltracker > 1) {
+                                    provider.incrementLevelCount("completed");
+                                  } else {
+                                    provider.incrementLevelCount(widget.params);
+                                  }
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) =>
                                           GifDisplayScreen()));
@@ -213,7 +220,13 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                   if (widget.dtcontainer.getCorrectOutput() ==
                                       widget.dtcontainer.getImageUrlList()[1]) {
                                     // success
-                                    provider.incrementLevelCount(widget.params);
+                                    leveltracker = leveltracker + 1;
+                                    if (leveltracker > 1) {
+                                      provider.incrementLevelCount("completed");
+                                    } else {
+                                      provider
+                                          .incrementLevelCount(widget.params);
+                                    }
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>

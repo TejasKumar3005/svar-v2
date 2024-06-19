@@ -37,26 +37,16 @@ class _GifWidgetState extends State<GifWidget>
     return AnimatedOpacity(
       opacity: _opacity,
       duration: Duration(seconds: 1),
-      child: Image.asset(
-        'assets/animation.gif',
-        fit: BoxFit.cover,
+      child: ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          Colors.red.withOpacity(0.5),
+          BlendMode.multiply,
+        ),
+        child: Image.asset(
+          'assets/animation.gif',
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
 }
-
-    //     child: _controller?.value.isInitialized ?? false
-    //       ? AspectRatio(
-    //           aspectRatio: _controller!.value.aspectRatio,
-    //           child: ColorFiltered(
-    //             colorFilter: ColorFilter.mode(
-    //               Colors.red.withOpacity(0.5),
-    //               BlendMode.multiply
-    //             ),
-    //             child: VideoPlayer(_controller!),
-    //           ),
-    //         )
-    //       : CircularProgressIndicator(),
-    //   ),
-    // );
-
