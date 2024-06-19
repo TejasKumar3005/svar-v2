@@ -10,7 +10,7 @@ Widget AuditoryAppBar(BuildContext context) {
         child: CustomButton(
             type: ButtonType.Back,
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context, true);
             }),
       ),
       Spacer(),

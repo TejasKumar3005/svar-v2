@@ -27,8 +27,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     _videoPlayerController.addListener(() {
       if (_videoPlayerController.value.position ==
           _videoPlayerController.value.duration) {
-        Navigator.pop(context);
-        setState(() {});
+        Navigator.pop(context, true);
       }
     });
     _chewieController = ChewieController(
