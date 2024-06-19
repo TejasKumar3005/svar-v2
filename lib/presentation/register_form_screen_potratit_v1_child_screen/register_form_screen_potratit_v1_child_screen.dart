@@ -1,21 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:svar_new/data/models/game_statsModel.dart';
-import 'package:svar_new/data/models/userModel.dart';
-import 'package:svar_new/database/authentication.dart';
+import 'package:svar_new/core/utils/validation_functions.dart';
 import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_screen/methods.dart';
 import 'package:svar_new/widgets/custom_button.dart';
-import 'package:svar_new/widgets/custom_icon_button.dart';
-import 'package:svar_new/widgets/custom_text_form_field.dart';
-import 'package:svar_new/core/utils/validation_functions.dart';
-import 'package:svar_new/widgets/custom_outlined_button.dart';
 import 'package:svar_new/widgets/loading.dart';
-import 'models/register_form_screen_potratit_v1_child_model.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/register_form_screen_potratit_v1_child_provider.dart';
-import 'package:country_code_picker/country_code_picker.dart';
 
 class RegisterFormScreenPotratitV1ChildScreen extends StatefulWidget {
   const RegisterFormScreenPotratitV1ChildScreen({Key? key})

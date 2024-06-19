@@ -1,13 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
-import 'package:svar_new/presentation/ling_learning_detailed/ling_learning_detailed_tip_box_provider.dart';
 import 'package:svar_new/widgets/circularScore.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/app_export.dart';

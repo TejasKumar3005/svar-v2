@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/app_navigation_screen/models/app_navigation_model.dart';
-import '../../../core/app_export.dart';
 
 
 /// A provider class for the AppNavigationScreen.

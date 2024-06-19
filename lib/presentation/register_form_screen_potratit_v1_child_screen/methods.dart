@@ -2,10 +2,8 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/data/models/game_statsModel.dart';
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/database/authentication.dart';
-import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_screen/models/register_form_screen_potratit_v1_child_model.dart';
 import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_screen/provider/register_form_screen_potratit_v1_child_provider.dart';
 
 class RegisterFormMethods {

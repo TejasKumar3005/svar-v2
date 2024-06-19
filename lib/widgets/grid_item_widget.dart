@@ -1,6 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/widgets.dart';
-import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/widgets/grid_item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -49,7 +47,7 @@ class GridItemWidget extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8.0),
                       child: AutoSizeText(
-                        gridItemModelObj.character!,
+                        gridItemModelObj.character,
                         style: theme.textTheme.bodyLarge!.copyWith(
                           fontSize: fontSize, 
                           color: appTheme.whiteA70001,

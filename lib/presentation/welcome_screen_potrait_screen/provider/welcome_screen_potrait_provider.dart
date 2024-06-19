@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/app_export.dart';
 import '../models/welcome_screen_potrait_model.dart';
 
 /// A provider class for the WelcomeScreenPotraitScreen.

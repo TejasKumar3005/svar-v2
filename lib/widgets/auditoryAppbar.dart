@@ -10,7 +10,7 @@ Widget AuditoryAppBar(BuildContext context) {
         child: CustomButton(
             type: ButtonType.Back,
             onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.auditoryScreenVisualLearningScreenResizedScreen);
+              Navigator.pop(context);
             }),
       ),
       Spacer(),
@@ -137,22 +137,14 @@ Widget AuditoryAppBar(BuildContext context) {
           left: 8.h,
           top: 1.v,
         ),
-        child: CustomButton(
-            type: ButtonType.Replay,
-            onPressed: () {
-              Navigator.pop(context);
-            }),
+        child: CustomButton(type: ButtonType.Replay, onPressed: () {}),
       ),
       Padding(
         padding: EdgeInsets.only(
           left: 8.h,
           top: 1.v,
         ),
-        child: CustomButton(
-            type: ButtonType.FullVolume,
-            onPressed: () {
-              Navigator.pop(context);
-            }),
+        child: CustomButton(type: ButtonType.FullVolume, onPressed: () {}),
       )
     ],
   );

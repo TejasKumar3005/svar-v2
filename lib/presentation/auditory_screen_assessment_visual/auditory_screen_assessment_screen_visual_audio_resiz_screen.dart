@@ -96,6 +96,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
+    String params = obj[2] as String;
 
     return type != "AudioToImage"
         ? SafeArea(
@@ -123,7 +124,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                       children: [
                         AuditoryAppBar(context),
                         SizedBox(height: 56.v),
-                        _buildOptionGRP(context, provider, type, dtcontainer),
+                        _buildOptionGRP(
+                            context, provider, type, dtcontainer, params),
                       ],
                     ),
                   ),
@@ -131,6 +133,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
           )
         : AuditoryScreenAssessmentScreenAudioVisualResizScreen(
             dtcontainer: dtcontainer,
+            params: params,
           );
   }
 
@@ -139,7 +142,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
       BuildContext context,
       AuditoryScreenAssessmentScreenVisualAudioResizProvider provider,
       String type,
-      dynamic dtcontainer) {
+      dynamic dtcontainer,
+      String params) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.h),
       child: Row(
@@ -163,7 +167,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                           dtcontainer.getImageUrl(), //  ImageConstant.imgClap,
                       radius: BorderRadiusStyle.roundedBorder15,
                     )),
-          buildDynamicOptions(type, provider, dtcontainer)
+          buildDynamicOptions(type, provider, dtcontainer, params)
         ],
       ),
     );
@@ -172,7 +176,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
   Widget buildDynamicOptions(
       String quizType,
       AuditoryScreenAssessmentScreenVisualAudioResizProvider provider,
-      dynamic dtcontainer) {
+      dynamic dtcontainer,
+      String params) {
     switch (quizType) {
       case "ImageToAudio":
         //debugPrint("entering in image to audio section!");
@@ -191,7 +196,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                             dtcontainer.getAudioList()[0]) {
                           // push the widget which will shown after success
                           //      Navigator.push(context, null);
-                          provider.incrementLevelCount();
+                          provider.incrementLevelCount(params);
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => GifDisplayScreen()));
                         } else {
@@ -256,7 +261,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                         if (dtcontainer.getCorrectOutput().toString() ==
                             dtcontainer.getAudioList()[1]) {
                           // push the widget which will shown after success
-                          provider.incrementLevelCount();
+                          provider.incrementLevelCount(params);
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => GifDisplayScreen()));
                         } else {
@@ -360,7 +365,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                           if (dtcontainer.getCorrectOutput() ==
                               dtcontainer.getTextList()[0]) {
                             // success widget push
-                            provider.incrementLevelCount();
+                            provider.incrementLevelCount(params);
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => GifDisplayScreen()));
                           } else {
@@ -415,7 +420,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                           if (dtcontainer.getCorrectOutput() ==
                               dtcontainer.getTextList()[1]) {
                             // success widget push
-                            provider.incrementLevelCount();
+                            provider.incrementLevelCount(params);
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => GifDisplayScreen()));
                           } else {
@@ -482,7 +487,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                             dtcontainer.getImageUrlList()[0]) {
                           // success widget loader
                           // debugPrint("correct option is choosen");
-                          provider.incrementLevelCount();
+                          provider.incrementLevelCount(params);
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -537,7 +542,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                           dtcontainer.getImageUrlList()[1]) {
                         // success widget loader
                         debugPrint("correct option is choosen");
-                        provider.incrementLevelCount();
+                        provider.incrementLevelCount(params);
                         Navigator.push(
                             context,
                             MaterialPageRoute(

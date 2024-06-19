@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../core/app_export.dart';
 import '../models/auditory_screen_assessment_screen_visual_audio_model.dart';
 
 /// A provider class for the AuditoryScreenAssessmentScreenVisualAudioScreen.

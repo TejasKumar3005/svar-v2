@@ -1,19 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: GifDisplayScreen(),
-    );
-  }
-}
-
 class GifDisplayScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -57,3 +44,19 @@ class _GifWidgetState extends State<GifWidget>
     );
   }
 }
+
+    //     child: _controller?.value.isInitialized ?? false
+    //       ? AspectRatio(
+    //           aspectRatio: _controller!.value.aspectRatio,
+    //           child: ColorFiltered(
+    //             colorFilter: ColorFilter.mode(
+    //               Colors.red.withOpacity(0.5),
+    //               BlendMode.multiply
+    //             ),
+    //             child: VideoPlayer(_controller!),
+    //           ),
+    //         )
+    //       : CircularProgressIndicator(),
+    //   ),
+    // );
+

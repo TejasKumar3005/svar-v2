@@ -1,7 +1,6 @@
 
 
 import 'package:flutter/material.dart';
-import '../../../core/app_export.dart';
 import '../models/register_form_screen_potratit_v1_child_model.dart';
 
 /// A provider class for the RegisterFormScreenPotratitV1ChildScreen.

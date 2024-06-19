@@ -1,14 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:svar_new/database/authentication.dart';
 import 'package:svar_new/presentation/login_screen_portrait/login-methods.dart';
 import 'package:svar_new/presentation/login_screen_portrait/login_screen_potrait_provider.dart';
-import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_screen/methods.dart';
-import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/core/utils/validation_functions.dart';
-import 'package:svar_new/widgets/custom_text_form_field.dart';
-import 'package:svar_new/widgets/custom_outlined_button.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/loading.dart';

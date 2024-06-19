@@ -1,21 +1,11 @@
-import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:svar_new/presentation/phenoms_level_screen_one/phonems_level_screen_one_screen.dart';
-import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart.dart';
-import 'package:svar_new/providers/appUpdateProvider.dart';
-import 'package:svar_new/widgets/app-update-dialog.dart';
-import 'package:svar_new/widgets/custom_icon_button.dart';
-import 'package:svar_new/widgets/game_stats_header.dart';
-import 'models/main_interaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/providers/appUpdateProvider.dart';
+import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
 import 'package:flutter/services.dart';
-import 'package:svar_new/widgets/custom_button.dart';
 
 class MainInteractionScreen extends StatefulWidget {
   const MainInteractionScreen({Key? key})

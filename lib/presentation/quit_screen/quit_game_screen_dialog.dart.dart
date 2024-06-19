@@ -1,12 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
+// import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/core/utils/parentalControlMethodChannel.dart';
-import 'package:svar_new/presentation/quit_screen/quit_game_screen_provider.dart.dart';
 // ignore_for_file: must_be_immutable
 
 void showQuitDialog(BuildContext context) {

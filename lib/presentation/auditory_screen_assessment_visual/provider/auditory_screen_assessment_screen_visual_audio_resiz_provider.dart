@@ -33,26 +33,29 @@ class AuditoryScreenAssessmentScreenVisualAudioResizProvider
     }
   }
 
-  Future<void> incrementLevelCount() async {
-    try {
-      String? uid = FirebaseAuth.instance.currentUser?.uid;
-      DocumentReference userRef =
-          FirebaseFirestore.instance.collection('users').doc(uid);
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(userRef);
-        if (snapshot.exists) {
-          int currentLevelCount = (snapshot.data()
-              as Map<String, dynamic>?)?['phoneme_current_level'];
-          int newLevelCount = currentLevelCount + 1;
-          transaction.update(userRef, {'phoneme_current_level': newLevelCount});
-        } else {
-          throw Exception('User not found!');
-        }
-      });
+  Future<void> incrementLevelCount(String params) async {
+    if (params != "completed") {
+      try {
+        String? uid = FirebaseAuth.instance.currentUser?.uid;
+        DocumentReference userRef =
+            FirebaseFirestore.instance.collection('users').doc(uid);
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(userRef);
+          if (snapshot.exists) {
+            int currentLevelCount = (snapshot.data()
+                as Map<String, dynamic>?)?['phoneme_current_level'];
+            int newLevelCount = currentLevelCount + 1;
+            transaction
+                .update(userRef, {'phoneme_current_level': newLevelCount});
+          } else {
+            throw Exception('User not found!');
+          }
+        });
 
-      print('levelCount incremented successfully!');
-    } catch (e) {
-      print('Error incrementing levelCount: $e');
+        print('levelCount incremented successfully!');
+      } catch (e) {
+        print('Error incrementing levelCount: $e');
+      }
     }
   }
 

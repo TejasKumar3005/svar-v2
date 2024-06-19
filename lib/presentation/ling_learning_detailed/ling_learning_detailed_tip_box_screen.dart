@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:svar_new/presentation/ling_learning_detailed/ling_learning_detailed_tip_box_provider.dart';
-import 'package:svar_new/presentation/ling_learning_quick_tip/ling_learning_quick_tip_provider.dart.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:avatar_glow/avatar_glow.dart';

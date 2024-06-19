@@ -30,6 +30,7 @@ class PhonemsLevelScreenOneScreenState
     extends State<PhonemsLevelScreenOneScreen> {
   late double currentLevelCount = 1.0;
   bool _initialized = false;
+  late int val = -1;
 // Add a loading state
 
   @override
@@ -45,15 +46,14 @@ class PhonemsLevelScreenOneScreenState
       debugPrint("arguments is $args");
       String origin = args == 0 ? "Auditory" : "Quizes";
       _fetchCurrenLevel(origin);
-      _initialized = true; // Ensure this block runs only once
+      _initialized = true;
+      val = args;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider =
-        Provider.of<PhonemsLevelScreenOneProvider>(context, listen: false);
-    final Object? val = ModalRoute.of(context)!.settings.arguments;
+    //final Object? val = ModalRoute.of(context)!.settings.arguments;
 
     return SafeArea(
       child: Scaffold(
@@ -86,10 +86,10 @@ class PhonemsLevelScreenOneScreenState
                   // taking level count from here and everything will be handled in AuditoryScreen class
                   if (val == 0) {
                     debugPrint("auditory");
-                    _handleAuditory(context, level);
+                    _handleAuditory(context, level, "notcompleted");
                   } else if (val == 1) {
                     debugPrint("in quizes level");
-                    _handleLevel(context, level);
+                    _handleLevel(context, level, "notcompleted");
                   } else {
                     Navigator.push(
                         context,
@@ -103,28 +103,16 @@ class PhonemsLevelScreenOneScreenState
               lockedLevelImage: ImageParams(
                 path: "assets/images/Locked_LVL.png",
                 size: Size(104.v, 104.h),
-                onTap: (int level) {
-                  // if (val as int == 0) {
-                  //   debugPrint("auditory");
-                  //   _handleAuditory(context, level);
-                  // } else if (val == 1) {
-                  //   debugPrint("in quizes level");
-                  //   _handleLevel(context, level);
-                  // } else {
-                  //   debugPrint("error zone");
-                  //   Navigator.push(context,
-                  //       MaterialPageRoute(builder: (context) => Text("data")));
-                  // }
-                },
+                onTap: (int level) {},
               ),
               completedLevelImage: ImageParams(
                 path: "assets/images/Complete_LVL.png",
                 size: Size(104.v, 104.h),
                 onTap: (int level) {
                   if (val == 0) {
-                    _handleAuditory(context, level);
-                  } else if (val as int == 1) {
-                    _handleLevel(context, level);
+                    _handleAuditory(context, level, "completed");
+                  } else if (val == 1) {
+                    _handleLevel(context, level, "completed");
                   } else {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => Text("data")));
@@ -151,7 +139,7 @@ class PhonemsLevelScreenOneScreenState
     );
   }
 
-  void _handleLevel(BuildContext context, int level) async {
+  void _handleLevel(BuildContext context, int level, String params) async {
     try {
       debugPrint("entering in level section");
       final levelProvider =
@@ -163,23 +151,29 @@ class PhonemsLevelScreenOneScreenState
       type = data!["type"];
       if (type == "video") {
         debugPrint("in video setion");
-        Navigator.push(
+        var result = await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => VideoPlayerScreen(videoUrl: data["video"])),
         );
-        levelProvider.incrementLevelCount("Quizes");
-        setState(() {});
+        if (params != "completed") {
+          levelProvider.incrementLevelCount("Quizes");
+        }
+        if (result != null) {
+          setState(() {});
+        }
       } else {
         final Object dtcontainer;
         dtcontainer = retrieveObject(type, data);
         debugPrint("data is ");
         debugPrint(data.toString());
-        List<dynamic> lis = [type, dtcontainer];
-        NavigatorService.pushNamed(
+        List<dynamic> lis = [type, dtcontainer, params];
+        var result = await NavigatorService.pushNamed(
             AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen,
             arguments: lis);
-        setState(() {});
+        if (result != null) {
+          setState(() {});
+        }
       }
     } catch (e) {
       debugPrint("catch section");
@@ -189,7 +183,7 @@ class PhonemsLevelScreenOneScreenState
     }
   }
 
-  void _handleAuditory(BuildContext context, int level) async {
+  void _handleAuditory(BuildContext context, int level, String params) async {
     final levelProvider =
         Provider.of<PhonemsLevelScreenOneProvider>(context, listen: false);
     final String type;
@@ -198,13 +192,17 @@ class PhonemsLevelScreenOneScreenState
           await levelProvider.fetchData(0, level);
       type = data!["type"];
       if (type == "video") {
-        Navigator.push(
+        var result = await Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => VideoPlayerScreen(videoUrl: data["video"])),
         );
-        levelProvider.incrementLevelCount("auditory");
-        setState(() {});
+        if (params == "completed") {
+          levelProvider.incrementLevelCount("auditory");
+        }
+        if (result != null) {
+          setState(() {});
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

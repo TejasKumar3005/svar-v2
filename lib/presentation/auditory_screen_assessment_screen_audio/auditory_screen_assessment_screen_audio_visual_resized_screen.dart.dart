@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/provider/auditory_screen_assessment_screen_audio_visual_resized_provider.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_visual/animation_play.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 
 class AuditoryScreenAssessmentScreenAudioVisualResizScreen
     extends StatefulWidget {
   final dynamic dtcontainer;
+  final String params;
   const AuditoryScreenAssessmentScreenAudioVisualResizScreen(
-      {Key? key, required this.dtcontainer})
+      {Key? key, required this.dtcontainer, required this.params})
       : super(
           key: key,
         );
@@ -24,6 +24,7 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreen
           AuditoryScreenAssessmentScreenAudioVisualResizedProvider(),
       child: AuditoryScreenAssessmentScreenAudioVisualResizScreen(
         dtcontainer: null,
+        params: '',
       ),
     );
   }
@@ -164,7 +165,7 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                 if (widget.dtcontainer.getCorrectOutput() ==
                                     widget.dtcontainer.getImageUrlList()[0]) {
                                   // success
-                                  provider.incrementLevelCount();
+                                  provider.incrementLevelCount(widget.params);
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) =>
                                           GifDisplayScreen()));
@@ -212,7 +213,7 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                   if (widget.dtcontainer.getCorrectOutput() ==
                                       widget.dtcontainer.getImageUrlList()[1]) {
                                     // success
-                                    provider.incrementLevelCount();
+                                    provider.incrementLevelCount(widget.params);
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
