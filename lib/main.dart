@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:country_code_picker/country_code_picker.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -10,8 +8,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/analytics/screen-tracking.dart';
 import 'package:svar_new/core/utils/firebaseoptions.dart';
-import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/provider/auditory_screen_assessment_screen_audio_visual_provider.dart';
-import 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/provider/auditory_screen_assessment_screen_audio_visual_resized_provider.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_visual/provider/auditory_screen_assessment_screen_visual_audio_resiz_provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/main_interaction_screen/provider/main_interaction_provider.dart';
@@ -60,7 +56,9 @@ void main() async {
     PrefUtils().init()
   ]).then((value) {
     initializeFirebaseAuth();
-    runApp(MyApp(analyticsService: analyticsService,));
+    runApp(MyApp(
+      analyticsService: analyticsService,
+    ));
   });
 // final AnalyticsService analyticsService = AnalyticsService();
 //   WidgetsFlutterBinding.ensureInitialized();
@@ -68,19 +66,17 @@ void main() async {
 //   runApp(MyApp(analyticsService));
 }
 
-
-
 class MyApp extends StatelessWidget {
-final  FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
   final AnalyticsService analyticsService;
   final ScreenTracking _screenTracking;
-   final NetworkInfo _networkInfo = NetworkInfo();
+  final NetworkInfo _networkInfo = NetworkInfo();
 
   MyApp({required this.analyticsService})
       : _screenTracking = ScreenTracking(analyticsService) {
     _networkInfo.onConnectivityChanged.listen((ConnectivityResult result) {
       final isConnected = result != ConnectivityResult.none;
-      showConnectivitySnackBar(isConnected,globalMessengerKey);
+      showConnectivitySnackBar(isConnected, globalMessengerKey);
     });
   }
   @override
@@ -97,17 +93,17 @@ final  FirebaseAuth auth = FirebaseAuth.instance;
             ),
             ChangeNotifierProvider(create: (context) => LingLearningProvider()),
             ChangeNotifierProvider(
-                create: (context) =>
-                    AuditoryScreenAssessmentScreenAudioVisualProvider()),
-            ChangeNotifierProvider(
-                create: (context) =>
-                    AuditoryScreenAssessmentScreenVisualAudioResizProvider()),
-            ChangeNotifierProvider(
               create: (context) => MainInteractionProvider(),
             ),
             ChangeNotifierProvider(create: (context) => AppUpdateProvider()),
             ChangeNotifierProvider(
-                create: (context) => PhonemsLevelScreenOneProvider())
+                create: (context) => PhonemsLevelScreenOneProvider()),
+            ChangeNotifierProvider(
+                create: (context) =>
+                    AuditoryScreenAssessmentScreenVisualAudioResizProvider()),
+            ChangeNotifierProvider(
+                create: (context) =>
+                    AuditoryScreenAssessmentScreenAudioVisualResizedProvider())
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {

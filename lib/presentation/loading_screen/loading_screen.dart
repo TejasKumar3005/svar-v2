@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/database/userController.dart';
-
-import 'models/loading_model.dart';
 import 'package:flutter/material.dart';
 
 import 'provider/loading_provider.dart';

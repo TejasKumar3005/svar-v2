@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/user_profile_screen/user_profile_model.dart';
-import '../../../core/app_export.dart';
 
 
 /// A provider class for the UserProfileScreen.

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/login_screen_portrait/login_screen_potrait_model.dart';
 

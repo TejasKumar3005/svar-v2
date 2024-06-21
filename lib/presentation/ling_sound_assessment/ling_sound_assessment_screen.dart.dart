@@ -1,10 +1,8 @@
 import 'package:svar_new/presentation/ling_sound_assessment/ling_sound_assessment_provider.dart.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
-import 'package:svar_new/widgets/custom_icon_button.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
+// import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/widgets/game_stats_header.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
 class LingSoundAssessmentScreen extends StatefulWidget {

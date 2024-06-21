@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:svar_new/data/models/game_statsModel.dart';
 import 'package:svar_new/data/models/userModel.dart';
 
 class UserDataProvider extends ChangeNotifier {

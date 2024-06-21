@@ -1,13 +1,9 @@
-import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
-import 'package:svar_new/widgets/custom_icon_button.dart';
-import 'models/welcome_screen_potrait_model.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'provider/welcome_screen_potrait_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:svar_new/widgets/custom_image_view.dart'; // Ensure this import is correct
+// import 'package:svar_new/widgets/custom_image_view.dart'; // Ensure this import is correct
 
 class WelcomeScreenPotraitScreen extends StatefulWidget {
   const WelcomeScreenPotraitScreen({Key? key}) : super(key: key);

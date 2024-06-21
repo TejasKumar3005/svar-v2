@@ -4,8 +4,7 @@ import '../model/level_map_params.dart';
 import '../paint/level_map_painter.dart';
 import '../utils/load_ui_image_to_draw.dart';
 import '../utils/scroll_behaviour.dart';
-import 'package:flutter/scheduler.dart';
-import 'dart:ui' as ui show PictureRecorder;
+// import 'dart:ui' as ui show PictureRecorder;
 
 class LevelMap extends StatelessWidget {
   final LevelMapParams levelMapParams;
@@ -30,9 +29,10 @@ class LevelMap extends StatelessWidget {
                 width: offsetPoints.imageDetails.size.width,
                 height: offsetPoints.imageDetails.size.height,
               ),
+              // ignore: unnecessary_null_comparison
               onTap: offsetPoints.imageDetails.onTap != null
                   ? () {
-                      offsetPoints.imageDetails.onTap!(offsetPoints.level);
+                      offsetPoints.imageDetails.onTap(offsetPoints.level);
                     }
                   : null,
             )),
