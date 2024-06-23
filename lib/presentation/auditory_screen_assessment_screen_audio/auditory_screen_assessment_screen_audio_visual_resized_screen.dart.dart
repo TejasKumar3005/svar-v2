@@ -176,6 +176,8 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) =>
                                           GifDisplayScreen()));
+                                   Navigator.pop(context);
+
                                 } else {
                                   _toggleGlowA();
                                 }
@@ -231,6 +233,8 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 GifDisplayScreen()));
+                                     Navigator.pop(context);
+
                                   } else {
                                     // failure
                                     _toggleGlowB();
