@@ -283,7 +283,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
   }
 
   Future<double> sendWavFile(String wavFile, String phoneme) async {
-    var uri = Uri.parse("http://65.0.76.10:3002/process_wav");
+    var uri = Uri.parse("https://gameapi.svar.in/process_wav");
 
     var request = http.MultipartRequest('POST', uri)
       ..fields['phoneme'] = phoneme

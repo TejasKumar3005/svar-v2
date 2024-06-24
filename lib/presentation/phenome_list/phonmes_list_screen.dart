@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_provider.dart';
-import 'package:svar_new/widgets/custom_icon_button.dart';
 import 'package:svar_new/widgets/grid_item_model.dart';
 import 'package:svar_new/widgets/grid_item_widget.dart';
 import 'package:svar_new/widgets/custom_button.dart';
@@ -33,8 +31,10 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
     final size = MediaQuery.of(context).size;
     final isLandscape = size.width > size.height;
     final padding = isLandscape
-        ? EdgeInsets.symmetric(horizontal: size.width * 0.1, vertical: size.height * 0.05)
-        : EdgeInsets.symmetric(horizontal: size.width * 0.07, vertical: size.height * 0.03);
+        ? EdgeInsets.symmetric(
+            horizontal: size.width * 0.1, vertical: size.height * 0.05)
+        : EdgeInsets.symmetric(
+            horizontal: size.width * 0.07, vertical: size.height * 0.03);
 
     return SafeArea(
       child: Scaffold(
@@ -62,7 +62,9 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                       _buildAppBar(context),
                       SizedBox(height: size.height * 0.02),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: size.width * 0.08, vertical: size.height * 0.01),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: size.width * 0.08,
+                            vertical: size.height * 0.01),
                         decoration: AppDecoration.fillAmber.copyWith(
                           borderRadius: BorderRadiusStyle.roundedBorder27,
                         ),
@@ -102,7 +104,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
         CustomButton(
           type: ButtonType.Back,
           onPressed: () {
-             Navigator.pushNamed(context, AppRoutes.mainInteractionScreen);
+            Navigator.pushNamed(context, AppRoutes.mainInteractionScreen);
           },
         ),
         // CustomButton(
@@ -135,12 +137,15 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
               ),
               itemCount: provider.phonmesListModelObj.gridItemList.length,
               itemBuilder: (context, index) {
-                GridItemModel model = provider.phonmesListModelObj.gridItemList[index];
+                GridItemModel model =
+                    provider.phonmesListModelObj.gridItemList[index];
                 return Align(
                   child: GestureDetector(
                     onTap: () {
-                      PhonmesListModel().onTapCharacter(context, model.character!);
-                      Navigator.pushNamed(context, AppRoutes.lingLearningScreen, arguments: model.character);
+                      PhonmesListModel()
+                          .onTapCharacter(context, model.character!);
+                      Navigator.pushNamed(context, AppRoutes.lingLearningScreen,
+                          arguments: model.character);
                     },
                     child: GridItemWidget(model),
                   ),
