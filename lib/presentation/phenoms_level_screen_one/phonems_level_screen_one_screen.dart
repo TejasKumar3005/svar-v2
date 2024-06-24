@@ -100,10 +100,10 @@ class PhonemsLevelScreenOneScreenState
                   // taking level count from here and everything will be handled in AuditoryScreen class
                   if (val == 0) {
                     debugPrint("auditory");
-                    _handleAuditory(context, level, "notcompleted");
+                    _handleAuditory(context, level, "completed");
                   } else if (val == 1) {
                     debugPrint("in quizes level");
-                    _handleLevel(context, level, "notcompleted");
+                    _handleLevel(context, level, "completed");
                   } else {
                     Navigator.push(
                         context,
