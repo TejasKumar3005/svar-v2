@@ -178,7 +178,7 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                           builder: (context) =>
                                               GifDisplayScreen()));
                                   if (response) {
-                                    Navigator.pop(context);
+                                    Navigator.pop(context, true);
                                   }
                                 } else {
                                   _toggleGlowA();
@@ -236,7 +236,7 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                             builder: (context) =>
                                                 GifDisplayScreen()));
                                     if (response) {
-                                      Navigator.pop(context);
+                                      Navigator.pop(context, true);
                                     }
                                   } else {
                                     // failure

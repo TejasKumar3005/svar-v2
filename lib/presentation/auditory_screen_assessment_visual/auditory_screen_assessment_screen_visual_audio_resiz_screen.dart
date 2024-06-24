@@ -209,7 +209,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                               MaterialPageRoute(
                                   builder: (context) => GifDisplayScreen()));
                           if (response) {
-                            Navigator.pop(context);
+                            Navigator.pop(context, true);
                           }
                         } else {
                           // push the widget which will shown after failure
@@ -283,7 +283,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                               MaterialPageRoute(
                                   builder: (context) => GifDisplayScreen()));
                           if (response) {
-                            Navigator.pop(context);
+                            Navigator.pop(context, true);
                           }
                         } else {
                           // push the widget which will shown after failure
@@ -396,7 +396,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                                 MaterialPageRoute(
                                     builder: (context) => GifDisplayScreen()));
                             if (response) {
-                              Navigator.pop(context);
+                              Navigator.pop(context, true);
                             }
                           } else {
                             // failure widget push
@@ -460,7 +460,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                                 MaterialPageRoute(
                                     builder: (context) => GifDisplayScreen()));
                             if (response) {
-                              Navigator.pop(context);
+                              Navigator.pop(context, true);
                             }
                           } else {
                             // failure widget push
@@ -536,7 +536,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                               MaterialPageRoute(
                                   builder: (context) => GifDisplayScreen()));
                           if (response) {
-                            Navigator.pop(context);
+                            Navigator.pop(context, true);
                           }
                         } else {
                           // failure widget loader
@@ -598,7 +598,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                             MaterialPageRoute(
                                 builder: (context) => GifDisplayScreen()));
                         if (response) {
-                          Navigator.pop(context);
+                          Navigator.pop(context, true);
                         }
                       } else {
                         // failure widget loader
