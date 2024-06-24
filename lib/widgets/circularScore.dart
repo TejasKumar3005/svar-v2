@@ -87,7 +87,7 @@ Widget circularScore(String per) {
               ),
             ),
             GradientCircularProgress(
-              progress: 75, // Set your progress here
+              progress: double.parse(per), // Set your progress here
               gradientColors: [Color(0xFFFFBD5A), Color(0xFFF0884A), Color(0xFFFF5F00)], // Gradient colors
               strokeWidth: 10.0, // Width of the stroke
             ),

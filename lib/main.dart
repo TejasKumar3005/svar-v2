@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
       : _screenTracking = ScreenTracking(analyticsService) {
     _networkInfo.onConnectivityChanged.listen((ConnectivityResult result) {
       final isConnected = result != ConnectivityResult.none;
-      showConnectivitySnackBar(isConnected, globalMessengerKey);
+      showConnectivitySnackBar(isConnected);
     });
   }
   @override
@@ -109,7 +109,7 @@ class MyApp extends StatelessWidget {
             builder: (context, provider, child) {
               return MaterialApp(
                 theme: theme,
-                title: 'svar_new',
+                title: 'Svar',
                 navigatorKey: NavigatorService.navigatorKey,
                 scaffoldMessengerKey: globalMessengerKey,
                 debugShowCheckedModeBanner: false,

@@ -33,15 +33,19 @@ class RegisterFormMethods {
                         ))
         .then((value) => {
               if (value)
-                { ctrler.addTester(provider.emailController.text.toString()).then((value) => {
-                  if(value){
-                    Navigator.of(context).pushNamedAndRemoveUntil(
+                { 
+                //   ctrler.addTester(provider.emailController.text.toString()).then((value) => {
+                //   if(value){
+                //     Navigator.of(context).pushNamedAndRemoveUntil(
+                //                     AppRoutes.loadingScreen,
+                //                     (route) => false)
+                //   }else{
+                //     provider.changeState()
+                //   }
+                // })
+                Navigator.of(context).pushNamedAndRemoveUntil(
                                     AppRoutes.loadingScreen,
                                     (route) => false)
-                  }else{
-                    provider.changeState()
-                  }
-                })
                 
                 }
               else

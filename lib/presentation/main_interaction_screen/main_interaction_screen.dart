@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
 import 'package:svar_new/providers/appUpdateProvider.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
@@ -54,47 +55,42 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<MainInteractionProvider>(context, listen: false);
-    var providerAppUpdate =
-        Provider.of<AppUpdateProvider>(context, listen: false);
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if(!kIsWeb){
 
-    // if (providerAppUpdate.dialogOpen) {
-    //   showDialog(
-    //       barrierDismissible: false,
-    //       context: context,
-    //       builder: (BuildContext context) => UpdateDialog());
-    // }
-    //   }
-    // });
-    return SafeArea(
-      child: Scaffold(
-        extendBody: true,
-        extendBodyBehindAppBar: true,
-        body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                ImageConstant.imgMainInteraction,
-              ),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 10.v),
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 10.h,
-                  ),
-                  child: AppStatsHeader(per: 40),
+    return PopScope(
+    canPop: false,
+    onPopInvoked: (didPop) {
+      showQuitDialog(context);
+    },
+
+      child: SafeArea(
+        child: Scaffold(
+          extendBody: true,
+          extendBodyBehindAppBar: true,
+          body: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                  ImageConstant.imgMainInteraction,
                 ),
-                Spacer(),
-                carouselSlider(provider, context),
-              ],
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 10.v),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.h,
+                    ),
+                    child: AppStatsHeader(per: 40),
+                  ),
+                  Spacer(),
+                  carouselSlider(provider, context),
+                ],
+              ),
             ),
           ),
         ),
@@ -136,7 +132,6 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
                     //     MaterialPageRoute(
                     //         builder: (context) =>
                     //             PhonemsLevelScreenOneScreen(val: 0)));
-
                   },
                   child: Center(
                     child: Container(

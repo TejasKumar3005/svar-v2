@@ -40,7 +40,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
   @override
   Widget build(BuildContext context) {
     var provider = context.watch<LoginScreenPotraitProvider>();
-   WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (provider.loading && _overlayEntry == null) {
         _overlayEntry = createOverlayEntry(context);
         Overlay.of(context)?.insert(_overlayEntry!);
@@ -118,13 +118,12 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                                 methods.login();
                               }
                             },
-                            child:CustomImageView(
-                                    imagePath: ImageConstant.imgLoginBTn,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.7,
-                                    height: 60.h,
-                                    fit: BoxFit.contain,
-                                  ),
+                            child: CustomImageView(
+                              imagePath: ImageConstant.imgLoginBTn,
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              height: 60.h,
+                              fit: BoxFit.contain,
+                            ),
                           )
                         ],
                       ),
@@ -144,7 +143,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
       BuildContext context, LoginScreenPotraitProvider provider) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.85,
-      height: height,
+      // height: height,
       decoration: BoxDecoration(
           color: appTheme.whiteA70001,
           borderRadius: BorderRadius.circular(height / 2)),
@@ -153,7 +152,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            height: height,
+            // height: height,
             width: 60.h,
             decoration: BoxDecoration(
                 color: appTheme.whiteA70001,
@@ -175,7 +174,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
           ),
           Expanded(
             child: Container(
-              height: height,
+              // height: height,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                   color: appTheme.whiteA70001,
@@ -189,7 +188,8 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                       bottomRight: Radius.circular(height / 2))),
               child: Center(
                 child: TextFormField(
-                  cursorHeight: height,
+                  // cursorHeight: height,
+                  obscureText: name=="password"?hide:false,
                   keyboardType: name == "email"
                       ? TextInputType.emailAddress
                       : TextInputType.visiblePassword,
@@ -199,11 +199,24 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                       hintText: name.tr,
                       suffixIcon: name == "password"
                           ? hide
-                              ? Icon(Icons.visibility)
-                              : Icon(Icons.visibility_off)
+                              ? InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      hide = !hide;
+                                    });
+                                  },
+                                  child: Icon(Icons.visibility))
+                              : InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      hide = !hide;
+                                    });
+                                  },
+                                  child: Icon(Icons.visibility_off))
                           : null,
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 22.h),
                       border: InputBorder.none,
+                      
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 6.h)
@@ -222,113 +235,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
     );
   }
 
-  /// Section Widget
-  Widget _buildEmail(BuildContext context) {
-    return Stack(
-      alignment: Alignment.topLeft,
-      children: [
-        CustomImageView(
-          imagePath: ImageConstant.imgUnionCyanA100,
-          height: 159.v,
-          width: 157.h,
-          alignment: Alignment.topRight,
-        ),
-        CustomImageView(
-          imagePath: ImageConstant.imgUnionCyanA10071x110,
-          height: 71.v,
-          width: 110.h,
-          alignment: Alignment.topLeft,
-          margin: EdgeInsets.only(top: 21.v),
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 28.h),
-          child: Selector<LoginScreenPotraitProvider, TextEditingController?>(
-            selector: (context, provider) => provider.emailController,
-            builder: (context, emailController, child) {
-              return CustomTextFormField(
-                width: 337.h,
-                controller: emailController,
-                hintText: "msg_rakeshramjirast2".tr,
-                hintStyle: CustomTextStyles.titleMediumTeal90003,
-                textInputType: TextInputType.emailAddress,
-                alignment: Alignment.centerLeft,
-                prefix: Container(
-                  margin: EdgeInsets.fromLTRB(12.h, 12.v, 22.h, 14.v),
-                  child: CustomImageView(
-                    imagePath: ImageConstant.imgLock,
-                    height: 16.v,
-                    width: 21.h,
-                  ),
-                ),
-                prefixConstraints: BoxConstraints(
-                  maxHeight: 44.v,
-                ),
-                validator: (value) {
-                  if (value == null ||
-                      (!isValidEmail(value, isRequired: true))) {
-                    return "err_msg_please_enter_valid_email".tr;
-                  }
-                  return null;
-                },
-                contentPadding: EdgeInsets.only(
-                  top: 9.v,
-                  right: 22.h,
-                  bottom: 9.v,
-                ),
-                borderDecoration: TextFormFieldStyleHelper.underLineOrangeA,
-                filled: false,
-              );
-            },
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomLeft,
-          child: Container(
-            height: 82.v,
-            width: 337.h,
-            margin: EdgeInsets.only(left: 28.h),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 57.h),
-                    child: Text(
-                      "lbl".tr,
-                      style: CustomTextStyles.displayLargeNunitoTeal90003,
-                    ),
-                  ),
-                ),
-                Selector<LoginScreenPotraitProvider, TextEditingController?>(
-                  selector: (context, provider) => provider.passController,
-                  builder: (context, editTextController, child) {
-                    return CustomTextFormField(
-                      width: 337.h,
-                      controller: editTextController,
-                      textInputAction: TextInputAction.done,
-                      alignment: Alignment.center,
-                      obscureText: true,
-                      borderDecoration:
-                          TextFormFieldStyleHelper.underLineOrangeA,
-                      filled: false,
-                      validator: (value) {
-                        if (value == null || (value.length < 6)) {
-                          return "password must be atleast 6 characters long"
-                              .tr;
-                        }
-                        return null;
-                      },
-                    );
-                  },
-                )
-              ],
-            ),
-          ),
-        )
-      ],
-    );
-  }
+
 
   /// Navigates to the previous screen.
   onTapImgClose(BuildContext context) {

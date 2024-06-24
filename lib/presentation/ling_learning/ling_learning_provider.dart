@@ -30,34 +30,39 @@ class LingLearningProvider extends ChangeNotifier {
 
   Future<bool> toggleRecording(BuildContext context) async {
     if (isRecording) {
-      await stopRecording();
+      await _audioRecorder!.stopRecorder();
+    isRecording = false;
+    notifyListeners();
 
-      return true;
+      return false;
     } else {
       await startRecording();
 
-      return false;
+      return true;
     }
   }
 
   Future<void> startRecording() async {
+      
      if (kIsWeb) {
       // Handle web case
       print("Recording is not supported on web.");
       return;
     }
+  
 
     Directory tempDir = await getTemporaryDirectory();
     print(tempDir);
     String path = '${tempDir.path}/audio.wav';
 
     await _audioRecorder!.startRecorder(
-      toFile: path,
+      toFile: path	,
       codec: Codec.pcm16WAV,
     );
-
     isRecording = true;
     notifyListeners();
+
+    
   }
 
   Future<void> stopRecording() async {

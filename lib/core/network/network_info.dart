@@ -1,5 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:svar_new/main.dart';
 // For checking internet connectivity
 abstract class NetworkInfoI {
   Future<bool> isConnected();
@@ -50,11 +51,11 @@ class NetworkInfo implements NetworkInfoI {
 
 
 
-void showConnectivitySnackBar(bool isConnected,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) {
+void showConnectivitySnackBar(bool isConnected) {
   final message = isConnected ? "Connected to the Internet" : "No Internet Connection";
   final color = isConnected ? Colors.green : Colors.red;
 
-  scaffoldMessengerKey.currentState?.showSnackBar(
+  globalMessengerKey.currentState?.showSnackBar(
     SnackBar(
       content: Text(message),
       backgroundColor: color,

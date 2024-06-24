@@ -11,6 +11,7 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
+import 'package:svar_new/widgets/loading.dart';
 
 class LingLearningScreen extends StatefulWidget {
   const LingLearningScreen({Key? key}) : super(key: key);
@@ -134,11 +135,21 @@ class LingLearningScreenState extends State<LingLearningScreen> {
   }
 
   String? result;
+  bool loading = false;
+    OverlayEntry? _overlayEntry;
   @override
   Widget build(BuildContext context) {
     LingLearningProvider lingLearningProvider =
         context.watch<LingLearningProvider>();
-
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (loading && _overlayEntry == null) {
+        _overlayEntry = createOverlayEntry(context);
+        Overlay.of(context)?.insert(_overlayEntry!);
+      } else if (!loading && _overlayEntry != null) {
+        _overlayEntry?.remove();
+        _overlayEntry = null;
+      }
+    });
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -160,7 +171,8 @@ class LingLearningScreenState extends State<LingLearningScreen> {
               Positioned(
                 left: 80,
                 bottom: 100,
-                child: GestureDetector(
+                child: result == null
+                    ?  GestureDetector(
                   onTap: () {
                     _playAudio(lingLearningProvider.selectedCharacter);
                   },
@@ -168,7 +180,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                     lingLearningProvider.selectedCharacter,
                     style: TextStyle(fontSize: 160),
                   ),
-                ),
+                ):Container(),
               ),
               Positioned(
                 left: 180,
@@ -187,6 +199,16 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                           child: Container(
                             height: 120,
                             width: 120,
+
+                            decoration: lingLearningProvider.isRecording
+                                ? BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.green,
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(60),
+                                  )
+                                : null,
                             // child: circularScore(),
                             child: CustomButton(
                               type: ButtonType.Mic,
@@ -197,6 +219,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                                 if (!permission) {
                                   return;
                                 }
+                                
                                 onTapMicrophonebutton(
                                     context, lingLearningProvider);
                               },
@@ -296,7 +319,9 @@ class LingLearningScreenState extends State<LingLearningScreen> {
       print(body);
       Map<String, dynamic> data = json.decode(body);
       setState(() {
-        result = data["result"].toString();
+        
+        result = ((data["result"]*100.0).toInt()).toString();
+        loading = false;
       });
       return data['result'];
     } else {
@@ -320,19 +345,23 @@ class LingLearningScreenState extends State<LingLearningScreen> {
     // print(provider.isRecording);
     // }
     try {
-      bool done = await provider.toggleRecording(context);
-      print(done);
-      if (!provider.isRecording) {
-        Directory tempDir = await getTemporaryDirectory();
-        print("hereafewfwef");
-        String tempPath = tempDir.path;
-        String path = '$tempPath/audio.wav';
-        var ans = await sendWavFile(path, model.typeTxt.value);
-        print(ans);
-        model.result = ans;
-        Navigator.pushNamed(context, AppRoutes.lingLearningScreen,
-            arguments: model);
-      }
+      provider.toggleRecording(context).then((value) async {
+        if (!value) {
+          setState(() {
+                                  loading = true;
+                                
+                                });
+          Directory tempDir = await getTemporaryDirectory();
+          print("hereafewfwef");
+          String tempPath = tempDir.path;
+          String path = '$tempPath/audio.wav';
+        await sendWavFile(path, provider.selectedCharacter);
+          // print(ans);
+          // model.result = ans;
+          // Navigator.pushNamed(context, AppRoutes.lingLearningScreen,
+          //     arguments: model);
+        }
+      });
     } catch (e) {
       print(e.toString());
     }

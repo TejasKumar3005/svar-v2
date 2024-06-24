@@ -33,6 +33,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
   List<String> list = <String>["Guardian", "Mother", "Father"];
   String dropdownValue = "Guardian";
   bool hide = true;
+    OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
@@ -44,9 +45,15 @@ class RegisterFormScreenPotratitV1ChildScreenState
   @override
   Widget build(BuildContext context) {
     final textCtrl = context.watch<RegisterFormScreenPotratitV1ChildProvider>();
-    if (textCtrl.loading) {
-      wheelLoadingDialog(context);
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (textCtrl.loading && _overlayEntry == null) {
+        _overlayEntry = createOverlayEntry(context);
+        Overlay.of(context).insert(_overlayEntry!);
+      } else if (!textCtrl.loading && _overlayEntry != null) {
+        _overlayEntry?.remove();
+        _overlayEntry = null;
+      }
+    });
     return SafeArea(
       child: Scaffold(
         extendBody: true,

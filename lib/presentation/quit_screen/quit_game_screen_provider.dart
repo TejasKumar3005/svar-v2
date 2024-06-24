@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:svar_new/presentation/quit_screen/quit_game_screen_model.dart.dart';
+import 'package:svar_new/presentation/quit_screen/quit_game_screen_model.dart';
 
 /// A provider class for the QuitGameScreenDialog.
 ///

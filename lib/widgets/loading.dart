@@ -67,20 +67,28 @@ class __LoadingDialogState extends State<_LoadingDialog>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 120,
-      width: 120,
-      padding: EdgeInsets.all(20),
-    
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: appTheme.orangeA200, width: 2),
-      ),
+    return Container
+    (
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      color: Colors.grey.withOpacity(0.5),
       child: Center(
-        child: RotationTransition(
-          turns: _controller,
-          child: Image.asset("assets/images/loading.png",height: 100,width: 100,fit: BoxFit.contain,),
+        child: Container(
+          height: 120,
+          width: 120,
+          padding: EdgeInsets.all(20),
+        
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: appTheme.orangeA200, width: 2),
+          ),
+          child: Center(
+            child: RotationTransition(
+              turns: _controller,
+              child: Image.asset("assets/images/loading.png",height: 100,width: 100,fit: BoxFit.contain,),
+            ),
+          ),
         ),
       ),
     );

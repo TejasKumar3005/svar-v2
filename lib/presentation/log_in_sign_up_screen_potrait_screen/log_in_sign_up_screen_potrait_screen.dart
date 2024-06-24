@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
 import 'provider/log_in_sign_up_screen_potrait_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
@@ -46,58 +47,64 @@ class LogInSignUpScreenPotraitScreenState
     //     barrierDismissible: false,
     //       context: context, builder: (BuildContext context) => UpdateDialog());
     // }
-    return SafeArea(
-      child: Scaffold(
-        extendBody: true,
-        extendBodyBehindAppBar: true,
-        body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage("assets/images/BG.png"), fit: BoxFit.fill),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  CustomImageView(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height: 110.v,
-                    fit: BoxFit.contain,
-                    imagePath: ImageConstant.imgSvaLogo,),
-                      SizedBox(
-                      height: 100.v,
-                    ),
+    return PopScope(
+      canPop: false,
+    onPopInvoked: (didPop) {
+      showQuitDialog(context);
+    },
+      child: SafeArea(
+        child: Scaffold(
+          extendBody: true,
+          extendBodyBehindAppBar: true,
+          body: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage("assets/images/BG.png"), fit: BoxFit.fill),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
                 
-                  Column(
-                    children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    CustomImageView(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: 110.v,
+                      fit: BoxFit.contain,
+                      imagePath: ImageConstant.imgSvaLogo,),
+                        SizedBox(
+                        height: 100.v,
+                      ),
+                  
+                    Column(
+                      children: [
+                          CustomButton(
+                          type: ButtonType.Login,
+                          onPressed: () {
+                            NavigatorService.pushNamed(
+                              AppRoutes.loginScreenPotraitScreen,
+                            );
+                          }),
+                        SizedBox(height: 10.v,),
                         CustomButton(
-                        type: ButtonType.Login,
-                        onPressed: () {
-                          NavigatorService.pushNamed(
-                            AppRoutes.loginScreenPotraitScreen,
-                          );
-                        }),
-                      SizedBox(height: 10.v,),
-                      CustomButton(
-                        type: ButtonType.SignUp,
-                        onPressed: () {
-                          NavigatorService.pushNamed(
-                            AppRoutes.registerFormScreenPotratitV1ChildScreen,
-                          );
-                        }),
-                    ],
-                  ),
-                  Container(),
-                ],
-              )
-            ],
+                          type: ButtonType.SignUp,
+                          onPressed: () {
+                            NavigatorService.pushNamed(
+                              AppRoutes.registerFormScreenPotratitV1ChildScreen,
+                            );
+                          }),
+                      ],
+                    ),
+                    Container(),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
