@@ -6,6 +6,7 @@
 /.flutter-plugins-dependencies
 /.packages
 /pubspec.lock
+/debug_info/
 
 
 

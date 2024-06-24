@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
+import 'package:googleapis_auth/auth_io.dart';
 
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/database/userController.dart';
@@ -26,12 +31,15 @@ class AuthConroller {
   Future<bool> phoneVerification(String phone, bool login) async {
     try {
       var provider;
-      if(login){
-        provider= Provider.of<LoginScreenPotraitProvider>(context!, listen: false);
-      }else{
-        provider= Provider.of<RegisterFormScreenPotratitV1ChildProvider>(context!, listen: false);
+      if (login) {
+        provider =
+            Provider.of<LoginScreenPotraitProvider>(context!, listen: false);
+      } else {
+        provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
+            context!,
+            listen: false);
       }
-      
+
       await firebaseAuth.verifyPhoneNumber(
           phoneNumber: phone,
           timeout: Duration(seconds: 120),
@@ -168,27 +176,28 @@ class AuthConroller {
 
       return false;
     } on FirebaseAuthException catch (e) {
-    String errorMessage;
-    switch (e.code) {
-      case 'email-already-in-use':
-        errorMessage = "This email address is already in use by another account.";
-        break;
-      case 'invalid-email':
-        errorMessage = "This email address is not valid.";
-        break;
-      case 'operation-not-allowed':
-        errorMessage = "Email/password accounts are not enabled.";
-        break;
-      case 'weak-password':
-        errorMessage = "Password is too weak.";
-        break;
-      default:
-        errorMessage = "Something went wrong.";
-    }
-    ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-      content: Text(errorMessage),
-      backgroundColor: Colors.red,
-    ));
+      String errorMessage;
+      switch (e.code) {
+        case 'email-already-in-use':
+          errorMessage =
+              "This email address is already in use by another account.";
+          break;
+        case 'invalid-email':
+          errorMessage = "This email address is not valid.";
+          break;
+        case 'operation-not-allowed':
+          errorMessage = "Email/password accounts are not enabled.";
+          break;
+        case 'weak-password':
+          errorMessage = "Password is too weak.";
+          break;
+        default:
+          errorMessage = "Something went wrong.";
+      }
+      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
+        content: Text(errorMessage),
+        backgroundColor: Colors.red,
+      ));
       return false;
     } catch (e) {
       ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
@@ -232,41 +241,38 @@ class AuthConroller {
   //   });
   // }
 
-  Future<bool> login(String email,String password) async {
+  Future<bool> login(String email, String password) async {
     try {
-      
-      
-      UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(
-          email: email,password: password);
-    
+      UserCredential userCredential = await firebaseAuth
+          .signInWithEmailAndPassword(email: email, password: password);
+
       if (userCredential.user != null) {
         return true;
       }
       return false;
     } on FirebaseAuthException catch (e) {
-    String errorMessage;
-    switch (e.code) {
-      case 'invalid-email':
-        errorMessage = "Please enter valid credentials";
-        break;
-      case 'user-disabled':
-        errorMessage = " User account has been disabled.";
-        break;
-      case 'user-not-found':
-        errorMessage = "No user found with this email.";
-        break;
-      case 'wrong-password':
-        errorMessage = "Please enter valid credentials";
-        break;
-      default:
-        errorMessage = "Something went wrong!";
+      String errorMessage;
+      switch (e.code) {
+        case 'invalid-email':
+          errorMessage = "Please enter valid credentials";
+          break;
+        case 'user-disabled':
+          errorMessage = " User account has been disabled.";
+          break;
+        case 'user-not-found':
+          errorMessage = "No user found with this email.";
+          break;
+        case 'wrong-password':
+          errorMessage = "Please enter valid credentials";
+          break;
+        default:
+          errorMessage = "Something went wrong!";
+      }
 
-    }
-  
-    ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-      content: Text(errorMessage),
-      backgroundColor: Colors.red,
-    ));
+      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
+        content: Text(errorMessage),
+        backgroundColor: Colors.red,
+      ));
       return false;
     } catch (e) {
       // Handle any other exceptions
@@ -275,6 +281,49 @@ class AuthConroller {
         content: Text("An error occurred: $e"),
         backgroundColor: Colors.red,
       ));
+      return false;
+    }
+  }
+
+  final _scopes = ['https://www.googleapis.com/auth/firebase'];
+
+  Future<bool> addTester(String email) async {
+    // Load the service account key file
+    final serviceAccountKey =
+        await rootBundle.loadString("assets/service-account.json");
+    final accountCredentials =
+        ServiceAccountCredentials.fromJson(serviceAccountKey);
+
+    // Obtain an authenticated HTTP client
+    final client = await clientViaServiceAccount(accountCredentials, _scopes);
+
+    // Replace with your project ID and app ID
+    final projectId = 'svar-v2-4f0f4';
+    final appId = '1:628827446185:web:951f546cf62d94092742b8';
+
+    // Make the API request to add a tester
+    final response = await http.post(
+      Uri.parse(
+          'https://firebaseappdistribution.googleapis.com/v1/projects/$projectId/apps/$appId/testers:batchAdd'),
+      headers: {
+        'Authorization': 'Bearer ${client.credentials.accessToken.data}',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'emails': [email],
+      }),
+    );
+
+    client.close();
+    if (response.statusCode == 200) {
+      print('Tester added successfully');
+      return true;
+    } else {
+      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
+        content: Text("Something went wrong"),
+        backgroundColor: Colors.red,
+      ));
+      print('Failed to add tester: ${response.statusCode} ${response.body}');
       return false;
     }
   }

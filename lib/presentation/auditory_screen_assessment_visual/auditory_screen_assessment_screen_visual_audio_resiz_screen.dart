@@ -207,6 +207,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
 
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => GifDisplayScreen()));
+                          Navigator.pop(context);
+
                         } else {
                           // push the widget which will shown after failure
                           // ScaffoldMessenger.of(context).showSnackBar(
@@ -277,6 +279,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                           }
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => GifDisplayScreen()));
+                          Navigator.pop(context);
+
                         } else {
                           // push the widget which will shown after failure
                           // ScaffoldMessenger.of(context).showSnackBar(
@@ -386,6 +390,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                             }
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => GifDisplayScreen()));
+                                                      Navigator.pop(context);
+
                           } else {
                             // failure widget push
                             _toggleGlowA();
@@ -446,6 +452,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                             }
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => GifDisplayScreen()));
+                                                      Navigator.pop(context);
+
                           } else {
                             // failure widget push
                             _toggleGlowB();
@@ -520,6 +528,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                               context,
                               MaterialPageRoute(
                                   builder: (context) => GifDisplayScreen()));
+                                                      Navigator.pop(context);
+
                         } else {
                           // failure widget loader
                           debugPrint("incorrect option is choosen");
@@ -580,6 +590,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                             context,
                             MaterialPageRoute(
                                 builder: (context) => GifDisplayScreen()));
+                                                    Navigator.pop(context);
+
                       } else {
                         // failure widget loader
                         _toggleGlowB();

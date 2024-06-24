@@ -27,7 +27,7 @@ class _GifWidgetState extends State<GifWidget>
     Timer(Duration(seconds: 3), () {
       setState(() {
         _opacity = 0.0;
-        Navigator.pop(context);
+        Navigator.pop(context , true);
       });
     });
   }
