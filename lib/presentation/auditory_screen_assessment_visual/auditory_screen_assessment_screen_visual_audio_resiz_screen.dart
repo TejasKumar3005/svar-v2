@@ -348,10 +348,12 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
           height: 192.v,
           width: MediaQuery.of(context).size.width * 0.4,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               AnimatedContainer(
                 duration: Duration(seconds: 1),
                 height: 125.v,
+                width: 120.h,
                 padding: EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
                 decoration: AppDecoration.outlineBlack9003.copyWith(
                   color: appTheme.deepOrangeA200,
@@ -405,7 +407,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                         },
                         child: Text(
                           dtcontainer.getTextList()[0],
-                          style: theme.textTheme.labelMedium,
+                       //   style: theme.textTheme.labelMedium,
+                         style: TextStyle(fontSize: 20),
                         ),
                       ),
                     ],
@@ -416,6 +419,7 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
               AnimatedContainer(
                 duration: Duration(seconds: 1),
                 height: 125.v,
+                width: 120.h,
                 padding: EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
                 decoration: AppDecoration.outlineBlack9003.copyWith(
                   color: appTheme.teal90001,
@@ -469,7 +473,8 @@ class AuditoryScreenAssessmentScreenVisualAudioResizScreenState
                         },
                         child: Text(
                           dtcontainer.getTextList()[1],
-                          style: theme.textTheme.labelMedium,
+                         // style: theme.textTheme.labelMedium,
+                         style: TextStyle(fontSize: 20),
                         ),
                       ),
                     ],
