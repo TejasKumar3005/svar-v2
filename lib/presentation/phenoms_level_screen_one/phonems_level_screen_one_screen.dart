@@ -96,7 +96,23 @@ class PhonemsLevelScreenOneScreenState
               lockedLevelImage: ImageParams(
                 path: "assets/images/Locked_LVL.png",
                 size: Size(104.v, 104.h),
-                onTap: (int level) {},
+                onTap: (int level) {
+                  // taking level count from here and everything will be handled in AuditoryScreen class
+                  if (val == 0) {
+                    debugPrint("auditory");
+                    _handleAuditory(context, level, "notcompleted");
+                  } else if (val == 1) {
+                    debugPrint("in quizes level");
+                    _handleLevel(context, level, "notcompleted");
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Center(
+                                  child: Text("data"),
+                                )));
+                  }
+                },
               ),
               completedLevelImage: ImageParams(
                 path: "assets/images/Complete_LVL.png",

@@ -163,7 +163,7 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                   : [],
                             ),
                             child: GestureDetector(
-                              onTap: () {
+                              onTap: () async {
                                 if (widget.dtcontainer.getCorrectOutput() ==
                                     widget.dtcontainer.getImageUrlList()[0]) {
                                   // success
@@ -173,11 +173,13 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                   } else {
                                     provider.incrementLevelCount(widget.params);
                                   }
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          GifDisplayScreen()));
-                                   Navigator.pop(context);
-
+                                  bool response = await Navigator.of(context)
+                                      .push(MaterialPageRoute(
+                                          builder: (context) =>
+                                              GifDisplayScreen()));
+                                  if (response) {
+                                    Navigator.pop(context);
+                                  }
                                 } else {
                                   _toggleGlowA();
                                 }
@@ -218,7 +220,7 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                     : [],
                               ),
                               child: GestureDetector(
-                                onTap: () {
+                                onTap: () async {
                                   if (widget.dtcontainer.getCorrectOutput() ==
                                       widget.dtcontainer.getImageUrlList()[1]) {
                                     // success
@@ -229,12 +231,13 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
                                       provider
                                           .incrementLevelCount(widget.params);
                                     }
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
+                                    bool response = await Navigator.of(context)
+                                        .push(MaterialPageRoute(
                                             builder: (context) =>
                                                 GifDisplayScreen()));
-                                     Navigator.pop(context);
-
+                                    if (response) {
+                                      Navigator.pop(context);
+                                    }
                                   } else {
                                     // failure
                                     _toggleGlowB();
