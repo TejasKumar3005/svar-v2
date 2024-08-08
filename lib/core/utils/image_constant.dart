@@ -147,6 +147,12 @@ class ImageConstant {
       
 
 // Ling Sound Assessment Screen images
+
+static String imgVolOrange2='$imagePath/svg/volume_orange.svg';
+static String imgVolRed2='$imagePath/svg/volume_red.svg';
+static String imgVolOrange3='$imagePath/svg/volume_orange3.svg';
+static String imgVolRed3='$imagePath/svg/volume_red3.svg';
+static String imgVolBlue3='$imagePath/svg/volume_blue3.svg';
   static String imgStar102 = '$imagePath/img_star_10_2.svg';
 
   static String imgAudioSection = '$imagePath/img_audio_section.svg';

@@ -79,6 +79,7 @@ class MyApp extends StatelessWidget {
       showConnectivitySnackBar(isConnected);
     });
   }
+  
   @override
   Widget build(BuildContext context) {
     return Sizer(
