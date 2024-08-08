@@ -136,7 +136,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
 
   String? result;
   bool loading = false;
-    OverlayEntry? _overlayEntry;
+  OverlayEntry? _overlayEntry;
   @override
   Widget build(BuildContext context) {
     LingLearningProvider lingLearningProvider =
@@ -172,15 +172,16 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                 left: 80,
                 bottom: 100,
                 child: result == null
-                    ?  GestureDetector(
-                  onTap: () {
-                    _playAudio(lingLearningProvider.selectedCharacter);
-                  },
-                  child: Text(
-                    lingLearningProvider.selectedCharacter,
-                    style: TextStyle(fontSize: 160),
-                  ),
-                ):Container(),
+                    ? GestureDetector(
+                        onTap: () {
+                          _playAudio(lingLearningProvider.selectedCharacter);
+                        },
+                        child: Text(
+                          lingLearningProvider.selectedCharacter,
+                          style: TextStyle(fontSize: 160),
+                        ),
+                      )
+                    : Container(),
               ),
               Positioned(
                 left: 180,
@@ -190,7 +191,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                         endRadius: 90.0,
                         glowColor: Colors.blue,
                         duration: Duration(milliseconds: 2000),
-                        repeat: true,
+                        repeat: lingLearningProvider.isRecording,
                         showTwoGlows: lingLearningProvider.isRecording,
                         repeatPauseDuration: Duration(milliseconds: 100),
                         child: Material(
@@ -199,7 +200,6 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                           child: Container(
                             height: 120,
                             width: 120,
-
                             decoration: lingLearningProvider.isRecording
                                 ? BoxDecoration(
                                     border: Border.all(
@@ -209,17 +209,13 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                                     borderRadius: BorderRadius.circular(60),
                                   )
                                 : null,
-                            // child: circularScore(),
                             child: CustomButton(
                               type: ButtonType.Mic,
                               onPressed: () async {
                                 bool permission = await requestPermissions();
-                                print("----permission---" +
-                                    permission.toString());
                                 if (!permission) {
                                   return;
                                 }
-                                
                                 onTapMicrophonebutton(
                                     context, lingLearningProvider);
                               },
@@ -319,8 +315,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
       print(body);
       Map<String, dynamic> data = json.decode(body);
       setState(() {
-        
-        result = ((data["result"]*100.0).toInt()).toString();
+        result = ((data["result"] * 100.0).toInt()).toString();
         loading = false;
       });
       return data['result'];
@@ -334,36 +329,45 @@ class LingLearningScreenState extends State<LingLearningScreen> {
 
   onTapMicrophonebutton(
       BuildContext context, LingLearningProvider provider) async {
-    print("-------hello");
+    print("Microphone button tapped");
 
-    // if (provider.isRecording) {
-    //   await provider.stopRecording();
-    // } else {
-    //   await provider.startRecording();
-    // }
-
-    // print(provider.isRecording);
-    // }
     try {
-      provider.toggleRecording(context).then((value) async {
-        if (!value) {
+      bool recordingStarted = await provider.toggleRecording(context);
+      print("Recording started: $recordingStarted");
+
+      if (recordingStarted) {
+        print("Recording in progress...");
+        // The glow effect will start automatically due to isRecording being true
+      } else {
+        print("Recording stopped");
+        setState(() {
+          loading = true;
+        });
+
+        Directory tempDir = await getTemporaryDirectory();
+        String tempPath = tempDir.path;
+        String path = '$tempPath/audio.wav';
+        print("Audio file path: $path");
+
+        try {
+          double result = await sendWavFile(path, provider.selectedCharacter);
+          print("Processing result: $result");
+        } catch (e) {
+          print("Error processing audio: ${e.toString()}");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error processing audio: ${e.toString()}")),
+          );
+        } finally {
           setState(() {
-                                  loading = true;
-                                
-                                });
-          Directory tempDir = await getTemporaryDirectory();
-          print("hereafewfwef");
-          String tempPath = tempDir.path;
-          String path = '$tempPath/audio.wav';
-        await sendWavFile(path, provider.selectedCharacter);
-          // print(ans);
-          // model.result = ans;
-          // Navigator.pushNamed(context, AppRoutes.lingLearningScreen,
-          //     arguments: model);
+            loading = false;
+          });
         }
-      });
+      }
     } catch (e) {
-      print(e.toString());
+      print("Error toggling recording: ${e.toString()}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error toggling recording: ${e.toString()}")),
+      );
     }
   }
 }

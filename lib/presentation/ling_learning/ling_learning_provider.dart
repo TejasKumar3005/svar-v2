@@ -62,7 +62,6 @@ class LingLearningProvider extends ChangeNotifier {
     isRecording = true;
     notifyListeners();
 
-    
   }
 
   Future<void> stopRecording() async {

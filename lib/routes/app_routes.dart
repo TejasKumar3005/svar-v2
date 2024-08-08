@@ -22,7 +22,7 @@ import '../presentation/register_form_screen_potratit_v1_child_screen/register_f
 import '../presentation/main_interaction_screen/main_interaction_screen.dart';
 import '../presentation/exit_screen/exit_screen.dart';
 import '../presentation/loading_screen/loading_screen.dart';
-
+import  '../presentation/speaking_phoneme/speaking_phoneme.dart';
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
 
 class AppRoutes {
@@ -85,6 +85,8 @@ class AppRoutes {
 
   static const String lingLearningDetailedTipBoxScreen =
       '/ling_learning_detailed_tip_box_screen';
+  
+  static const String speakingphonemeScreen = '/speaking_phoneme_screen';
 
   static const String tipBoxVideoScreen = '/tip_box_video_screen';
 
@@ -124,6 +126,7 @@ class AppRoutes {
             AuditoryScreenAssessmentScreenVisualAudioScreen.builder,
         phonmesListScreen: PhonmesListScreen.builder,
         lingLearningScreen: LingLearningScreen.builder,
+        speakingphonemeScreen: SpeakingPhonemeScreen.builder,
         lingLearningQuickTipScreen: LingLearningQuickTipScreen.builder,
         lingLearningDetailedTipBoxScreen:
             LingLearningDetailedTipBoxScreen.builder,
