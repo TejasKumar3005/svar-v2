@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../models/auditory_screen_assessment_screen_audio_visual_resized_model.dart';
 
 /// A provider class for the AuditoryScreenAssessmentScreenAudioVisualResizedScreen.
 ///
@@ -11,9 +10,7 @@ import '../models/auditory_screen_assessment_screen_audio_visual_resized_model.d
 // ignore_for_file: must_be_immutable
 class AuditoryScreenAssessmentScreenAudioVisualResizedProvider
     extends ChangeNotifier {
-  AuditoryScreenAssessmentScreenAudioVisualResizedModel
-      auditoryScreenAssessmentScreenAudioVisualResizedModelObj =
-      AuditoryScreenAssessmentScreenAudioVisualResizedModel();
+
 
   Future<void> incrementLevelCount(String params) async {
     if (params != "completed") {

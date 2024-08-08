@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:svar_new/presentation/exit_screen/models/exit_model.dart.dart';
 
 /// A provider class for the ExitScreen.
 ///
@@ -8,7 +7,7 @@ import 'package:svar_new/presentation/exit_screen/models/exit_model.dart.dart';
 
 // ignore_for_file: must_be_immutable
 class ExitProvider extends ChangeNotifier {
-ExitModel exitModelObj = ExitModel();
+
 
 @override
 void dispose() {

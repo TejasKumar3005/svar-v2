@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../models/welcome_screen_potrait_model.dart';
 
 /// A provider class for the WelcomeScreenPotraitScreen.
 ///
@@ -8,8 +7,7 @@ import '../models/welcome_screen_potrait_model.dart';
 
 // ignore_for_file: must_be_immutable
 class WelcomeScreenPotraitProvider extends ChangeNotifier {
-  WelcomeScreenPotraitModel welcomeScreenPotraitModelObj =
-      WelcomeScreenPotraitModel();
+
 
   @override
   void dispose() {

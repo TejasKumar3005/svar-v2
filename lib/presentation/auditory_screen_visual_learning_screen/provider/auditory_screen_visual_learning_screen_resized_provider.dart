@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../models/auditory_screen_visual_learning_screen_resized_model.dart';
 
 /// A provider class for the AuditoryScreenVisualLearningScreenResizedScreen.
 ///
@@ -8,9 +7,7 @@ import '../models/auditory_screen_visual_learning_screen_resized_model.dart';
 
 // ignore_for_file: must_be_immutable
 class AuditoryScreenVisualLearningScreenResizedProvider extends ChangeNotifier {
-AuditoryScreenVisualLearningScreenResizedModel
-auditoryScreenVisualLearningScreenResizedModelObj =
-AuditoryScreenVisualLearningScreenResizedModel();
+
 
 @override
 void dispose() {

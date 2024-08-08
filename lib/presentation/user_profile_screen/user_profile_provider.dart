@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:svar_new/presentation/user_profile_screen/user_profile_model.dart';
 
 
 /// A provider class for the UserProfileScreen.
@@ -10,7 +9,7 @@ import 'package:svar_new/presentation/user_profile_screen/user_profile_model.dar
 
 // ignore_for_file: must_be_immutable
 class UserProfileProvider extends ChangeNotifier {
-UserProfileModel userProfileModelObj = UserProfileModel();
+
 
 @override
 void dispose() {

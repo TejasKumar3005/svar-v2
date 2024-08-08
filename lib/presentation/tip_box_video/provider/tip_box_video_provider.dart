@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../models/tip_box_video_model.dart';
+
 
 /// A provider class for the TipBoxVideoScreen.
 ///
@@ -9,7 +9,7 @@ import '../models/tip_box_video_model.dart';
 
 // ignore_for_file: must_be_immutable
 class TipBoxVideoProvider extends ChangeNotifier {
-TipBoxVideoModel tipBoxVideoModelObj = TipBoxVideoModel();
+
 
 @override
 void dispose() {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../models/phonems_level_screen_two_model.dart';
+
 
 /// A provider class for the PhonemsLevelScreenTwoScreen.
 ///
@@ -9,8 +9,6 @@ import '../models/phonems_level_screen_two_model.dart';
 class PhonemsLevelScreenTwoProvider extends ChangeNotifier {
 TextEditingController imageSeventyNineController = TextEditingController();
 
-PhonemsLevelScreenTwoModel phonemsLevelScreenTwoModelObj =
-PhonemsLevelScreenTwoModel();
 
 @override
 void dispose() {
