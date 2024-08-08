@@ -2,7 +2,6 @@
 // import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'provider/auditory_screen_assessment_screen_audio_visual_one_provider.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 
 class AuditoryScreenAssessmentScreenAudioVisualOneScreen
@@ -16,11 +15,7 @@ class AuditoryScreenAssessmentScreenAudioVisualOneScreen
   AuditoryScreenAssessmentScreenAudioVisualOneScreenState createState() =>
       AuditoryScreenAssessmentScreenAudioVisualOneScreenState();
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) =>
-          AuditoryScreenAssessmentScreenAudioVisualOneProvider(),
-      child: AuditoryScreenAssessmentScreenAudioVisualOneScreen(),
-    );
+      return AuditoryScreenAssessmentScreenAudioVisualOneScreen();
   }
 }
 

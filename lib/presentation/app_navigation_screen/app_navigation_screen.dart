@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'provider/app_navigation_provider.dart';
 
 class AppNavigationScreen extends StatefulWidget {
-  const AppNavigationScreen({Key? key})
-      : super(
-          key: key,
-        );
+  const AppNavigationScreen({Key? key}) : super(key: key);
 
   @override
   AppNavigationScreenState createState() => AppNavigationScreenState();
+  
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AppNavigationProvider(),
-      child: AppNavigationScreen(),
-    );
+    return AppNavigationScreen();
   }
 }
+
 
 class AppNavigationScreenState extends State<AppNavigationScreen> {
   @override

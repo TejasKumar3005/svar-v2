@@ -1,7 +1,6 @@
 // import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/presentation/user_profile_screen/user_profile_provider.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -13,10 +12,8 @@ class UserProfileScreen extends StatefulWidget {
   @override
   UserProfileScreenState createState() => UserProfileScreenState();
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => UserProfileProvider(),
-      child: UserProfileScreen(),
-    );
+    return 
+ UserProfileScreen();
   }
 }
 

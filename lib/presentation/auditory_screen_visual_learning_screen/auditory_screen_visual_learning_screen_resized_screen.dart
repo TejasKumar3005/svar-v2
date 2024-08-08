@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'provider/auditory_screen_visual_learning_screen_resized_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
 class AuditoryScreenVisualLearningScreenResizedScreen extends StatefulWidget {
@@ -14,10 +13,8 @@ class AuditoryScreenVisualLearningScreenResizedScreen extends StatefulWidget {
       AuditoryScreenVisualLearningScreenResizedScreenState();
 
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AuditoryScreenVisualLearningScreenResizedProvider(),
-      child: AuditoryScreenVisualLearningScreenResizedScreen(),
-    );
+    return 
+    AuditoryScreenVisualLearningScreenResizedScreen();
   }
 }
 

@@ -4,8 +4,6 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:flutter/material.dart';
 
-import 'provider/loading_provider.dart';
-
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({Key? key})
       : super(
@@ -16,10 +14,8 @@ class LoadingScreen extends StatefulWidget {
   LoadingScreenState createState() => LoadingScreenState();
 
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => LoadingProvider(),
-      child: LoadingScreen(),
-    );
+    return 
+    LoadingScreen();
   }
 }
 

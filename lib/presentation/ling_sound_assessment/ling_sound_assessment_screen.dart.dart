@@ -1,4 +1,4 @@
-import 'package:svar_new/presentation/ling_sound_assessment/ling_sound_assessment_provider.dart.dart';
+
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 // import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
@@ -15,10 +15,8 @@ class LingSoundAssessmentScreen extends StatefulWidget {
   LingSoundAssessmentScreenState createState() =>
       LingSoundAssessmentScreenState();
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => LingSoundAssessmentProvider(),
-      child: LingSoundAssessmentScreen(),
-    );
+    return 
+       LingSoundAssessmentScreen();
   }
 }
 

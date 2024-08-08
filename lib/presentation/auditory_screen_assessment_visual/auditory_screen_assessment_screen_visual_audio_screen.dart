@@ -2,7 +2,6 @@ import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'provider/auditory_screen_assessment_screen_visual_audio_provider.dart';
 
 class AuditoryScreenAssessmentScreenVisualAudioScreen extends StatefulWidget {
   const AuditoryScreenAssessmentScreenVisualAudioScreen({Key? key})
@@ -14,10 +13,8 @@ class AuditoryScreenAssessmentScreenVisualAudioScreen extends StatefulWidget {
   AuditoryScreenAssessmentScreenVisualAudioScreenState createState() =>
       AuditoryScreenAssessmentScreenVisualAudioScreenState();
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AuditoryScreenAssessmentScreenVisualAudioProvider(),
-      child: AuditoryScreenAssessmentScreenVisualAudioScreen(),
-    );
+    return 
+      AuditoryScreenAssessmentScreenVisualAudioScreen();
   }
 }
 

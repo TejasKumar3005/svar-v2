@@ -1,4 +1,4 @@
-import 'package:svar_new/presentation/ling_learning_quick_tip/ling_learning_quick_tip_provider.dart.dart';
+
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 
@@ -12,10 +12,8 @@ class LingLearningQuickTipScreen extends StatefulWidget {
   LingLearningQuickTipScreenState createState() =>
       LingLearningQuickTipScreenState();
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => LingLearningQuickTipProvider(),
-      child: LingLearningQuickTipScreen(),
-    );
+    return 
+       LingLearningQuickTipScreen();
   }
 }
 
