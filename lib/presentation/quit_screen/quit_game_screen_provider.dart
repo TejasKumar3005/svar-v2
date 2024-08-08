@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:svar_new/presentation/quit_screen/quit_game_screen_model.dart';
+
 
 /// A provider class for the QuitGameScreenDialog.
 ///
@@ -8,7 +8,7 @@ import 'package:svar_new/presentation/quit_screen/quit_game_screen_model.dart';
 
 // ignore_for_file: must_be_immutable
 class QuitGameScreenProvider extends ChangeNotifier {
-QuitGameScreenModel quitGameScreenModelObj = QuitGameScreenModel();
+
 
 @override
 void dispose() {

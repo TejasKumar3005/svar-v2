@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/auditory_screen_assessment_screen_audio_visual_one_model.dart';
+
 
 /// A provider class for the AuditoryScreenAssessmentScreenAudioVisualOneScreen.
 ///
@@ -7,9 +7,7 @@ import '../models/auditory_screen_assessment_screen_audio_visual_one_model.dart'
 /// current auditoryScreenAssessmentScreenAudioVisualOneModelObj
 class AuditoryScreenAssessmentScreenAudioVisualOneProvider
 extends ChangeNotifier {
-AuditoryScreenAssessmentScreenAudioVisualOneModel
-auditoryScreenAssessmentScreenAudioVisualOneModelObj =
-AuditoryScreenAssessmentScreenAudioVisualOneModel();
+
 
 @override
 void dispose() {

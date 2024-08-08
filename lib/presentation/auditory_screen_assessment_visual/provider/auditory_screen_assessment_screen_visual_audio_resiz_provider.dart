@@ -3,13 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../../data/models/levelManagementModel/visual.dart';
-import '../models/auditory_screen_assessment_screen_visual_audio_resiz_model.dart';
+
 
 class AuditoryScreenAssessmentScreenVisualAudioResizProvider
     extends ChangeNotifier {
-  AuditoryScreenAssessmentScreenVisualAudioResizModel
-      auditoryScreenAssessmentScreenVisualAudioResizModelObj =
-      AuditoryScreenAssessmentScreenVisualAudioResizModel();
+
 
   Future<Map<String, dynamic>?> fetchDocument(String docname) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;

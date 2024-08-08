@@ -3,15 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 
-import '../models/phonems_level_screen_one_model.dart';
+
 
 /// A provider class for the PhonemsLevelScreenOneScreen.
 ///
 /// This provider manages the state of the PhonemsLevelScreenOneScreen, including the
 /// current phonemsLevelScreenOneModelObj
 class PhonemsLevelScreenOneProvider extends ChangeNotifier {
-  PhonemsLevelScreenOneModel phonemsLevelScreenOneModelObj =
-      PhonemsLevelScreenOneModel();
+
 
   String? type;
   FigToWord? instance_of_fig_to_word;

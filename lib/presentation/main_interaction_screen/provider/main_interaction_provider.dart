@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/main_interaction_model.dart';
+
 
 /// A provider class for the MainInteractionScreen.
 ///
@@ -8,7 +8,7 @@ import '../models/main_interaction_model.dart';
 
 // ignore_for_file: must_be_immutable
 class MainInteractionProvider extends ChangeNotifier {
-  MainInteractionModel mainInteractionModelObj = MainInteractionModel();
+
 
   int? val;
   void setScreenInfo(int x) {
