@@ -49,6 +49,7 @@ flutter:
     - assets/images/
     - assets/images/svg/
     - assets/audio/
+    - assets/video/
 
   fonts: 
     - family: Nunito

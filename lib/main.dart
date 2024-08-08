@@ -51,7 +51,7 @@ void main() async {
 
   Future.wait([
     SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
+      DeviceOrientation.landscapeRight,
     ]),
     PrefUtils().init()
   ]).then((value) {
@@ -125,7 +125,7 @@ class MyApp extends StatelessWidget {
                 // supportedLocales: locals,
                 // initialRoute: AppRoutes.logInSignUpScreenPotraitScreen,
                 initialRoute: auth.currentUser == null
-                    ? AppRoutes.logInSignUpScreenPotraitScreen
+                    ? AppRoutes.lingLearningScreen
                     : AppRoutes
                         .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
