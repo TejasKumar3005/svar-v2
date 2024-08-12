@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/presentation/login_screen_portrait/login-methods.dart';
 import 'package:svar_new/presentation/login_screen_portrait/login_screen_potrait_provider.dart';
 import 'package:svar_new/core/utils/validation_functions.dart';
@@ -72,8 +73,8 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.of(context).popAndPushNamed(
-                            AppRoutes.logInSignUpScreenPotraitScreen);
+                        PlayBgm().playMusic('Back_Btn.mp3', "mp3", false);
+                        Navigator.pop(context);
                       },
                       child: CustomImageView(
                         imagePath: ImageConstant.imgBackBtn,
@@ -189,7 +190,7 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
               child: Center(
                 child: TextFormField(
                   // cursorHeight: height,
-                  obscureText: name=="password"?hide:false,
+                  obscureText: name == "password" ? hide : false,
                   keyboardType: name == "email"
                       ? TextInputType.emailAddress
                       : TextInputType.visiblePassword,
@@ -216,7 +217,6 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
                           : null,
                       hintStyle: TextStyle(color: Colors.grey, fontSize: 22.h),
                       border: InputBorder.none,
-                      
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 6.h)
@@ -234,8 +234,6 @@ class LoginScreenPotraitScreenState extends State<LoginScreenPotraitScreen> {
       ),
     );
   }
-
-
 
   /// Navigates to the previous screen.
   onTapImgClose(BuildContext context) {

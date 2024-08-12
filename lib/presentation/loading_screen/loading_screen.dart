@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:flutter/material.dart';
 
@@ -42,7 +43,7 @@ class LoadingScreenState extends State<LoadingScreen>
       userData.getUserData(),
       userData.getParentalTip(),
     ]);
-
+    PlayBgm().playMusic('loading.mp3',"mp3",false);
     // Navigate after both functions are complete
     Navigator.of(context).pushNamedAndRemoveUntil(
       AppRoutes.mainInteractionScreen, 

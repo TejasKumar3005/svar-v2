@@ -159,7 +159,7 @@ class AuthConroller {
     }
   }
 
-  Future<bool> registeruserWithEmail(UserModel model) async {
+  Future<bool> registeruserWithEmail(UserModel model,String therapyCenterId) async {
     try {
       UserCredential userCredential =
           (await firebaseAuth.createUserWithEmailAndPassword(
@@ -168,6 +168,8 @@ class AuthConroller {
       if (userCredential.user != null) {
         await UserData(uid: userCredential.user!.uid, buildContext: context!)
             .saveUserData(model);
+        await UserData(buildContext: context).addPatientToTherapyCenter(
+            therapyCenterId, userCredential.user!.uid);
 
         return true;
       }

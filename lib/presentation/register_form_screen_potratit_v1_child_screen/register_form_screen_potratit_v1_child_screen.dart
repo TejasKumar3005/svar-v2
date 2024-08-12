@@ -1,6 +1,11 @@
 import 'package:flutter/services.dart';
+import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/core/utils/validation_functions.dart';
+import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/localization/app_localization.dart';
 import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_screen/methods.dart';
+import 'package:svar_new/presentation/user_profile_screen/user_profile_provider.dart';
+import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/loading.dart';
 import 'package:flutter/material.dart';
@@ -32,12 +37,14 @@ class RegisterFormScreenPotratitV1ChildScreenState
   TextEditingController phoneCtrl = TextEditingController();
   List<String> list = <String>["Guardian", "Mother", "Father"];
   String dropdownValue = "Guardian";
+  String? dropdownValue1;
   bool hide = true;
-    OverlayEntry? _overlayEntry;
+  OverlayEntry? _overlayEntry;
 
   @override
   void initState() {
     super.initState();
+    UserData(buildContext: context).getTherapyCenters().then((value) {});
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   }
@@ -45,6 +52,10 @@ class RegisterFormScreenPotratitV1ChildScreenState
   @override
   Widget build(BuildContext context) {
     final textCtrl = context.watch<RegisterFormScreenPotratitV1ChildProvider>();
+    var provider = context.watch<UserDataProvider>();
+    List<String> nameList =
+        provider.therapyCenters.map((json) => json['name'] as String).toList();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (textCtrl.loading && _overlayEntry == null) {
         _overlayEntry = createOverlayEntry(context);
@@ -96,8 +107,9 @@ class RegisterFormScreenPotratitV1ChildScreenState
                             padding: EdgeInsets.only(left: 1.h),
                             child: GestureDetector(
                               onTap: () {
-                                NavigatorService.pushNamedAndRemoveUntil(
-                                    AppRoutes.logInSignUpScreenPotraitScreen);
+                                PlayBgm()
+                                    .playMusic('Back_Btn.mp3', "mp3", false);
+                                Navigator.pop(context);
                               },
                               child: CustomImageView(
                                 height: 38.adaptSize,
@@ -126,6 +138,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildNamePlaceholder(context),
                           SizedBox(height: 16.v),
@@ -206,8 +219,74 @@ class RegisterFormScreenPotratitV1ChildScreenState
                           SizedBox(height: 6.v),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [_buildEditText(context)],
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              _buildEditText(context),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 3.h),
+                                decoration:
+                                    AppDecoration.outlineOrangeA200.copyWith(
+                                  borderRadius:
+                                      BorderRadiusStyle.roundedBorder5,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.person_2,
+                                      color: appTheme.orangeA200,
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 4.h),
+                                      child: SizedBox(
+                                        height: 23.v,
+                                        child: VerticalDivider(
+                                          width: 1.h,
+                                          thickness: 1.v,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                        padding: EdgeInsets.only(
+                                          left: 13.h,
+                                          top: 3.v,
+                                          bottom: 2.v,
+                                        ),
+                                        child: SizedBox(
+                                          height: 24.v,
+                                          child: DropdownButton<String>(
+                                            iconEnabledColor:
+                                                PrimaryColors().amber900,
+                                            value: dropdownValue1,
+                                            icon: const Icon(
+                                                Icons.arrow_drop_down),
+                                            elevation: 16,
+                                            style: theme.textTheme.labelLarge,
+                                            underline: Container(),
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                dropdownValue1 = value!;
+                                              });
+                                            },
+                                            items: nameList
+                                                .map<DropdownMenuItem<String>>(
+                                                    (String value) {
+                                              return DropdownMenuItem<String>(
+                                                value: value,
+                                                child: Text(
+                                                  value,
+                                                  style: TextStyle(
+                                                      color: PrimaryColors()
+                                                          .amber900),
+                                                ),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        )),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                           SizedBox(height: 22.v),
                           textCtrl.loading
@@ -220,7 +299,14 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                     if (_formKey.currentState!.validate()) {
                                       RegisterFormMethods methods =
                                           RegisterFormMethods(context: context);
-                                      methods.RegisterUser();
+                                      Map<String, dynamic> result =
+                                          provider.therapyCenters.firstWhere(
+                                              (json) =>
+                                                  json['name'] == dropdownValue1,
+                                              orElse: () =>
+                                                  {"error": "Name not found"});
+                                      
+                                      methods.RegisterUser(result["uid"]);
                                     }
                                   },
                                 )
