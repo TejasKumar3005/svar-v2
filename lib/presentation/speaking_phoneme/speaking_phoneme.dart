@@ -155,20 +155,20 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
                       )
                     : Container(),
               ),
-              // Positioned(
-              //   right: 80,
-              //   bottom: 0,
-              //   child: Container(
-              //     height: 360,
-              //     width: 270,
-              //     child: _controller.value.isInitialized
-              //         ? AspectRatio(
-              //             aspectRatio: _controller.value.aspectRatio,
-              //             child: VideoPlayer(_controller),
-              //           )
-              //         : Center(child: CircularProgressIndicator()),
-              //   ),
-              // ),
+              Positioned(
+                right: 80,
+                bottom: 0,
+                child: Container(
+                  height: 360,
+                  width: 270,
+                  child: _controller.value.isInitialized
+                      ? AspectRatio(
+                          aspectRatio: _controller.value.aspectRatio,
+                          child: VideoPlayer(_controller),
+                        )
+                      : Center(child: CircularProgressIndicator()),
+                ),
+              ),
               Positioned(
                 right: 10,
                 bottom: 50,

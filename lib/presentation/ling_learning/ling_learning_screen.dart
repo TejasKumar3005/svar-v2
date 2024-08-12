@@ -212,10 +212,13 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                             child: CustomButton(
                               type: ButtonType.Mic,
                               onPressed: () async {
+                                print("pressed");
                                 bool permission = await requestPermissions();
-                                if (!permission) {
-                                  return;
-                                }
+                                print(permission);
+                                // if (!permission) {
+                                //   return;
+                                // }
+                                print("hiiiii");
                                 onTapMicrophonebutton(
                                     context, lingLearningProvider);
                               },
