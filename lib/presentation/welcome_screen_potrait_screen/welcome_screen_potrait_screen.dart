@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'provider/welcome_screen_potrait_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:svar_new/widgets/custom_image_view.dart'; // Ensure this import is correct
@@ -12,10 +11,8 @@ class WelcomeScreenPotraitScreen extends StatefulWidget {
   WelcomeScreenPotraitScreenState createState() => WelcomeScreenPotraitScreenState();
 
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => WelcomeScreenPotraitProvider(),
-      child: WelcomeScreenPotraitScreen(),
-    );
+    return
+     WelcomeScreenPotraitScreen();
   }
 }
 

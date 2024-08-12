@@ -19,14 +19,11 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreen
       AuditoryScreenAssessmentScreenAudioVisualResizScreenState();
 
   static Widget builder(BuildContext context, dynamic dtcontainer) {
-    return ChangeNotifierProvider(
-      create: (context) =>
-          AuditoryScreenAssessmentScreenAudioVisualResizedProvider(),
-      child: AuditoryScreenAssessmentScreenAudioVisualResizScreen(
+    return 
+    AuditoryScreenAssessmentScreenAudioVisualResizScreen(
         dtcontainer: null,
         params: '',
-      ),
-    );
+      );
   }
 }
 

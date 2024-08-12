@@ -2,7 +2,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
-import 'provider/log_in_sign_up_screen_potrait_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
 
@@ -17,10 +16,8 @@ class LogInSignUpScreenPotraitScreen extends StatefulWidget {
       LogInSignUpScreenPotraitScreenState();
 
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => LogInSignUpScreenPotraitProvider(),
-      child: LogInSignUpScreenPotraitScreen(),
-    );
+    return 
+      LogInSignUpScreenPotraitScreen();
   }
 }
 

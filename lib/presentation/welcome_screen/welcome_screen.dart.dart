@@ -1,4 +1,4 @@
-import 'package:svar_new/presentation/welcome_screen/welcome_provider.dart.dart';
+
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 
@@ -11,10 +11,8 @@ class WelcomeScreen extends StatefulWidget {
   @override
   WelcomeScreenState createState() => WelcomeScreenState();
   static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => WelcomeProvider(),
-      child: WelcomeScreen(),
-    );
+    return 
+       WelcomeScreen();
   }
 }
 
