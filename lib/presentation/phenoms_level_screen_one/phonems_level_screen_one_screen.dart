@@ -6,6 +6,7 @@ import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/presentation/phenoms_level_screen_one/video_player_screen.dart';
 import 'provider/phonems_level_screen_one_provider.dart';
 import 'package:svar_new/widgets/custom_level_map/level_map.dart';
+import 'package:svar_new/presentation/speaking_phoneme/speaking_phoneme.dart';
 
 class PhonemsLevelScreenOneScreen extends StatefulWidget {
   PhonemsLevelScreenOneScreen({Key? key}) : super(key: key);
@@ -24,27 +25,16 @@ class PhonemsLevelScreenOneScreen extends StatefulWidget {
 
 class PhonemsLevelScreenOneScreenState
     extends State<PhonemsLevelScreenOneScreen> {
-  late double currentLevelCount = 1.0;
+  late double currentLevelCount = 23;
   bool _initialized = false;
-  late int val = -1;
+  late int val = 1;
 
   @override
   void initState() {
     super.initState();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_initialized) {
-      final int args = ModalRoute.of(context)!.settings.arguments as int;
-      debugPrint("arguments is $args");
-      String origin = args == 0 ? "Auditory" : "Quizes";
-      _fetchCurrentLevel(origin);
-      _initialized = true;
-      val = args;
-    }
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +57,7 @@ class PhonemsLevelScreenOneScreenState
           ),
           child: LevelMap(
             levelMapParams: LevelMapParams(
-              levelCount: 21,
+              levelCount: 23,
               currentLevel: currentLevelCount, // provider.level!.toDouble(),
               enableVariationBetweenCurves: true,
               pathColor: appTheme.amber90001,
@@ -76,6 +66,7 @@ class PhonemsLevelScreenOneScreenState
                 path: "assets/images/Current_LVL.png",
                 size: Size(104.v, 104.h),
                 onTap: (int level) {
+                  print("val is $val");
                   // taking level count from here and everything will be handled in AuditoryScreen class
                   if (val == 0) {
                     debugPrint("auditory");
@@ -174,7 +165,28 @@ class PhonemsLevelScreenOneScreenState
           String origin = val == 0 ? "Auditory" : "Quizes";
           await _fetchCurrentLevel(origin);
         }
-      } else {
+      }  else if (type == "speech") {
+      debugPrint("in speech section");
+      print("hello");
+      bool result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SpeakingPhonemeScreen(
+            text: (data["text"] as List).map((item) => Map<String, dynamic>.from(item)).toList(),
+            videoUrl: data["video_url"],
+            testSpeech: data["test_speech"],
+          ),
+        ),
+      );
+      if (params != "completed") {
+        await levelProvider.incrementLevelCount("SpeechTests");
+      }
+      if (result) {
+        debugPrint("set state is called for rebuilding the widget");
+        String origin = val == 0 ? "Auditory" : "SpeechTests";
+        await _fetchCurrentLevel(origin);
+      }
+    } else {
         final Object dtcontainer;
         dtcontainer = retrieveObject(type, data);
         debugPrint("data is ");

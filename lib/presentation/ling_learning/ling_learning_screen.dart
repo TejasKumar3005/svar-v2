@@ -279,9 +279,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
           CustomButton(
             type: ButtonType.Back,
             onPressed: () {
-              NavigatorService.pushNamed(
-                AppRoutes.phonmesListScreen,
-              );
+              NavigatorService.goBack();
             },
           ),
           Spacer(),
