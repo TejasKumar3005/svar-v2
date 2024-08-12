@@ -9,35 +9,37 @@ dependencies:
     sdk: flutter
   flutter_localizations: 
     sdk: flutter
-  auto_size_text: ^3.0.0
-  provider: ^6.1.1
-  cached_network_image: ^3.3.0
-  flutter_svg: ^2.0.9
-  flutter_svg_provider: ^1.0.0
-  connectivity_plus: ^5.0.2
-  shared_preferences: ^2.2.2
-  intl: ^0.19.0
-  firebase_core: ^2.31.1
-  cloud_firestore: ^4.17.4
-  firebase_auth: ^4.19.6
-  firebase_storage: ^11.7.6
-  avatar_glow: ^2.0.1
-  confetti: ^0.7.0
-  flutter_sound: ^8.1.6
   app_settings: ^5.1.1
+  audioplayers: ^6.0.0
+  auto_size_text: ^3.0.0
+  avatar_glow: ^2.0.1
+  cached_network_image: ^3.3.0
+  carousel_slider_plus: ^6.0.0
+  chewie: ^1.8.0
+  cloud_firestore: ^4.17.4
+  confetti: ^0.7.0
+  connectivity_plus: ^5.0.2
+  country_code_picker: ^3.0.0
+  firebase_analytics: ^10.10.7
+  firebase_auth: ^4.19.6
+  firebase_core: ^2.31.1
+  firebase_storage: ^11.7.6
+  flutter_sound: ^8.1.6
+  flutter_svg_provider: ^1.0.0
+  flutter_svg: ^2.0.9
+  googleapis_auth: ^1.0.0
+  googleapis: ^9.0.0
   http: ^0.13.6
   country_code_picker: ^3.0.0
   carousel_slider_plus: ^6.0.0
   carousel_slider: ^5.0.0
   audioplayers: ^6.0.0
   path_provider: ^2.0.11
-  firebase_analytics: ^10.10.7
-  just_audio: ^0.9.38
   permission_handler: ^11.3.1
+  provider: ^6.1.1
+  rive: ^0.13.12
+  shared_preferences: ^2.2.2
   video_player: ^2.8.3
-  chewie: ^1.8.0
-  googleapis_auth: ^1.0.0
-  googleapis: ^9.0.0
   
 dev_dependencies: 
   flutter_test: 
