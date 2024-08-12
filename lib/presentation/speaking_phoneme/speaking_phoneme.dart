@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/widgets/circularScore.dart';
@@ -15,13 +14,26 @@ import 'package:svar_new/widgets/loading.dart';
 import 'package:video_player/video_player.dart';
 
 class SpeakingPhonemeScreen extends StatefulWidget {
-  const SpeakingPhonemeScreen({Key? key}) : super(key: key);
+  final List<Map<String, dynamic>> text;
+  final String videoUrl;
+  final bool testSpeech;
+
+  const SpeakingPhonemeScreen({
+    Key? key,
+    required this.text,
+    required this.videoUrl,
+    required this.testSpeech,
+  }) : super(key: key);
 
   @override
   SpeakingPhonemeScreenState createState() => SpeakingPhonemeScreenState();
 
   static Widget builder(BuildContext context) {
-    return SpeakingPhonemeScreen();
+    return SpeakingPhonemeScreen(
+      text: [], // You need to pass the actual text data here
+      videoUrl: '', // You need to pass the actual video URL here
+      testSpeech: true, // You need to pass the actual testSpeech value here
+    );
   }
 }
 
@@ -34,7 +46,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
   void initState() {
     super.initState();
 
-    _controller = VideoPlayerController.asset('assets/video/Laal1.mp4')
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
       ..initialize().then((_) {
         setState(() {});
       })
@@ -43,12 +55,12 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
 
     AudioCache.instance = AudioCache(prefix: '');
     _audioPlayer = AudioPlayer();
-    // requestPermissions();
   }
 
   @override
   void dispose() {
     _audioPlayer.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -61,6 +73,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
   String? result;
   bool loading = false;
   OverlayEntry? _overlayEntry;
+
   @override
   Widget build(BuildContext context) {
     LingLearningProvider lingLearningProvider =
@@ -74,129 +87,51 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
         _overlayEntry = null;
       }
     });
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(ImageConstant.imgGroup7),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  _buildAppBar(context),
-                ],
-              ),
-              Positioned(
-                left: 130,
-                bottom: 180,
-                child: result == null
-                    ? GestureDetector(
-                        onTap: () {
-                          // _playAudio(lingLearningProvider.selectedCharacter);
-                        },
-                        child: Text(
-                          // lingLearningProvider.selectedCharacter,
-                          'paani',
-                          style: TextStyle(fontSize: 100),
-                        ),
-                      )
-                    : Container(),
-              ),
-              Positioned(
-                left: 150,
-                bottom: 20,
-                child: result == null
-                    ? AvatarGlow(
-                        endRadius: 90.0,
-                        glowColor: Colors.blue,
-                        duration: Duration(milliseconds: 2000),
-                        repeat: true,
-                        showTwoGlows: lingLearningProvider.isRecording,
-                        repeatPauseDuration: Duration(milliseconds: 100),
-                        child: Material(
-                          elevation: 8.0,
-                          shape: CircleBorder(),
-                          child: Container(
-                            height: 120,
-                            width: 120,
-
-                            decoration: lingLearningProvider.isRecording
-                                ? BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.green,
-                                      width: 2,
-                                    ),
-                                    borderRadius: BorderRadius.circular(60),
-                                  )
-                                : null,
-                            // child: circularScore(),
-                            child: CustomButton(
-                              type: ButtonType.Mic,
-                              onPressed: () async {
-                                bool permission = await requestPermissions();
-                                print("----permission---" +
-                                    permission.toString());
-                                if (!permission) {
-                                  return;
-                                }
-
-                                onTapMicrophonebutton(
-                                    context, lingLearningProvider);
-                              },
-                            ),
-                          ),
-                        ),
-                      )
-                    : Container(),
-              ),
-              Positioned(
-                right: 80,
-                bottom: 0,
-                child: Container(
-                  height: 360,
-                  width: 270,
-                  child: _controller.value.isInitialized
-                      ? AspectRatio(
-                          aspectRatio: _controller.value.aspectRatio,
-                          child: VideoPlayer(_controller),
-                        )
-                      : Center(child: CircularProgressIndicator()),
-                ),
-              ),
-              Positioned(
-                right: 10,
-                bottom: 50,
-                child: Container(
-                  height: 70,
-                  width: 100,
-                  child: CustomButton(
-                    type: ButtonType.Tip,
-                    onPressed: () {
-                      NavigatorService.pushNamed(
-                        AppRoutes.tipBoxVideoScreen,
-                      );
-                    },
-                  ),
-                ),
-              ),
-              result != null
-                  ? Positioned(
-                      left: MediaQuery.of(context).size.width * 0.1,
-                      bottom: 10,
-                      child: circularScore(result!),
-                    )
-                  : Container()
-            ],
+   return SafeArea(
+    child: Scaffold(
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(ImageConstant.imgGroup7),
+            fit: BoxFit.cover,
           ),
         ),
+        child: Column(
+          children: [
+            _buildAppBar(context),
+            Expanded(
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      Expanded(child: _buildText()),
+                      if (widget.testSpeech) _buildMicrophoneButton(lingLearningProvider),
+                    ],
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildVideo(),
+                        _buildTipButton(),
+                      ],
+                    ),
+                  ),
+                  if (result != null) 
+                    Positioned.fill(
+                      child: _buildResult(),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildAppBar(BuildContext context) {
@@ -209,13 +144,121 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
             type: ButtonType.Back,
             onPressed: () {
               NavigatorService.pushNamed(
-                AppRoutes.phonmesListScreen,
+                AppRoutes.phonemsLevelScreenOneScreen,
               );
             },
           ),
           Spacer(),
         ],
       ),
+    );
+  }
+
+  Widget _buildText() {
+    return Positioned(
+      left: 130,
+      bottom: 180,
+      child: RichText(
+        text: TextSpan(
+          children: widget.text.map((textMap) {
+            String key = textMap.keys.first;
+            bool value = textMap[key];
+            return TextSpan(
+              text: key,
+              style: TextStyle(
+                fontSize: 100,
+                color: value ? Colors.blue : Colors.black,
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMicrophoneButton(LingLearningProvider lingLearningProvider) {
+    return Positioned(
+      left: 150,
+      bottom: 20,
+      child: AvatarGlow(
+        endRadius: 90.0,
+        glowColor: Colors.blue,
+        duration: Duration(milliseconds: 2000),
+        repeat: true,
+        showTwoGlows: lingLearningProvider.isRecording,
+        repeatPauseDuration: Duration(milliseconds: 100),
+        child: Material(
+          elevation: 8.0,
+          shape: CircleBorder(),
+          child: Container(
+            height: 120,
+            width: 120,
+            decoration: lingLearningProvider.isRecording
+                ? BoxDecoration(
+                    border: Border.all(
+                      color: Colors.green,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(60),
+                  )
+                : null,
+            child: CustomButton(
+              type: ButtonType.Mic,
+              onPressed: () async {
+                bool permission = await requestPermissions();
+                if (!permission) {
+                  return;
+                }
+                onTapMicrophonebutton(context, lingLearningProvider);
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideo() {
+    return Positioned(
+      right: 80,
+      bottom: 0,
+      child: Container(
+        height: 360,
+        width: 270,
+        child: _controller.value.isInitialized
+            ? AspectRatio(
+                aspectRatio: _controller.value.aspectRatio,
+                child: VideoPlayer(_controller),
+              )
+            : Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+
+  Widget _buildTipButton() {
+    return Positioned(
+      right: 10,
+      bottom: 50,
+      child: Container(
+        height: 70,
+        width: 100,
+        child: CustomButton(
+          type: ButtonType.Tip,
+          onPressed: () {
+            NavigatorService.pushNamed(
+              AppRoutes.tipBoxVideoScreen,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResult() {
+    return Positioned(
+      left: MediaQuery.of(context).size.width * 0.1,
+      bottom: 10,
+      child: circularScore(result!),
     );
   }
 
@@ -261,16 +304,6 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
 
   onTapMicrophonebutton(
       BuildContext context, LingLearningProvider provider) async {
-    print("-------hello");
-
-    // if (provider.isRecording) {
-    //   await provider.stopRecording();
-    // } else {
-    //   await provider.startRecording();
-    // }
-
-    // print(provider.isRecording);
-    // }
     try {
       provider.toggleRecording(context).then((value) async {
         if (!value) {
@@ -278,14 +311,9 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
             loading = true;
           });
           Directory tempDir = await getTemporaryDirectory();
-          print("hereafewfwef");
           String tempPath = tempDir.path;
           String path = '$tempPath/audio.wav';
           await sendWavFile(path, provider.selectedCharacter);
-          // print(ans);
-          // model.result = ans;
-          // Navigator.pushNamed(context, AppRoutes.SpeakingPhonemeScreen,
-          //     arguments: model);
         }
       });
     } catch (e) {
