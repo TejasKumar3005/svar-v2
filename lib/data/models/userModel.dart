@@ -2,14 +2,14 @@
 import 'package:svar_new/data/models/gift.dart';
 
 class UserModel {
-  String? p_name;
+  List<String>? parentNames;
   String name;
   String? password;
   String? email;
   String? uid;
-  String? imageUrl;
-  String? age;
-  String? timeStamp;
+  String? profile;
+  String? dob;
+  String? doj;
   String? address;
   int? gender;
   List? location;
@@ -31,14 +31,15 @@ class UserModel {
   //     current_level: 0);
 
   UserModel({
-    this.p_name,
+    this.parentNames,
     required this.name,
     this.password,
     required this.email,
     this.uid,
-    this.imageUrl,
-    this.age,
-    this.timeStamp,
+    this.profile,
+    this.dob,
+    this.doj,
+    
     this.gender,
     this.location,
     this.access_token,
@@ -53,14 +54,15 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      p_name: json["p_name"] ?? "",
+      parentNames: json["parentNames"] ?? [],
       name: json['name'] ?? "",
       password: json['password'] ?? "",
       email: json['email'] ?? "",
       uid: json['uid'] ?? "",
-      imageUrl: json['imageUrl'] ?? "",
-      age: json['age'] ?? "",
-      timeStamp: json['timeStamp'] ?? "",
+      profile: json['profile'] ?? "",
+      dob: json['dob'] ?? "",
+      doj: json['doj'] ?? "",
+    
       gender: json['gender'] ?? 0,
       location: json['location'] ?? [0, 0],
       access_token: json['access_token'] ?? "",
@@ -84,15 +86,15 @@ class UserModel {
 
   Map<String, dynamic> toJson() {
     return {
-      "p_name": this.p_name,
+      "parentNames": this.parentNames,
       "name": this.name,
       "email": this.email,
       "password": this.password,
       "mobile": this.mobile,
       "uid": this.uid,
-      "imageUrl": this.imageUrl,
-      "age": this.age,
-      "timeStamp": this.timeStamp,
+      "profile": this.profile,
+      "dob": this.dob,
+      "doj": this.doj,
       "gender": this.gender,
       "location": this.location,
       "access_token": this.access_token,

@@ -1,6 +1,4 @@
-// import 'dart:js_interop';
 
-import 'dart:js_interop';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +11,7 @@ class UserData {
   BuildContext? buildContext;
   UserData({this.uid, this.buildContext});
   final CollectionReference userCollection =
-      FirebaseFirestore.instance.collection("users");
+      FirebaseFirestore.instance.collection("patients");
 final CollectionReference tipsCollection =
       FirebaseFirestore.instance.collection("Parental Tips");
 final CollectionReference therapyCenterCollection =

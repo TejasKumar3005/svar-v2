@@ -28,6 +28,7 @@ dependencies:
   http: ^0.13.6
   country_code_picker: ^3.0.0
   carousel_slider_plus: ^6.0.0
+  carousel_slider: ^5.0.0
   audioplayers: ^6.0.0
   path_provider: ^2.0.11
   firebase_analytics: ^10.10.7

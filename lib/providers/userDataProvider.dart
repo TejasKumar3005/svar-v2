@@ -5,14 +5,14 @@ class UserDataProvider extends ChangeNotifier {
 
 List<dynamic> therapyCenters = [];
  UserModel userModel = UserModel(
-        p_name: "",
+        parentNames: [],
         name: "",
         password: "",
         email: "",
         uid: "",
-        imageUrl: "",
-        age: "",
-        timeStamp: "",
+        profile: "",
+        dob: "",
+        doj: "",
         access_token: "",
         
       );
