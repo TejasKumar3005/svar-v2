@@ -254,10 +254,13 @@ class PhonemsLevelScreenOneScreenState
 
       if (user != null) {
         final String uid = user.uid;
-        final data =
+        var data =
             await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        print(data.data());
         setState(() {
-          currentLevelCount = data[screen].toDouble();
+          currentLevelCount = data[screen] >= 1 || data[screen] == null
+              ? data[screen].toDouble()
+              : 1.0;
         });
       }
     } catch (e) {

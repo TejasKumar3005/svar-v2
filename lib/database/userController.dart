@@ -1,5 +1,7 @@
 // import 'dart:js_interop';
 
+import 'dart:js_interop';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -14,13 +16,17 @@ class UserData {
       FirebaseFirestore.instance.collection("users");
 final CollectionReference tipsCollection =
       FirebaseFirestore.instance.collection("Parental Tips");
+final CollectionReference therapyCenterCollection =
+      FirebaseFirestore.instance.collection("therapy_centers");
   Future saveUserData(UserModel userModel) async {
+    UserModel user=userModel;
+    user.uid = uid;
     Provider.of<UserDataProvider>(buildContext!, listen: false)
         .setUser(userModel);
     try {
       await userCollection
           .doc(uid)
-          .set(userModel.toJson(), SetOptions(merge: true));
+          .set(user.toJson(), SetOptions(merge: true));
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
         content: Text(e.toString()),
@@ -50,6 +56,56 @@ final CollectionReference tipsCollection =
 
   Future updateUserInfo(Map<String, dynamic> map) async {
     await userCollection.doc(uid).set(map);
+  }
+
+  Future getTherapyCenters()async {
+    try {
+    QuerySnapshot querySnapshot = await therapyCenterCollection.get();
+
+      // Create a map of document IDs and their corresponding data
+      List<dynamic> tempKeys = [];
+      querySnapshot.docs.forEach((doc) {
+        tempKeys.add(doc.data());
+      });
+      Provider.of<UserDataProvider>(buildContext!, listen: false)
+          .setTherapyCenters(tempKeys);
+    }  on FirebaseException catch (e) {
+      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ));
+    }
+  } 
+
+  Future<bool> addPatientToTherapyCenter(String therapyCenterId, String patientId) async {
+    try {
+      await therapyCenterCollection.doc(therapyCenterId).update({
+        "patients": FieldValue.arrayUnion([patientId])
+      });
+      return true;
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ));
+      return false;
+    }
+  }
+
+  
+  Future<bool> updateScore(int score) async {
+    try {
+      await userCollection.doc(uid).update({
+        "score": score
+      });
+      return true;
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ));
+      return false;
+    }
   }
 
   Future<bool> getUserData() async {

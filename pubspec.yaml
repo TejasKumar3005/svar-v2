@@ -49,6 +49,7 @@ flutter:
     - assets/images/
     - assets/images/svg/
     - assets/audio/
+    - assets/audio/bgm/
     - assets/video/
 
   fonts: 

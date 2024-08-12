@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/core/utils/image_constant.dart';
+import 'package:svar_new/core/utils/playBgm.dart';
 
 enum ButtonType {
   Play,
@@ -124,7 +125,7 @@ class CustomButton extends StatelessWidget {
         height = 35;
         isSvg = true;
         break;
-      case ButtonType.Mic:  
+      case ButtonType.Mic:
         imagePath = ImageConstant.micBtn;
         width = 35;
         height = 35;
@@ -134,7 +135,14 @@ class CustomButton extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: onPressed,
+      onTap: () {
+        if (type == ButtonType.Next){
+
+          PlayBgm().playMusic('Next_Btn.mp3', "mp3", false);
+        }
+                        
+        onPressed();
+      },
       child: Container(
         height: height,
         width: width,

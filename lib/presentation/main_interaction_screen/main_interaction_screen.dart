@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
 import 'package:svar_new/providers/appUpdateProvider.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
@@ -35,6 +36,7 @@ class MainInteractionScreenState extends State<MainInteractionScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    PlayBgm().playMusic('Main_Interaction_Screen.mp3',"mp3",true);
     // WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
     //   var provider = Provider.of<AppUpdateProvider>(context, listen: false);
     //   provider.checkForUpdate();

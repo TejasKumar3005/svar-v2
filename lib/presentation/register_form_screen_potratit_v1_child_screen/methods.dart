@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/database/authentication.dart';
+import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_screen/provider/register_form_screen_potratit_v1_child_provider.dart';
 
 class RegisterFormMethods {
@@ -13,7 +14,7 @@ class RegisterFormMethods {
   RegisterFormMethods({required this.context}) {
     ctrler = AuthConroller(context: this.context);
   }
-  void RegisterUser() {
+  void RegisterUser(String therapyCenterId) {
   
     var provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
         context,
@@ -25,24 +26,16 @@ class RegisterFormMethods {
                           email: provider.emailController.text,
                           password: provider.passwordController.text,
                           mobile: provider.phoneNumberController.text,
-                          address: provider.addressGrpController.text,
+                          address: provider.addressGrpController.text,           
                           phoneme_current_level: 0,
                           auditory_current_level: 0,
                           score: 0,
                           
-                        ))
+                        ),therapyCenterId)
         .then((value) => {
               if (value)
                 { 
-                //   ctrler.addTester(provider.emailController.text.toString()).then((value) => {
-                //   if(value){
-                //     Navigator.of(context).pushNamedAndRemoveUntil(
-                //                     AppRoutes.loadingScreen,
-                //                     (route) => false)
-                //   }else{
-                //     provider.changeState()
-                //   }
-                // })
+                provider.changeState(),
                 Navigator.of(context).pushNamedAndRemoveUntil(
                                     AppRoutes.loadingScreen,
                                     (route) => false)
