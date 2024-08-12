@@ -22,6 +22,7 @@ class UserModel {
   // Gift? currently_scheduled_gift;
   int? score;
   int? coins;
+  String? therapist;
   // GameStatsModel gameStats = GameStatsModel(
   //     gifts: [],
   //     progressScore: 0.0,
@@ -49,7 +50,8 @@ class UserModel {
     this.auditory_current_level,
     this.score,
     this.coins,
-    this.address
+    this.address,
+     this.therapist
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -72,7 +74,8 @@ class UserModel {
       auditory_current_level: json['auditory_current_level'] ?? 0,
       score: json['score'] ?? 0,
       coins: json['coins'] ?? 0,
-      address: json['address'] ?? ""
+      address: json['address'] ?? "",
+      therapist: json['therapist'] ?? ""
     );
   }
 
@@ -103,7 +106,8 @@ class UserModel {
       "auditory_current_level": this.auditory_current_level,
       "score": this.score,
       "coins": this.coins,
-      "address": this.address
+      "address": this.address,
+      "therapist": this.therapist
       // "gift_purchase_history": list_gifts,
       // "currently_scheduled_gift": this.currently_scheduled_gift == null
       //     ? null
