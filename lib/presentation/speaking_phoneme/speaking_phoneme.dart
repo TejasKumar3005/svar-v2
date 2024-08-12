@@ -87,51 +87,34 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
         _overlayEntry = null;
       }
     });
-   return SafeArea(
-    child: Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(ImageConstant.imgGroup7),
-            fit: BoxFit.cover,
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(ImageConstant.imgGroup7),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: Column(
-          children: [
-            _buildAppBar(context),
-            Expanded(
-              child: Stack(
+          child: Stack(
+            children: [
+              Column(
                 children: [
-                  Column(
-                    children: [
-                      Expanded(child: _buildText()),
-                      if (widget.testSpeech) _buildMicrophoneButton(lingLearningProvider),
-                    ],
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildVideo(),
-                        _buildTipButton(),
-                      ],
-                    ),
-                  ),
-                  if (result != null) 
-                    Positioned.fill(
-                      child: _buildResult(),
-                    ),
+                  _buildAppBar(context),
                 ],
               ),
-            ),
-          ],
+              _buildText(),
+              if (widget.testSpeech) _buildMicrophoneButton(lingLearningProvider),
+              _buildVideo(),
+              _buildTipButton(),
+              if (result != null) _buildResult(),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
   }
 
   Widget _buildAppBar(BuildContext context) {
@@ -220,10 +203,10 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
 
   Widget _buildVideo() {
     return Positioned(
-      right: 80,
+      right: 100,
       bottom: 0,
       child: Container(
-        height: 360,
+        height: 500,
         width: 270,
         child: _controller.value.isInitialized
             ? AspectRatio(
