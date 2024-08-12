@@ -4,6 +4,7 @@ import 'package:svar_new/core/utils/validation_functions.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/localization/app_localization.dart';
 import 'package:svar_new/presentation/register_form_screen_potratit_v1_child_screen/methods.dart';
+
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/loading.dart';
