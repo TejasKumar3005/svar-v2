@@ -1,4 +1,3 @@
-
 import 'package:svar_new/data/models/gift.dart';
 
 class UserModel {
@@ -23,6 +22,7 @@ class UserModel {
   int? score;
   int? coins;
   String? therapist;
+  String? batch;
   // GameStatsModel gameStats = GameStatsModel(
   //     gifts: [],
   //     progressScore: 0.0,
@@ -31,51 +31,49 @@ class UserModel {
   //     exercises: [],
   //     current_level: 0);
 
-  UserModel({
-    this.parentNames,
-    required this.name,
-    this.password,
-    required this.email,
-    this.uid,
-    this.profile,
-    this.dob,
-    this.doj,
-    
-    this.gender,
-    this.location,
-    this.access_token,
-    this.subscription_status,
-    this.mobile,
-    this.phoneme_current_level,
-    this.auditory_current_level,
-    this.score,
-    this.coins,
-    this.address,
-     this.therapist
+  UserModel(
+      {this.parentNames,
+      required this.name,
+      this.password,
+      required this.email,
+      this.uid,
+      this.profile,
+      this.dob,
+      this.doj,
+      this.gender,
+      this.location,
+      this.access_token,
+      this.subscription_status,
+      this.mobile,
+      this.phoneme_current_level,
+      this.auditory_current_level,
+      this.score,
+      this.coins,
+      this.address,
+      this.therapist ,  this.batch
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      parentNames: json["parentNames"] ?? [],
-      name: json['name'] ?? "",
-      password: json['password'] ?? "",
-      email: json['email'] ?? "",
-      uid: json['uid'] ?? "",
-      profile: json['profile'] ?? "",
-      dob: json['dob'] ?? "",
-      doj: json['doj'] ?? "",
-    
-      gender: json['gender'] ?? 0,
-      location: json['location'] ?? [0, 0],
-      access_token: json['access_token'] ?? "",
-      subscription_status: json['subscription_status'] ?? "NO",
-      mobile: json['mobile'] ?? "",
-      phoneme_current_level: json['phoneme_current_level'] ?? 0,
-      auditory_current_level: json['auditory_current_level'] ?? 0,
-      score: json['score'] ?? 0,
-      coins: json['coins'] ?? 0,
-      address: json['address'] ?? "",
-      therapist: json['therapist'] ?? ""
+        parentNames: json["parentNames"] ?? [],
+        name: json['name'] ?? "",
+        password: json['password'] ?? "",
+        email: json['email'] ?? "",
+        uid: json['uid'] ?? "",
+        profile: json['profile'] ?? "",
+        dob: json['dob'] ?? "",
+      
+        gender: json['gender'] ?? 0,
+        location: json['location'] ?? [0, 0],
+        access_token: json['access_token'] ?? "",
+        subscription_status: json['subscription_status'] ?? "NO",
+        mobile: json['mobile'] ?? "",
+        phoneme_current_level: json['phoneme_current_level'] ?? 0,
+        auditory_current_level: json['auditory_current_level'] ?? 0,
+        score: json['score'] ?? 0,
+        coins: json['coins'] ?? 0,
+        address: json['address'] ?? "",  therapist: json['therapist'] ?? "",
+      batch: json['batch'] ?? ""
     );
   }
 
@@ -107,7 +105,8 @@ class UserModel {
       "score": this.score,
       "coins": this.coins,
       "address": this.address,
-      "therapist": this.therapist
+      "therapist": this.therapist,
+      "batch": this.batch
       // "gift_purchase_history": list_gifts,
       // "currently_scheduled_gift": this.currently_scheduled_gift == null
       //     ? null

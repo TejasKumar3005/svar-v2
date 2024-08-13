@@ -1,5 +1,5 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/auditory_screen_assessment_visual/animation_play.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
@@ -36,8 +36,11 @@ class AuditoryScreenAssessmentScreenAudioVisualResizScreenState
 
   Future<void> playAudio(String url) async {
     try {
-      await _player.setUrl(url);
-      _player.play();
+        AudioCache.instance = AudioCache(prefix: '');
+      _player = AudioPlayer();
+      await _player.play(
+        UrlSource(url)
+      );
     } catch (e) {
       print('Error initializing player: $e');
     }

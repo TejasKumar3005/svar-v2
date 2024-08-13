@@ -14,7 +14,6 @@ dependencies:
   auto_size_text: ^3.0.0
   avatar_glow: ^2.0.1
   cached_network_image: ^3.3.0
-  carousel_slider_plus: ^6.0.0
   chewie: ^1.8.0
   cloud_firestore: ^4.17.4
   confetti: ^0.7.0
@@ -32,7 +31,6 @@ dependencies:
   country_code_picker: ^3.0.0
   carousel_slider_plus: ^6.0.0
   carousel_slider: ^5.0.0
-  audioplayers: ^6.0.0
   path_provider: ^2.0.11
   permission_handler: ^11.3.1
   provider: ^6.1.1
