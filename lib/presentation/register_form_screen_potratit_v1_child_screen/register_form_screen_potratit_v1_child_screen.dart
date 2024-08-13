@@ -37,7 +37,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
   TextEditingController phoneCtrl = TextEditingController();
   List<String> list = <String>["Guardian", "Mother", "Father"];
   String dropdownValue = "Guardian";
-  String? dropdownValue1;
+  String dropdownValue1="Select Therapist";
   bool hide = true;
   OverlayEntry? _overlayEntry;
 
@@ -53,8 +53,11 @@ class RegisterFormScreenPotratitV1ChildScreenState
   Widget build(BuildContext context) {
     final textCtrl = context.watch<RegisterFormScreenPotratitV1ChildProvider>();
     var provider = context.watch<UserDataProvider>();
-    List<String> nameList =
-        provider.therapyCenters.map((json) => json['name'] as String).toList();
+    List<String> nameList =["Select Therapist"];
+    for (var i = 0; i < provider.therapyCenters.length; i++) {
+      nameList.add(provider.therapyCenters[i]['name']);
+    }
+      
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (textCtrl.loading && _overlayEntry == null) {
@@ -146,6 +149,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
+                            
                                 padding: EdgeInsets.symmetric(horizontal: 3.h),
                                 decoration:
                                     AppDecoration.outlineOrangeA200.copyWith(
@@ -153,30 +157,21 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                       BorderRadiusStyle.roundedBorder5,
                                 ),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
                                       Icons.person_2,
                                       color: appTheme.orangeA200,
                                     ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 4.h),
-                                      child: SizedBox(
-                                        height: 23.v,
-                                        child: VerticalDivider(
-                                          width: 1.h,
-                                          thickness: 1.v,
-                                        ),
-                                      ),
-                                    ),
+                                  
                                     Padding(
                                         padding: EdgeInsets.only(
-                                          left: 13.h,
+                                        left: 13.h,
                                           top: 3.v,
                                           bottom: 2.v,
                                         ),
                                         child: SizedBox(
-                                          height: 24.v,
+                                          height: 40.v,
                                           child: DropdownButton<String>(
                                             iconEnabledColor:
                                                 PrimaryColors().amber900,
@@ -223,7 +218,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
                             children: [
                               _buildEditText(context),
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 3.h),
+                            
                                 decoration:
                                     AppDecoration.outlineOrangeA200.copyWith(
                                   borderRadius:
@@ -236,24 +231,15 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                       Icons.person_2,
                                       color: appTheme.orangeA200,
                                     ),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 4.h),
-                                      child: SizedBox(
-                                        height: 23.v,
-                                        child: VerticalDivider(
-                                          width: 1.h,
-                                          thickness: 1.v,
-                                        ),
-                                      ),
-                                    ),
+                                    
                                     Padding(
                                         padding: EdgeInsets.only(
                                           left: 13.h,
-                                          top: 3.v,
-                                          bottom: 2.v,
+                                          
+                                          
                                         ),
                                         child: SizedBox(
-                                          height: 24.v,
+                                        
                                           child: DropdownButton<String>(
                                             iconEnabledColor:
                                                 PrimaryColors().amber900,
@@ -275,9 +261,13 @@ class RegisterFormScreenPotratitV1ChildScreenState
                                                 value: value,
                                                 child: Text(
                                                   value,
+
                                                   style: TextStyle(
+                                                    
                                                       color: PrimaryColors()
-                                                          .amber900),
+                                                          .amber900,
+                                                          overflow: TextOverflow.ellipsis,
+                                                          ),
                                                 ),
                                               );
                                             }).toList(),
@@ -289,14 +279,10 @@ class RegisterFormScreenPotratitV1ChildScreenState
                             ],
                           ),
                           SizedBox(height: 22.v),
-                          textCtrl.loading
-                              ? CircularProgressIndicator(
-                                  color: appTheme.deepOrange200,
-                                )
-                              : CustomButton(
+                        CustomButton(
                                   type: ButtonType.Next,
                                   onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
+                                    if (_formKey.currentState!.validate() && dropdownValue1!="Select Therapist") {
                                       RegisterFormMethods methods =
                                           RegisterFormMethods(context: context);
                                       Map<String, dynamic> result =
@@ -479,7 +465,7 @@ class RegisterFormScreenPotratitV1ChildScreenState
         selector: (context, provider) => provider.passwordController,
         builder: (context, passwordController, child) {
           return CustomTextFormField(
-            width: 200.h,
+            width: 150.h,
             controller: passwordController,
             suffix: GestureDetector(
               onTap: () {

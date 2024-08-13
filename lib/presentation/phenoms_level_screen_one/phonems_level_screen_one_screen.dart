@@ -27,7 +27,7 @@ class PhonemsLevelScreenOneScreenState
     extends State<PhonemsLevelScreenOneScreen> {
   late double currentLevelCount = 23;
   bool _initialized = false;
-  late int val = 1;
+   int val = 1;
 
   @override
   void initState() {
@@ -189,12 +189,16 @@ class PhonemsLevelScreenOneScreenState
     } else {
         final Object dtcontainer;
         dtcontainer = retrieveObject(type, data);
+      
         debugPrint("data is ");
         debugPrint(data.toString());
         List<dynamic> lis = [type, dtcontainer, params];
+        print("lis is $lis");
+        
         bool result = await NavigatorService.pushNamed(
             AppRoutes.auditoryScreenAssessmentScreenVisualAudioResizScreen,
             arguments: lis);
+
         if (result) {
           debugPrint("set state is called for rebuilding the widget");
           String origin = val == 0 ? "Auditory" : "Quizes";
@@ -267,8 +271,9 @@ class PhonemsLevelScreenOneScreenState
       if (user != null) {
         final String uid = user.uid;
         var data =
-            await FirebaseFirestore.instance.collection('users').doc(uid).get();
-        print(data.data());
+            await FirebaseFirestore.instance.collection('patients').doc(uid).get();
+            print("jnnnnackc ");
+        print(data);
         setState(() {
           currentLevelCount = data[screen] >= 1 || data[screen] == null
               ? data[screen].toDouble()
@@ -276,6 +281,7 @@ class PhonemsLevelScreenOneScreenState
         });
       }
     } catch (e) {
+      debugPrint("error in fetching current level");
       debugPrint(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),

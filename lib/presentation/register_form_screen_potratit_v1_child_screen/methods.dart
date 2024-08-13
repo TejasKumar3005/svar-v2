@@ -30,7 +30,8 @@ class RegisterFormMethods {
                           phoneme_current_level: 0,
                           auditory_current_level: 0,
                           score: 0,
-                          therapist: null
+                          therapist: null,
+                          batch:null
                         ),therapyCenterId)
         .then((value) => {
               if (value)

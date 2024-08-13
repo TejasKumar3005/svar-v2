@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
+import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/widgets/circularScore.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -351,7 +352,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
         print("Audio file path: $path");
 
         try {
-          double result = await sendWavFile(path, provider.selectedCharacter);
+          double result = await sendWavFile(path, PhonmesListModel().hindiToEnglishPhonemeMap[provider.selectedCharacter]!);
           print("Processing result: $result");
         } catch (e) {
           print("Error processing audio: ${e.toString()}");
