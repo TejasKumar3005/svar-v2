@@ -72,7 +72,7 @@ android {
             enable true
             reset()
             include 'armeabi-v7a', 'arm64-v8a'
-            universalApk true  // If you want to also generate a universal APK that includes all architectures, set this to true.
+            universalApk false  // If you want to also generate a universal APK that includes all architectures, set this to true.
         }
     }
 }

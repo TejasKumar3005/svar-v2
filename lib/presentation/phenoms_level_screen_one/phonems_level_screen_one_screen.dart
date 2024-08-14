@@ -167,7 +167,6 @@ class PhonemsLevelScreenOneScreenState
         }
       }  else if (type == "speech") {
       debugPrint("in speech section");
-      print("hello");
       bool result = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -186,7 +185,7 @@ class PhonemsLevelScreenOneScreenState
         String origin = val == 0 ? "Auditory" : "SpeechTests";
         await _fetchCurrentLevel(origin);
       }
-    } else {
+    }else {
         final Object dtcontainer;
         dtcontainer = retrieveObject(type, data);
       

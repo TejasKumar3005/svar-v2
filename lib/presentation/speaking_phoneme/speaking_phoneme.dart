@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
+import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/widgets/circularScore.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -127,7 +128,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
             type: ButtonType.Back,
             onPressed: () {
               NavigatorService.pushNamed(
-                AppRoutes.phonemsLevelScreenOneScreen,
+                AppRoutes.phonmesListScreen,
               );
             },
           ),
@@ -203,10 +204,10 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
 
   Widget _buildVideo() {
     return Positioned(
-      right: 100,
+      right: 80,
       bottom: 0,
       child: Container(
-        height: 500,
+        height: 360,
         width: 270,
         child: _controller.value.isInitialized
             ? AspectRatio(
@@ -296,7 +297,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
           Directory tempDir = await getTemporaryDirectory();
           String tempPath = tempDir.path;
           String path = '$tempPath/audio.wav';
-          await sendWavFile(path, provider.selectedCharacter);
+          await sendWavFile(path,PhonmesListModel().hindiToEnglishPhonemeMap[provider.selectedCharacter]!);
         }
       });
     } catch (e) {

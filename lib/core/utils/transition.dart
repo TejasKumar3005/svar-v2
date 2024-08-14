@@ -8,7 +8,8 @@ class RivePageRoute extends PageRouteBuilder {
   final dynamic arguments;
   final String riveFileName;
 
-  RivePageRoute({required this.routeName, this.arguments, required this.riveFileName})
+  RivePageRoute(
+      {required this.routeName, this.arguments, required this.riveFileName})
       : super(
           pageBuilder: (context, animation, secondaryAnimation) {
             var builder = AppRoutes.routes[routeName];
@@ -24,17 +25,19 @@ class RivePageRoute extends PageRouteBuilder {
                     animation: animation,
                     builder: (context, child) {
                       // Only show the Rive animation when the animation is not yet completed.
-                      return animation.isCompleted ? SizedBox() : RiveAnimationTransition(
-                        animation: animation,
-                        riveFileName: riveFileName,
-                      );
+                      return animation.isCompleted
+                          ? SizedBox()
+                          : RiveAnimationTransition(
+                              animation: animation,
+                              riveFileName: riveFileName,
+                            );
                     },
                   ),
                 ),
               ],
             );
           },
-);
+        );
 }
 
 // class RiveAnimationTransition extends StatelessWidget {
@@ -63,10 +66,12 @@ class RiveAnimationTransition extends StatefulWidget {
   final Animation<double> animation;
   final String riveFileName;
 
-  RiveAnimationTransition({required this.animation, required this.riveFileName});
+  RiveAnimationTransition(
+      {required this.animation, required this.riveFileName});
 
   @override
-  _RiveAnimationTransitionState createState() => _RiveAnimationTransitionState();
+  _RiveAnimationTransitionState createState() =>
+      _RiveAnimationTransitionState();
 }
 
 class _RiveAnimationTransitionState extends State<RiveAnimationTransition> {
@@ -84,7 +89,7 @@ class _RiveAnimationTransitionState extends State<RiveAnimationTransition> {
       Future.delayed(Duration(milliseconds: 500), () {
         if (mounted) {
           setState(() {
-            _controller.isActive = false;  // This will stop the Rive animation
+            _controller.isActive = false; // This will stop the Rive animation
           });
         }
       });
@@ -97,7 +102,7 @@ class _RiveAnimationTransitionState extends State<RiveAnimationTransition> {
       widget.riveFileName,
       controllers: [_controller],
       fit: BoxFit.cover,
-      onInit: (_) => _controller.isActive = true,  // Start animation on init
+      onInit: (_) => _controller.isActive = true, // Start animation on init
     );
   }
 
