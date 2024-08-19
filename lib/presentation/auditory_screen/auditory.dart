@@ -517,7 +517,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                         child: Text(
                           dtcontainer.getTextList()[0],
                           //   style: theme.textTheme.labelMedium,
-                          style: TextStyle(fontSize: 50),
+                          style: TextStyle(fontSize: 40),
                         ),
                       ),
                     ],
@@ -583,7 +583,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                         child: Text(
                           dtcontainer.getTextList()[1],
                           // style: theme.textTheme.labelMedium,
-                          style: TextStyle(fontSize: 50),
+                          style: TextStyle(fontSize: 40),
                         ),
                       ),
                     ],
