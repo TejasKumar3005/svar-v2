@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
-import 'package:svar_new/presentation/main_interaction_screen/main_interaction_screen.dart';
+import 'package:svar_new/presentation/home/home.dart';
 import 'package:svar_new/routes/app_routes.dart';
 
 class RivePageRoute extends PageRouteBuilder {
@@ -13,7 +13,7 @@ class RivePageRoute extends PageRouteBuilder {
       : super(
           pageBuilder: (context, animation, secondaryAnimation) {
             var builder = AppRoutes.routes[routeName];
-            return builder != null ? builder(context) : MainInteractionScreen();
+            return builder != null ? builder(context) : HomeScreen();
           },
           transitionDuration: Duration(seconds: 1),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {

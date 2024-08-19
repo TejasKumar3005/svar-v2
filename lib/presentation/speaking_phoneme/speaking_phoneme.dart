@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/widgets/circularScore.dart';
@@ -46,7 +47,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
   @override
   void initState() {
     super.initState();
-
+    PlayBgm().stopMusic();
     _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
       ..initialize().then((_) {
         setState(() {});
@@ -107,7 +108,8 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
                 ],
               ),
               _buildText(),
-              if (widget.testSpeech) _buildMicrophoneButton(lingLearningProvider),
+              if (widget.testSpeech)
+                _buildMicrophoneButton(lingLearningProvider),
               _buildVideo(),
               _buildTipButton(),
               if (result != null) _buildResult(),
@@ -297,7 +299,10 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
           Directory tempDir = await getTemporaryDirectory();
           String tempPath = tempDir.path;
           String path = '$tempPath/audio.wav';
-          await sendWavFile(path,PhonmesListModel().hindiToEnglishPhonemeMap[provider.selectedCharacter]!);
+          await sendWavFile(
+              path,
+              PhonmesListModel()
+                  .hindiToEnglishPhonemeMap[provider.selectedCharacter]!);
         }
       });
     } catch (e) {

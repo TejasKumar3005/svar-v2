@@ -21,4 +21,3 @@ export 'package:svar_new/widgets/custom_icon_button.dart';
 export 'package:svar_new/widgets/custom_outlined_button.dart';
 export 'package:svar_new/widgets/custom_text_form_field.dart';
 export 'package:svar_new/widgets/appbar_trailing_iconbutton.dart';
-export 'package:svar_new/presentation/auditory_screen_assessment_screen_audio/provider/auditory_screen_assessment_screen_audio_visual_resized_provider.dart';

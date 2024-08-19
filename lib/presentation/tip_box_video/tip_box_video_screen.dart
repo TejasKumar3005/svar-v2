@@ -1,13 +1,17 @@
 // import 'dart:html';
+import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
+import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-
+import 'package:chewie/chewie.dart';
+import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
 class TipBoxVideoScreen extends StatefulWidget {
-  const TipBoxVideoScreen({Key? key})
+
+   TipBoxVideoScreen({Key? key})
       : super(
           key: key,
         );
@@ -16,21 +20,72 @@ class TipBoxVideoScreen extends StatefulWidget {
   TipBoxVideoScreenState createState() => TipBoxVideoScreenState();
 
   static Widget builder(BuildContext context) {
-    return 
- TipBoxVideoScreen();
+    
+    return TipBoxVideoScreen();
   }
 }
 
 class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
+    late VideoPlayerController _videoPlayerController;
+  ChewieController? _chewieController;
+  bool _showPlayButton = false;
+
+
   @override
   void initState() {
     super.initState();
+
+      void stop() async {
+    await PlayBgm().stopMusic();
+    }
+    stop();
+    var prov=Provider.of<LingLearningProvider>(context,listen: false);
+
+    _videoPlayerController = VideoPlayerController.asset("assets/phonemes/${PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]}.mp4")
+      ..initialize().then((_) {
+        setState(() {});
+      });
+    _videoPlayerController.addListener(() {
+      if (_videoPlayerController.value.position ==
+          _videoPlayerController.value.duration) {
+        Navigator.pop(context, true);
+      }
+    });
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController,
+      autoPlay: false,
+      looping: false,
+    );
+  }
+
+  @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    _chewieController?.dispose();
+    super.dispose();
+  }
+
+  void _togglePlayPause() {
+    setState(() {
+      if (_videoPlayerController.value.isPlaying) {
+        _videoPlayerController.pause();
+      } else {
+        _videoPlayerController.play();
+      }
+      _showPlayButton = false;
+    });
+  }
+
+  void _onTap() {
+    setState(() {
+      _showPlayButton = !_showPlayButton;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     var userprovider = context.watch<UserDataProvider>();
-  
+
     var levelprovider = context.watch<LingLearningProvider>();
     return SafeArea(
       child: Scaffold(
@@ -53,43 +108,38 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
               ),
               SizedBox(height: 12.v),
               Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 30.h, vertical: 10.v),
+                padding: EdgeInsets.symmetric(horizontal: 30.h, vertical: 10.v),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                
-                Image(
-                  image: NetworkImage(
-                    userprovider.parentaltips[levelprovider.selectedCharacter] !=
-                            null
-                        ? userprovider
-                                .parentaltips[levelprovider.selectedCharacter]
-                            ["image"]
-                        : "",
-                  ),
-                  height: 219.v,
-                  width: MediaQuery.of(context).size.width * 0.45,
-                  fit: BoxFit.contain,
+                    GestureDetector(
+        onTap: _onTap,
+        child: _videoPlayerController.value.isInitialized
+            ? SizedBox(
+              height: 219.v,
+                width: MediaQuery.of(context).size.width * 0.40,
+              child: AspectRatio(
+                  aspectRatio: _videoPlayerController.value.aspectRatio,
+                  child: Center(child: Chewie(controller: _chewieController!)),
                 ),
-                Container(
-                  height: 219.v,
-                  width:  MediaQuery.of(context).size.width * 0.45,
-                  child: Center(
-                    child: Text(
-                      userprovider.parentaltips[levelprovider.selectedCharacter] !=
-                              null
-                          ? userprovider
-                              .parentaltips[levelprovider.selectedCharacter]["tips"]
-                          : "tips",
-                    maxLines: 10,
-                    
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: CustomTextStyles.titleMediumNunitoSansTeal900,
+            )
+            : Center(child: CircularProgressIndicator()),
+      ),
+                    Container(
+                      height: 219.v,
+                      width: MediaQuery.of(context).size.width * 0.40,
+                      child: Center(
+                        child: Text(
+                          levelprovider.selectedTip,
+                          maxLines: 10,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: CustomTextStyles.titleMediumNunitoSansTeal900,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-                ],),
               ),
               SizedBox(height: 2.v)
             ],
@@ -103,7 +153,7 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
   Widget _buildAppBar(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        onTapAppBar(context);
+      
       },
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 20.v),
@@ -116,7 +166,7 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
               child: CustomButton(
                   type: ButtonType.Back,
                   onPressed: () {
-                    NavigatorService.pushNamed(AppRoutes.lingLearningScreen);
+                    NavigatorService.goBack();
                   }),
             ),
             Spacer(),
@@ -136,10 +186,5 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
     );
   }
 
-  /// Navigates to the lingLearningDetailedTipBoxScreen when the action is triggered.
-  onTapAppBar(BuildContext context) {
-    NavigatorService.pushNamed(
-      AppRoutes.lingLearningDetailedTipBoxScreen,
-    );
-  }
+
 }

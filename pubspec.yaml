@@ -51,6 +51,7 @@ flutter:
     - assets/audio/
     - assets/audio/bgm/
     - assets/video/
+    - assets/phonemes/
 
   fonts: 
     - family: Nunito

@@ -7,6 +7,7 @@ import 'dart:io';
 
 class LingLearningProvider extends ChangeNotifier {
   String _selectedCharacter = '';
+  String selectedTip = '';
 
   String get selectedCharacter => _selectedCharacter;
 
@@ -14,6 +15,10 @@ class LingLearningProvider extends ChangeNotifier {
     _selectedCharacter = character;
     notifyListeners(); // Notify listeners to update the UI.
   }
+  void setTip(String tip) {
+    selectedTip = tip;
+    notifyListeners(); // Notify listeners to update the UI.
+  }	
 
   FlutterSoundRecorder? _audioRecorder;
   bool isRecording = false;

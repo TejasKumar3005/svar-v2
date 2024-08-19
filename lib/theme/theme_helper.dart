@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/utils/pref_utils.dart';
 import 'package:svar_new/core/utils/size_utils.dart';
@@ -193,6 +192,7 @@ class PrimaryColors {
   Color get blueGray900 => Color(0XFF0B213B);
 
   Color get brown100 => Color(0XFF9F4300);
+    Color get brown200 => Color(0XFF844A16);
 
 // Cyan
   Color get cyan100 => Color(0XFFB4FAFF);
@@ -303,6 +303,7 @@ class PrimaryColors {
   Color get orange90001 => Color(0XFFCA5B00);
   Color get orangeA200 => Color(0XFFFF9A3E);
   Color get orangeA700 => Color(0XFFF96900);
+  Color get orange800 => Color(0XFFFB6D03);
 
 // OrangeD
   Color get orange400D8 => Color(0XD8FF9233);
@@ -353,6 +354,8 @@ class PrimaryColors {
   Color get yellow90005 => Color(0XFFF78D11);
   Color get yellow90006 => Color(0XFFE98D32);
   Color get yellowA700 => Color(0XFFFFD600);
+
+
 
   get black90001 => null;
 }

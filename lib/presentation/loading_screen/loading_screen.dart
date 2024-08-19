@@ -43,10 +43,8 @@ class LoadingScreenState extends State<LoadingScreen>
       userData.getUserData(),
       userData.getParentalTip(),
     ]);
-    PlayBgm().playMusic('loading.mp3',"mp3",false);
-    // Navigate after both functions are complete
     Navigator.of(context).pushNamedAndRemoveUntil(
-      AppRoutes.mainInteractionScreen, 
+      AppRoutes.home, 
       (route) => false,
     );
   } catch (error) {

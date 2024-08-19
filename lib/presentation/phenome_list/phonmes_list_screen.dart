@@ -24,8 +24,14 @@ class PhonmesListScreen extends StatefulWidget {
 class PhonmesListScreenState extends State<PhonmesListScreen> {
   @override
   void initState() {
+  
     super.initState();
   }
+
+  void dispose() {
+  
+    super.dispose();
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -146,6 +152,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                     onTap: () {
                       PhonmesListModel()
                           .onTapCharacter(context, model.character!);
+                          
                       Navigator.pushNamed(context, AppRoutes.lingLearningScreen,
                           arguments: model.character);
                     },

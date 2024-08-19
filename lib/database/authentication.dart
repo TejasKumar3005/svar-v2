@@ -2,17 +2,16 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart';
 
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/login/login_provider.dart';
 
-import 'package:svar_new/presentation/login_screen_portrait/login_screen_potrait_provider.dart';
+import 'package:svar_new/presentation/register/provider/register_provider.dart';
 
 import '../core/app_export.dart';
-import '../presentation/register_form_screen_potratit_v1_child_screen/provider/register_form_screen_potratit_v1_child_provider.dart';
 
 class AuthConroller {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -31,9 +30,9 @@ class AuthConroller {
       var provider;
       if (login) {
         provider =
-            Provider.of<LoginScreenPotraitProvider>(context!, listen: false);
+            Provider.of<LoginProvider>(context!, listen: false);
       } else {
-        provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
+        provider = Provider.of<LoginProvider>(
             context!,
             listen: false);
       }
@@ -73,7 +72,7 @@ class AuthConroller {
 
   Future<bool> registerWithPhone(String sms, UserModel model) async {
     try {
-      var provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
+      var provider = Provider.of<RegisterProvider>(
           context!,
           listen: false);
       var otpId = provider.otpId;
@@ -117,7 +116,7 @@ class AuthConroller {
 
   Future<bool> loginWithPhone(String sms, UserModel model) async {
     try {
-      var provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
+      var provider = Provider.of<LoginProvider>(
           context!,
           listen: false);
       var otpId = provider.otpId;
@@ -463,7 +462,7 @@ class AuthConroller {
   Future<bool> resendOtp(String phone) async {
     try {
       if (rtoken != null) {
-        var provider = Provider.of<RegisterFormScreenPotratitV1ChildProvider>(
+        var provider = Provider.of<RegisterProvider>(
             context!,
             listen: false);
         await firebaseAuth.verifyPhoneNumber(

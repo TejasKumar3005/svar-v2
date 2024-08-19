@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/widgets/circularScore.dart';
@@ -32,10 +33,6 @@ class LingLearningScreenState extends State<LingLearningScreen> {
   @override
   void initState() {
     super.initState();
-
-    AudioCache.instance = AudioCache(prefix: '');
-    _audioPlayer = AudioPlayer();
-    // requestPermissions();
   }
 
   @override
@@ -250,9 +247,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                   child: CustomButton(
                     type: ButtonType.Tip,
                     onPressed: () {
-                      NavigatorService.pushNamed(
-                        AppRoutes.tipBoxVideoScreen,
-                      );
+                    Navigator.pushNamed(context, AppRoutes.tipBoxVideoScreen);
                     },
                   ),
                 ),

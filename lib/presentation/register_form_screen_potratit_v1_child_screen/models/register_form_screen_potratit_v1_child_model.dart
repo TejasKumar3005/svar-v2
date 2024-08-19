@@ -1,2 +1,0 @@
-
-class RegisterFormScreenPotratitV1ChildModel {}
