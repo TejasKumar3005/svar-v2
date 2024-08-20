@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
+import 'package:svar_new/core/utils/playBgm.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key})
@@ -12,8 +13,7 @@ class UserProfileScreen extends StatefulWidget {
   @override
   UserProfileScreenState createState() => UserProfileScreenState();
   static Widget builder(BuildContext context) {
-    return 
- UserProfileScreen();
+    return UserProfileScreen();
   }
 }
 
@@ -47,7 +47,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // AppStatsHeader(per: 30),
-              
+
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12.h),
                 child: Row(
@@ -70,47 +70,85 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                           borderRadius: BorderRadiusStyle.roundedBorder15,
                         ),
                         child: Container(
-                          height: 245.v,
-                          width: (MediaQuery.of(context).size.width-44.h )* 0.45,
+                          height: 400.v,
+                          width:
+                              (MediaQuery.of(context).size.width - 44.h) * 0.45,
                           decoration: AppDecoration.outlineWhiteA.copyWith(
                             borderRadius: BorderRadiusStyle.roundedBorder15,
                           ),
                           child: Stack(
                             alignment: Alignment.bottomCenter,
                             children: [
-                              // Align(
-                              //   alignment: Alignment.center,
-                              //   child: CustomImageView(
-                              //     fit: BoxFit.cover,
-                              //     height: 245.v,
-                              //     width:
-                              //         (MediaQuery.of(context).size.width-44.h )* 0.4,
-                              //     imagePath: ImageConstant.imgMascotBGProfile,
-                              //   ),
-                              // ),
-                              // Align(
-                              //   alignment: Alignment.center,
-                              //   child: CustomImageView(
-                              //     fit: BoxFit.contain,
-                              //     height: 180.v,
-                              //     width:(MediaQuery.of(context).size.width-44.h )* 0.4 *
-                              //         0.7,
-                              //     imagePath: ImageConstant.imgMascot,
-                              //   ),
-                              // ),
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextField(
+                                      decoration: InputDecoration(
+                                        hintText: 'Parent/Guardian Name  ',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    TextField(
+                                      decoration: InputDecoration(
+                                        hintText: 'Students Name',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: TextField(
+                                            decoration: InputDecoration(
+                                              hintText: 'Phone Number',
+                                              border: OutlineInputBorder(),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                    TextField(
+                                      decoration: InputDecoration(
+                                        hintText: 'Address',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                     GestureDetector(
+                                      onTap: () {},
+                                      child: CustomImageView(
+                                        imagePath: ImageConstant.imgNextBtn,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    GestureDetector(
+                                      onTap: () {},
+                                      child: CustomImageView(
+                                        imagePath: ImageConstant.imgNextBtn,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       ),
                     ),
                     Container(
-                      width: (MediaQuery.of(context).size.width-44.h )* 0.45 ,
+                      width: (MediaQuery.of(context).size.width - 44.h) * 0.45,
                       height: 245.v,
                       padding: EdgeInsets.symmetric(
                         horizontal: 6.h,
                         vertical: 4.v,
                       ),
-                      decoration: AppDecoration.outlineWhiteDeepOrangeA200.copyWith(
+                      decoration:
+                          AppDecoration.outlineWhiteDeepOrangeA200.copyWith(
                         borderRadius: BorderRadiusStyle.roundedBorder10,
                       ),
                       child: Column(
@@ -120,9 +158,8 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                width: ((MediaQuery.of(context).size.width-44.h )* 0.45-12.h) *
-                                    0.48,
-                                    height: 149.v,
+                                width: 280.h,
+                                height: 149.v,
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 7.h,
                                   vertical: 7.v,
@@ -134,9 +171,9 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                 ),
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                  
                                     Container(
                                       width: double.maxFinite,
                                       height: 40.v,
@@ -178,9 +215,8 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                         ],
                                       ),
                                     ),
-                                    
                                     Container(
-                                        width: double.maxFinite,
+                                      width: double.maxFinite,
                                       height: 40.v,
                                       padding: EdgeInsets.symmetric(
                                         horizontal: 6.h,
@@ -198,7 +234,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                              maxLines: 1,
+                                            maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             "lbl_coins_earned".tr,
                                             style: CustomTextStyles
@@ -236,12 +272,15 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                         ],
                                       ),
                                     ),
-                                    
                                     Container(
-                                        width: ((MediaQuery.of(context).size.width-44.h )* 0.45-12.h) *
-                                    0.48*0.7,
+                                      width:
+                                          ((MediaQuery.of(context).size.width -
+                                                          44.h) *
+                                                      0.45 -
+                                                  12.h) *
+                                              0.48 *
+                                              0.7,
                                       height: 30.v,
-                                    
                                       decoration: BoxDecoration(
                                         color: appTheme.yellow500,
                                         borderRadius: BorderRadius.circular(
@@ -262,15 +301,15 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                               //   width:((MediaQuery.of(context).size.width-44.h )* 0.45-12.h) *
                               //       0.48,
                               //       height: 155.v,
-                                  
+
                               //   child: Column(
                               //     crossAxisAlignment: CrossAxisAlignment.stretch,
                               //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               //     children: [
                               //       buildScoreBar(),
-                                    
+
                               //       buildScoreBar(),
-                                  
+
                               //       buildScoreBar(),
                               //     ],
                               //   ),
@@ -281,39 +320,53 @@ class UserProfileScreenState extends State<UserProfileScreen> {
 
                           Container(
                             height: 65.v,
-                            width: (MediaQuery.of(context).size.width-44.h ) *
-                                    0.45,
+                            width: (MediaQuery.of(context).size.width - 44.h) *
+                                0.45,
                             padding: EdgeInsets.symmetric(
                               horizontal: 12.h,
                               vertical: 4.v,
                             ),
-                            decoration:
-                                AppDecoration.fillDeepOrange10.copyWith(
+                            decoration: AppDecoration.fillDeepOrange10.copyWith(
                               borderRadius: BorderRadiusStyle.roundedBorder10,
                             ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              CustomImageView(
-                                width: ((MediaQuery.of(context).size.width-44.h )*0.45-24.h-30.h)/3,
-                                height: 55.v,
-                                fit: BoxFit.contain,
-                                imagePath: "assets/images/badge_g.png",
-                              ),
-                              CustomImageView(
-                                width: ((MediaQuery.of(context).size.width-44.h )*0.45-24.h-30.h)/3,
-                                height: 55.v,
-                                fit: BoxFit.contain,
-                                imagePath: "assets/images/badge_s.png",
-                              ),
-                              CustomImageView(
-                                width: ((MediaQuery.of(context).size.width-44.h )*0.45-24.h-30.h)/3,
-                                height: 55.v,
-                                fit: BoxFit.contain,
-                                imagePath: "assets/images/badge_b.png",
-                              ),
-                            ],
-                          ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                CustomImageView(
+                                  width: ((MediaQuery.of(context).size.width -
+                                                  44.h) *
+                                              0.45 -
+                                          24.h -
+                                          30.h) /
+                                      3,
+                                  height: 55.v,
+                                  fit: BoxFit.contain,
+                                  imagePath: "assets/images/badge_g.png",
+                                ),
+                                CustomImageView(
+                                  width: ((MediaQuery.of(context).size.width -
+                                                  44.h) *
+                                              0.45 -
+                                          24.h -
+                                          30.h) /
+                                      3,
+                                  height: 55.v,
+                                  fit: BoxFit.contain,
+                                  imagePath: "assets/images/badge_s.png",
+                                ),
+                                CustomImageView(
+                                  width: ((MediaQuery.of(context).size.width -
+                                                  44.h) *
+                                              0.45 -
+                                          24.h -
+                                          30.h) /
+                                      3,
+                                  height: 55.v,
+                                  fit: BoxFit.contain,
+                                  imagePath: "assets/images/badge_b.png",
+                                ),
+                              ],
+                            ),
                           ),
                           // SizedBox(height: 5.v)
                         ],
@@ -424,7 +477,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
   //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
   //                     mainAxisSize: MainAxisSize.min,
   //                     children: [
-                        
+
   //                       Container(
   //                         height: 7.13.v,
   //                         margin: EdgeInsets.only(
@@ -469,10 +522,10 @@ class UserProfileScreenState extends State<UserProfileScreen> {
   //                                 borderRadius:  BorderRadiusStyle.roundedBorder5
   //                               ),
   //                             )
-                            
+
   //                           ],
   //                         ),
-                              
+
   //                       ),SizedBox(width: 8.h,),
   //                         _buildRowvectorThree(
   //                               context,
