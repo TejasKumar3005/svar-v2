@@ -26,7 +26,7 @@ class PhonemeLevelOneScreen extends StatefulWidget {
 
 class PhonemeLevelOneScreenState
     extends State<PhonemeLevelOneScreen> {
-  late double currentLevelCount = 23;
+  late double currentLevelCount = 1;
   bool _initialized = false;
    int val = 1;
 
