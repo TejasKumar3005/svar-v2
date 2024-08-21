@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key})
@@ -17,11 +18,56 @@ class UserProfileScreen extends StatefulWidget {
   }
 }
 
+
+
 class UserProfileScreenState extends State<UserProfileScreen> {
+
+
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
+  TextEditingController _addressController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
   @override
   void initState() {
     super.initState();
+    _fetchUserData();
   }
+
+  _fetchUserData() async {
+    // Assuming 'uid' is the user ID, replace with your method to get current user's UID
+    String uid = 'BeonEOATC2ZfaNbGaIFJLeNlxy33'; 
+    DocumentSnapshot userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    setState(() {
+      _nameController.text = userDoc['name'];
+      _phoneController.text = userDoc['mobile'];
+      _addressController.text = userDoc['address'];
+      _emailController.text = userDoc['email'];
+    });
+  }
+
+
+
+  _updateUserData() async {
+  String uid =
+      'BeonEOATC2ZfaNbGaIFJLeNlxy33'; // Replace with your method to get current user's UID
+  await FirebaseFirestore.instance.collection('users').doc(uid).update({
+    'name': _nameController.text,
+    'mobile': _phoneController.text,
+    'address': _addressController.text,
+    'email': _emailController.text,
+  });
+
+  // Show a success message
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Profile updated successfully!')),
+  );
+
+  // Navigate to the next screen
+  Navigator.pushReplacementNamed(
+      context, '/nextScreenRoute'); // Replace with your next screen's route
+}
 
   @override
   Widget build(BuildContext context) {
@@ -84,50 +130,51 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    TextField(
-                                      decoration: InputDecoration(
-                                        hintText: 'Parent/Guardian Name  ',
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    ),
-                                    SizedBox(height: 10),
-                                    TextField(
-                                      decoration: InputDecoration(
-                                        hintText: 'Students Name',
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Row(
-                                      children: [
-                                        SizedBox(width: 10),
-                                        Expanded(
-                                          child: TextField(
-                                            decoration: InputDecoration(
-                                              hintText: 'Phone Number',
-                                              border: OutlineInputBorder(),
-                                            ),
-                                          ),
+                                SizedBox(height: 10),
+                                TextField(
+                                  controller: _nameController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Student Name',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                      child: TextField(
+                                        controller: _phoneController,
+                                        decoration: InputDecoration(
+                                          hintText: 'Phone Number',
+                                          border: OutlineInputBorder(),
                                         ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 10),
-                                    TextField(
-                                      decoration: InputDecoration(
-                                        hintText: 'Address',
-                                        border: OutlineInputBorder(),
                                       ),
                                     ),
-                                    SizedBox(height: 10),
-                                     GestureDetector(
-                                      onTap: () {},
-                                      child: CustomImageView(
-                                        imagePath: ImageConstant.imgNextBtn,
-                                      ),
-                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                TextField(
+                                  controller: _addressController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Address',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                TextField(
+                                  controller: _emailController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Email',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
                                     SizedBox(height: 10),
                                     GestureDetector(
-                                      onTap: () {},
+                                      onTap: () async {
+                                        await _updateUserData();
+                                        // Any additional actions after update
+                                      },
                                       child: CustomImageView(
                                         imagePath: ImageConstant.imgNextBtn,
                                       ),
@@ -297,23 +344,6 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                   ],
                                 ),
                               ),
-                              // Container(
-                              //   width:((MediaQuery.of(context).size.width-44.h )* 0.45-12.h) *
-                              //       0.48,
-                              //       height: 155.v,
-
-                              //   child: Column(
-                              //     crossAxisAlignment: CrossAxisAlignment.stretch,
-                              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              //     children: [
-                              //       buildScoreBar(),
-
-                              //       buildScoreBar(),
-
-                              //       buildScoreBar(),
-                              //     ],
-                              //   ),
-                              // )
                             ],
                           ),
                           SizedBox(height: 10.v),
@@ -382,215 +412,6 @@ class UserProfileScreenState extends State<UserProfileScreen> {
       ),
     );
   }
-
-  /// Common widget
-  // Widget _buildRowgroupthirtyo(
-  //   BuildContext context, {
-  //   required String groupthirtyone,
-  //   required String two,
-  // }) {
-  //   return Container(
-  //     width: 87.h,
-  //     padding: EdgeInsets.symmetric(horizontal: 2.h),
-  //     decoration: AppDecoration.fillYellow.copyWith(
-  //       borderRadius: BorderRadiusStyle.roundedBorder5,
-  //     ),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Container(
-  //           width: 72.h,
-  //           margin: EdgeInsets.only(
-  //             top: 2.v,
-  //             bottom: 3.v,
-  //           ),
-  //           padding: EdgeInsets.symmetric(
-  //             horizontal: 13.h,
-  //             vertical: 1.v,
-  //           ),
-  //           decoration: AppDecoration.fillDeeporange70002.copyWith(
-  //             borderRadius: BorderRadiusStyle.roundedBorder5,
-  //           ),
-  //           child: Text(
-  //             groupthirtyone,
-  //             style: CustomTextStyles.nunitoWhiteA70001Bold.copyWith(
-  //               color: appTheme.whiteA700,
-  //             ),
-  //           ),
-  //         ),
-  //         Padding(
-  //           padding: EdgeInsets.only(
-  //             left: 3.h,
-  //             bottom: 1.v,
-  //           ),
-  //           child: Text(
-  //             two,
-  //             style: theme.textTheme.labelMedium!.copyWith(
-  //               color: appTheme.whiteA700,
-  //             ),
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // Widget buildScoreBar() {
-  //   return SizedBox(
-  //     height:50.v,
-  //     width: double.maxFinite,
-  //     child: Stack(
-  //       alignment: Alignment.centerLeft,
-  //       children: [
-  //         Align(
-  //           alignment: Alignment.bottomRight,
-  //           child: Container(
-  //             width: ((MediaQuery.of(context).size.width-44.h )* 0.45-12.h) *
-  //                                   0.43,
-  //             margin: EdgeInsets.only(
-  //               left: 5.h,
-  //               bottom: 3.v,
-  //             ),
-  //             padding: EdgeInsets.symmetric(
-  //               horizontal: 3.h,
-  //               vertical: 2.v,
-  //             ),
-  //             decoration: AppDecoration.outlineWhiteA70001.copyWith(
-  //               borderRadius: BorderRadiusStyle.roundedBorder5,
-  //               border: Border.all(width: 2.h,color: appTheme.whiteA700)
-  //             ),
-  //             child: Column(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 Text(
-  //                   "msg_score_multiplier".tr,
-  //                   style: theme.textTheme.labelMedium,
-  //                 ),
-  //                 Text(
-  //                   "msg_increase_duration".tr,
-  //                   style: theme.textTheme.labelSmall!.copyWith(color: appTheme.black900),
-  //                 ),
-  //                 Align(
-  //                   alignment: Alignment.bottomRight,
-  //                   child: Row(
-  //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                     mainAxisSize: MainAxisSize.min,
-  //                     children: [
-
-  //                       Container(
-  //                         height: 7.13.v,
-  //                         margin: EdgeInsets.only(
-  //                           top: 4.v,
-  //                           bottom: 1.v,
-  //                         ),
-  //                         child: Row(
-  //                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                           children: [
-  //                             Container(
-  //                               height: 7.13.v,
-  //                             width: 10.02.h,
-  //                               margin: EdgeInsets.only(left: 2.h),
-  //                               decoration: AppDecoration.outlineBlackYellow.copyWith(borderRadius: BorderRadiusStyle.roundedBorder5),
-  //                             ),
-  //                             Container(
-  //                             height: 7.13.v,
-  //                             width: 10.02.h,
-  //                                 margin: EdgeInsets.only(left: 2.h),
-  //                               decoration: AppDecoration.outlineBlackYellow.copyWith(borderRadius: BorderRadiusStyle.roundedBorder5),
-  //                             ),
-  //                             Container(
-  //                             height: 7.13.v,
-  //                             width: 10.02.h,
-  //                                 margin: EdgeInsets.only(left: 2.h),
-  //                               decoration: AppDecoration.outlineBlackYellow.copyWith(borderRadius: BorderRadiusStyle.roundedBorder5),
-  //                             ),
-  //                             Container(
-  //                             height: 7.13.v,
-  //                             width: 10.02.h,
-  //                                 margin: EdgeInsets.only(left: 2.h),
-  //                               decoration: BoxDecoration(
-  //                                 color: appTheme.brown100,  borderRadius:  BorderRadiusStyle.roundedBorder5
-  //                               ),
-  //                             ),
-  //                             Container(
-  //                               height: 7.13.v,
-  //                             width: 10.02.h,
-  //                                 margin: EdgeInsets.only(left: 2.h),
-  //                               decoration: BoxDecoration(
-  //                                 color: appTheme.brown100,
-  //                                 borderRadius:  BorderRadiusStyle.roundedBorder5
-  //                               ),
-  //                             )
-
-  //                           ],
-  //                         ),
-
-  //                       ),SizedBox(width: 8.h,),
-  //                         _buildRowvectorThree(
-  //                               context,
-  //                               zipcode: "5000",
-  //                             )
-  //                     ],
-  //                   ),
-  //                 )
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //         Positioned(
-  //         left: -4.h,
-  //         top: 0,
-  //           child: Transform.rotate(
-  //             angle: -20.39 * 3.14/180,
-  //             child: CustomImageView(
-  //               imagePath: ImageConstant.imgStar14,
-  //               height: 45.v,
-  //               width: 40.h,
-  //               fit: BoxFit.contain,
-  //               radius: BorderRadius.circular(
-  //                 1.h,
-  //               ),
-  //               alignment: Alignment.centerLeft,
-  //             ),
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  /// Common widget
-  // Widget _buildRowvectorThree(
-  //   BuildContext context, {
-  //   required String zipcode,
-  // }) {
-  //   return Container(
-  //     padding: EdgeInsets.symmetric(horizontal: 2.h),
-  //     decoration: AppDecoration.gradientGreenToLightGreen.copyWith(borderRadius: BorderRadiusStyle.roundedBorder10,border: Border.all(color: appTheme.black900)),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       mainAxisSize: MainAxisSize.min,
-  //       children: [
-  //         CustomImageView(
-  //           imagePath: ImageConstant.imgCoin,
-  //           height: 10.v,
-  //           width: 10.h,
-  //           fit: BoxFit.contain,
-  //         ),
-  //         Padding(
-  //           padding: EdgeInsets.only(left: 1.h),
-  //           child: Text(
-  //             zipcode,
-  //             style: CustomTextStyles.nunitoWhiteA70001.copyWith(
-  //               color: appTheme.whiteA700,
-  //             ),
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //   );
-  // }
 
   /// Common widget
   Widget _buildSilverbadge(
