@@ -4,6 +4,7 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key})
@@ -18,56 +19,156 @@ class UserProfileScreen extends StatefulWidget {
   }
 }
 
-
-
 class UserProfileScreenState extends State<UserProfileScreen> {
-
-
   TextEditingController _nameController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
+  TextEditingController _currentPasswordController = TextEditingController();
+  TextEditingController _newPasswordController = TextEditingController();
+  bool hide = true;
+  bool _showPasswordFields = true;
   @override
   void initState() {
     super.initState();
     _fetchUserData();
   }
 
-  _fetchUserData() async {
-    // Assuming 'uid' is the user ID, replace with your method to get current user's UID
-    String uid = 'BeonEOATC2ZfaNbGaIFJLeNlxy33'; 
-    DocumentSnapshot userDoc =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
-
-    setState(() {
-      _nameController.text = userDoc['name'];
-      _phoneController.text = userDoc['mobile'];
-      _addressController.text = userDoc['address'];
-      _emailController.text = userDoc['email'];
-    });
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _addressController.dispose();
+    _emailController.dispose();
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
+    super.dispose();
   }
 
+  Future<void> _fetchUserData() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
 
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No user is currently logged in.')),
+        );
+        return;
+      }
 
-  _updateUserData() async {
-  String uid =
-      'BeonEOATC2ZfaNbGaIFJLeNlxy33'; // Replace with your method to get current user's UID
-  await FirebaseFirestore.instance.collection('users').doc(uid).update({
-    'name': _nameController.text,
-    'mobile': _phoneController.text,
-    'address': _addressController.text,
-    'email': _emailController.text,
-  });
+      String uid = user.uid;
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(uid)
+          .get();
 
-  // Show a success message
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('Profile updated successfully!')),
-  );
+      if (userDoc.exists) {
+        setState(() {
+          _nameController.text = userDoc['name'] ?? '';
+          _phoneController.text = userDoc['mobile'] ?? '';
+          _addressController.text = userDoc['address'] ?? '';
+          _emailController.text = userDoc['email'] ?? '';
+        });
+        print("User data fetched successfully: ${userDoc.data()}");
+      } else {
+        print("No user data found for the UID: $uid");
+      }
+    } catch (e) {
+      print("Failed to fetch user data: $e");
+    }
+  }
 
-  // Navigate to the next screen
-  Navigator.pushReplacementNamed(
-      context, '/nextScreenRoute'); // Replace with your next screen's route
-}
+  Future<void> _updateUserData() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No user is currently logged in.')),
+        );
+        return;
+      }
+
+      String uid = user.uid;
+      await FirebaseFirestore.instance.collection('patients').doc(uid).update({
+        'name': _nameController.text,
+        'mobile': _phoneController.text,
+        'address': _addressController.text,
+        'email': _emailController.text,
+      });
+
+      print("User data updated successfully!");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profile updated successfully!')),
+      );
+      Navigator.pushReplacementNamed(context, '/nextScreenRoute');
+    } catch (e) {
+      print("Failed to update user data: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update profile.')),
+      );
+    }
+  }
+
+  Future<void> _updatePassword() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No user is currently logged in.')),
+        );
+        return;
+      }
+
+      String uid = user.uid;
+
+      // Fetch the user's stored password from Firestore
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(uid)
+          .get();
+
+      if (userDoc.exists) {
+        String storedPassword =
+            userDoc['password']; // Assume the password is stored in this field
+
+        // Compare the entered current password with the stored password
+        if (_currentPasswordController.text == storedPassword) {
+          // If passwords match, update the password
+          await FirebaseFirestore.instance
+              .collection('patients')
+              .doc(uid)
+              .update({
+            'password': _newPasswordController.text,
+          });
+
+          // Optionally, update the password in Firebase Authentication
+          await user.updatePassword(_newPasswordController.text);
+
+          print("User Password updated successfully!");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Password updated successfully!')),
+          );
+        } else {
+          // If passwords don't match, show an error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Current password is incorrect.')),
+          );
+        }
+      } else {
+        print("User document not found.");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User document not found.')),
+        );
+      }
+    } catch (e) {
+      print("Failed to update password: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update password.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +217,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                           borderRadius: BorderRadiusStyle.roundedBorder15,
                         ),
                         child: Container(
-                          height: 400.v,
+                          height: 320.v,
                           width:
                               (MediaQuery.of(context).size.width - 44.h) * 0.45,
                           decoration: AppDecoration.outlineWhiteA.copyWith(
@@ -127,59 +228,213 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                             children: [
                               Padding(
                                 padding: EdgeInsets.all(8.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                SizedBox(height: 10),
-                                TextField(
-                                  controller: _nameController,
-                                  decoration: InputDecoration(
-                                    hintText: 'Student Name',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: TextField(
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(height: 10),
+                                      CustomTextFormField(
+                                        controller: _nameController,
+                                        hintText: "name".tr,
+                                        autofocus: false,
+                                        prefix: Icon(
+                                          Icons.person,
+                                          size: 25,
+                                          color: appTheme.orangeA200,
+                                        ),
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical: 6.v, horizontal: 2.h),
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return "Please enter name";
+                                          } else {
+                                            return null;
+                                          }
+                                        },
+                                      ),
+                                      SizedBox(height: 10),
+                                      CustomTextFormField(
+                                        width: 370.h,
                                         controller: _phoneController,
-                                        decoration: InputDecoration(
-                                          hintText: 'Phone Number',
-                                          border: OutlineInputBorder(),
+                                        prefix: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8.0),
+                                              child: CustomImageView(
+                                                imagePath:
+                                                    ImageConstant.imgIndia,
+                                                width: 24.h,
+                                                height: 23.v,
+                                                fit: BoxFit.contain,
+                                                alignment: Alignment.center,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(left: 4),
+                                              child: SizedBox(
+                                                height: 23.v,
+                                                child: VerticalDivider(
+                                                  width: 1.h,
+                                                  thickness: 1.v,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        validator: (value) {
+                                          if (value!.length < 10) {
+                                            return "Please enter valid phone number";
+                                          } else {
+                                            return null;
+                                          }
+                                        },
+                                        hintText: "lbl_9312211596".tr,
+                                      ),
+                                      SizedBox(height: 10),
+                                      CustomTextFormField(
+                                        controller: _addressController,
+                                        prefix: Icon(
+                                          Icons.location_on,
+                                          size: 25,
+                                          color: appTheme.orangeA200,
+                                        ),
+                                        hintText: "address".tr,
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical: 6.v, horizontal: 2.h),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return "err_msg_please_enter_valid_address"
+                                                .tr;
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      SizedBox(height: 10),
+                                      CustomTextFormField(
+                                        controller: _emailController,
+                                        hintText: "email".tr,
+                                        textInputType:
+                                            TextInputType.emailAddress,
+                                        prefix: Icon(
+                                          size: 25,
+                                          Icons.email,
+                                          color: appTheme.orangeA200,
+                                        ),
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical: 6.v, horizontal: 2.h),
+                                      ),
+                                      if (_showPasswordFields) ...[
+                                        SizedBox(height: 10),
+                                        CustomTextFormField(
+                                          width: 370.h,
+                                          controller:
+                                              _currentPasswordController,
+                                          suffix: GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                hide = !hide;
+                                              });
+                                            },
+                                            child: Icon(
+                                              hide
+                                                  ? Icons.visibility
+                                                  : Icons.visibility_off,
+                                              color: appTheme.orangeA200,
+                                            ),
+                                          ),
+                                          validator: (value) {
+                                            if (value!.length < 6) {
+                                              return "Password must be at least 6 characters";
+                                            } else {
+                                              return null;
+                                            }
+                                          },
+                                          prefix: Icon(
+                                            Icons.lock,
+                                            size: 25,
+                                            color: appTheme.orangeA200,
+                                          ),
+                                          obscureText: hide,
+                                          hintText: "Current Password",
+                                          contentPadding: EdgeInsets.symmetric(
+                                              vertical: 6.v, horizontal: 2.h),
+                                        ),
+                                        SizedBox(height: 10),
+                                        CustomTextFormField(
+                                          width: 370.h,
+                                          controller: _newPasswordController,
+                                          suffix: GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                hide = !hide;
+                                              });
+                                            },
+                                            child: Icon(
+                                              hide
+                                                  ? Icons.visibility
+                                                  : Icons.visibility_off,
+                                              color: appTheme.orangeA200,
+                                            ),
+                                          ),
+                                          validator: (value) {
+                                            if (value!.length < 6) {
+                                              return "Password must be at least 6 characters";
+                                            } else {
+                                              return null;
+                                            }
+                                          },
+                                          prefix: Icon(
+                                            Icons.lock,
+                                            size: 25,
+                                            color: appTheme.orangeA200,
+                                          ),
+                                          obscureText: hide,
+                                          hintText: "New Password",
+                                          contentPadding: EdgeInsets.symmetric(
+                                              vertical: 6.v, horizontal: 2.h),
+                                        ),
+                                        SizedBox(height: 10),
+                                        ElevatedButton(
+                                          onPressed: () async {
+                                            await _updatePassword();
+                                          },
+                                          child: Text('Change Password'),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                appTheme.orangeA200,
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 24, vertical: 12),
+                                            textStyle: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                      SizedBox(height: 10),
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          await _updateUserData();
+                                        },
+                                        child: Text('Save Changes'),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: appTheme.orangeA200,
+                                          foregroundColor: Colors.white,
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 24, vertical: 12),
+                                          textStyle: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 10),
-                                TextField(
-                                  controller: _addressController,
-                                  decoration: InputDecoration(
-                                    hintText: 'Address',
-                                    border: OutlineInputBorder(),
+                                    ],
                                   ),
-                                ),
-                                SizedBox(height: 10),
-                                TextField(
-                                  controller: _emailController,
-                                  decoration: InputDecoration(
-                                    hintText: 'Email',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                ),
-                                    SizedBox(height: 10),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        await _updateUserData();
-                                        // Any additional actions after update
-                                      },
-                                      child: CustomImageView(
-                                        imagePath: ImageConstant.imgNextBtn,
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
                             ],
