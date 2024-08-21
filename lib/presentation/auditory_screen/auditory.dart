@@ -236,7 +236,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                   },
                                   height: 65.v,
                                   fit: BoxFit.contain,
-                                  imagePath: ImageConstant.imgVolRed2,
+                                  imagePath: ImageConstant.imgVol,
                                 ),
                               ),
                             ),
@@ -268,35 +268,13 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                 height: 80.v,
                                 padding: EdgeInsets.symmetric(
                                     vertical: 8.v, horizontal: 10.h),
-                                decoration:
-                                    AppDecoration.outlineBlack9003.copyWith(
-                                  border: Border.all(
-                                    width: provider.sel == 1 ? 2.3.h : 1.3.h,
-                                    color: provider.sel == 1
-                                        ? appTheme.green900
-                                        : appTheme.black900,
-                                  ),
-                                  borderRadius:
-                                      BorderRadiusStyle.roundedBorder10,
-                                  boxShadow: _isGlowingB
-                                      ? [
-                                          BoxShadow(
-                                            color:
-                                                Color.fromARGB(255, 202, 1, 1)
-                                                    .withOpacity(0.6),
-                                            spreadRadius: 10,
-                                            blurRadius: 5,
-                                          ),
-                                        ]
-                                      : [],
-                                ),
                                 child: CustomImageView(
                                   onTap: () {
                                     playAudio(dtcontainer.getAudioList()[1]);
                                   },
                                   height: 65.v,
                                   fit: BoxFit.contain,
-                                  imagePath: ImageConstant.imgVolRed2,
+                                  imagePath: ImageConstant.imgVol,
                                 ),
                               ),
                             ),
@@ -367,7 +345,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                         },
                                         height: 65.v,
                                         fit: BoxFit.contain,
-                                        imagePath: ImageConstant.imgVolRed2,
+                                        imagePath: ImageConstant.imgVol,
                                       ),
                                     ),
                                   ),
@@ -439,7 +417,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                               height: 65.v,
                                               fit: BoxFit.contain,
                                               imagePath:
-                                                  ImageConstant.imgVolRed2,
+                                                  ImageConstant.imgVol,
                                             ),
                                           ),
                                         )
