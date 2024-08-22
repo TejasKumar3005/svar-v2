@@ -144,7 +144,11 @@ Widget AuditoryAppBar(BuildContext context) {
           left: 8.h,
           top: 1.v,
         ),
-        child: CustomButton(type: ButtonType.FullVolume, onPressed: () {}),
+        child: CustomButton(type: ButtonType.FullVolume, onPressed: () {
+
+          Navigator.pushNamed(context, AppRoutes.setting);
+          
+        }),
       )
     ],
   );

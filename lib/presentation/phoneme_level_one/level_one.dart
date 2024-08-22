@@ -208,9 +208,7 @@ class PhonemeLevelOneScreenState
       }
     } catch (e) {
       debugPrint("catch section");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      
     }
   }
 
@@ -238,9 +236,7 @@ class PhonemeLevelOneScreenState
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      
     }
   }
 
@@ -284,9 +280,7 @@ class PhonemeLevelOneScreenState
     } catch (e) {
       debugPrint("error in fetching current level");
       debugPrint(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      
     }
   }
 }
