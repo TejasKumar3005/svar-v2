@@ -10,6 +10,9 @@ class SettingsScreen extends StatefulWidget {
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
+  static Widget builder(BuildContext context) {
+    return SettingsScreen();
+  }
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
@@ -48,6 +51,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(left: 1.h),
+                            child: GestureDetector(
+                              onTap: () {
+                                PlayBgm()
+                                    .playMusic('Back_Btn.mp3', "mp3", false);
+                                Navigator.pop(context);
+                              },
+                              child: CustomImageView(
+                                height: 38.adaptSize,
+                                width: 38.adaptSize,
+                                fit: BoxFit.contain,
+                                imagePath: ImageConstant.imgBackBtn,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20),
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 30.h,vertical: 8),
                       decoration: BoxDecoration(

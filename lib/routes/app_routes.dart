@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/auditory_screen/auditory.dart';
+import 'package:svar_new/presentation/camera_video_excercise/videoCam.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_screen.dart';
 import 'package:svar_new/presentation/login/login.dart';
 import 'package:svar_new/presentation/login_signup/login_signup.dart';
@@ -7,6 +8,7 @@ import 'package:svar_new/presentation/phenome_list/phonmes_list_screen.dart';
 import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 import 'package:svar_new/presentation/phoneme_level_two/level_two.dart';
 import 'package:svar_new/presentation/register/register.dart';
+import 'package:svar_new/presentation/settings_screen/setting.dart';
 import 'package:svar_new/presentation/tip_box_video/tip_box_video_screen.dart';
 import 'package:svar_new/presentation/user_profile_screen/user_profile_screen.dart';
 import 'package:svar_new/presentation/welcome/welcome_screen_potrait_screen.dart';
@@ -50,7 +52,7 @@ class AppRoutes {
       '/auditory_screen';
 
 
-
+  static const String setting="/setting_screen";
 
 
 
@@ -67,6 +69,7 @@ class AppRoutes {
 
   
   static const String speakingphonemeScreen = '/speaking_phoneme_screen';
+  static const String videoCamScreen = '/video_cam_screen';
 
   static const String tipBoxVideoScreen = '/tip_box_video_screen';
 
@@ -74,6 +77,7 @@ class AppRoutes {
 
   static const String initialRoute = '/initialRoute';
   static const String userProfileScreen = '/user_profile';
+
 
   static Map<String, WidgetBuilder> get routes => {
         // auditoryScreenAssessmentScreenAudioVisualResizScreen:AuditoryScreenAssessmentScreenAudioVisualResizScreen.builder,
@@ -87,7 +91,7 @@ register:RegisterScreen.builder,
         welcomeScreen: WelcomeScreen.builder,
         phonemsLevelScreenTwoScreen: PhonemsLevelScreenTwoScreen.builder,
         phonemsLevelScreenOneScreen: PhonemeLevelOneScreen.builder,
-      
+      setting:SettingsScreen.builder,
         auditory:
             AuditoryScreen
                 .builder, // will have to change the route to learning pathway
@@ -96,6 +100,7 @@ register:RegisterScreen.builder,
         phonmesListScreen: PhonmesListScreen.builder,
         lingLearningScreen: LingLearningScreen.builder,
         speakingphonemeScreen: SpeakingPhonemeScreen.builder,
+        videoCamScreen:VideoCamScreen.builder,
       
         tipBoxVideoScreen: TipBoxVideoScreen.builder,
         appNavigationScreen: AppNavigationScreen.builder,

@@ -17,6 +17,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   ChewieController? _chewieController;
   bool _showPlayButton = false;
 
+  
   @override
   void initState() {
     super.initState();
