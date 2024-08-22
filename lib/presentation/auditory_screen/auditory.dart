@@ -7,29 +7,26 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:video_player/video_player.dart';
 import 'provider/auditory_provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-class AuditoryScreen
-    extends StatefulWidget {
+class AuditoryScreen extends StatefulWidget {
   const AuditoryScreen({Key? key})
       : super(
           key: key,
         );
 
   @override
-  AuditoryScreenState createState() =>
-      AuditoryScreenState();
+  AuditoryScreenState createState() => AuditoryScreenState();
 
   static Widget builder(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) =>
-          AuditoryProvider(),
+      create: (context) => AuditoryProvider(),
       child: AuditoryScreen(),
     );
   }
 }
 
-class AuditoryScreenState
-    extends State<AuditoryScreen> {
+class AuditoryScreenState extends State<AuditoryScreen> {
   late bool _isGlowingA;
   late bool _isGlowingB;
   late AudioPlayer _player;
@@ -41,9 +38,7 @@ class AuditoryScreenState
     try {
       AudioCache.instance = AudioCache(prefix: '');
       _player = AudioPlayer();
-      await _player.play(
-        UrlSource(url)
-      );
+      await _player.play(UrlSource(url));
     } catch (e) {
       print('Error initializing player: $e');
     }
@@ -95,8 +90,7 @@ class AuditoryScreenState
   int sel = 0;
   @override
   Widget build(BuildContext context) {
-    var provider =
-        context.watch<AuditoryProvider>();
+    var provider = context.watch<AuditoryProvider>();
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
@@ -105,21 +99,22 @@ class AuditoryScreenState
     return type != "AudioToImage"
         ? SafeArea(
             child: Scaffold(
-                extendBody: true,
-                extendBodyBehindAppBar: true,
-                backgroundColor: appTheme.gray300,
-                body: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(
-                        ImageConstant.imgAuditorybg,
-                      ),
+              extendBody: true,
+              extendBodyBehindAppBar: true,
+              backgroundColor: appTheme.gray300,
+              body: Stack(
+                children: [
+                  // SVG background
+                  Positioned.fill(
+                    child: SvgPicture.asset(
+                      ImageConstant.imgAuditorybg, // Replace with your SVG path
                       fit: BoxFit.cover,
                     ),
                   ),
-                  child: Padding(
+                  // Main content
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
                     padding: EdgeInsets.symmetric(
                       horizontal: 15.h,
                       vertical: 10.v,
@@ -133,7 +128,9 @@ class AuditoryScreenState
                       ],
                     ),
                   ),
-                )),
+                ],
+              ),
+            ),
           )
         : AudiotoimageScreen(
             dtcontainer: dtcontainer,
@@ -142,12 +139,8 @@ class AuditoryScreenState
   }
 
   /// Section Widget
-  Widget _buildOptionGRP(
-      BuildContext context,
-      AuditoryProvider provider,
-      String type,
-      dynamic dtcontainer,
-      String params) {
+  Widget _buildOptionGRP(BuildContext context, AuditoryProvider provider,
+      String type, dynamic dtcontainer, String params) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.h),
       child: Row(
@@ -177,213 +170,12 @@ class AuditoryScreenState
     );
   }
 
-  Widget buildDynamicOptions(
-      String quizType,
-      AuditoryProvider provider,
-      dynamic dtcontainer,
-      String params) {
+  Widget buildDynamicOptions(String quizType, AuditoryProvider provider,
+      dynamic dtcontainer, String params) {
     switch (quizType) {
       case "ImageToAudio":
-        //debugPrint("entering in image to audio section!");
         return dtcontainer.getAudioList().length <= 3
             ? Padding(
-                padding: EdgeInsets.only(right: 70.h),
-                child: Container(
-                    height: 192.v,
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    child: Row(
-                      children: [
-                        Spacer(),
-                        GestureDetector(
-                          onTap: () async {
-                            provider.setSelected(0);
-                            if (dtcontainer.getCorrectOutput() ==
-                                dtcontainer.getAudioList()[0]) {
-                              // push the widget which will shown after success
-                              //      Navigator.push(context, null);
-                              leveltracker = leveltracker + 1;
-                              if (leveltracker > 1) {
-                                provider.incrementLevelCount("completed");
-                              } else {
-                                provider.incrementLevelCount(params);
-                              }
-
-                              bool response = await Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          GifDisplayScreen()));
-                              if (response) {
-                                Navigator.pop(context, true);
-                              }
-                            } else {
-                              // push the widget which will shown after failure
-                              // ScaffoldMessenger.of(context).showSnackBar(
-                              //   SnackBar(content: Text("Incorrect option choosen")),
-                              // );
-                              _toggleGlowA();
-                            }
-                          },
-                          child: AnimatedContainer(
-                            duration: Duration(seconds: 1),
-                            height: 80.v,
-                            padding: EdgeInsets.symmetric(
-                                vertical: 8.v, horizontal: 10.h),
-                            decoration: AppDecoration.outlineBlack.copyWith(
-                              border: Border.all(
-                                width: provider.sel == 0 ? 2.0.h : 1.0.h,
-                                color: provider.sel == 0
-                                    ? appTheme.green900
-                                    : appTheme.black900,
-                              ),
-                              borderRadius: BorderRadiusStyle.roundedBorder10,
-                              boxShadow: _isGlowingA
-                                  ? [
-                                      BoxShadow(
-                                        color: Color.fromARGB(255, 202, 1, 1)
-                                            .withOpacity(0.6),
-                                        spreadRadius: 10,
-                                        blurRadius: 5,
-                                      ),
-                                    ]
-                                  : [],
-                            ),
-                            child: CustomImageView(
-                              onTap: () {
-                                playAudio(dtcontainer.getAudioList()[0]);
-                              },
-                              height: 65.v,
-                              fit: BoxFit.contain,
-                              imagePath: ImageConstant.imgVolRed2,
-                            ),
-                          ),
-                        ),
-                        Spacer(),
-                        GestureDetector(
-                          onTap: () async {
-                            provider.setSelected(1);
-                            if (dtcontainer.getCorrectOutput().toString() ==
-                                dtcontainer.getAudioList()[1]) {
-                              // push the widget which will shown after success
-                              leveltracker = leveltracker + 1;
-                              if (leveltracker > 1) {
-                                provider.incrementLevelCount("completed");
-                              } else {
-                                provider.incrementLevelCount(params);
-                              }
-                              bool response = await Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          GifDisplayScreen()));
-                              if (response) {
-                                Navigator.pop(context, true);
-                              }
-                            } else {
-                              // push the widget which will shown after failure
-                              // ScaffoldMessenger.of(context).showSnackBar(
-                              //   SnackBar(content: Text("Incorrect option choosen")),
-                              // );
-                              _toggleGlowB();
-                            }
-                          },
-                          child: AnimatedContainer(
-                            duration: Duration(seconds: 1),
-                            height: 80.v,
-                            padding: EdgeInsets.symmetric(
-                                vertical: 8.v, horizontal: 10.h),
-                            decoration: AppDecoration.outlineBlack9003.copyWith(
-                              border: Border.all(
-                                width: provider.sel == 1 ? 2.3.h : 1.3.h,
-                                color: provider.sel == 1
-                                    ? appTheme.green900
-                                    : appTheme.black900,
-                              ),
-                              borderRadius: BorderRadiusStyle.roundedBorder10,
-                              boxShadow: _isGlowingB
-                                  ? [
-                                      BoxShadow(
-                                        color: Color.fromARGB(255, 202, 1, 1)
-                                            .withOpacity(0.6),
-                                        spreadRadius: 10,
-                                        blurRadius: 5,
-                                      ),
-                                    ]
-                                  : [],
-                            ),
-                            child: CustomImageView(
-                              onTap: () {
-                                playAudio(dtcontainer.getAudioList()[1]);
-                              },
-                              height: 65.v,
-                              fit: BoxFit.contain,
-                              imagePath: ImageConstant.imgVolRed2,
-                            ),
-                          ),
-                        ),
-                        Spacer(),
-                        GestureDetector(
-                          onTap: () async {
-                            provider.setSelected(1);
-                            if (dtcontainer.getCorrectOutput().toString() ==
-                                dtcontainer.getAudioList()[1]) {
-                              // push the widget which will shown after success
-                              leveltracker = leveltracker + 1;
-                              if (leveltracker > 1) {
-                                provider.incrementLevelCount("completed");
-                              } else {
-                                provider.incrementLevelCount(params);
-                              }
-                              bool response = await Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          GifDisplayScreen()));
-                              if (response) {
-                                Navigator.pop(context, true);
-                              }
-                            } else {
-                              // push the widget which will shown after failure
-                              // ScaffoldMessenger.of(context).showSnackBar(
-                              //   SnackBar(content: Text("Incorrect option choosen")),
-                              // );
-                              _toggleGlowB();
-                            }
-                          },
-                          child: AnimatedContainer(
-                            duration: Duration(seconds: 1),
-                            height: 80.v,
-                            padding: EdgeInsets.symmetric(
-                                vertical: 8.v, horizontal: 10.h),
-                            decoration: AppDecoration.outlineBlack9003.copyWith(
-                              border: Border.all(
-                                width: provider.sel == 1 ? 2.3.h : 1.3.h,
-                                color: provider.sel == 1
-                                    ? appTheme.green900
-                                    : appTheme.black900,
-                              ),
-                              borderRadius: BorderRadiusStyle.roundedBorder10,
-                              boxShadow: _isGlowingB
-                                  ? [
-                                      BoxShadow(
-                                        color: Color.fromARGB(255, 202, 1, 1)
-                                            .withOpacity(0.6),
-                                        spreadRadius: 10,
-                                        blurRadius: 5,
-                                      ),
-                                    ]
-                                  : [],
-                            ),
-                            child: CustomImageView(
-                              onTap: () {
-                                playAudio(dtcontainer.getAudioList()[1]);
-                              },
-                              height: 65.v,
-                              fit: BoxFit.contain,
-                              imagePath: ImageConstant.imgVolRed2,
-                            ),
-                          ),
-                        ),
-                      ],
-                    )))
-            : Padding(
                 padding: EdgeInsets.only(right: 70.h),
                 child: Container(
                     height: 192.v,
@@ -391,6 +183,7 @@ class AuditoryScreenState
                     child: Column(
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Spacer(),
                             GestureDetector(
@@ -398,15 +191,12 @@ class AuditoryScreenState
                                 provider.setSelected(0);
                                 if (dtcontainer.getCorrectOutput() ==
                                     dtcontainer.getAudioList()[0]) {
-                                  // push the widget which will shown after success
-                                  //      Navigator.push(context, null);
                                   leveltracker = leveltracker + 1;
                                   if (leveltracker > 1) {
                                     provider.incrementLevelCount("completed");
                                   } else {
                                     provider.incrementLevelCount(params);
                                   }
-
                                   bool response = await Navigator.of(context)
                                       .push(MaterialPageRoute(
                                           builder: (context) =>
@@ -415,10 +205,6 @@ class AuditoryScreenState
                                     Navigator.pop(context, true);
                                   }
                                 } else {
-                                  // push the widget which will shown after failure
-                                  // ScaffoldMessenger.of(context).showSnackBar(
-                                  //   SnackBar(content: Text("Incorrect option choosen")),
-                                  // );
                                   _toggleGlowA();
                                 }
                               },
@@ -427,34 +213,13 @@ class AuditoryScreenState
                                 height: 80.v,
                                 padding: EdgeInsets.symmetric(
                                     vertical: 8.v, horizontal: 10.h),
-                                decoration: AppDecoration.outlineBlack.copyWith(
-                                  border: Border.all(
-                                    width: provider.sel == 0 ? 2.0.h : 1.0.h,
-                                    color: provider.sel == 0
-                                        ? appTheme.green900
-                                        : appTheme.black900,
-                                  ),
-                                  borderRadius:
-                                      BorderRadiusStyle.roundedBorder10,
-                                  boxShadow: _isGlowingA
-                                      ? [
-                                          BoxShadow(
-                                            color:
-                                                Color.fromARGB(255, 202, 1, 1)
-                                                    .withOpacity(0.6),
-                                            spreadRadius: 10,
-                                            blurRadius: 5,
-                                          ),
-                                        ]
-                                      : [],
-                                ),
                                 child: CustomImageView(
                                   onTap: () {
                                     playAudio(dtcontainer.getAudioList()[0]);
                                   },
-                                  height: 65.v,
+                                  height: 100.v,
                                   fit: BoxFit.contain,
-                                  imagePath: ImageConstant.imgVolRed2,
+                                  imagePath: ImageConstant.imgVol,
                                 ),
                               ),
                             ),
@@ -464,7 +229,6 @@ class AuditoryScreenState
                                 provider.setSelected(1);
                                 if (dtcontainer.getCorrectOutput().toString() ==
                                     dtcontainer.getAudioList()[1]) {
-                                  // push the widget which will shown after success
                                   leveltracker = leveltracker + 1;
                                   if (leveltracker > 1) {
                                     provider.incrementLevelCount("completed");
@@ -479,10 +243,6 @@ class AuditoryScreenState
                                     Navigator.pop(context, true);
                                   }
                                 } else {
-                                  // push the widget which will shown after failure
-                                  // ScaffoldMessenger.of(context).showSnackBar(
-                                  //   SnackBar(content: Text("Incorrect option choosen")),
-                                  // );
                                   _toggleGlowB();
                                 }
                               },
@@ -491,179 +251,118 @@ class AuditoryScreenState
                                 height: 80.v,
                                 padding: EdgeInsets.symmetric(
                                     vertical: 8.v, horizontal: 10.h),
-                                decoration:
-                                    AppDecoration.outlineBlack9003.copyWith(
-                                  border: Border.all(
-                                    width: provider.sel == 1 ? 2.3.h : 1.3.h,
-                                    color: provider.sel == 1
-                                        ? appTheme.green900
-                                        : appTheme.black900,
-                                  ),
-                                  borderRadius:
-                                      BorderRadiusStyle.roundedBorder10,
-                                  boxShadow: _isGlowingB
-                                      ? [
-                                          BoxShadow(
-                                            color:
-                                                Color.fromARGB(255, 202, 1, 1)
-                                                    .withOpacity(0.6),
-                                            spreadRadius: 10,
-                                            blurRadius: 5,
-                                          ),
-                                        ]
-                                      : [],
-                                ),
                                 child: CustomImageView(
                                   onTap: () {
                                     playAudio(dtcontainer.getAudioList()[1]);
                                   },
-                                  height: 65.v,
+                                  height: 100.v,
                                   fit: BoxFit.contain,
-                                  imagePath: ImageConstant.imgVolRed2,
+                                  imagePath: ImageConstant.imgVol,
                                 ),
                               ),
                             ),
                             Spacer(),
                           ],
                         ),
-                        Row(
-                          children: [
-                            Spacer(),
-                            GestureDetector(
-                              onTap: () async {
-                                provider.setSelected(2);
-                                if (dtcontainer.getCorrectOutput() ==
-                                    dtcontainer.getAudioList()[2]) {
-                                  // push the widget which will shown after success
-                                  //      Navigator.push(context, null);
-                                  leveltracker = leveltracker + 1;
-                                  if (leveltracker > 1) {
-                                    provider.incrementLevelCount("completed");
-                                  } else {
-                                    provider.incrementLevelCount(params);
-                                  }
-
-                                  bool response = await Navigator.of(context)
-                                      .push(MaterialPageRoute(
-                                          builder: (context) =>
-                                              GifDisplayScreen()));
-                                  if (response) {
-                                    Navigator.pop(context, true);
-                                  }
-                                } else {
-                                  // push the widget which will shown after failure
-                                  // ScaffoldMessenger.of(context).showSnackBar(
-                                  //   SnackBar(content: Text("Incorrect option choosen")),
-                                  // );
-                                  _toggleGlowA();
-                                }
-                              },
-                              child: AnimatedContainer(
-                                duration: Duration(seconds: 1),
-                                height: 80.v,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 8.v, horizontal: 10.h),
-                                decoration: AppDecoration.outlineBlack.copyWith(
-                                  border: Border.all(
-                                    width: provider.sel == 2 ? 2.0.h : 1.0.h,
-                                    color: provider.sel == 2
-                                        ? appTheme.green900
-                                        : appTheme.black900,
+                        dtcontainer.getAudioList().length > 2
+                            ? Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Spacer(),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      provider.setSelected(2);
+                                      if (dtcontainer.getCorrectOutput() ==
+                                          dtcontainer.getAudioList()[2]) {
+                                        leveltracker = leveltracker + 1;
+                                        if (leveltracker > 1) {
+                                          provider
+                                              .incrementLevelCount("completed");
+                                        } else {
+                                          provider.incrementLevelCount(params);
+                                        }
+                                        bool response =
+                                            await Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        GifDisplayScreen()));
+                                        if (response) {
+                                          Navigator.pop(context, true);
+                                        }
+                                      } else {
+                                        _toggleGlowA();
+                                      }
+                                    },
+                                    child: AnimatedContainer(
+                                      duration: Duration(seconds: 1),
+                                      height: 80.v,
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 8.v, horizontal: 10.h),
+                                      child: CustomImageView(
+                                        onTap: () {
+                                          playAudio(
+                                              dtcontainer.getAudioList()[2]);
+                                        },
+                                        height: 100.v,
+                                        fit: BoxFit.contain,
+                                        imagePath: ImageConstant.imgVol,
+                                      ),
+                                    ),
                                   ),
-                                  borderRadius:
-                                      BorderRadiusStyle.roundedBorder10,
-                                  boxShadow: _isGlowingA
-                                      ? [
-                                          BoxShadow(
-                                            color:
-                                                Color.fromARGB(255, 202, 1, 1)
-                                                    .withOpacity(0.6),
-                                            spreadRadius: 10,
-                                            blurRadius: 5,
+                                  Spacer(),
+                                  dtcontainer.getAudioList().length > 3
+                                      ? GestureDetector(
+                                          onTap: () async {
+                                            provider.setSelected(3);
+                                            if (dtcontainer
+                                                    .getCorrectOutput()
+                                                    .toString() ==
+                                                dtcontainer.getAudioList()[3]) {
+                                              leveltracker = leveltracker + 1;
+                                              if (leveltracker > 1) {
+                                                provider.incrementLevelCount(
+                                                    "completed");
+                                              } else {
+                                                provider.incrementLevelCount(
+                                                    params);
+                                              }
+                                              bool response = await Navigator
+                                                      .of(context)
+                                                  .push(MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          GifDisplayScreen()));
+                                              if (response) {
+                                                Navigator.pop(context, true);
+                                              }
+                                            } else {
+                                              _toggleGlowB();
+                                            }
+                                          },
+                                          child: AnimatedContainer(
+                                            duration: Duration(seconds: 1),
+                                            height: 80.v,
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 8.v,
+                                                horizontal: 10.h),
+                                            child: CustomImageView(
+                                              onTap: () {
+                                                playAudio(dtcontainer
+                                                    .getAudioList()[3]);
+                                              },
+                                              height: 100.v,
+                                              fit: BoxFit.contain,
+                                              imagePath: ImageConstant.imgVol,
+                                            ),
                                           ),
-                                        ]
-                                      : [],
-                                ),
-                                child: CustomImageView(
-                                  onTap: () {
-                                    playAudio(dtcontainer.getAudioList()[2]);
-                                  },
-                                  height: 65.v,
-                                  fit: BoxFit.contain,
-                                  imagePath: ImageConstant.imgVolRed2,
-                                ),
-                              ),
-                            ),
-                            Spacer(),
-                            GestureDetector(
-                              onTap: () async {
-                                provider.setSelected(3);
-                                if (dtcontainer.getCorrectOutput().toString() ==
-                                    dtcontainer.getAudioList()[3]) {
-                                  // push the widget which will shown after success
-                                  leveltracker = leveltracker + 1;
-                                  if (leveltracker > 1) {
-                                    provider.incrementLevelCount("completed");
-                                  } else {
-                                    provider.incrementLevelCount(params);
-                                  }
-                                  bool response = await Navigator.of(context)
-                                      .push(MaterialPageRoute(
-                                          builder: (context) =>
-                                              GifDisplayScreen()));
-                                  if (response) {
-                                    Navigator.pop(context, true);
-                                  }
-                                } else {
-                                  // push the widget which will shown after failure
-                                  // ScaffoldMessenger.of(context).showSnackBar(
-                                  //   SnackBar(content: Text("Incorrect option choosen")),
-                                  // );
-                                  _toggleGlowB();
-                                }
-                              },
-                              child: AnimatedContainer(
-                                duration: Duration(seconds: 1),
-                                height: 80.v,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 8.v, horizontal: 10.h),
-                                decoration:
-                                    AppDecoration.outlineBlack9003.copyWith(
-                                  border: Border.all(
-                                    width: provider.sel == 3 ? 2.3.h : 1.3.h,
-                                    color: provider.sel == 3
-                                        ? appTheme.green900
-                                        : appTheme.black900,
-                                  ),
-                                  borderRadius:
-                                      BorderRadiusStyle.roundedBorder10,
-                                  boxShadow: _isGlowingB
-                                      ? [
-                                          BoxShadow(
-                                            color:
-                                                Color.fromARGB(255, 202, 1, 1)
-                                                    .withOpacity(0.6),
-                                            spreadRadius: 10,
-                                            blurRadius: 5,
-                                          ),
-                                        ]
-                                      : [],
-                                ),
-                                child: CustomImageView(
-                                  onTap: () {
-                                    playAudio(dtcontainer.getAudioList()[3]);
-                                  },
-                                  height: 65.v,
-                                  fit: BoxFit.contain,
-                                  imagePath: ImageConstant.imgVolRed2,
-                                ),
-                              ),
-                            ),
-                            Spacer(),
-                          ],
-                        ),
+                                        )
+                                      : SizedBox(),
+                                  Spacer(),
+                                ],
+                              )
+                            : SizedBox(),
                       ],
-                    )));
+                    )))
+            : SizedBox();
 
       case "FigToWord":
         return Container(
@@ -677,64 +376,51 @@ class AuditoryScreenState
                 height: 125.v,
                 width: 120.h,
                 padding: EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
-                decoration: AppDecoration.outlineBlack9003.copyWith(
-                  color: appTheme.deepOrangeA200,
-                  border: Border.all(
-                    width: provider.sel == 1 ? 2.3.h : 1.3.h,
-                    color: provider.sel == 1
-                        ? appTheme.green900
-                        : appTheme.black900,
-                  ),
-                  image: DecorationImage(
-                      image: AssetImage("assets/images/radial_ray_orange.png"),
-                      fit: BoxFit.cover),
-                  borderRadius: BorderRadiusStyle.roundedBorder10,
-                  boxShadow: _isGlowingA
-                      ? [
-                          BoxShadow(
-                            color:
-                                Color.fromARGB(255, 202, 1, 1).withOpacity(0.6),
-                            spreadRadius: 10,
-                            blurRadius: 5,
+                child: Stack(
+                  children: [
+                    SvgPicture.asset(
+                      "assets/images/svg/Opt-2.svg",
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              if (dtcontainer.getCorrectOutput() ==
+                                  dtcontainer.getTextList()[0]) {
+                                // success widget push
+                                leveltracker = leveltracker + 1;
+                                if (leveltracker > 1) {
+                                  provider.incrementLevelCount("completed");
+                                } else {
+                                  provider.incrementLevelCount(params);
+                                }
+                                bool response = await Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                        builder: (context) =>
+                                            GifDisplayScreen()));
+                                if (response) {
+                                  Navigator.pop(context, true);
+                                }
+                              } else {
+                                // failure widget push
+                                _toggleGlowA();
+                              }
+                            },
+                            child: Text(
+                              dtcontainer.getTextList()[0],
+                              style: TextStyle(fontSize: 40),
+                            ),
                           ),
-                        ]
-                      : [],
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () async {
-                          if (dtcontainer.getCorrectOutput() ==
-                              dtcontainer.getTextList()[0]) {
-                            // success widget push
-                            leveltracker = leveltracker + 1;
-                            if (leveltracker > 1) {
-                              provider.incrementLevelCount("completed");
-                            } else {
-                              provider.incrementLevelCount(params);
-                            }
-                            bool response = await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) => GifDisplayScreen()));
-                            if (response) {
-                              Navigator.pop(context, true);
-                            }
-                          } else {
-                            // failure widget push
-                            _toggleGlowA();
-                          }
-                        },
-                        child: Text(
-                          dtcontainer.getTextList()[0],
-                          //   style: theme.textTheme.labelMedium,
-                          style: TextStyle(fontSize: 20),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               Spacer(),
@@ -743,64 +429,51 @@ class AuditoryScreenState
                 height: 125.v,
                 width: 120.h,
                 padding: EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
-                decoration: AppDecoration.outlineBlack9003.copyWith(
-                  color: appTheme.teal90001,
-                  border: Border.all(
-                    width: provider.sel == 1 ? 2.3.h : 1.3.h,
-                    color: provider.sel == 1
-                        ? appTheme.green900
-                        : appTheme.black900,
-                  ),
-                  image: DecorationImage(
-                      image: AssetImage("assets/images/radial_ray_green.png"),
-                      fit: BoxFit.cover),
-                  borderRadius: BorderRadiusStyle.roundedBorder10,
-                  boxShadow: _isGlowingB
-                      ? [
-                          BoxShadow(
-                            color:
-                                Color.fromARGB(255, 202, 1, 1).withOpacity(0.6),
-                            spreadRadius: 10,
-                            blurRadius: 5,
+                child: Stack(
+                  children: [
+                    SvgPicture.asset(
+                      "assets/images/svg/Opt-2.svg",
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              if (dtcontainer.getCorrectOutput() ==
+                                  dtcontainer.getTextList()[1]) {
+                                // success widget push
+                                leveltracker = leveltracker + 1;
+                                if (leveltracker > 1) {
+                                  provider.incrementLevelCount("completed");
+                                } else {
+                                  provider.incrementLevelCount(params);
+                                }
+                                bool response = await Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                        builder: (context) =>
+                                            GifDisplayScreen()));
+                                if (response) {
+                                  Navigator.pop(context, true);
+                                }
+                              } else {
+                                // failure widget push
+                                _toggleGlowA();
+                              }
+                            },
+                            child: Text(
+                              dtcontainer.getTextList()[1],
+                              style: TextStyle(fontSize: 40),
+                            ),
                           ),
-                        ]
-                      : [],
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () async {
-                          if (dtcontainer.getCorrectOutput() ==
-                              dtcontainer.getTextList()[1]) {
-                            // success widget push
-                            leveltracker = leveltracker + 1;
-                            if (leveltracker > 1) {
-                              provider.incrementLevelCount("completed");
-                            } else {
-                              provider.incrementLevelCount(params);
-                            }
-                            bool response = await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) => GifDisplayScreen()));
-                            if (response) {
-                              Navigator.pop(context, true);
-                            }
-                          } else {
-                            // failure widget push
-                            _toggleGlowB();
-                          }
-                        },
-                        child: Text(
-                          dtcontainer.getTextList()[1],
-                          // style: theme.textTheme.labelMedium,
-                          style: TextStyle(fontSize: 20),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -819,126 +492,114 @@ class AuditoryScreenState
               Padding(
                 padding: EdgeInsets.only(right: 40.h),
                 child: AnimatedContainer(
-                  duration: Duration(seconds: 2),
-                  height: 130.v,
+                  duration: Duration(seconds: 1),
+                  height: 125.v,
+                  width: 120.h,
                   padding:
                       EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
-                  decoration: AppDecoration.outlineBlack9003.copyWith(
-                    border: Border.all(
-                      width: provider.sel == 1 ? 2.3.h : 1.3.h,
-                      color: provider.sel == 1
-                          ? appTheme.green900
-                          : appTheme.black900,
-                    ),
-                    image: DecorationImage(
-                        image:
-                            AssetImage("assets/images/radial_ray_yellow.png"),
-                        fit: BoxFit.cover),
-                    borderRadius: BorderRadiusStyle.roundedBorder10,
-                    boxShadow: _isGlowingA
-                        ? [
-                            BoxShadow(
-                              color: Color.fromARGB(255, 202, 1, 1)
-                                  .withOpacity(0.6),
-                              spreadRadius: 10,
-                              blurRadius: 5,
-                            ),
-                          ]
-                        : [],
-                  ),
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () async {
-                        if (dtcontainer.getCorrectOutput() ==
-                            dtcontainer.getImageUrlList()[0]) {
-                          // success widget loader
-                          // debugPrint("correct option is choosen");
-                          leveltracker = leveltracker + 1;
-                          if (leveltracker > 1) {
-                            provider.incrementLevelCount("completed");
-                          } else {
-                            provider.incrementLevelCount(params);
-                          }
-                          bool response = await Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => GifDisplayScreen()));
-                          if (response) {
-                            Navigator.pop(context, true);
-                          }
-                        } else {
-                          // failure widget loader
-                          debugPrint("incorrect option is choosen");
-                          _toggleGlowA();
-                        }
-                      },
-                      child: Image.network(
-                        dtcontainer.getImageUrlList()[0],
-                        fit: BoxFit.contain,
-                        height: 70.v,
-                        width: 90.v,
+                  child: Stack(
+                    children: [
+                      SvgPicture.asset(
+                        "assets/images/svg/Opt-2.svg",
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
                       ),
-                    ),
+                      Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              onTap: () async {
+                                if (dtcontainer.getCorrectOutput() ==
+                                    dtcontainer.getImageUrlList()[0]) {
+                                  // success widget push
+                                  leveltracker = leveltracker + 1;
+                                  if (leveltracker > 1) {
+                                    provider.incrementLevelCount("completed");
+                                  } else {
+                                    provider.incrementLevelCount(params);
+                                  }
+                                  bool response = await Navigator.of(context)
+                                      .push(MaterialPageRoute(
+                                          builder: (context) =>
+                                              GifDisplayScreen()));
+                                  if (response) {
+                                    Navigator.pop(context, true);
+                                  }
+                                } else {
+                                  // failure widget push
+                                  _toggleGlowA();
+                                }
+                              },
+                              child: Image.network(
+                                dtcontainer.getImageUrlList()[0],
+                                fit: BoxFit.contain,
+                                height: 70.v,
+                                width: 90.v,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
               Spacer(),
               AnimatedContainer(
                 duration: Duration(seconds: 1),
-                height: 130.v,
+                height: 125.v,
+                width: 120.h,
                 padding: EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
-                decoration: AppDecoration.outlineBlack9003.copyWith(
-                  border: Border.all(
-                    width: provider.sel == 1 ? 2.3.h : 1.3.h,
-                    color: provider.sel == 1
-                        ? appTheme.green900
-                        : appTheme.black900,
-                  ),
-                  image: DecorationImage(
-                      image: AssetImage("assets/images/radial_ray_yellow.png"),
-                      fit: BoxFit.cover),
-                  borderRadius: BorderRadiusStyle.roundedBorder10,
-                  boxShadow: _isGlowingB
-                      ? [
-                          BoxShadow(
-                            color:
-                                Color.fromARGB(255, 239, 7, 7).withOpacity(0.6),
-                            spreadRadius: 10,
-                            blurRadius: 5,
-                          ),
-                        ]
-                      : [],
-                ),
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () async {
-                      if (dtcontainer.getCorrectOutput() ==
-                          dtcontainer.getImageUrlList()[1]) {
-                        // success widget loader
-                        debugPrint("correct option is choosen");
-                        leveltracker = leveltracker + 1;
-                        if (leveltracker > 1) {
-                          provider.incrementLevelCount("completed");
-                        } else {
-                          provider.incrementLevelCount(params);
-                        }
-                        bool response = await Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => GifDisplayScreen()));
-                        if (response) {
-                          Navigator.pop(context, true);
-                        }
-                      } else {
-                        // failure widget loader
-                        _toggleGlowB();
-                      }
-                    },
-                    child: Image.network(
-                      dtcontainer.getImageUrlList()[1],
-                      fit: BoxFit.contain,
-                      height: 70.v,
-                      width: 90.v,
+                child: Stack(
+                  children: [
+                    SvgPicture.asset(
+                      "assets/images/svg/Opt-2.svg",
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
                     ),
-                  ),
+                    Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              if (dtcontainer.getCorrectOutput() ==
+                                  dtcontainer.getImageUrlList()[1]) {
+                                // success widget push
+                                leveltracker = leveltracker + 1;
+                                if (leveltracker > 1) {
+                                  provider.incrementLevelCount("completed");
+                                } else {
+                                  provider.incrementLevelCount(params);
+                                }
+                                bool response = await Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                        builder: (context) =>
+                                            GifDisplayScreen()));
+                                if (response) {
+                                  Navigator.pop(context, true);
+                                }
+                              } else {
+                                // failure widget push
+                                _toggleGlowA();
+                              }
+                            },
+                            child: Image.network(
+                              dtcontainer.getImageUrlList()[1],
+                              fit: BoxFit.contain,
+                              height: 70.v,
+                              width: 90.v,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

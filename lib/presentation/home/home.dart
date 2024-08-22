@@ -225,7 +225,129 @@ class HomeScreenState extends State<HomeScreen> {
                     ):Container(color: Colors.transparent,),
                   ),
               ),
-            )
+            ),
+             ClipRect(
+              child: Container(
+                width: 300.h,
+                height: 150.v,
+                decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+                    borderRadius: BorderRadiusStyle.roundedBorder20,
+                    image: DecorationImage(
+                        image: AssetImage(ImageConstant.imgDetection),
+                        fit: BoxFit.fill)),
+                        child: 
+                         Center(
+                    child:_currentIndex==3? GestureDetector(
+                      onTap: () {
+                          provider.setScreenInfo(1);
+                NavigatorService.pushNamed(
+                    AppRoutes.phonemsLevelScreenOneScreen,
+                    arguments: provider.val);
+                      },
+                      child: Container(
+                        height: 101.adaptSize,
+                        width: 101.adaptSize,
+                        padding: EdgeInsets.all(20.h),
+                        decoration: AppDecoration.outlineWhiteA.copyWith(
+                            color: AppDecoration.fillDeepOrange.color,
+                            borderRadius: BorderRadius.all(
+                                Radius.circular((101.adaptSize) / 2))),
+                        alignment: Alignment.center,
+                        child: Center(
+                          child: SvgPicture.asset(
+                            height: 45.adaptSize,
+                            width: 45.adaptSize,
+                            fit: BoxFit.contain,
+                            ImageConstant.imgPlayBtn,
+                          ),
+                        ),
+                      ),
+                    ):Container(color: Colors.transparent,),
+                  ),
+              ),
+            ),
+            ClipRect(
+              child: Container(
+                width: 300.h,
+                height: 150.v,
+                decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+                    borderRadius: BorderRadiusStyle.roundedBorder20,
+                    image: DecorationImage(
+                        image: AssetImage(ImageConstant.imgDescription),
+                        fit: BoxFit.fill)),
+                        child: 
+                         Center(
+                    child:_currentIndex==4? GestureDetector(
+                      onTap: () {
+                          provider.setScreenInfo(1);
+                NavigatorService.pushNamed(
+                    AppRoutes.phonemsLevelScreenOneScreen,
+                    arguments: provider.val);
+                      },
+                      child: Container(
+                        height: 101.adaptSize,
+                        width: 101.adaptSize,
+                        padding: EdgeInsets.all(20.h),
+                        decoration: AppDecoration.outlineWhiteA.copyWith(
+                            color: AppDecoration.fillDeepOrange.color,
+                            borderRadius: BorderRadius.all(
+                                Radius.circular((101.adaptSize) / 2))),
+                        alignment: Alignment.center,
+                        child: Center(
+                          child: SvgPicture.asset(
+                            height: 45.adaptSize,
+                            width: 45.adaptSize,
+                            fit: BoxFit.contain,
+                            ImageConstant.imgPlayBtn,
+                          ),
+                        ),
+                      ),
+                    ):Container(color: Colors.transparent,),
+                  ),
+              ),
+            ),
+            ClipRect(
+              child: Container(
+                width: 300.h,
+                height: 150.v,
+                decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+                    borderRadius: BorderRadiusStyle.roundedBorder20,
+                    image: DecorationImage(
+                        image: AssetImage(ImageConstant.imgIdentification),
+                        fit: BoxFit.fill)),
+                        child: 
+                         Center(
+                    child:_currentIndex==5? GestureDetector(
+                      onTap: () {
+                          provider.setScreenInfo(1);
+                NavigatorService.pushNamed(
+                    AppRoutes.phonemsLevelScreenOneScreen,
+                    arguments: provider.val);
+                      },
+                      child: Container(
+                        height: 101.adaptSize,
+                        width: 101.adaptSize,
+                        padding: EdgeInsets.all(20.h),
+                        decoration: AppDecoration.outlineWhiteA.copyWith(
+                            color: AppDecoration.fillDeepOrange.color,
+                            borderRadius: BorderRadius.all(
+                                Radius.circular((101.adaptSize) / 2))),
+                        alignment: Alignment.center,
+                        child: Center(
+                          child: SvgPicture.asset(
+                            height: 45.adaptSize,
+                            width: 45.adaptSize,
+                            fit: BoxFit.contain,
+                            ImageConstant.imgPlayBtn,
+                          ),
+                        ),
+                      ),
+                    ):Container(color: Colors.transparent,),
+                  ),
+              ),
+            ),
+             
+  
           ],
 
           //Slider Container properties

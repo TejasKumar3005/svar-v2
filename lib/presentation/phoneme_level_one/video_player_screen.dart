@@ -21,13 +21,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   void initState() {
     super.initState();
-    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
-      ..initialize().then((_) {
-        setState(() {});
-      });
+    _initializePlayer();
+  }
+
+  void _initializePlayer() async {
+    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+    await _videoPlayerController.initialize();
     _videoPlayerController.addListener(() {
-      if (_videoPlayerController.value.position ==
-          _videoPlayerController.value.duration) {
+      if (_videoPlayerController.value.position == _videoPlayerController.value.duration) {
         Navigator.pop(context, true);
       }
     });
@@ -35,11 +36,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       videoPlayerController: _videoPlayerController,
       autoPlay: false,
       looping: false,
+      aspectRatio: _videoPlayerController.value.aspectRatio,
+      fullScreenByDefault: true,
+      allowFullScreen: false,
+      deviceOrientationsAfterFullScreen: [
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ],
     );
+    setState(() {});
   }
 
   @override
   void dispose() {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     _videoPlayerController.dispose();
     _chewieController?.dispose();
     super.dispose();
@@ -64,36 +74,28 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
-    ]);
-
     return Scaffold(
       backgroundColor: Colors.black,
-      body: GestureDetector(
-        onTap: _onTap,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            _videoPlayerController.value.isInitialized
-                ? AspectRatio(
-                    aspectRatio: _videoPlayerController.value.aspectRatio,
-                    child: Center(child: Chewie(controller: _chewieController!)),
-                  )
-                : Center(child: CircularProgressIndicator()),
-            if (_showPlayButton)
-              GestureDetector(
-                onTap: _togglePlayPause,
-                child: Icon(
-                  _videoPlayerController.value.isPlaying
-                      ? Icons.pause
-                      : Icons.play_arrow,
-                  color: Colors.white,
-                  size: 100.0,
+      body: SafeArea(
+        child: GestureDetector(
+          onTap: _onTap,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              _chewieController != null && _videoPlayerController.value.isInitialized
+                  ? Chewie(controller: _chewieController!)
+                  : Center(child: CircularProgressIndicator()),
+              if (_showPlayButton)
+                GestureDetector(
+                  onTap: _togglePlayPause,
+                  child: Icon(
+                    _videoPlayerController.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                    color: Colors.white,
+                    size: 100.0,
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
