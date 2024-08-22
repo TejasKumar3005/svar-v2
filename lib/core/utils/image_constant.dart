@@ -15,6 +15,13 @@ class ImageConstant {
   static String imgArrowLeftYellow = "$imagePath/svg/LeftArrow_BTN_IconButton.svg";
   static String imgArrowRightGreen = "$imagePath/svg/RightArrow_BTN_IconButton.svg";
   
+  static String imgChangebtn = "$imagePath/svg/ChangeBTN.svg";
+  static String imgDiffbtn = "$imagePath/svg/DiffBTN.svg";
+  static String imgSamebtn  = "$imagePath/svg/Same_BTN.svg";
+  static String imgTipbtn = "$imagePath/svg/Tip_BTN_Button.svg";
+  static String imgVideo1btn = "$imagePath/svg/Video-1-BTN.svg";
+  static String imgVideo2btn = "$imagePath/svg/Video-2-BTN.svg";
+ 
 
   static String imgDetection = '$imagePath/Detection.png';  
   static String imgDescription = '$imagePath/Description.png';

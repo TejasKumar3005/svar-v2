@@ -19,6 +19,12 @@ enum ButtonType {
   Menu,
   Tip,
   Mic,
+  Change,
+  Diff,
+  Tip2,
+  Same,
+  Video1,
+  Video2,
   // Add more button types as needed
 }
 
