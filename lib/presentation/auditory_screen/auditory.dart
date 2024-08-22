@@ -215,9 +215,8 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                 },
                                 child: AnimatedContainer(
                                   duration: Duration(seconds: 1),
-                                  height: 80.v,
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 8.v, horizontal: 10.h),
+                                  height: 180.v,
+                                 
                                   child: CustomImageView(
                                     onTap: () {
                                       playAudio(dtcontainer.getAudioList()[0]);
@@ -255,9 +254,8 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                 },
                                 child: AnimatedContainer(
                                   duration: Duration(seconds: 1),
-                                  height: 80.v,
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 8.v, horizontal: 10.h),
+                                  height: 180.v,
+                                 
                                   child: CustomImageView(
                                     onTap: () {
                                       playAudio(dtcontainer.getAudioList()[1]);
