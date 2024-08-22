@@ -99,21 +99,22 @@ class AuditoryScreenState extends State<AuditoryScreen> {
     return type != "AudioToImage"
         ? SafeArea(
             child: Scaffold(
-                extendBody: true,
-                extendBodyBehindAppBar: true,
-                backgroundColor: appTheme.gray300,
-                body: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(
-                        ImageConstant.imgAuditorybg,
-                      ),
+              extendBody: true,
+              extendBodyBehindAppBar: true,
+              backgroundColor: appTheme.gray300,
+              body: Stack(
+                children: [
+                  // SVG background
+                  Positioned.fill(
+                    child: SvgPicture.asset(
+                      ImageConstant.imgAuditorybg, // Replace with your SVG path
                       fit: BoxFit.cover,
                     ),
                   ),
-                  child: Padding(
+                  // Main content
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
                     padding: EdgeInsets.symmetric(
                       horizontal: 15.h,
                       vertical: 10.v,
@@ -127,7 +128,9 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                       ],
                     ),
                   ),
-                )),
+                ],
+              ),
+            ),
           )
         : AudiotoimageScreen(
             dtcontainer: dtcontainer,
