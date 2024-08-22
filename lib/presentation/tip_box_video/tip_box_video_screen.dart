@@ -117,7 +117,7 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
         child: _videoPlayerController.value.isInitialized
             ? SizedBox(
               height: 219.v,
-                width: MediaQuery.of(context).size.width * 0.40,
+                width: MediaQuery.of(context).size.width * 0.50,
               child: AspectRatio(
                   aspectRatio: _videoPlayerController.value.aspectRatio,
                   child: Center(child: Chewie(controller: _chewieController!)),
