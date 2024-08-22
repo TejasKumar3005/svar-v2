@@ -178,307 +178,498 @@ class AuditoryScreenState extends State<AuditoryScreen> {
             ? Padding(
                 padding: EdgeInsets.only(right: 70.h),
                 child: Container(
-                    height: 192.v,
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Spacer(),
-                            GestureDetector(
-                              onTap: () async {
-                                provider.setSelected(0);
-                                if (dtcontainer.getCorrectOutput() ==
-                                    dtcontainer.getAudioList()[0]) {
-                                  leveltracker = leveltracker + 1;
-                                  if (leveltracker > 1) {
-                                    provider.incrementLevelCount("completed");
+                  height: 192.v,
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  child: Stack(
+                    children: [
+                      // Main content
+                      Column(
+                        children: [
+                          // Title image at the top
+                          // Add spacing between the title and Row
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              GestureDetector(
+                                onTap: () async {
+                                  provider.setSelected(0);
+                                  if (dtcontainer.getCorrectOutput() ==
+                                      dtcontainer.getAudioList()[0]) {
+                                    leveltracker = leveltracker + 1;
+                                    if (leveltracker > 1) {
+                                      provider.incrementLevelCount("completed");
+                                    } else {
+                                      provider.incrementLevelCount(params);
+                                    }
+                                    bool response = await Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: (context) =>
+                                                GifDisplayScreen()));
+                                    if (response) {
+                                      Navigator.pop(context, true);
+                                    }
                                   } else {
-                                    provider.incrementLevelCount(params);
+                                    _toggleGlowA();
                                   }
-                                  bool response = await Navigator.of(context)
-                                      .push(MaterialPageRoute(
-                                          builder: (context) =>
-                                              GifDisplayScreen()));
-                                  if (response) {
-                                    Navigator.pop(context, true);
-                                  }
-                                } else {
-                                  _toggleGlowA();
-                                }
-                              },
-                              child: AnimatedContainer(
-                                duration: Duration(seconds: 1),
-                                height: 80.v,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 8.v, horizontal: 10.h),
-                                child: CustomImageView(
-                                  onTap: () {
-                                    playAudio(dtcontainer.getAudioList()[0]);
-                                  },
-                                  height: 100.v,
-                                  fit: BoxFit.contain,
-                                  imagePath: ImageConstant.imgVol,
+                                },
+                                child: AnimatedContainer(
+                                  duration: Duration(seconds: 1),
+                                  height: 80.v,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8.v, horizontal: 10.h),
+                                  child: CustomImageView(
+                                    onTap: () {
+                                      playAudio(dtcontainer.getAudioList()[0]);
+                                    },
+                                    height: 100.v,
+                                    fit: BoxFit.contain,
+                                    imagePath: ImageConstant.imgVol,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Spacer(),
-                            GestureDetector(
-                              onTap: () async {
-                                provider.setSelected(1);
-                                if (dtcontainer.getCorrectOutput().toString() ==
-                                    dtcontainer.getAudioList()[1]) {
-                                  leveltracker = leveltracker + 1;
-                                  if (leveltracker > 1) {
-                                    provider.incrementLevelCount("completed");
+                              Spacer(),
+                              GestureDetector(
+                                onTap: () async {
+                                  provider.setSelected(1);
+                                  if (dtcontainer
+                                          .getCorrectOutput()
+                                          .toString() ==
+                                      dtcontainer.getAudioList()[1]) {
+                                    leveltracker = leveltracker + 1;
+                                    if (leveltracker > 1) {
+                                      provider.incrementLevelCount("completed");
+                                    } else {
+                                      provider.incrementLevelCount(params);
+                                    }
+                                    bool response = await Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: (context) =>
+                                                GifDisplayScreen()));
+                                    if (response) {
+                                      Navigator.pop(context, true);
+                                    }
                                   } else {
-                                    provider.incrementLevelCount(params);
+                                    _toggleGlowB();
                                   }
-                                  bool response = await Navigator.of(context)
-                                      .push(MaterialPageRoute(
-                                          builder: (context) =>
-                                              GifDisplayScreen()));
-                                  if (response) {
-                                    Navigator.pop(context, true);
-                                  }
-                                } else {
-                                  _toggleGlowB();
-                                }
-                              },
-                              child: AnimatedContainer(
-                                duration: Duration(seconds: 1),
-                                height: 80.v,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 8.v, horizontal: 10.h),
-                                child: CustomImageView(
-                                  onTap: () {
-                                    playAudio(dtcontainer.getAudioList()[1]);
-                                  },
-                                  height: 100.v,
-                                  fit: BoxFit.contain,
-                                  imagePath: ImageConstant.imgVol,
+                                },
+                                child: AnimatedContainer(
+                                  duration: Duration(seconds: 1),
+                                  height: 80.v,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8.v, horizontal: 10.h),
+                                  child: CustomImageView(
+                                    onTap: () {
+                                      playAudio(dtcontainer.getAudioList()[1]);
+                                    },
+                                    height: 100.v,
+                                    fit: BoxFit.contain,
+                                    imagePath: ImageConstant.imgVol,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Spacer(),
-                          ],
+                              Spacer(),
+                            ],
+                          ),
+                          dtcontainer.getAudioList().length > 2
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Spacer(),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        provider.setSelected(2);
+                                        if (dtcontainer.getCorrectOutput() ==
+                                            dtcontainer.getAudioList()[2]) {
+                                          leveltracker = leveltracker + 1;
+                                          if (leveltracker > 1) {
+                                            provider.incrementLevelCount(
+                                                "completed");
+                                          } else {
+                                            provider
+                                                .incrementLevelCount(params);
+                                          }
+                                          bool response =
+                                              await Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          GifDisplayScreen()));
+                                          if (response) {
+                                            Navigator.pop(context, true);
+                                          }
+                                        } else {
+                                          _toggleGlowA();
+                                        }
+                                      },
+                                      child: AnimatedContainer(
+                                        duration: Duration(seconds: 1),
+                                        height: 80.v,
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 8.v, horizontal: 10.h),
+                                        child: CustomImageView(
+                                          onTap: () {
+                                            playAudio(
+                                                dtcontainer.getAudioList()[2]);
+                                          },
+                                          height: 100.v,
+                                          fit: BoxFit.contain,
+                                          imagePath: ImageConstant.imgVol,
+                                        ),
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    dtcontainer.getAudioList().length > 3
+                                        ? GestureDetector(
+                                            onTap: () async {
+                                              provider.setSelected(3);
+                                              if (dtcontainer
+                                                      .getCorrectOutput()
+                                                      .toString() ==
+                                                  dtcontainer
+                                                      .getAudioList()[3]) {
+                                                leveltracker = leveltracker + 1;
+                                                if (leveltracker > 1) {
+                                                  provider.incrementLevelCount(
+                                                      "completed");
+                                                } else {
+                                                  provider.incrementLevelCount(
+                                                      params);
+                                                }
+                                                bool response = await Navigator
+                                                        .of(context)
+                                                    .push(MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            GifDisplayScreen()));
+                                                if (response) {
+                                                  Navigator.pop(context, true);
+                                                }
+                                              } else {
+                                                _toggleGlowB();
+                                              }
+                                            },
+                                            child: AnimatedContainer(
+                                              duration: Duration(seconds: 1),
+                                              height: 80.v,
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 8.v,
+                                                  horizontal: 10.h),
+                                              child: CustomImageView(
+                                                onTap: () {
+                                                  playAudio(dtcontainer
+                                                      .getAudioList()[3]);
+                                                },
+                                                height: 100.v,
+                                                fit: BoxFit.contain,
+                                                imagePath: ImageConstant.imgVol,
+                                              ),
+                                            ),
+                                          )
+                                        : SizedBox(),
+                                    Spacer(),
+                                  ],
+                                )
+                              : SizedBox(),
+                        ],
+                      ),
+                      // Custom button with image at the bottom
+                      Positioned(
+                        bottom: 0, // Position at the bottom
+                        right:
+                            0, // Adjust to position it at the right side, or use left: 0 for left side
+                        child: GestureDetector(
+                          onTap: () {
+                            // Define what happens when the button is tapped
+                          },
+                          child: CustomImageView(
+                            imagePath: ImageConstant
+                                .imgTipbtn, // Replace with the correct image constant
+                            height: 40.v, // Adjust size as needed
+                            width: 40.h, // Adjust size as needed
+                            fit: BoxFit.contain,
+                          ),
                         ),
-                        dtcontainer.getAudioList().length > 2
-                            ? Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : SizedBox();
+
+    case "FigToWord":
+  return StatefulBuilder(
+    builder: (context, setState) {
+      bool isFailure = false; // State to track failure
+
+      return Container(
+        height: 192.v,
+        width: MediaQuery.of(context).size.width * 0.4,
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                SizedBox(height: 8.v), // Add spacing between the image and Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    // First Option
+                    AnimatedContainer(
+                      duration: Duration(seconds: 1),
+                      height: 125.v,
+                      width: 120.h,
+                      
+                      child: Stack(
+                        children: [
+                          SvgPicture.asset(
+                            isFailure
+                                ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
+                                : "assets/images/svg/Opt-2.svg", // Default SVG
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                          Center(
+                            child: Column(
+                              
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    if (dtcontainer.getCorrectOutput() ==
+                                        dtcontainer.getTextList()[0]) {
+                                      // success widget push
+                                      leveltracker = leveltracker + 1;
+                                      if (leveltracker > 1) {
+                                        provider.incrementLevelCount("completed");
+                                      } else {
+                                        provider.incrementLevelCount(params);
+                                      }
+                                      bool response = await Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) => GifDisplayScreen()));
+                                      if (response) {
+                                        Navigator.pop(context, true);
+                                      }
+                                    } else {
+                                      // Set failure state
+                                      setState(() {
+                                        isFailure = true;
+                                      });
+                                    }
+                                  },
+                                  child: Text(
+                                    dtcontainer.getTextList()[0],
+                                    style: TextStyle(fontSize: 40),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(),
+                    // Second Option
+                    AnimatedContainer(
+                      duration: Duration(seconds: 1),
+                      height: 125.v,
+                      width: 120.h,
+                      
+                      child: Stack(
+                        children: [
+                          SvgPicture.asset(
+                            isFailure
+                                ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
+                                : "assets/images/svg/Opt-2.svg", // Default SVG
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    if (dtcontainer.getCorrectOutput() ==
+                                        dtcontainer.getTextList()[1]) {
+                                      // success widget push
+                                      leveltracker = leveltracker + 1;
+                                      if (leveltracker > 1) {
+                                        provider.incrementLevelCount("completed");
+                                      } else {
+                                        provider.incrementLevelCount(params);
+                                      }
+                                      bool response = await Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) => GifDisplayScreen()));
+                                      if (response) {
+                                        Navigator.pop(context, true);
+                                      }
+                                    } else {
+                                      // Set failure state
+                                      setState(() {
+                                        isFailure = true;
+                                      });
+                                    }
+                                  },
+                                  child: Text(
+                                    dtcontainer.getTextList()[1],
+                                    style: TextStyle(fontSize: 40),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(),
+                    // Check if there are more than 2 options
+                    if (dtcontainer.getTextList().length > 2)
+                      AnimatedContainer(
+                        duration: Duration(seconds: 1),
+                        height: 125.v,
+                        width: 120.h,
+                       
+                        child: Stack(
+                          children: [
+                            SvgPicture.asset(
+                              isFailure
+                                  ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
+                                  : "assets/images/svg/Opt-2.svg", // Default SVG
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
+                            Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Spacer(),
                                   GestureDetector(
                                     onTap: () async {
-                                      provider.setSelected(2);
                                       if (dtcontainer.getCorrectOutput() ==
-                                          dtcontainer.getAudioList()[2]) {
+                                          dtcontainer.getTextList()[2]) {
+                                        // success widget push
                                         leveltracker = leveltracker + 1;
                                         if (leveltracker > 1) {
-                                          provider
-                                              .incrementLevelCount("completed");
+                                          provider.incrementLevelCount("completed");
                                         } else {
                                           provider.incrementLevelCount(params);
                                         }
-                                        bool response =
-                                            await Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        GifDisplayScreen()));
+                                        bool response = await Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) => GifDisplayScreen()));
                                         if (response) {
                                           Navigator.pop(context, true);
                                         }
                                       } else {
-                                        _toggleGlowA();
+                                        // Set failure state
+                                        setState(() {
+                                          isFailure = true;
+                                        });
                                       }
                                     },
-                                    child: AnimatedContainer(
-                                      duration: Duration(seconds: 1),
-                                      height: 80.v,
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 8.v, horizontal: 10.h),
-                                      child: CustomImageView(
-                                        onTap: () {
-                                          playAudio(
-                                              dtcontainer.getAudioList()[2]);
-                                        },
-                                        height: 100.v,
-                                        fit: BoxFit.contain,
-                                        imagePath: ImageConstant.imgVol,
-                                      ),
+                                    child: Text(
+                                      dtcontainer.getTextList()[2],
+                                      style: TextStyle(fontSize: 40),
                                     ),
                                   ),
-                                  Spacer(),
-                                  dtcontainer.getAudioList().length > 3
-                                      ? GestureDetector(
-                                          onTap: () async {
-                                            provider.setSelected(3);
-                                            if (dtcontainer
-                                                    .getCorrectOutput()
-                                                    .toString() ==
-                                                dtcontainer.getAudioList()[3]) {
-                                              leveltracker = leveltracker + 1;
-                                              if (leveltracker > 1) {
-                                                provider.incrementLevelCount(
-                                                    "completed");
-                                              } else {
-                                                provider.incrementLevelCount(
-                                                    params);
-                                              }
-                                              bool response = await Navigator
-                                                      .of(context)
-                                                  .push(MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          GifDisplayScreen()));
-                                              if (response) {
-                                                Navigator.pop(context, true);
-                                              }
-                                            } else {
-                                              _toggleGlowB();
-                                            }
-                                          },
-                                          child: AnimatedContainer(
-                                            duration: Duration(seconds: 1),
-                                            height: 80.v,
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 8.v,
-                                                horizontal: 10.h),
-                                            child: CustomImageView(
-                                              onTap: () {
-                                                playAudio(dtcontainer
-                                                    .getAudioList()[3]);
-                                              },
-                                              height: 100.v,
-                                              fit: BoxFit.contain,
-                                              imagePath: ImageConstant.imgVol,
-                                            ),
-                                          ),
-                                        )
-                                      : SizedBox(),
-                                  Spacer(),
                                 ],
-                              )
-                            : SizedBox(),
-                      ],
-                    )))
-            : SizedBox();
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    // Check if there are more than 3 options
+                    if (dtcontainer.getTextList().length > 3) Spacer(),
+                    if (dtcontainer.getTextList().length > 3)
+                      AnimatedContainer(
+                        duration: Duration(seconds: 1),
+                        height: 125.v,
+                        width: 120.h,
+                        
+                        child: Stack(
+                          children: [
+                            SvgPicture.asset(
+                              isFailure
+                                  ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
+                                  : "assets/images/svg/Opt-2.svg", // Default SVG
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
+                            Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () async {
+                                      if (dtcontainer.getCorrectOutput() ==
+                                          dtcontainer.getTextList()[3]) {
+                                        // success widget push
+                                        leveltracker = leveltracker + 1;
+                                        if (leveltracker > 1) {
+                                          provider.incrementLevelCount("completed");
+                                        } else {
+                                          provider.incrementLevelCount(params);
+                                        }
+                                        bool response = await Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) => GifDisplayScreen()));
+                                        if (response) {
+                                          Navigator.pop(context, true);
+                                        }
+                                      } else {
+                                        // Set failure state
+                                        setState(() {
+                                          isFailure = true;
+                                        });
+                                      }
+                                    },
+                                    child: Text(
+                                      dtcontainer.getTextList()[3],
+                                      style: TextStyle(fontSize: 40),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+            // Custom button with image at the bottom, change color on failure
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: () {
+                  // Define what happens when the button is tapped
+                },
+                child: CustomImageView(
+                  imagePath // Red or different image on failure
+                      : ImageConstant.imgTipbtn, // Default image
+                  height: 40.v,
+                  width: 40.h,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 
-      case "FigToWord":
-        return Container(
-          height: 192.v,
-          width: MediaQuery.of(context).size.width * 0.4,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              AnimatedContainer(
-                duration: Duration(seconds: 1),
-                height: 125.v,
-                width: 120.h,
-                padding: EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
-                child: Stack(
-                  children: [
-                    SvgPicture.asset(
-                      "assets/images/svg/Opt-2.svg",
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
-                    Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              if (dtcontainer.getCorrectOutput() ==
-                                  dtcontainer.getTextList()[0]) {
-                                // success widget push
-                                leveltracker = leveltracker + 1;
-                                if (leveltracker > 1) {
-                                  provider.incrementLevelCount("completed");
-                                } else {
-                                  provider.incrementLevelCount(params);
-                                }
-                                bool response = await Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                        builder: (context) =>
-                                            GifDisplayScreen()));
-                                if (response) {
-                                  Navigator.pop(context, true);
-                                }
-                              } else {
-                                // failure widget push
-                                _toggleGlowA();
-                              }
-                            },
-                            child: Text(
-                              dtcontainer.getTextList()[0],
-                              style: TextStyle(fontSize: 40),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Spacer(),
-              AnimatedContainer(
-                duration: Duration(seconds: 1),
-                height: 125.v,
-                width: 120.h,
-                padding: EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
-                child: Stack(
-                  children: [
-                    SvgPicture.asset(
-                      "assets/images/svg/Opt-2.svg",
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
-                    Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              if (dtcontainer.getCorrectOutput() ==
-                                  dtcontainer.getTextList()[1]) {
-                                // success widget push
-                                leveltracker = leveltracker + 1;
-                                if (leveltracker > 1) {
-                                  provider.incrementLevelCount("completed");
-                                } else {
-                                  provider.incrementLevelCount(params);
-                                }
-                                bool response = await Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                        builder: (context) =>
-                                            GifDisplayScreen()));
-                                if (response) {
-                                  Navigator.pop(context, true);
-                                }
-                              } else {
-                                // failure widget push
-                                _toggleGlowA();
-                              }
-                            },
-                            child: Text(
-                              dtcontainer.getTextList()[1],
-                              style: TextStyle(fontSize: 40),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
+
+
 
       case "WordToFig":
         debugPrint("entering in the word to fig section");
