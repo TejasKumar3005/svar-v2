@@ -25,7 +25,7 @@ enum ButtonType {
   Same,
   Video1,
   Video2,
-  // Add more button types as needed
+ 
 }
 
 class CustomButton extends StatelessWidget {
