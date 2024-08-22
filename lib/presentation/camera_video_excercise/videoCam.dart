@@ -77,7 +77,7 @@ class _VideoCamScreenState extends State<VideoCamScreen> {
     _requestCameraPermission();
     var prov=Provider.of<LingLearningProvider>(context,listen: false);
 
-    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse("assets/phonemes/${PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]}.mp4"))
+    _videoPlayerController = VideoPlayerController.asset("assets/phonemes/${PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]}.mp4")
       ..initialize().then((_) {
         setState(() {});
       });
