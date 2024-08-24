@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
+import 'package:flutter/services.dart';
 import 'package:svar_new/presentation/auditory_screen/audioToImage.dart';
 import 'package:svar_new/presentation/auditory_screen/animation_play.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
@@ -55,6 +56,10 @@ class AuditoryScreenState extends State<AuditoryScreen> {
   @override
   void initState() {
     super.initState();
+      SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     _player = AudioPlayer();
     _isGlowingA = false;
     _isGlowingB = false;
@@ -88,6 +93,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
   }
 
   int sel = 0;
+  
   @override
   Widget build(BuildContext context) {
     var provider = context.watch<AuditoryProvider>();

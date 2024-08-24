@@ -16,7 +16,10 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  double _sliderValue = 0.5;
+  double bgmslider = 0.5;
+  double audioslider = 0.5;
+  double videoslider = 0.5;
+
   final PlayBgm _playBgm = PlayBgm();
   @override
   void initState() {
@@ -92,13 +95,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       
       children: [
         // Music Icon
-        Container(
-          width: 40,
-          height: 40,
-          child: SvgPicture.asset(
-            'assets/images/svg/mute_btn.svg', // Path to your SVG asset
+        GestureDetector(
+          onTap: () {
+            if(bgmslider==0.0){
+                _playBgm.setVolume(0.5);
+                setState(() {
+                  bgmslider = 0.5;
+                });
+            }else{
+              _playBgm.setVolume(0.0);
+              setState(() {
+                bgmslider = 0.0;
+              });
+            }
+          },
+          child: Container(
             width: 40,
             height: 40,
+            child: SvgPicture.asset(
+              'assets/images/svg/mute_btn.svg', // Path to your SVG asset
+              width: 40,
+              height: 40,
+            ),
           ),
         ),
         SizedBox(width: 8), // Add spacing between the icon and the slider
@@ -124,10 +142,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
             ),
             child: Slider(
-              value: _sliderValue,
+              value: bgmslider,
               onChanged: (value) {
                 setState(() {
-                  _sliderValue = value;
+                  bgmslider = value;
                 });
                 _playBgm.setVolume(value);
               },
@@ -178,11 +196,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
             ),
             child: Slider(
-              value: _sliderValue,
+              value: audioslider,
               onChanged: (value) {
-                setState(() {
-                  _sliderValue = value;
-                });
+                
               },
             ),
           ),
@@ -228,11 +244,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
             ),
             child: Slider(
-              value: _sliderValue,
+              value: videoslider,
               onChanged: (value) {
-                setState(() {
-                  _sliderValue = value;
-                });
+                
               },
             ),
           ),

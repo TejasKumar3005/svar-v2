@@ -3,6 +3,7 @@
 import 'package:camera/camera.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/camera_video_excercise/permission_dialog.dart';
@@ -74,6 +75,10 @@ class _VideoCamScreenState extends State<VideoCamScreen> {
   void initState() {
     super.initState();
 
+      SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     _requestCameraPermission();
     var prov=Provider.of<LingLearningProvider>(context,listen: false);
 

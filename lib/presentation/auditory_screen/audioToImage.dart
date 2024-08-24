@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/auditory_screen/animation_play.dart';
 import 'package:svar_new/presentation/auditory_screen/provider/auditory_provider.dart';
@@ -82,6 +83,10 @@ class AudiotoimageScreenState
   @override
   void initState() {
     super.initState();
+      SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     _player = AudioPlayer();
     _isGlowingA = false;
     _isGlowingB = false;

@@ -27,7 +27,6 @@ class AppUpdateProvider extends ChangeNotifier {
       status = "Checking for updates...";
       dialogOpen = true;
       await platform.invokeMethod('checkForUpdate');
-
     } on PlatformException catch (e) {
       dialogOpen = false;
       status = "Failed to check for updates: ${e.message}";
@@ -39,7 +38,7 @@ class AppUpdateProvider extends ChangeNotifier {
     dialogOpen = false;
     notifyListeners();
   }
-  
+
   Future<void> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case "updateProgress":

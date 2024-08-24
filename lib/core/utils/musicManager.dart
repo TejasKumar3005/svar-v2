@@ -19,7 +19,17 @@ class _MusicManagerState extends State<MusicManager>
   final PlayBgm _playBgm = PlayBgm();
 
   List<String> screensWithoutMusic = [
-    '/ling_learning_screen',
+    
+    '/home',
+    '/loading_screen',
+    '/login',
+      '/login_signup'
+    '/register',
+    "/auditory_screen",
+    '/setting_screen',
+    '/phonmes_list_screen',
+    '/phonems_level_screen_one_screen',
+    '/user_profile'
   ];
 
   @override
@@ -57,7 +67,7 @@ class _MusicManagerState extends State<MusicManager>
     debugPrint("Current Route: ");
     debugPrint(currentRoute + " kjjkkj");
     debugPrint("Screens");
-    if (!screensWithoutMusic.contains(currentRoute)) {
+    if (screensWithoutMusic.contains(currentRoute)) {
       _playBgm.playMusic('Main_Interaction_Screen.mp3', "mp3", true);
     } else {
       _playBgm.stopMusic();

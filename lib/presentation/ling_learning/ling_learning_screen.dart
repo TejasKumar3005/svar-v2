@@ -32,6 +32,10 @@ class LingLearningScreenState extends State<LingLearningScreen> {
 
   @override
   void initState() {
+      SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     super.initState();
   }
 
