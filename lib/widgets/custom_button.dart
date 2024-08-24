@@ -19,7 +19,13 @@ enum ButtonType {
   Menu,
   Tip,
   Mic,
-  // Add more button types as needed
+  Change,
+  Diff,
+  Tip2,
+  Same,
+  Video1,
+  Video2,
+ 
 }
 
 class CustomButton extends StatelessWidget {
@@ -131,6 +137,44 @@ class CustomButton extends StatelessWidget {
         height = 35;
         isSvg = true;
         break;
+      case ButtonType.Change:
+        imagePath = ImageConstant.imgChangebtn;
+        width = 35;
+        height = 35;
+        isSvg = true;
+        break;
+      case ButtonType.Diff:
+        imagePath = ImageConstant.imgDiffbtn;
+        width = 35;
+        height = 35;
+        isSvg = true;
+        break;
+      case ButtonType.Tip2:
+        imagePath = ImageConstant.imgTipbtn;
+        width = 35;
+        height = 35;
+        isSvg = true;
+        break;
+      case ButtonType.Same:
+        imagePath = ImageConstant.imgSamebtn;
+        width = 35;
+        height = 35;
+        isSvg = true;
+        break;
+      case ButtonType.Video1:
+        imagePath = ImageConstant.imgVideo1btn;
+        width = 35;
+        height = 35;
+        isSvg = true;
+        break;
+      case ButtonType.Video2:
+        imagePath = ImageConstant.imgVideo2btn;
+        width = 35;
+        height = 35;
+        isSvg = true;
+        break;    
+
+
       // Add cases for more button types here
     }
 
