@@ -38,17 +38,20 @@ class HomeScreenState extends State<HomeScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+  
   }
+
 
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<MainInteractionProvider>(context, listen: false);
 
     return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {
-        showQuitDialog(context);
-      },
+    canPop: false,
+    onPopInvoked: (didPop) {
+      showQuitDialog(context);
+    },
+
       child: SafeArea(
         child: Scaffold(
           extendBody: true,
@@ -95,270 +98,246 @@ class HomeScreenState extends State<HomeScreen> {
         child: CarouselSlider(
           items: [
             ClipRect(
-              child: Container(
-                width: 400.h,
-                height: 250
-                    .v, // Ensure the height and width are set to make the container rectangular
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadiusStyle
-                      .roundedBorder20, // Adjust if you need rounded corners
-                  image: DecorationImage(
-                    image: AssetImage(ImageConstant.thumbnailBarakhadi),
-                    fit: BoxFit
-                        .contain, // Ensure the image is contained within the box
-                  ),
-                ),
-                child: Center(
-                  child: _currentIndex == 0
-                      ? GestureDetector(
-                          onTap: () {
-                            NavigatorService.pushNamed(
-                              AppRoutes.phonmesListScreen,
-                            );
-                          },
-                          child: Container(
-                            height: 101
-                                .adaptSize, // Adjust these sizes to match the image
-                            width: 101.adaptSize,
-                            padding: EdgeInsets.all(20.h),
-                            decoration: BoxDecoration(
-                              color: AppDecoration.fillDeepOrange.color,
-                              shape: BoxShape
-                                  .circle, // Keep this circular if the play button needs to be circular
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: SvgPicture.asset(
-                                height: 45.adaptSize,
-                                width: 45.adaptSize,
-                                fit: BoxFit.contain,
-                                ImageConstant.imgPlayBtn,
-                              ),
-                            ),
-                          ),
-                        )
-                      : Container(color: Colors.transparent),
+              child: GestureDetector(
+                onTap: () {
+                    provider.setScreenInfo(0);
+                      NavigatorService.pushNamed(
+                          AppRoutes.phonemsLevelScreenOneScreen,
+                          arguments: provider.val);
+                },
+                child: Container(
+                  width: 300.h,
+                  height: 150.v,
+                  // padding: EdgeInsets.symmetric(vertical: 32.v),
+                  decoration: AppDecoration.outlineWhiteA.copyWith(
+                      borderRadius: BorderRadiusStyle.roundedBorder20,
+                      image: DecorationImage(
+                          image: AssetImage(ImageConstant.thumbnailAuditory),
+                          fit: BoxFit.fill)),
+                  child:_currentIndex==0? Center(
+                    child: Container(
+                      height: 101.adaptSize,
+                      width: 101.adaptSize,
+                      padding: EdgeInsets.all(20.h),
+                      decoration: AppDecoration.outlineWhiteA.copyWith(
+                          color: AppDecoration.fillDeepOrange.color,
+                          borderRadius: BorderRadius.all(
+                              Radius.circular((101.adaptSize) / 2))),
+                      alignment: Alignment.center,
+                      child: Center(
+                        child: SvgPicture.asset(
+                          height: 45.adaptSize,
+                          width: 45.adaptSize,
+                          fit: BoxFit.contain,
+                          ImageConstant.imgPlayBtn,
+                        ),
+                      ),
+                    ),
+                  ):Container(color: Colors.transparent,)
                 ),
               ),
             ),
             ClipRect(
-              child: Container(
-                width: 400.h,
-                height: 250
-                    .v, // Ensure the height and width are set to make the container rectangular
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadiusStyle
-                      .roundedBorder20, // Adjust if you need rounded corners
-                  image: DecorationImage(
-                    image: AssetImage(ImageConstant.thumbnailPhonemes),
-                    fit: BoxFit
-                        .contain, // Ensure the image is contained within the box
-                  ),
-                ),
-                child: Center(
-                  child: _currentIndex == 1
-                      ? GestureDetector(
-                          onTap: () {
-                            NavigatorService.pushNamed(
-                              AppRoutes.phonmesListScreen,
-                            );
-                          },
-                          child: Container(
-                            height: 101
-                                .adaptSize, // Adjust these sizes to match the image
-                            width: 101.adaptSize,
-                            padding: EdgeInsets.all(20.h),
-                            decoration: BoxDecoration(
-                              color: AppDecoration.fillDeepOrange.color,
-                              shape: BoxShape
-                                  .circle, // Keep this circular if the play button needs to be circular
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: SvgPicture.asset(
-                                height: 45.adaptSize,
-                                width: 45.adaptSize,
-                                fit: BoxFit.contain,
-                                ImageConstant.imgPlayBtn,
-                              ),
-                            ),
+              child: GestureDetector(
+                onTap: () {
+                  NavigatorService.pushNamed(
+                    AppRoutes.phonmesListScreen,
+                  );
+                },
+                child: Container(
+                  width: 300.h,
+                  height: 150.v,
+                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+                      borderRadius: BorderRadiusStyle.roundedBorder20,
+                      image: DecorationImage(
+                          image: AssetImage(ImageConstant.thumbnailBarakhadi),
+                          fit: BoxFit.fill)),
+                
+                          child:  Center(
+                      child:_currentIndex==1? Container(
+                        height: 101.adaptSize,
+                        width: 101.adaptSize,
+                        padding: EdgeInsets.all(20.h),
+                        decoration: AppDecoration.outlineWhiteA.copyWith(
+                            color: AppDecoration.fillDeepOrange.color,
+                            borderRadius: BorderRadius.all(
+                                Radius.circular((101.adaptSize) / 2))),
+                        alignment: Alignment.center,
+                        child: Center(
+                          child: SvgPicture.asset(
+                            height: 45.adaptSize,
+                            width: 45.adaptSize,
+                            fit: BoxFit.contain,
+                            ImageConstant.imgPlayBtn,
                           ),
-                        )
-                      : Container(color: Colors.transparent),
+                        ),
+                      ):Container(color: Colors.transparent,),
+                    ),
                 ),
               ),
             ),
             ClipRect(
-              child: Container(
-                width: 400.h,
-                height: 250
-                    .v, // Ensure the height and width are set to make the container rectangular
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadiusStyle
-                      .roundedBorder20, // Adjust if you need rounded corners
-                  image: DecorationImage(
-                    image: AssetImage(ImageConstant.imgDetection),
-                    fit: BoxFit
-                        .contain, // Ensure the image is contained within the box
-                  ),
-                ),
-                child: Center(
-                  child: _currentIndex == 2
-                      ? GestureDetector(
-                          onTap: () {
-                            NavigatorService.pushNamed(
-                              AppRoutes.phonemsLevelScreenOneScreen,
-                            );
-                          },
-                          child: Container(
-                            height: 101
-                                .adaptSize, // Adjust these sizes to match the image
-                            width: 101.adaptSize,
-                            padding: EdgeInsets.all(20.h),
-                            decoration: BoxDecoration(
-                              color: AppDecoration.fillDeepOrange.color,
-                              shape: BoxShape
-                                  .circle, // Keep this circular if the play button needs to be circular
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: SvgPicture.asset(
-                                height: 45.adaptSize,
-                                width: 45.adaptSize,
-                                fit: BoxFit.contain,
-                                ImageConstant.imgPlayBtn,
-                              ),
-                            ),
+              child: GestureDetector(
+                onTap: () {
+                    provider.setScreenInfo(1);
+                  NavigatorService.pushNamed(
+                      AppRoutes.phonemsLevelScreenOneScreen,
+                      arguments: provider.val);
+                },
+                child: Container(
+                  width: 300.h,
+                  height: 150.v,
+                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+                      borderRadius: BorderRadiusStyle.roundedBorder20,
+                      image: DecorationImage(
+                          image: AssetImage(ImageConstant.thumbnailPhonemes),
+                          fit: BoxFit.fill)),
+                          child: 
+                           Center(
+                      child:_currentIndex==2? Container(
+                        height: 101.adaptSize,
+                        width: 101.adaptSize,
+                        padding: EdgeInsets.all(20.h),
+                        decoration: AppDecoration.outlineWhiteA.copyWith(
+                            color: AppDecoration.fillDeepOrange.color,
+                            borderRadius: BorderRadius.all(
+                                Radius.circular((101.adaptSize) / 2))),
+                        alignment: Alignment.center,
+                        child: Center(
+                          child: SvgPicture.asset(
+                            height: 45.adaptSize,
+                            width: 45.adaptSize,
+                            fit: BoxFit.contain,
+                            ImageConstant.imgPlayBtn,
                           ),
-                        )
-                      : Container(color: Colors.transparent),
+                        ),
+                      ):Container(color: Colors.transparent,),
+                    ),
+                ),
+              ),
+            ),
+             ClipRect(
+              child: GestureDetector(
+                onTap: () {
+                    provider.setScreenInfo(1);
+                  NavigatorService.pushNamed(
+                      AppRoutes.phonemsLevelScreenOneScreen,
+                      arguments: provider.val);
+                },
+                child: Container(
+                  width: 300.h,
+                  height: 150.v,
+                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+                      borderRadius: BorderRadiusStyle.roundedBorder20,
+                      image: DecorationImage(
+                          image: AssetImage(ImageConstant.imgDetection),
+                          fit: BoxFit.fill)),
+                          child: 
+                           Center(
+                      child:_currentIndex==3? Container(
+                        height: 101.adaptSize,
+                        width: 101.adaptSize,
+                        padding: EdgeInsets.all(20.h),
+                        decoration: AppDecoration.outlineWhiteA.copyWith(
+                            color: AppDecoration.fillDeepOrange.color,
+                            borderRadius: BorderRadius.all(
+                                Radius.circular((101.adaptSize) / 2))),
+                        alignment: Alignment.center,
+                        child: Center(
+                          child: SvgPicture.asset(
+                            height: 45.adaptSize,
+                            width: 45.adaptSize,
+                            fit: BoxFit.contain,
+                            ImageConstant.imgPlayBtn,
+                          ),
+                        ),
+                      ):Container(color: Colors.transparent,),
+                    ),
                 ),
               ),
             ),
             ClipRect(
-              child: Container(
-                width: 400.h,
-                height: 250
-                    .v, // Ensure the height and width are set to make the container rectangular
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadiusStyle
-                      .roundedBorder20, // Adjust if you need rounded corners
-                  image: DecorationImage(
-                    image: AssetImage(ImageConstant.imgDescription),
-                    fit: BoxFit
-                        .contain, // Ensure the image is contained within the box
-                  ),
-                ),
-                child: Center(
-                  child: _currentIndex == 3
-                      ? GestureDetector(
-                          onTap: () {
-                            NavigatorService.pushNamed(
-                              AppRoutes.phonemsLevelScreenOneScreen,
-                            );
-                          },
-                          child: Container(
-                            height: 101
-                                .adaptSize, // Adjust these sizes to match the image
-                            width: 101.adaptSize,
-                            padding: EdgeInsets.all(20.h),
-                            decoration: BoxDecoration(
-                              color: AppDecoration.fillDeepOrange.color,
-                              shape: BoxShape
-                                  .circle, // Keep this circular if the play button needs to be circular
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: SvgPicture.asset(
-                                height: 45.adaptSize,
-                                width: 45.adaptSize,
-                                fit: BoxFit.contain,
-                                ImageConstant.imgPlayBtn,
-                              ),
-                            ),
+              child: GestureDetector(
+                onTap: () {
+                    provider.setScreenInfo(1);
+                  NavigatorService.pushNamed(
+                      AppRoutes.phonemsLevelScreenOneScreen,
+                      arguments: provider.val);
+                },
+                child: Container(
+                  width: 300.h,
+                  height: 150.v,
+                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+                      borderRadius: BorderRadiusStyle.roundedBorder20,
+                      image: DecorationImage(
+                          image: AssetImage(ImageConstant.imgDescription),
+                          fit: BoxFit.fill)),
+                          child: 
+                           Center(
+                      child:_currentIndex==4? Container(
+                        height: 101.adaptSize,
+                        width: 101.adaptSize,
+                        padding: EdgeInsets.all(20.h),
+                        decoration: AppDecoration.outlineWhiteA.copyWith(
+                            color: AppDecoration.fillDeepOrange.color,
+                            borderRadius: BorderRadius.all(
+                                Radius.circular((101.adaptSize) / 2))),
+                        alignment: Alignment.center,
+                        child: Center(
+                          child: SvgPicture.asset(
+                            height: 45.adaptSize,
+                            width: 45.adaptSize,
+                            fit: BoxFit.contain,
+                            ImageConstant.imgPlayBtn,
                           ),
-                        )
-                      : Container(color: Colors.transparent),
+                        ),
+                      ):Container(color: Colors.transparent,),
+                    ),
                 ),
               ),
             ),
             ClipRect(
-              child: Container(
-                width: 400.h,
-                height: 250
-                    .v, // Ensure the height and width are set to make the container rectangular
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadiusStyle
-                      .roundedBorder20, // Adjust if you need rounded corners
-                  image: DecorationImage(
-                    image: AssetImage(ImageConstant.imgIdentification),
-                    fit: BoxFit
-                        .contain, // Ensure the image is contained within the box
-                  ),
-                ),
-                child: Center(
-                  child: _currentIndex == 4
-                      ? GestureDetector(
-                          onTap: () {
-                            NavigatorService.pushNamed(
-                              AppRoutes.phonemsLevelScreenOneScreen,
-                            );
-                          },
-                          child: Container(
-                            height: 101
-                                .adaptSize, // Adjust these sizes to match the image
-                            width: 101.adaptSize,
-                            padding: EdgeInsets.all(20.h),
-                            decoration: BoxDecoration(
-                              color: AppDecoration.fillDeepOrange.color,
-                              shape: BoxShape
-                                  .circle, // Keep this circular if the play button needs to be circular
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  spreadRadius: 1,
-                                  blurRadius: 5,
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: SvgPicture.asset(
-                                height: 45.adaptSize,
-                                width: 45.adaptSize,
-                                fit: BoxFit.contain,
-                                ImageConstant.imgPlayBtn,
-                              ),
-                            ),
+              child: GestureDetector(
+                onTap: () {
+                    provider.setScreenInfo(1);
+                  NavigatorService.pushNamed(
+                      AppRoutes.phonemsLevelScreenOneScreen,
+                      arguments: provider.val);
+                },
+                child: Container(
+                  width: 300.h,
+                  height: 150.v,
+                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
+                      borderRadius: BorderRadiusStyle.roundedBorder20,
+                      image: DecorationImage(
+                          image: AssetImage(ImageConstant.imgIdentification),
+                          fit: BoxFit.fill)),
+                          child: 
+                           Center(
+                      child:_currentIndex==5? Container(
+                        height: 101.adaptSize,
+                        width: 101.adaptSize,
+                        padding: EdgeInsets.all(20.h),
+                        decoration: AppDecoration.outlineWhiteA.copyWith(
+                            color: AppDecoration.fillDeepOrange.color,
+                            borderRadius: BorderRadius.all(
+                                Radius.circular((101.adaptSize) / 2))),
+                        alignment: Alignment.center,
+                        child: Center(
+                          child: SvgPicture.asset(
+                            height: 45.adaptSize,
+                            width: 45.adaptSize,
+                            fit: BoxFit.contain,
+                            ImageConstant.imgPlayBtn,
                           ),
-                        )
-                      : Container(color: Colors.transparent),
+                        ),
+                      ):Container(color: Colors.transparent,),
+                    ),
                 ),
               ),
             ),
+             
+  
           ],
 
           //Slider Container properties
@@ -370,10 +349,10 @@ class HomeScreenState extends State<HomeScreen> {
             viewportFraction: 0.4,
             autoPlayAnimationDuration: const Duration(milliseconds: 800),
             onPageChanged: (index, reason) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
+    setState(() {
+      _currentIndex = index;
+    });
+  },
           ),
         ),
       ),

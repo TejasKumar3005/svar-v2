@@ -15,10 +15,15 @@ class AppStatsHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        SvgPicture.asset(
-          ImageConstant.imgAvatar,
-          height: 38.adaptSize,
-          width: 38.adaptSize,
+        GestureDetector(
+          onTap: () {
+            Navigator.pushNamed(context, AppRoutes.userProfileScreen);
+          },
+          child: SvgPicture.asset(
+            ImageConstant.imgAvatar,
+            height: 38.adaptSize,
+            width: 38.adaptSize,
+          ),
         ),
         Container(
           height: 31.v,
@@ -204,84 +209,7 @@ class AppStatsHeader extends StatelessWidget {
                   ),
                 ),
               ),
-              // Positioned(
-              //   left: 8.h,
-              //   child: SizedBox(
-              //     height: 19.v,
-              //     width: 17.h,
-              //     child: Stack(
-              //       alignment: Alignment.centerLeft,
-              //       children: [
-              //         Align(
-              //           alignment: Alignment.centerRight,
-              //           child: SizedBox(
-              //             height: 17.v,
-              //             width: 13.h,
-              //             child: Stack(
-              //               alignment: Alignment.bottomCenter,
-              //               children: [
-              //                 // CustomImageView(
-              //                 //   imagePath: ImageConstant.imgUserDeepOrange600,
-              //                 //   width: 13.h,
-              //                 //   alignment: Alignment.center,
-              //                 // ),
-              //                 // CustomImageView(
-              //                 //   imagePath:
-              //                 //       ImageConstant.imgSettingsDeepOrange700,
-              //                 //   height: 11.v,
-              //                 //   alignment: Alignment.bottomCenter,
-              //                 // )
-              //               ],
-              //             ),
-              //           ),
-              //         ),
-              //         Align(
-              //           alignment: Alignment.centerLeft,
-              //           child: SizedBox(
-              //             height: 19.v,
-              //             width: 16.h,
-              //             child: Stack(
-              //               alignment: Alignment.center,
-              //               children: [
-              //                 CustomImageView(
-              //                   imagePath: ImageConstant.imgClose,
-              //                   width: 16.h,
-              //                   alignment: Alignment.center,
-              //                 ),
-              //                 Align(
-              //                   alignment: Alignment.center,
-              //                   child: SizedBox(
-              //                     height: 16.v,
-              //                     width: 11.h,
-              //                     child: Stack(
-              //                       alignment: Alignment.center,
-              //                       children: [
-              //                         CustomImageView(
-              //                           imagePath:
-              //                               ImageConstant.imgCloseYellow90003,
-              //                           width: 11.h,
-              //                           alignment: Alignment.center,
-              //                         ),
-              //                         Align(
-              //                           alignment: Alignment.center,
-              //                           child: Text(
-              //                             "lbl3".tr,
-              //                             style: CustomTextStyles
-              //                                 .labelMediumYellow500,
-              //                           ),
-              //                         )
-              //                       ],
-              //                     ),
-              //                   ),
-              //                 )
-              //               ],
-              //             ),
-              //           ),
-              //         )
-              //       ],
-              //     ),
-              //   ),
-              // ),
+              
               Positioned(
                 right: 3.h,
                 child: Text(
@@ -300,10 +228,7 @@ class AppStatsHeader extends StatelessWidget {
             ],
           ),
         ),
-        // Padding(
-        //   padding: EdgeInsets.only(left: 5.h),
-        //   child: CustomButton(type: ButtonType.Menu, onPressed: () {}),
-        // )
+      
       ],
     );
   }
