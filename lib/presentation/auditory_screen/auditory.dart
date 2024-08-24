@@ -35,7 +35,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
   late int leveltracker;
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
-    OverlayEntry? _overlayEntry;
+  OverlayEntry? _overlayEntry;
 
   Future<void> playAudio(String url) async {
     try {
@@ -211,11 +211,12 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                       provider.incrementLevelCount(params);
                                     }
 
-                                    _overlayEntry = celebrationOverlay(context, () {
+                                    _overlayEntry =
+                                        celebrationOverlay(context, () {
                                       _overlayEntry?.remove();
                                     });
-        Overlay.of(context).insert(_overlayEntry!);
-        
+                                    Overlay.of(context).insert(_overlayEntry!);
+
                                     bool response = await Navigator.of(context)
                                         .push(MaterialPageRoute(
                                             builder: (context) =>
@@ -425,17 +426,22 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                           // First Option
                           AnimatedContainer(
                             duration: Duration(seconds: 1),
-                            height: 125.v,
-                            width: 120.h,
+                            height: MediaQuery.of(context).size.height *
+                                0.25, // 15% of the screen height
+                            width: MediaQuery.of(context).size.width *
+                                0.25, // 30% of the screen width
                             child: Stack(
                               children: [
-                                SvgPicture.asset(
-                                  isFailure
-                                      ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
-                                      : "assets/images/svg/Opt-2.svg", // Default SVG
-                                  fit: BoxFit.cover,
+                                Container(
                                   width: double.infinity,
                                   height: double.infinity,
+                                  child: SvgPicture.asset(
+                                    isFailure
+                                        ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
+                                        : "assets/images/svg/Opt-2.svg", // Default SVG
+                                    fit: BoxFit
+                                        .contain, // Ensures the image scales correctly within the container
+                                  ),
                                 ),
                                 Center(
                                   child: Column(
@@ -465,7 +471,6 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                               Navigator.pop(context, true);
                                             }
                                           } else {
-                                            // Set failure state
                                             setState(() {
                                               isFailure = true;
                                             });
@@ -473,7 +478,12 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                         },
                                         child: Text(
                                           dtcontainer.getTextList()[0],
-                                          style: TextStyle(fontSize: 40),
+                                          style: TextStyle(
+                                            fontSize: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.05,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -482,21 +492,27 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                               ],
                             ),
                           ),
-                          SizedBox(),
-                          // Second Option
+
+                       
+                         
                           AnimatedContainer(
                             duration: Duration(seconds: 1),
-                            height: 125.v,
-                            width: 120.h,
+                            height: MediaQuery.of(context).size.height *
+                                0.25, // 15% of the screen height
+                            width: MediaQuery.of(context).size.width *
+                                0.25, // 30% of the screen width
                             child: Stack(
                               children: [
-                                SvgPicture.asset(
-                                  isFailure
-                                      ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
-                                      : "assets/images/svg/Opt-2.svg", // Default SVG
-                                  fit: BoxFit.cover,
+                                Container(
                                   width: double.infinity,
                                   height: double.infinity,
+                                  child: SvgPicture.asset(
+                                    isFailure
+                                        ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
+                                        : "assets/images/svg/Opt-2.svg", // Default SVG
+                                    fit: BoxFit
+                                        .contain, // Ensures the image scales correctly within the container
+                                  ),
                                 ),
                                 Center(
                                   child: Column(
@@ -526,7 +542,6 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                               Navigator.pop(context, true);
                                             }
                                           } else {
-                                            // Set failure state
                                             setState(() {
                                               isFailure = true;
                                             });
@@ -534,7 +549,12 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                         },
                                         child: Text(
                                           dtcontainer.getTextList()[1],
-                                          style: TextStyle(fontSize: 40),
+                                          style: TextStyle(
+                                            fontSize: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.05,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -765,7 +785,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                   ),
                 ),
               ),
-            // Adjust space between the two blocks
+              // Adjust space between the two blocks
               AnimatedContainer(
                 duration: Duration(seconds: 1),
                 height: MediaQuery.of(context).size.height *

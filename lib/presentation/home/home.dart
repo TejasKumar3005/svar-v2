@@ -97,84 +97,54 @@ class HomeScreenState extends State<HomeScreen> {
             ClipRect(
               child: GestureDetector(
                 onTap: () {
-                  provider.setScreenInfo(0);
+                  provider.setScreenInfo(1);
                   NavigatorService.pushNamed(
                       AppRoutes.phonemsLevelScreenOneScreen,
                       arguments: provider.val);
                 },
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,  // Increased width for rectangle
-                  height: MediaQuery.of(context).size.height * 0.4,  // Adjusted height
-                  decoration: AppDecoration.outlineWhiteA.copyWith(
-                      borderRadius: BorderRadiusStyle.roundedBorder20,
-                      image: DecorationImage(
-                          image: AssetImage(ImageConstant.thumbnailAuditory),
-                          fit: BoxFit.fill)),
-                  child: _currentIndex == 0
-                      ? Center(
-                          child: Container(
-                            height: 101.adaptSize,
-                            width: 101.adaptSize,
-                            padding: EdgeInsets.all(20.h),
-                            decoration: AppDecoration.outlineWhiteA.copyWith(
-                                color: AppDecoration.fillDeepOrange.color,
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular((101.adaptSize) / 2))),
-                            alignment: Alignment.center,
-                            child: Center(
-                              child: SvgPicture.asset(
-                                height: 45.adaptSize,
-                                width: 45.adaptSize,
-                                fit: BoxFit.contain,
-                                ImageConstant.imgPlayBtn,
-                              ),
-                            ),
-                          ),
-                        )
-                      : Container(
-                          color: Colors.transparent,
+                child: Center(
+                  // Centering the entire container
+                  child: Container(
+                    width: MediaQuery.of(context).size.width *
+                        0.6, // Increased width for the container
+                    height: MediaQuery.of(context).size.width *
+                        0.3, // Increased height for the container
+                    child: Stack(
+                      children: [
+                        // Background Image
+                        Image.asset(
+                          ImageConstant.thumbnailBarakhadi,
+                          fit: BoxFit.fill,
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          height: MediaQuery.of(context).size.width * 0.3,
                         ),
-                ),
-              ),
-            ),
-            ClipRect(
-              child: GestureDetector(
-                onTap: () {
-                  NavigatorService.pushNamed(
-                    AppRoutes.phonmesListScreen,
-                  );
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,  // Increased width for rectangle
-                  height: MediaQuery.of(context).size.height * 0.4,  // Adjusted height
-                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
-                      borderRadius: BorderRadiusStyle.roundedBorder20,
-                      image: DecorationImage(
-                          image: AssetImage(ImageConstant.thumbnailBarakhadi),
-                          fit: BoxFit.fill)),
-                  child: Center(
-                    child: _currentIndex == 1
-                        ? Container(
-                            height: 101.adaptSize,
-                            width: 101.adaptSize,
-                            padding: EdgeInsets.all(20.h),
-                            decoration: AppDecoration.outlineWhiteA.copyWith(
+                        if (_currentIndex == 0)
+                          Center(
+                            child: Container(
+                              height: 101
+                                  .adaptSize, // Increased size of play button container
+                              width: 101
+                                  .adaptSize, // Increased size of play button container
+                              padding: EdgeInsets.all(20.h),
+                              decoration: AppDecoration.outlineWhiteA.copyWith(
                                 color: AppDecoration.fillDeepOrange.color,
                                 borderRadius: BorderRadius.all(
-                                    Radius.circular((101.adaptSize) / 2))),
-                            alignment: Alignment.center,
-                            child: Center(
+                                  Radius.circular((121.adaptSize) / 2),
+                                ),
+                              ),
+                              alignment: Alignment.center,
                               child: SvgPicture.asset(
-                                height: 45.adaptSize,
-                                width: 45.adaptSize,
-                                fit: BoxFit.contain,
                                 ImageConstant.imgPlayBtn,
+                                height: 45
+                                    .adaptSize, // Increased size of play button
+                                width: 45
+                                    .adaptSize, // Increased size of play button
+                                fit: BoxFit.contain,
                               ),
                             ),
-                          )
-                        : Container(
-                            color: Colors.transparent,
                           ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -187,37 +157,49 @@ class HomeScreenState extends State<HomeScreen> {
                       AppRoutes.phonemsLevelScreenOneScreen,
                       arguments: provider.val);
                 },
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,  // Increased width for rectangle
-                  height: MediaQuery.of(context).size.height * 0.4,  // Adjusted height
-                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
-                      borderRadius: BorderRadiusStyle.roundedBorder20,
-                      image: DecorationImage(
-                          image: AssetImage(ImageConstant.thumbnailPhonemes),
-                          fit: BoxFit.fill)),
-                  child: Center(
-                    child: _currentIndex == 2
-                        ? Container(
-                            height: 101.adaptSize,
-                            width: 101.adaptSize,
-                            padding: EdgeInsets.all(20.h),
-                            decoration: AppDecoration.outlineWhiteA.copyWith(
+                child: Center(
+                  // Centering the entire container
+                  child: Container(
+                    width: MediaQuery.of(context).size.width *
+                        0.6, // Increased width for the container
+                    height: MediaQuery.of(context).size.width *
+                        0.3, // Increased height for the container
+                    child: Stack(
+                      children: [
+                        // Background Image
+                        Image.asset(
+                          ImageConstant.thumbnailPhonemes,
+                          fit: BoxFit.fill,
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          height: MediaQuery.of(context).size.width * 0.3,
+                        ),
+                        if (_currentIndex == 1)
+                          Center(
+                            child: Container(
+                              height: 101
+                                  .adaptSize, // Increased size of play button container
+                              width: 101
+                                  .adaptSize, // Increased size of play button container
+                              padding: EdgeInsets.all(20.h),
+                              decoration: AppDecoration.outlineWhiteA.copyWith(
                                 color: AppDecoration.fillDeepOrange.color,
                                 borderRadius: BorderRadius.all(
-                                    Radius.circular((101.adaptSize) / 2))),
-                            alignment: Alignment.center,
-                            child: Center(
+                                  Radius.circular((121.adaptSize) / 2),
+                                ),
+                              ),
+                              alignment: Alignment.center,
                               child: SvgPicture.asset(
-                                height: 45.adaptSize,
-                                width: 45.adaptSize,
-                                fit: BoxFit.contain,
                                 ImageConstant.imgPlayBtn,
+                                height: 45
+                                    .adaptSize, // Increased size of play button
+                                width: 45
+                                    .adaptSize, // Increased size of play button
+                                fit: BoxFit.contain,
                               ),
                             ),
-                          )
-                        : Container(
-                            color: Colors.transparent,
                           ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -230,37 +212,49 @@ class HomeScreenState extends State<HomeScreen> {
                       AppRoutes.phonemsLevelScreenOneScreen,
                       arguments: provider.val);
                 },
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,  // Increased width for rectangle
-                  height: MediaQuery.of(context).size.height * 0.4,  // Adjusted height
-                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
-                      borderRadius: BorderRadiusStyle.roundedBorder20,
-                      image: DecorationImage(
-                          image: AssetImage(ImageConstant.imgDetection),
-                          fit: BoxFit.fill)),
-                  child: Center(
-                    child: _currentIndex == 3
-                        ? Container(
-                            height: 101.adaptSize,
-                            width: 101.adaptSize,
-                            padding: EdgeInsets.all(20.h),
-                            decoration: AppDecoration.outlineWhiteA.copyWith(
+                child: Center(
+                  // Centering the entire container
+                  child: Container(
+                    width: MediaQuery.of(context).size.width *
+                        0.6, // Increased width for the container
+                    height: MediaQuery.of(context).size.width *
+                        0.3, // Increased height for the container
+                    child: Stack(
+                      children: [
+                        // Background Image
+                        Image.asset(
+                          ImageConstant.imgDetection,
+                          fit: BoxFit.fill,
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          height: MediaQuery.of(context).size.width * 0.3,
+                        ),
+                        if (_currentIndex == 2)
+                          Center(
+                            child: Container(
+                              height: 101
+                                  .adaptSize, // Increased size of play button container
+                              width: 101
+                                  .adaptSize, // Increased size of play button container
+                              padding: EdgeInsets.all(20.h),
+                              decoration: AppDecoration.outlineWhiteA.copyWith(
                                 color: AppDecoration.fillDeepOrange.color,
                                 borderRadius: BorderRadius.all(
-                                    Radius.circular((101.adaptSize) / 2))),
-                            alignment: Alignment.center,
-                            child: Center(
+                                  Radius.circular((121.adaptSize) / 2),
+                                ),
+                              ),
+                              alignment: Alignment.center,
                               child: SvgPicture.asset(
-                                height: 45.adaptSize,
-                                width: 45.adaptSize,
-                                fit: BoxFit.contain,
                                 ImageConstant.imgPlayBtn,
+                                height: 45
+                                    .adaptSize, // Increased size of play button
+                                width: 45
+                                    .adaptSize, // Increased size of play button
+                                fit: BoxFit.contain,
                               ),
                             ),
-                          )
-                        : Container(
-                            color: Colors.transparent,
                           ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -273,37 +267,49 @@ class HomeScreenState extends State<HomeScreen> {
                       AppRoutes.phonemsLevelScreenOneScreen,
                       arguments: provider.val);
                 },
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,  // Increased width for rectangle
-                  height: MediaQuery.of(context).size.height * 0.4,  // Adjusted height
-                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
-                      borderRadius: BorderRadiusStyle.roundedBorder20,
-                      image: DecorationImage(
-                          image: AssetImage(ImageConstant.imgDescription),
-                          fit: BoxFit.fill)),
-                  child: Center(
-                    child: _currentIndex == 4
-                        ? Container(
-                            height: 101.adaptSize,
-                            width: 101.adaptSize,
-                            padding: EdgeInsets.all(20.h),
-                            decoration: AppDecoration.outlineWhiteA.copyWith(
+                child: Center(
+                  // Centering the entire container
+                  child: Container(
+                    width: MediaQuery.of(context).size.width *
+                        0.6, // Increased width for the container
+                    height: MediaQuery.of(context).size.width *
+                        0.3, // Increased height for the container
+                    child: Stack(
+                      children: [
+                        // Background Image
+                        Image.asset(
+                          ImageConstant.imgDescription,
+                          fit: BoxFit.fill,
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          height: MediaQuery.of(context).size.width * 0.3,
+                        ),
+                        if (_currentIndex == 3)
+                          Center(
+                            child: Container(
+                              height: 101
+                                  .adaptSize, // Increased size of play button container
+                              width: 101
+                                  .adaptSize, // Increased size of play button container
+                              padding: EdgeInsets.all(20.h),
+                              decoration: AppDecoration.outlineWhiteA.copyWith(
                                 color: AppDecoration.fillDeepOrange.color,
                                 borderRadius: BorderRadius.all(
-                                    Radius.circular((101.adaptSize) / 2))),
-                            alignment: Alignment.center,
-                            child: Center(
+                                  Radius.circular((121.adaptSize) / 2),
+                                ),
+                              ),
+                              alignment: Alignment.center,
                               child: SvgPicture.asset(
-                                height: 45.adaptSize,
-                                width: 45.adaptSize,
-                                fit: BoxFit.contain,
                                 ImageConstant.imgPlayBtn,
+                                height: 45
+                                    .adaptSize, // Increased size of play button
+                                width: 45
+                                    .adaptSize, // Increased size of play button
+                                fit: BoxFit.contain,
                               ),
                             ),
-                          )
-                        : Container(
-                            color: Colors.transparent,
                           ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -316,37 +322,49 @@ class HomeScreenState extends State<HomeScreen> {
                       AppRoutes.phonemsLevelScreenOneScreen,
                       arguments: provider.val);
                 },
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.8,  // Increased width for rectangle
-                  height: MediaQuery.of(context).size.height * 0.4,  // Adjusted height
-                  decoration: AppDecoration.gradientRedToWhiteA.copyWith(
-                      borderRadius: BorderRadiusStyle.roundedBorder20,
-                      image: DecorationImage(
-                          image: AssetImage(ImageConstant.imgIdentification),
-                          fit: BoxFit.fill)),
-                  child: Center(
-                    child: _currentIndex == 5
-                        ? Container(
-                            height: 101.adaptSize,
-                            width: 101.adaptSize,
-                            padding: EdgeInsets.all(20.h),
-                            decoration: AppDecoration.outlineWhiteA.copyWith(
+                child: Center(
+                  // Centering the entire container
+                  child: Container(
+                    width: MediaQuery.of(context).size.width *
+                        0.6, // Increased width for the container
+                    height: MediaQuery.of(context).size.width *
+                        0.3, // Increased height for the container
+                    child: Stack(
+                      children: [
+                        // Background Image
+                        Image.asset(
+                          ImageConstant.imgIdentification,
+                          fit: BoxFit.fill,
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          height: MediaQuery.of(context).size.width * 0.3,
+                        ),
+                        if (_currentIndex == 4)
+                          Center(
+                            child: Container(
+                              height: 101
+                                  .adaptSize, // Increased size of play button container
+                              width: 101
+                                  .adaptSize, // Increased size of play button container
+                              padding: EdgeInsets.all(20.h),
+                              decoration: AppDecoration.outlineWhiteA.copyWith(
                                 color: AppDecoration.fillDeepOrange.color,
                                 borderRadius: BorderRadius.all(
-                                    Radius.circular((101.adaptSize) / 2))),
-                            alignment: Alignment.center,
-                            child: Center(
+                                  Radius.circular((121.adaptSize) / 2),
+                                ),
+                              ),
+                              alignment: Alignment.center,
                               child: SvgPicture.asset(
-                                height: 45.adaptSize,
-                                width: 45.adaptSize,
-                                fit: BoxFit.contain,
                                 ImageConstant.imgPlayBtn,
+                                height: 45
+                                    .adaptSize, // Increased size of play button
+                                width: 45
+                                    .adaptSize, // Increased size of play button
+                                fit: BoxFit.contain,
                               ),
                             ),
-                          )
-                        : Container(
-                            color: Colors.transparent,
                           ),
+                      ],
+                    ),
                   ),
                 ),
               ),
