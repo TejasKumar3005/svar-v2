@@ -56,7 +56,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
   @override
   void initState() {
     super.initState();
-      SystemChrome.setPreferredOrientations([
+    SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
@@ -93,7 +93,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
   }
 
   int sel = 0;
-  
+
   @override
   Widget build(BuildContext context) {
     var provider = context.watch<AuditoryProvider>();
@@ -222,7 +222,6 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                 child: AnimatedContainer(
                                   duration: Duration(seconds: 1),
                                   height: 180.v,
-                                 
                                   child: CustomImageView(
                                     onTap: () {
                                       playAudio(dtcontainer.getAudioList()[0]);
@@ -261,7 +260,6 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                 child: AnimatedContainer(
                                   duration: Duration(seconds: 1),
                                   height: 180.v,
-                                 
                                   child: CustomImageView(
                                     onTap: () {
                                       playAudio(dtcontainer.getAudioList()[1]);
@@ -399,304 +397,322 @@ class AuditoryScreenState extends State<AuditoryScreen> {
               )
             : SizedBox();
 
-    case "FigToWord":
-  return StatefulBuilder(
-    builder: (context, setState) {
-      bool isFailure = false; // State to track failure
+      case "FigToWord":
+        return StatefulBuilder(
+          builder: (context, setState) {
+            bool isFailure = false; // State to track failure
 
-      return Container(
-        height: 192.v,
-        width: MediaQuery.of(context).size.width * 0.4,
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                SizedBox(height: 8.v), // Add spacing between the image and Row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    // First Option
-                    AnimatedContainer(
-                      duration: Duration(seconds: 1),
-                      height: 125.v,
-                      width: 120.h,
-                      
-                      child: Stack(
+            return Container(
+              height: 192.v,
+              width: MediaQuery.of(context).size.width * 0.4,
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      SizedBox(
+                          height: 8.v), // Add spacing between the image and Row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          SvgPicture.asset(
-                            isFailure
-                                ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
-                                : "assets/images/svg/Opt-2.svg", // Default SVG
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                          ),
-                          Center(
-                            child: Column(
-                              
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                          // First Option
+                          AnimatedContainer(
+                            duration: Duration(seconds: 1),
+                            height: 125.v,
+                            width: 120.h,
+                            child: Stack(
                               children: [
-                                GestureDetector(
-                                  onTap: () async {
-                                    if (dtcontainer.getCorrectOutput() ==
-                                        dtcontainer.getTextList()[0]) {
-                                      // success widget push
-                                      leveltracker = leveltracker + 1;
-                                      if (leveltracker > 1) {
-                                        provider.incrementLevelCount("completed");
-                                      } else {
-                                        provider.incrementLevelCount(params);
-                                      }
-                                      bool response = await Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) => GifDisplayScreen()));
-                                      if (response) {
-                                        Navigator.pop(context, true);
-                                      }
-                                    } else {
-                                      // Set failure state
-                                      setState(() {
-                                        isFailure = true;
-                                      });
-                                    }
-                                  },
-                                  child: Text(
-                                    dtcontainer.getTextList()[0],
-                                    style: TextStyle(fontSize: 40),
+                                SvgPicture.asset(
+                                  isFailure
+                                      ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
+                                      : "assets/images/svg/Opt-2.svg", // Default SVG
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
+                                Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () async {
+                                          if (dtcontainer.getCorrectOutput() ==
+                                              dtcontainer.getTextList()[0]) {
+                                            // success widget push
+                                            leveltracker = leveltracker + 1;
+                                            if (leveltracker > 1) {
+                                              provider.incrementLevelCount(
+                                                  "completed");
+                                            } else {
+                                              provider
+                                                  .incrementLevelCount(params);
+                                            }
+                                            bool response = await Navigator.of(
+                                                    context)
+                                                .push(MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        GifDisplayScreen()));
+                                            if (response) {
+                                              Navigator.pop(context, true);
+                                            }
+                                          } else {
+                                            // Set failure state
+                                            setState(() {
+                                              isFailure = true;
+                                            });
+                                          }
+                                        },
+                                        child: Text(
+                                          dtcontainer.getTextList()[0],
+                                          style: TextStyle(fontSize: 40),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(),
-                    // Second Option
-                    AnimatedContainer(
-                      duration: Duration(seconds: 1),
-                      height: 125.v,
-                      width: 120.h,
-                      
-                      child: Stack(
-                        children: [
-                          SvgPicture.asset(
-                            isFailure
-                                ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
-                                : "assets/images/svg/Opt-2.svg", // Default SVG
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                          ),
-                          Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                          SizedBox(),
+                          // Second Option
+                          AnimatedContainer(
+                            duration: Duration(seconds: 1),
+                            height: 125.v,
+                            width: 120.h,
+                            child: Stack(
                               children: [
-                                GestureDetector(
-                                  onTap: () async {
-                                    if (dtcontainer.getCorrectOutput() ==
-                                        dtcontainer.getTextList()[1]) {
-                                      // success widget push
-                                      leveltracker = leveltracker + 1;
-                                      if (leveltracker > 1) {
-                                        provider.incrementLevelCount("completed");
-                                      } else {
-                                        provider.incrementLevelCount(params);
-                                      }
-                                      bool response = await Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) => GifDisplayScreen()));
-                                      if (response) {
-                                        Navigator.pop(context, true);
-                                      }
-                                    } else {
-                                      // Set failure state
-                                      setState(() {
-                                        isFailure = true;
-                                      });
-                                    }
-                                  },
-                                  child: Text(
-                                    dtcontainer.getTextList()[1],
-                                    style: TextStyle(fontSize: 40),
+                                SvgPicture.asset(
+                                  isFailure
+                                      ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
+                                      : "assets/images/svg/Opt-2.svg", // Default SVG
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
+                                Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () async {
+                                          if (dtcontainer.getCorrectOutput() ==
+                                              dtcontainer.getTextList()[1]) {
+                                            // success widget push
+                                            leveltracker = leveltracker + 1;
+                                            if (leveltracker > 1) {
+                                              provider.incrementLevelCount(
+                                                  "completed");
+                                            } else {
+                                              provider
+                                                  .incrementLevelCount(params);
+                                            }
+                                            bool response = await Navigator.of(
+                                                    context)
+                                                .push(MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        GifDisplayScreen()));
+                                            if (response) {
+                                              Navigator.pop(context, true);
+                                            }
+                                          } else {
+                                            // Set failure state
+                                            setState(() {
+                                              isFailure = true;
+                                            });
+                                          }
+                                        },
+                                        child: Text(
+                                          dtcontainer.getTextList()[1],
+                                          style: TextStyle(fontSize: 40),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                          SizedBox(),
+                          // Check if there are more than 2 options
+                          if (dtcontainer.getTextList().length > 2)
+                            AnimatedContainer(
+                              duration: Duration(seconds: 1),
+                              height: 125.v,
+                              width: 120.h,
+                              child: Stack(
+                                children: [
+                                  SvgPicture.asset(
+                                    isFailure
+                                        ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
+                                        : "assets/images/svg/Opt-2.svg", // Default SVG
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                  ),
+                                  Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () async {
+                                            if (dtcontainer
+                                                    .getCorrectOutput() ==
+                                                dtcontainer.getTextList()[2]) {
+                                              // success widget push
+                                              leveltracker = leveltracker + 1;
+                                              if (leveltracker > 1) {
+                                                provider.incrementLevelCount(
+                                                    "completed");
+                                              } else {
+                                                provider.incrementLevelCount(
+                                                    params);
+                                              }
+                                              bool response = await Navigator
+                                                      .of(context)
+                                                  .push(MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          GifDisplayScreen()));
+                                              if (response) {
+                                                Navigator.pop(context, true);
+                                              }
+                                            } else {
+                                              // Set failure state
+                                              setState(() {
+                                                isFailure = true;
+                                              });
+                                            }
+                                          },
+                                          child: Text(
+                                            dtcontainer.getTextList()[2],
+                                            style: TextStyle(fontSize: 40),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          // Check if there are more than 3 options
+                          if (dtcontainer.getTextList().length > 3) Spacer(),
+                          if (dtcontainer.getTextList().length > 3)
+                            AnimatedContainer(
+                              duration: Duration(seconds: 1),
+                              height: 125.v,
+                              width: 120.h,
+                              child: Stack(
+                                children: [
+                                  SvgPicture.asset(
+                                    isFailure
+                                        ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
+                                        : "assets/images/svg/Opt-2.svg", // Default SVG
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                  ),
+                                  Center(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () async {
+                                            if (dtcontainer
+                                                    .getCorrectOutput() ==
+                                                dtcontainer.getTextList()[3]) {
+                                              // success widget push
+                                              leveltracker = leveltracker + 1;
+                                              if (leveltracker > 1) {
+                                                provider.incrementLevelCount(
+                                                    "completed");
+                                              } else {
+                                                provider.incrementLevelCount(
+                                                    params);
+                                              }
+                                              bool response = await Navigator
+                                                      .of(context)
+                                                  .push(MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          GifDisplayScreen()));
+                                              if (response) {
+                                                Navigator.pop(context, true);
+                                              }
+                                            } else {
+                                              // Set failure state
+                                              setState(() {
+                                                isFailure = true;
+                                              });
+                                            }
+                                          },
+                                          child: Text(
+                                            dtcontainer.getTextList()[3],
+                                            style: TextStyle(fontSize: 40),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                         ],
                       ),
+                    ],
+                  ),
+                  // Custom button with image at the bottom, change color on failure
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Define what happens when the button is tapped
+                      },
+                      child: CustomImageView(
+                        imagePath // Red or different image on failure
+                            : ImageConstant.imgTipbtn, // Default image
+                        height: 40.v,
+                        width: 40.h,
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                    SizedBox(),
-                    // Check if there are more than 2 options
-                    if (dtcontainer.getTextList().length > 2)
-                      AnimatedContainer(
-                        duration: Duration(seconds: 1),
-                        height: 125.v,
-                        width: 120.h,
-                       
-                        child: Stack(
-                          children: [
-                            SvgPicture.asset(
-                              isFailure
-                                  ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
-                                  : "assets/images/svg/Opt-2.svg", // Default SVG
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                            ),
-                            Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () async {
-                                      if (dtcontainer.getCorrectOutput() ==
-                                          dtcontainer.getTextList()[2]) {
-                                        // success widget push
-                                        leveltracker = leveltracker + 1;
-                                        if (leveltracker > 1) {
-                                          provider.incrementLevelCount("completed");
-                                        } else {
-                                          provider.incrementLevelCount(params);
-                                        }
-                                        bool response = await Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) => GifDisplayScreen()));
-                                        if (response) {
-                                          Navigator.pop(context, true);
-                                        }
-                                      } else {
-                                        // Set failure state
-                                        setState(() {
-                                          isFailure = true;
-                                        });
-                                      }
-                                    },
-                                    child: Text(
-                                      dtcontainer.getTextList()[2],
-                                      style: TextStyle(fontSize: 40),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    // Check if there are more than 3 options
-                    if (dtcontainer.getTextList().length > 3) Spacer(),
-                    if (dtcontainer.getTextList().length > 3)
-                      AnimatedContainer(
-                        duration: Duration(seconds: 1),
-                        height: 125.v,
-                        width: 120.h,
-                        
-                        child: Stack(
-                          children: [
-                            SvgPicture.asset(
-                              isFailure
-                                  ? "assets/images/svg/Red-Opt-2.svg" // Change to failure SVG
-                                  : "assets/images/svg/Opt-2.svg", // Default SVG
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                            ),
-                            Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () async {
-                                      if (dtcontainer.getCorrectOutput() ==
-                                          dtcontainer.getTextList()[3]) {
-                                        // success widget push
-                                        leveltracker = leveltracker + 1;
-                                        if (leveltracker > 1) {
-                                          provider.incrementLevelCount("completed");
-                                        } else {
-                                          provider.incrementLevelCount(params);
-                                        }
-                                        bool response = await Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) => GifDisplayScreen()));
-                                        if (response) {
-                                          Navigator.pop(context, true);
-                                        }
-                                      } else {
-                                        // Set failure state
-                                        setState(() {
-                                          isFailure = true;
-                                        });
-                                      }
-                                    },
-                                    child: Text(
-                                      dtcontainer.getTextList()[3],
-                                      style: TextStyle(fontSize: 40),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-            // Custom button with image at the bottom, change color on failure
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: GestureDetector(
-                onTap: () {
-                  // Define what happens when the button is tapped
-                },
-                child: CustomImageView(
-                  imagePath // Red or different image on failure
-                      : ImageConstant.imgTipbtn, // Default image
-                  height: 40.v,
-                  width: 40.h,
-                  fit: BoxFit.contain,
-                ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-
-
-
+            );
+          },
+        );
 
       case "WordToFig":
         debugPrint("entering in the word to fig section");
-
         return Container(
-          height: 192.v,
-          width: MediaQuery.of(context).size.width * 0.4,
+          height: MediaQuery.of(context).size.height *
+              0.4, // Adjusting height dynamically
+          width: MediaQuery.of(context).size.width *
+              0.8, // Adjusting the width to fit better
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceEvenly, // Distribute space evenly
             children: [
               Padding(
-                padding: EdgeInsets.only(right: 40.h),
+                padding: EdgeInsets.only(right: 10.h),
                 child: AnimatedContainer(
                   duration: Duration(seconds: 1),
-                  height: 125.v,
-                  width: 120.h,
-                  padding:
-                      EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
+                  height: MediaQuery.of(context).size.height *
+                      0.3, // Adjusting height dynamically
+                  width: MediaQuery.of(context).size.width *
+                      0.3, // Adjusting width dynamically
                   child: Stack(
                     children: [
                       SvgPicture.asset(
                         "assets/images/svg/Opt-2.svg",
-                        fit: BoxFit.cover,
+                        fit: BoxFit
+                            .contain, // Ensuring the image doesn't overflow
                         width: double.infinity,
                         height: double.infinity,
                       ),
@@ -709,7 +725,6 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                               onTap: () async {
                                 if (dtcontainer.getCorrectOutput() ==
                                     dtcontainer.getImageUrlList()[0]) {
-                                  // success widget push
                                   leveltracker = leveltracker + 1;
                                   if (leveltracker > 1) {
                                     provider.incrementLevelCount("completed");
@@ -724,13 +739,13 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                     Navigator.pop(context, true);
                                   }
                                 } else {
-                                  // failure widget push
                                   _toggleGlowA();
                                 }
                               },
                               child: Image.network(
                                 dtcontainer.getImageUrlList()[0],
-                                fit: BoxFit.contain,
+                                fit: BoxFit
+                                    .contain, // Ensuring the image scales correctly
                                 height: 70.v,
                                 width: 90.v,
                               ),
@@ -742,17 +757,19 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                   ),
                 ),
               ),
-              Spacer(),
+            // Adjust space between the two blocks
               AnimatedContainer(
                 duration: Duration(seconds: 1),
-                height: 125.v,
-                width: 120.h,
-                padding: EdgeInsets.symmetric(vertical: 8.v, horizontal: 10.h),
+                height: MediaQuery.of(context).size.height *
+                    0.3, // Adjusting height dynamically
+                width: MediaQuery.of(context).size.width *
+                    0.3, // Adjusting width dynamically
                 child: Stack(
                   children: [
                     SvgPicture.asset(
                       "assets/images/svg/Opt-2.svg",
-                      fit: BoxFit.cover,
+                      fit:
+                          BoxFit.contain, // Ensuring the image doesn't overflow
                       width: double.infinity,
                       height: double.infinity,
                     ),
@@ -765,7 +782,6 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                             onTap: () async {
                               if (dtcontainer.getCorrectOutput() ==
                                   dtcontainer.getImageUrlList()[1]) {
-                                // success widget push
                                 leveltracker = leveltracker + 1;
                                 if (leveltracker > 1) {
                                   provider.incrementLevelCount("completed");
@@ -780,13 +796,13 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                   Navigator.pop(context, true);
                                 }
                               } else {
-                                // failure widget push
                                 _toggleGlowA();
                               }
                             },
                             child: Image.network(
                               dtcontainer.getImageUrlList()[1],
-                              fit: BoxFit.contain,
+                              fit: BoxFit
+                                  .contain, // Ensuring the image scales correctly
                               height: 70.v,
                               width: 90.v,
                             ),

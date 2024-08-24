@@ -5,6 +5,7 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/login/login-methods.dart';
 import 'package:svar_new/presentation/login/login_provider.dart';
 import 'package:svar_new/widgets/loading.dart';
+import 'package:rive/rive.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key})
@@ -54,18 +55,20 @@ class LoginScreenState extends State<LoginScreen> {
 
     
 
-    return SafeArea(
-      child: Scaffold(
-        extendBody: true,
-        extendBodyBehindAppBar: true,
-        resizeToAvoidBottomInset: false,
-        body: Container(
+   return SafeArea(
+  child: Scaffold(
+    extendBody: true,
+    extendBodyBehindAppBar: true,
+    resizeToAvoidBottomInset: false,
+    body: Stack(  // Use Stack to layer widgets
+      children: [
+        Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
           decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage("assets/images/BG.png"), fit: BoxFit.fill),
+                image: AssetImage("assets/images/Login_Screen_Potrait.png"), fit: BoxFit.fill),
           ),
           child: Form(
             key: _formKey,
@@ -83,7 +86,7 @@ class LoginScreenState extends State<LoginScreen> {
                         imagePath: ImageConstant.imgBackBtn,
                       ),
                     ),
-                    Spacer()
+                    Spacer(),
                   ],
                 ),
                 Column(
@@ -128,19 +131,34 @@ class LoginScreenState extends State<LoginScreen> {
                               height: 60.h,
                               fit: BoxFit.contain,
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
                     Container(),
                   ],
-                )
+                ),
               ],
             ),
           ),
         ),
-      ),
-    );
+        Positioned(  // Add the Rive animation as a Positioned widget
+          bottom: 20.v,  // Adjust bottom position
+          right: 20.h,   // Adjust right position
+          child: Container(
+            width: 100.v,  // Set the width for the Rive animation
+            height: 100.v, // Set the height for the Rive animation
+            child: RiveAnimation.asset(
+              'assets/animations/mascot-rig-final.riv',  // Update with your Rive file path
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+      ],
+    ),
+  ),
+);
+
   }
 
   Widget Field(double height, String name, TextEditingController controller,
@@ -156,7 +174,6 @@ class LoginScreenState extends State<LoginScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-          
             width: 60.h,
             padding: EdgeInsets.symmetric(vertical: 6.v),
             decoration: BoxDecoration(

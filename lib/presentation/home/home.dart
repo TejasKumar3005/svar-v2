@@ -219,7 +219,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ? GestureDetector(
                           onTap: () {
                             NavigatorService.pushNamed(
-                              AppRoutes.phonmesListScreen,
+                              AppRoutes.phonemsLevelScreenOneScreen,
                             );
                           },
                           child: Container(
@@ -272,7 +272,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ? GestureDetector(
                           onTap: () {
                             NavigatorService.pushNamed(
-                              AppRoutes.phonmesListScreen,
+                              AppRoutes.phonemsLevelScreenOneScreen,
                             );
                           },
                           child: Container(
@@ -325,7 +325,7 @@ class HomeScreenState extends State<HomeScreen> {
                       ? GestureDetector(
                           onTap: () {
                             NavigatorService.pushNamed(
-                              AppRoutes.phonmesListScreen,
+                              AppRoutes.phonemsLevelScreenOneScreen,
                             );
                           },
                           child: Container(
