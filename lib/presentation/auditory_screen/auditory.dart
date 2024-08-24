@@ -3,6 +3,7 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/presentation/auditory_screen/audioToImage.dart';
 import 'package:svar_new/presentation/auditory_screen/animation_play.dart';
+import 'package:svar_new/presentation/auditory_screen/celebration_overlay.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -34,6 +35,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
   late int leveltracker;
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
+    OverlayEntry? _overlayEntry;
 
   Future<void> playAudio(String url) async {
     try {
@@ -208,6 +210,12 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                     } else {
                                       provider.incrementLevelCount(params);
                                     }
+
+                                    _overlayEntry = celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+        Overlay.of(context).insert(_overlayEntry!);
+        
                                     bool response = await Navigator.of(context)
                                         .push(MaterialPageRoute(
                                             builder: (context) =>
