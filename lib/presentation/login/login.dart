@@ -8,14 +8,10 @@ import 'package:svar_new/widgets/loading.dart';
 import 'package:rive/rive.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key})
-      : super(
-          key: key,
-        );
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  LoginScreenState createState() =>
-      LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 
   static Widget builder(BuildContext context) {
     return ChangeNotifierProvider(
@@ -25,7 +21,6 @@ class LoginScreen extends StatefulWidget {
   }
 }
 
-// ignore_for_file: must_be_immutable
 class LoginScreenState extends State<LoginScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool hide = true;
@@ -51,60 +46,56 @@ class LoginScreenState extends State<LoginScreen> {
       }
     });
 
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
 
-
-    
-
-   return SafeArea(
-  child: Scaffold(
-    extendBody: true,
-    extendBodyBehindAppBar: true,
-    resizeToAvoidBottomInset: false,
-    body: Stack(  // Use Stack to layer widgets
-      children: [
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage("assets/images/Login_Screen_Potrait.png"), fit: BoxFit.fill),
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        PlayBgm().playMusic('Back_Btn.mp3', "mp3", false);
-                        Navigator.pop(context);
-                      },
-                      child: CustomImageView(
-                        imagePath: ImageConstant.imgBackBtn,
-                      ),
-                    ),
-                    Spacer(),
-                  ],
-                ),
-                Column(
+    return SafeArea(
+      child: Scaffold(
+        extendBody: true,
+        extendBodyBehindAppBar: true,
+        resizeToAvoidBottomInset: false,
+        body: Stack(
+          children: [
+            Container(
+              width: screenWidth,
+              height: screenHeight,
+              padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("assets/images/Login_Screen_Potrait.png"),
+                    fit: BoxFit.fill),
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
                   mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            PlayBgm().playMusic('Back_Btn.mp3', "mp3", false);
+                            Navigator.pop(context);
+                          },
+                          child: CustomImageView(
+                            imagePath: ImageConstant.imgBackBtn,
+                          ),
+                        ),
+                        Spacer(),
+                      ],
+                    ),
                     CustomImageView(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: 110.v,
+                      width: screenWidth * 0.8,
+                      height: screenHeight * 0.15, // Adjusted proportionally
                       fit: BoxFit.contain,
                       imagePath: ImageConstant.imgSvaLogo,
                     ),
                     SizedBox(
-                      height: 90.v,
+                      height: screenHeight * 0.05, // Adjusted proportionally
                     ),
-                    Align(
-                      alignment: Alignment.center,
+                    Flexible(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Field(40.h, "email", provider.emailController,
                               context, provider),
@@ -127,38 +118,37 @@ class LoginScreenState extends State<LoginScreen> {
                             },
                             child: CustomImageView(
                               imagePath: ImageConstant.imgLoginBTn,
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              height: 60.h,
+                              width: screenWidth * 0.7, // Adjusted proportionally
+                              height: screenHeight * 0.08, // Adjusted proportionally
                               fit: BoxFit.contain,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    Container(),
+                    SizedBox(
+                      height: screenHeight * 0.05, // Adjusted proportionally
+                    ),
+                    Flexible(
+                      child: Center(
+                        child: Container(
+                          width: screenWidth * 0.9, // Adjusted proportionally
+                          height: screenHeight * 0.9, // Increased height proportion
+                          child: RiveAnimation.asset(
+                            'rive/mascot-rig-final.riv', // Update with your Rive file
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
-        Positioned(  // Add the Rive animation as a Positioned widget
-          bottom: 20.v,  // Adjust bottom position
-          right: 20.h,   // Adjust right position
-          child: Container(
-            width: 100.v,  // Set the width for the Rive animation
-            height: 100.v, // Set the height for the Rive animation
-            child: RiveAnimation.asset(
-              'assets/animations/mascot-rig-final.riv',  // Update with your Rive file path
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-      ],
-    ),
-  ),
-);
-
+      ),
+    );
   }
 
   Widget Field(double height, String name, TextEditingController controller,
@@ -196,7 +186,6 @@ class LoginScreenState extends State<LoginScreen> {
           ),
           Expanded(
             child: Container(
-              // height: height,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                   color: appTheme.whiteA70001,
@@ -210,7 +199,6 @@ class LoginScreenState extends State<LoginScreen> {
                       bottomRight: Radius.circular(height / 2))),
               child: Center(
                 child: TextFormField(
-                  // cursorHeight: height,
                   obscureText: name == "password" ? hide : false,
                   keyboardType: name == "email"
                       ? TextInputType.emailAddress
@@ -240,9 +228,8 @@ class LoginScreenState extends State<LoginScreen> {
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 6.h)
-                          ),
-                  validator: (value){
+                      contentPadding: EdgeInsets.symmetric(horizontal: 6.h)),
+                  validator: (value) {
                     if (value == null || value == "") {
                       return "Please enter $name";
                     }
@@ -256,7 +243,6 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  /// Navigates to the previous screen.
   onTapImgClose(BuildContext context) {
     NavigatorService.goBack();
   }

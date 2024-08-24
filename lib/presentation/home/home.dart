@@ -38,20 +38,17 @@ class HomeScreenState extends State<HomeScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-  
   }
-
 
   @override
   Widget build(BuildContext context) {
     var provider = Provider.of<MainInteractionProvider>(context, listen: false);
 
     return PopScope(
-    canPop: false,
-    onPopInvoked: (didPop) {
-      showQuitDialog(context);
-    },
-
+      canPop: false,
+      onPopInvoked: (didPop) {
+        showQuitDialog(context);
+      },
       child: SafeArea(
         child: Scaffold(
           extendBody: true,
@@ -100,40 +97,43 @@ class HomeScreenState extends State<HomeScreen> {
             ClipRect(
               child: GestureDetector(
                 onTap: () {
-                    provider.setScreenInfo(0);
-                      NavigatorService.pushNamed(
-                          AppRoutes.phonemsLevelScreenOneScreen,
-                          arguments: provider.val);
+                  provider.setScreenInfo(0);
+                  NavigatorService.pushNamed(
+                      AppRoutes.phonemsLevelScreenOneScreen,
+                      arguments: provider.val);
                 },
                 child: Container(
-                  width: 300.h,
-                  height: 150.v,
-                  // padding: EdgeInsets.symmetric(vertical: 32.v),
+                  width: MediaQuery.of(context).size.width * 0.8,  // Increased width for rectangle
+                  height: MediaQuery.of(context).size.height * 0.4,  // Adjusted height
                   decoration: AppDecoration.outlineWhiteA.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder20,
                       image: DecorationImage(
                           image: AssetImage(ImageConstant.thumbnailAuditory),
                           fit: BoxFit.fill)),
-                  child:_currentIndex==0? Center(
-                    child: Container(
-                      height: 101.adaptSize,
-                      width: 101.adaptSize,
-                      padding: EdgeInsets.all(20.h),
-                      decoration: AppDecoration.outlineWhiteA.copyWith(
-                          color: AppDecoration.fillDeepOrange.color,
-                          borderRadius: BorderRadius.all(
-                              Radius.circular((101.adaptSize) / 2))),
-                      alignment: Alignment.center,
-                      child: Center(
-                        child: SvgPicture.asset(
-                          height: 45.adaptSize,
-                          width: 45.adaptSize,
-                          fit: BoxFit.contain,
-                          ImageConstant.imgPlayBtn,
+                  child: _currentIndex == 0
+                      ? Center(
+                          child: Container(
+                            height: 101.adaptSize,
+                            width: 101.adaptSize,
+                            padding: EdgeInsets.all(20.h),
+                            decoration: AppDecoration.outlineWhiteA.copyWith(
+                                color: AppDecoration.fillDeepOrange.color,
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular((101.adaptSize) / 2))),
+                            alignment: Alignment.center,
+                            child: Center(
+                              child: SvgPicture.asset(
+                                height: 45.adaptSize,
+                                width: 45.adaptSize,
+                                fit: BoxFit.contain,
+                                ImageConstant.imgPlayBtn,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(
+                          color: Colors.transparent,
                         ),
-                      ),
-                    ),
-                  ):Container(color: Colors.transparent,)
                 ),
               ),
             ),
@@ -145,199 +145,212 @@ class HomeScreenState extends State<HomeScreen> {
                   );
                 },
                 child: Container(
-                  width: 300.h,
-                  height: 150.v,
+                  width: MediaQuery.of(context).size.width * 0.8,  // Increased width for rectangle
+                  height: MediaQuery.of(context).size.height * 0.4,  // Adjusted height
                   decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder20,
                       image: DecorationImage(
                           image: AssetImage(ImageConstant.thumbnailBarakhadi),
                           fit: BoxFit.fill)),
-                
-                          child:  Center(
-                      child:_currentIndex==1? Container(
-                        height: 101.adaptSize,
-                        width: 101.adaptSize,
-                        padding: EdgeInsets.all(20.h),
-                        decoration: AppDecoration.outlineWhiteA.copyWith(
-                            color: AppDecoration.fillDeepOrange.color,
-                            borderRadius: BorderRadius.all(
-                                Radius.circular((101.adaptSize) / 2))),
-                        alignment: Alignment.center,
-                        child: Center(
-                          child: SvgPicture.asset(
-                            height: 45.adaptSize,
-                            width: 45.adaptSize,
-                            fit: BoxFit.contain,
-                            ImageConstant.imgPlayBtn,
+                  child: Center(
+                    child: _currentIndex == 1
+                        ? Container(
+                            height: 101.adaptSize,
+                            width: 101.adaptSize,
+                            padding: EdgeInsets.all(20.h),
+                            decoration: AppDecoration.outlineWhiteA.copyWith(
+                                color: AppDecoration.fillDeepOrange.color,
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular((101.adaptSize) / 2))),
+                            alignment: Alignment.center,
+                            child: Center(
+                              child: SvgPicture.asset(
+                                height: 45.adaptSize,
+                                width: 45.adaptSize,
+                                fit: BoxFit.contain,
+                                ImageConstant.imgPlayBtn,
+                              ),
+                            ),
+                          )
+                        : Container(
+                            color: Colors.transparent,
                           ),
-                        ),
-                      ):Container(color: Colors.transparent,),
-                    ),
+                  ),
                 ),
               ),
             ),
             ClipRect(
               child: GestureDetector(
                 onTap: () {
-                    provider.setScreenInfo(1);
+                  provider.setScreenInfo(1);
                   NavigatorService.pushNamed(
                       AppRoutes.phonemsLevelScreenOneScreen,
                       arguments: provider.val);
                 },
                 child: Container(
-                  width: 300.h,
-                  height: 150.v,
+                  width: MediaQuery.of(context).size.width * 0.8,  // Increased width for rectangle
+                  height: MediaQuery.of(context).size.height * 0.4,  // Adjusted height
                   decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder20,
                       image: DecorationImage(
                           image: AssetImage(ImageConstant.thumbnailPhonemes),
                           fit: BoxFit.fill)),
-                          child: 
-                           Center(
-                      child:_currentIndex==2? Container(
-                        height: 101.adaptSize,
-                        width: 101.adaptSize,
-                        padding: EdgeInsets.all(20.h),
-                        decoration: AppDecoration.outlineWhiteA.copyWith(
-                            color: AppDecoration.fillDeepOrange.color,
-                            borderRadius: BorderRadius.all(
-                                Radius.circular((101.adaptSize) / 2))),
-                        alignment: Alignment.center,
-                        child: Center(
-                          child: SvgPicture.asset(
-                            height: 45.adaptSize,
-                            width: 45.adaptSize,
-                            fit: BoxFit.contain,
-                            ImageConstant.imgPlayBtn,
+                  child: Center(
+                    child: _currentIndex == 2
+                        ? Container(
+                            height: 101.adaptSize,
+                            width: 101.adaptSize,
+                            padding: EdgeInsets.all(20.h),
+                            decoration: AppDecoration.outlineWhiteA.copyWith(
+                                color: AppDecoration.fillDeepOrange.color,
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular((101.adaptSize) / 2))),
+                            alignment: Alignment.center,
+                            child: Center(
+                              child: SvgPicture.asset(
+                                height: 45.adaptSize,
+                                width: 45.adaptSize,
+                                fit: BoxFit.contain,
+                                ImageConstant.imgPlayBtn,
+                              ),
+                            ),
+                          )
+                        : Container(
+                            color: Colors.transparent,
                           ),
-                        ),
-                      ):Container(color: Colors.transparent,),
-                    ),
+                  ),
                 ),
               ),
             ),
-             ClipRect(
+            ClipRect(
               child: GestureDetector(
                 onTap: () {
-                    provider.setScreenInfo(1);
+                  provider.setScreenInfo(1);
                   NavigatorService.pushNamed(
                       AppRoutes.phonemsLevelScreenOneScreen,
                       arguments: provider.val);
                 },
                 child: Container(
-                  width: 300.h,
-                  height: 150.v,
+                  width: MediaQuery.of(context).size.width * 0.8,  // Increased width for rectangle
+                  height: MediaQuery.of(context).size.height * 0.4,  // Adjusted height
                   decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder20,
                       image: DecorationImage(
                           image: AssetImage(ImageConstant.imgDetection),
                           fit: BoxFit.fill)),
-                          child: 
-                           Center(
-                      child:_currentIndex==3? Container(
-                        height: 101.adaptSize,
-                        width: 101.adaptSize,
-                        padding: EdgeInsets.all(20.h),
-                        decoration: AppDecoration.outlineWhiteA.copyWith(
-                            color: AppDecoration.fillDeepOrange.color,
-                            borderRadius: BorderRadius.all(
-                                Radius.circular((101.adaptSize) / 2))),
-                        alignment: Alignment.center,
-                        child: Center(
-                          child: SvgPicture.asset(
-                            height: 45.adaptSize,
-                            width: 45.adaptSize,
-                            fit: BoxFit.contain,
-                            ImageConstant.imgPlayBtn,
+                  child: Center(
+                    child: _currentIndex == 3
+                        ? Container(
+                            height: 101.adaptSize,
+                            width: 101.adaptSize,
+                            padding: EdgeInsets.all(20.h),
+                            decoration: AppDecoration.outlineWhiteA.copyWith(
+                                color: AppDecoration.fillDeepOrange.color,
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular((101.adaptSize) / 2))),
+                            alignment: Alignment.center,
+                            child: Center(
+                              child: SvgPicture.asset(
+                                height: 45.adaptSize,
+                                width: 45.adaptSize,
+                                fit: BoxFit.contain,
+                                ImageConstant.imgPlayBtn,
+                              ),
+                            ),
+                          )
+                        : Container(
+                            color: Colors.transparent,
                           ),
-                        ),
-                      ):Container(color: Colors.transparent,),
-                    ),
+                  ),
                 ),
               ),
             ),
             ClipRect(
               child: GestureDetector(
                 onTap: () {
-                    provider.setScreenInfo(1);
+                  provider.setScreenInfo(1);
                   NavigatorService.pushNamed(
                       AppRoutes.phonemsLevelScreenOneScreen,
                       arguments: provider.val);
                 },
                 child: Container(
-                  width: 300.h,
-                  height: 150.v,
+                  width: MediaQuery.of(context).size.width * 0.8,  // Increased width for rectangle
+                  height: MediaQuery.of(context).size.height * 0.4,  // Adjusted height
                   decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder20,
                       image: DecorationImage(
                           image: AssetImage(ImageConstant.imgDescription),
                           fit: BoxFit.fill)),
-                          child: 
-                           Center(
-                      child:_currentIndex==4? Container(
-                        height: 101.adaptSize,
-                        width: 101.adaptSize,
-                        padding: EdgeInsets.all(20.h),
-                        decoration: AppDecoration.outlineWhiteA.copyWith(
-                            color: AppDecoration.fillDeepOrange.color,
-                            borderRadius: BorderRadius.all(
-                                Radius.circular((101.adaptSize) / 2))),
-                        alignment: Alignment.center,
-                        child: Center(
-                          child: SvgPicture.asset(
-                            height: 45.adaptSize,
-                            width: 45.adaptSize,
-                            fit: BoxFit.contain,
-                            ImageConstant.imgPlayBtn,
+                  child: Center(
+                    child: _currentIndex == 4
+                        ? Container(
+                            height: 101.adaptSize,
+                            width: 101.adaptSize,
+                            padding: EdgeInsets.all(20.h),
+                            decoration: AppDecoration.outlineWhiteA.copyWith(
+                                color: AppDecoration.fillDeepOrange.color,
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular((101.adaptSize) / 2))),
+                            alignment: Alignment.center,
+                            child: Center(
+                              child: SvgPicture.asset(
+                                height: 45.adaptSize,
+                                width: 45.adaptSize,
+                                fit: BoxFit.contain,
+                                ImageConstant.imgPlayBtn,
+                              ),
+                            ),
+                          )
+                        : Container(
+                            color: Colors.transparent,
                           ),
-                        ),
-                      ):Container(color: Colors.transparent,),
-                    ),
+                  ),
                 ),
               ),
             ),
             ClipRect(
               child: GestureDetector(
                 onTap: () {
-                    provider.setScreenInfo(1);
+                  provider.setScreenInfo(1);
                   NavigatorService.pushNamed(
                       AppRoutes.phonemsLevelScreenOneScreen,
                       arguments: provider.val);
                 },
                 child: Container(
-                  width: 300.h,
-                  height: 150.v,
+                  width: MediaQuery.of(context).size.width * 0.8,  // Increased width for rectangle
+                  height: MediaQuery.of(context).size.height * 0.4,  // Adjusted height
                   decoration: AppDecoration.gradientRedToWhiteA.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder20,
                       image: DecorationImage(
                           image: AssetImage(ImageConstant.imgIdentification),
                           fit: BoxFit.fill)),
-                          child: 
-                           Center(
-                      child:_currentIndex==5? Container(
-                        height: 101.adaptSize,
-                        width: 101.adaptSize,
-                        padding: EdgeInsets.all(20.h),
-                        decoration: AppDecoration.outlineWhiteA.copyWith(
-                            color: AppDecoration.fillDeepOrange.color,
-                            borderRadius: BorderRadius.all(
-                                Radius.circular((101.adaptSize) / 2))),
-                        alignment: Alignment.center,
-                        child: Center(
-                          child: SvgPicture.asset(
-                            height: 45.adaptSize,
-                            width: 45.adaptSize,
-                            fit: BoxFit.contain,
-                            ImageConstant.imgPlayBtn,
+                  child: Center(
+                    child: _currentIndex == 5
+                        ? Container(
+                            height: 101.adaptSize,
+                            width: 101.adaptSize,
+                            padding: EdgeInsets.all(20.h),
+                            decoration: AppDecoration.outlineWhiteA.copyWith(
+                                color: AppDecoration.fillDeepOrange.color,
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular((101.adaptSize) / 2))),
+                            alignment: Alignment.center,
+                            child: Center(
+                              child: SvgPicture.asset(
+                                height: 45.adaptSize,
+                                width: 45.adaptSize,
+                                fit: BoxFit.contain,
+                                ImageConstant.imgPlayBtn,
+                              ),
+                            ),
+                          )
+                        : Container(
+                            color: Colors.transparent,
                           ),
-                        ),
-                      ):Container(color: Colors.transparent,),
-                    ),
+                  ),
                 ),
               ),
             ),
-             
-  
           ],
 
           //Slider Container properties
@@ -349,10 +362,10 @@ class HomeScreenState extends State<HomeScreen> {
             viewportFraction: 0.4,
             autoPlayAnimationDuration: const Duration(milliseconds: 800),
             onPageChanged: (index, reason) {
-    setState(() {
-      _currentIndex = index;
-    });
-  },
+              setState(() {
+                _currentIndex = index;
+              });
+            },
           ),
         ),
       ),

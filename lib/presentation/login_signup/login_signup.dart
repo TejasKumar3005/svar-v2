@@ -7,10 +7,7 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:rive/rive.dart';
 
 class LoginSignUpScreen extends StatefulWidget {
-  const LoginSignUpScreen({Key? key})
-      : super(
-          key: key,
-        );
+  const LoginSignUpScreen({Key? key}) : super(key: key);
 
   @override
   LoginSignUpScreenState createState() => LoginSignUpScreenState();
@@ -22,6 +19,7 @@ class LoginSignUpScreen extends StatefulWidget {
 
 class LoginSignUpScreenState extends State<LoginSignUpScreen> {
   final PlayBgm _playBgm = PlayBgm();
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +34,9 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
@@ -46,75 +47,63 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
           extendBody: true,
           extendBodyBehindAppBar: true,
           body: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
+            width: screenWidth,
+            height: screenHeight,
             padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
             decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage("assets/images/Login_Screen_Potrait.png"),
-                  fit: BoxFit.fill),
+                image: AssetImage("assets/images/Login_Screen_Potrait.png"),
+                fit: BoxFit.fill,
+              ),
             ),
-            child: Stack(
-              // Changed to Stack
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
               children: [
-                Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        CustomImageView(
-                          width: MediaQuery.of(context).size.width * 0.8,
-                          height: 110.v,
-                          fit: BoxFit.contain,
-                          imagePath: ImageConstant.imgSvaLogo,
-                        ),
-                        SizedBox(
-                          height: 100.v,
-                        ),
-                        Column(
-                          children: [
-                            CustomButton(
-                              type: ButtonType.Login,
-                              onPressed: () {
-                                NavigatorService.pushNamed(
-                                  AppRoutes.login,
-                                );
-                              },
-                            ),
-                            SizedBox(
-                              height: 10.v,
-                            ),
-                            CustomButton(
-                              type: ButtonType.SignUp,
-                              onPressed: () {
-                                NavigatorService.pushNamed(
-                                  AppRoutes.register,
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                        Container(),
-                      ],
-                    )
-                  ],
+                CustomImageView(
+                  width: screenWidth * 0.8,
+                  height: screenHeight * 0.15, // Adjusted proportionally
+                  fit: BoxFit.contain,
+                  imagePath: ImageConstant.imgSvaLogo,
                 ),
-                Positioned(
-                  bottom: 20.v, // Adjust position as needed
-                  right: 20.h, // Adjust position as needed
-                  child: Container(
-                    width: 100.v, // Set width for the Rive animation
-                    height: 100.v, // Set height for the Rive animation
-                    decoration: BoxDecoration(
-                      color: Colors.white, // Add background color
-                      borderRadius: BorderRadius.circular(
-                          10.v), // Optional: add rounded corners
-                    ),
-                    child: RiveAnimation.asset(
-                      'assets/animations/mascot-rig-final.riv', // Update with your Rive file
-                      fit: BoxFit.contain,
+                SizedBox(
+                  height: screenHeight * 0.05, // Adjusted proportionally
+                ),
+                Flexible(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomButton(
+                        type: ButtonType.Login,
+                        onPressed: () {
+                          NavigatorService.pushNamed(AppRoutes.login);
+                        },
+                        // Adjusted proportionally
+                      ),
+                      SizedBox(
+                        height: screenHeight * 0.02, // Adjusted proportionally
+                      ),
+                      CustomButton(
+                        type: ButtonType.SignUp,
+                        onPressed: () {
+                          NavigatorService.pushNamed(AppRoutes.register);
+                        },
+                        // Adjusted proportionally
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: screenHeight * 0.05, // Adjusted proportionally
+                ),
+                Flexible(
+                  child: Center(
+                    child: Container(
+                      width: screenWidth * 0.8, // Adjusted proportionally
+                      height: screenHeight * 0.8, // Adjusted proportionally
+                      child: RiveAnimation.asset(
+                        'rive/mascot-rig-final.riv', // Update with your Rive file
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
