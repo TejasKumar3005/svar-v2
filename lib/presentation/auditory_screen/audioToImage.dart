@@ -131,11 +131,11 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                           playAudio(widget.dtcontainer.getAudioUrl());
 
                           // Get the audio samples using the audiowaveform package
-                          List<double> samples =
-                              await _player.getCurrentAudioData();
+                          // List<double> samples =
+                          //     await _player.getCurrentAudioData();
 
-                          // Update the waveform with the audio samples
-                          _waveController.updateSamples(samples);
+                          // // Update the waveform with the audio samples
+                          // _waveController.updateSamples(samples);
                         },
                         child: Stack(
                           children: [
@@ -145,19 +145,19 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                               width: MediaQuery.of(context).size.width / 2,
                               fit: BoxFit.fill,
                             ),
-                            Positioned(
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              child: PolygonWaveform(
-                                samples: _waveController
-                                    .samples, // Use the updated samples
-                                height: 20.v,
-                                width: MediaQuery.of(context).size.width / 2,
-                                inactiveColor: Colors.white.withOpacity(0.5),
-                                activeColor: Colors.white,
-                              ),
-                            ),
+                            // Positioned(
+                            //   top: 0,
+                            //   left: 0,
+                            //   right: 0,
+                            //   child: PolygonWaveform(
+                            //     samples: _waveController
+                            //         .samples, // Use the updated samples
+                            //     height: 20.v,
+                            //     width: MediaQuery.of(context).size.width / 2,
+                            //     inactiveColor: Colors.white.withOpacity(0.5),
+                            //     activeColor: Colors.white,
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
