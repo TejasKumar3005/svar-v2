@@ -194,10 +194,11 @@ class UserProfileScreenState extends State<UserProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // AppStatsHeader(per: 30),
-
+          
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12.h),
                 child: Row(
+                  mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
@@ -217,9 +218,9 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                           borderRadius: BorderRadiusStyle.roundedBorder15,
                         ),
                         child: Container(
-                          height: 320.v,
+                          height: MediaQuery.of(context).size.height * 0.8,
                           width:
-                              (MediaQuery.of(context).size.width - 44.h) * 0.45,
+                              (MediaQuery.of(context).size.width ) * 0.45,
                           decoration: AppDecoration.outlineWhiteA.copyWith(
                             borderRadius: BorderRadiusStyle.roundedBorder15,
                           ),
@@ -254,7 +255,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                       ),
                                       SizedBox(height: 10),
                                       CustomTextFormField(
-                                        width: 370.h,
+                                        width: 370.v,
                                         controller: _phoneController,
                                         prefix: Row(
                                           mainAxisSize: MainAxisSize.min,
@@ -330,7 +331,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                       if (_showPasswordFields) ...[
                                         SizedBox(height: 10),
                                         CustomTextFormField(
-                                          width: 370.h,
+                                          width: 370.v,
                                           controller:
                                               _currentPasswordController,
                                           suffix: GestureDetector(
@@ -365,7 +366,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                         ),
                                         SizedBox(height: 10),
                                         CustomTextFormField(
-                                          width: 370.h,
+                                          width: 370.v,
                                           controller: _newPasswordController,
                                           suffix: GestureDetector(
                                             onTap: () {
@@ -443,7 +444,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                       ),
                     ),
                     Container(
-                      width: (MediaQuery.of(context).size.width - 44.h) * 0.45,
+                      width: (MediaQuery.of(context).size.width ) * 0.45,
                       height: 245.v,
                       padding: EdgeInsets.symmetric(
                         horizontal: 6.h,
@@ -477,7 +478,8 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Container(
-                                      width: double.maxFinite,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.45, 
                                       height: 40.v,
                                       padding: EdgeInsets.symmetric(
                                         horizontal: 6.h,
@@ -605,7 +607,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
 
                           Container(
                             height: 65.v,
-                            width: (MediaQuery.of(context).size.width - 44.h) *
+                            width: (MediaQuery.of(context).size.width ) *
                                 0.45,
                             padding: EdgeInsets.symmetric(
                               horizontal: 12.h,
