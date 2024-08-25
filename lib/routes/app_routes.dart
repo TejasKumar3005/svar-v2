@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/auditory_screen/auditory.dart';
 import 'package:svar_new/presentation/camera_video_excercise/videoCam.dart';
+import 'package:svar_new/presentation/discrimination/discrimination.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_screen.dart';
 import 'package:svar_new/presentation/login/login.dart';
 import 'package:svar_new/presentation/login_signup/login_signup.dart';
@@ -76,6 +77,7 @@ class AppRoutes {
 
   static const String initialRoute = '/initialRoute';
   static const String userProfileScreen = '/user_profile';
+  static const String discrimination = '/discrimination';
 
 
   static Map<String, WidgetBuilder> get routes => {
@@ -100,10 +102,11 @@ register:RegisterScreen.builder,
         lingLearningScreen: LingLearningScreen.builder,
         speakingphonemeScreen: SpeakingPhonemeScreen.builder,
         videoCamScreen:VideoCamScreen.builder,
-      
+        discrimination: Discrimination.builder,
         tipBoxVideoScreen: TipBoxVideoScreen.builder,
         appNavigationScreen: AppNavigationScreen.builder,
         initialRoute: LoadingScreen.builder,
         userProfileScreen: UserProfileScreen.builder
+
       };
 }
