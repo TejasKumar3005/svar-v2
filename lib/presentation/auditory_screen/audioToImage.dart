@@ -6,9 +6,10 @@ import 'package:svar_new/presentation/auditory_screen/animation_play.dart';
 import 'package:svar_new/presentation/auditory_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/auditory_screen/provider/auditory_provider.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
 
-class AudiotoimageScreen
-    extends StatefulWidget {
+class AudiotoimageScreen extends StatefulWidget {
   final dynamic dtcontainer;
   final String params;
   const AudiotoimageScreen(
@@ -18,20 +19,17 @@ class AudiotoimageScreen
         );
 
   @override
-AudiotoimageScreenState createState() =>
-      AudiotoimageScreenState();
+  AudiotoimageScreenState createState() => AudiotoimageScreenState();
 
   static Widget builder(BuildContext context, dynamic dtcontainer) {
-    return 
-    AudiotoimageScreen(
-        dtcontainer: null,
-        params: '',
-      );
+    return AudiotoimageScreen(
+      dtcontainer: null,
+      params: '',
+    );
   }
 }
 
-class AudiotoimageScreenState
-    extends State<AudiotoimageScreen> {
+class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   late AudioPlayer _player;
   late bool _isGlowingA;
   late bool _isGlowingB;
@@ -39,11 +37,9 @@ class AudiotoimageScreenState
 
   Future<void> playAudio(String url) async {
     try {
-        AudioCache.instance = AudioCache(prefix: '');
+      AudioCache.instance = AudioCache(prefix: '');
       _player = AudioPlayer();
-      await _player.play(
-        UrlSource(url)
-      );
+      await _player.play(UrlSource(url));
     } catch (e) {
       print('Error initializing player: $e');
     }
@@ -84,7 +80,7 @@ class AudiotoimageScreenState
   @override
   void initState() {
     super.initState();
-      SystemChrome.setPreferredOrientations([
+    SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
@@ -95,12 +91,11 @@ class AudiotoimageScreenState
   }
 
   int sel = 0;
-    OverlayEntry? _overlayEntry;
+  OverlayEntry? _overlayEntry;
 
   @override
   Widget build(BuildContext context) {
-    var provider = context
-        .watch<AuditoryProvider>();
+    var provider = context.watch<AuditoryProvider>();
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -132,14 +127,38 @@ class AudiotoimageScreenState
                   children: [
                     Center(
                       child: GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           playAudio(widget.dtcontainer.getAudioUrl());
+
+                          // Get the audio samples using the audiowaveform package
+                          List<double> samples =
+                              await _player.getCurrentAudioData();
+
+                          // Update the waveform with the audio samples
+                          _waveController.updateSamples(samples);
                         },
-                        child: CustomImageView(
-                          height: 50.v,
-                          fit: BoxFit.fill,
-                          width: MediaQuery.of(context).size.width / 2,
-                          imagePath: "assets/images/audio_spectrum.png",
+                        child: Stack(
+                          children: [
+                            SvgPicture.asset(
+                              "assets/images/svg/Audio-Bar.svg",
+                              height: 50.v,
+                              width: MediaQuery.of(context).size.width / 2,
+                              fit: BoxFit.fill,
+                            ),
+                            Positioned(
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              child: PolygonWaveform(
+                                samples: _waveController
+                                    .samples, // Use the updated samples
+                                height: 20.v,
+                                width: MediaQuery.of(context).size.width / 2,
+                                inactiveColor: Colors.white.withOpacity(0.5),
+                                activeColor: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -182,10 +201,10 @@ class AudiotoimageScreenState
                                     provider.incrementLevelCount(widget.params);
                                   }
                                   _overlayEntry =
-                                        celebrationOverlay(context, () {
-                                      _overlayEntry?.remove();
-                                    });
-                                    Overlay.of(context).insert(_overlayEntry!);
+                                      celebrationOverlay(context, () {
+                                    _overlayEntry?.remove();
+                                  });
+                                  Overlay.of(context).insert(_overlayEntry!);
                                 } else {
                                   _toggleGlowA();
                                 }
