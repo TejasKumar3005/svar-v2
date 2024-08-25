@@ -59,11 +59,9 @@ void main() async {
   ]).then((value) {
     initializeFirebaseAuth();
     runApp(
-      MusicManager(
-        child: MyApp(
-        analyticsService: analyticsService,
-            ),
-      ));
+      MyApp(
+      analyticsService: analyticsService,
+          ));
   });
 // final AnalyticsService analyticsService = AnalyticsService();
 //   WidgetsFlutterBinding.ensureInitialized();

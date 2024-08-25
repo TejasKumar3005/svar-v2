@@ -25,6 +25,7 @@ class VideoCamScreen extends StatefulWidget {
 class _VideoCamScreenState extends State<VideoCamScreen>
     with WidgetsBindingObserver {
   late CameraController _controller;
+  bool _isCameraReady = false;
   late Future<void> _initializeControllerFuture;
 
   OverlayEntry? _overlayEntry;
@@ -61,8 +62,10 @@ class _VideoCamScreenState extends State<VideoCamScreen>
       frontCamera,
       kIsWeb ? ResolutionPreset.medium : ResolutionPreset.max,
     );
+    _controller.lockCaptureOrientation(DeviceOrientation.landscapeLeft);
 
     _initializeControllerFuture = _controller.initialize();
+    _isCameraReady = true;
     setState(() {});
   }
 
@@ -164,13 +167,16 @@ class _VideoCamScreenState extends State<VideoCamScreen>
             AuditoryAppBar(context),
             Spacer(),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
                     height: 219.v,
                     width: MediaQuery.of(context).size.width * 0.40,
-                    child: !_controller.value.isInitialized
+                    child: !_isCameraReady
                         ? Center(child: CircularProgressIndicator())
-                        : CameraPreview(_controller)),
+                        : Transform.flip(
+                            flipY: false,
+                            child: CameraPreview(_controller))),
                 GestureDetector(
                   onTap: _onTap,
                   child: _videoPlayerController.value.isInitialized
@@ -203,7 +209,7 @@ class _VideoCamScreenState extends State<VideoCamScreen>
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
-
+      cameraController.lockCaptureOrientation(DeviceOrientation.landscapeLeft);
     _controller = cameraController;
 
     // If the controller is updated then update the UI.
