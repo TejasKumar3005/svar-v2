@@ -1,7 +1,6 @@
-
-
 import 'package:camera/camera.dart';
 import 'package:chewie/chewie.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -17,14 +16,14 @@ class VideoCamScreen extends StatefulWidget {
 
   @override
   State<VideoCamScreen> createState() => _VideoCamScreenState();
-  
+
   static Widget builder(BuildContext context) {
     return VideoCamScreen();
   }
 }
 
-class _VideoCamScreenState extends State<VideoCamScreen> {
-
+class _VideoCamScreenState extends State<VideoCamScreen>
+    with WidgetsBindingObserver {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
 
@@ -40,26 +39,27 @@ class _VideoCamScreenState extends State<VideoCamScreen> {
       _initializeCamera();
     } else {
       // Handle the case when the permission is not granted
-  
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (_overlayEntry == null) {
-      _overlayEntry = persmissionOverlay(context,()=>_overlayEntry?.remove());
-      Overlay.of(context).insert(_overlayEntry!);
 
-    }
-  });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_overlayEntry == null) {
+          _overlayEntry =
+              persmissionOverlay(context, () => _overlayEntry?.remove());
+          Overlay.of(context).insert(_overlayEntry!);
+        }
+      });
     }
   }
 
   void _initializeCamera() async {
     // Obtain a list of available cameras on the device.
-  final cameras = await availableCameras();
-  
-  // Select the front camera, if available.
-  final frontCamera = cameras.firstWhere((camera) => camera.lensDirection == CameraLensDirection.front);
+    final cameras = await availableCameras();
+
+    // Select the front camera, if available.
+    final frontCamera = cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.front);
     _controller = CameraController(
       frontCamera,
-      ResolutionPreset.high,
+      kIsWeb ? ResolutionPreset.medium : ResolutionPreset.max,
     );
 
     _initializeControllerFuture = _controller.initialize();
@@ -70,19 +70,20 @@ class _VideoCamScreenState extends State<VideoCamScreen> {
   ChewieController? _chewieController;
   bool _showPlayButton = false;
 
-
   @override
   void initState() {
     super.initState();
 
-      SystemChrome.setPreferredOrientations([
+    SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    _requestCameraPermission();
-    var prov=Provider.of<LingLearningProvider>(context,listen: false);
 
-    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse("https://firebasestorage.googleapis.com/v0/b/faceattendance-a1720.appspot.com/o/audio%2F${PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]}.mp4?alt=media"))
+    _requestCameraPermission();
+    var prov = Provider.of<LingLearningProvider>(context, listen: false);
+
+    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(
+        "https://firebasestorage.googleapis.com/v0/b/faceattendance-a1720.appspot.com/o/audio%2F${PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]}.mp4?alt=media"))
       ..initialize().then((_) {
         setState(() {});
       });
@@ -124,70 +125,97 @@ class _VideoCamScreenState extends State<VideoCamScreen> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final CameraController? cameraController = _controller;
+
+    // App state changed before we got the chance to initialize.
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      cameraController.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      _initializeCameraController(cameraController.description);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:Container(
-        width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(
-                        "assets/images/cambg.png",
-                      ),
-                      fit: BoxFit.cover,
-                    ),
-
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 15.h,
-                      vertical: 10.v,
-                    ),
-                    child: Column(
-                      children: [
-                        AuditoryAppBar(context),
-                        SizedBox(height: 56.v),
-                        Row(
-                          children: [
-
-                            Container(
-                      height: 219.v,
-                      width: MediaQuery.of(context).size.width * 0.40,
-                      child: _initializeControllerFuture == null
-          ? Center(child: CircularProgressIndicator())
-          : FutureBuilder<void>(
-              future: _initializeControllerFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return CameraPreview(_controller);
-                } else {
-                  return Center(child: CircularProgressIndicator());
-                }
-              },
-            ),
-                      
-                    ),
-        GestureDetector(
-
-        onTap: _onTap,
-        child: _videoPlayerController.value.isInitialized
-            ? SizedBox(
-              height: 219.v,
-                width: MediaQuery.of(context).size.width * 0.40,
-              child: AspectRatio(
-                  aspectRatio: _videoPlayerController.value.aspectRatio,
-                  child: Center(child: Chewie(controller: _chewieController!)),
-                ),
-            )
-            : Center(child: CircularProgressIndicator()),
+        body: Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(
+            "assets/images/cambg.png",
+          ),
+          fit: BoxFit.cover,
+        ),
       ),
-                    
-                          ],
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: 15.h,
+          vertical: 10.v,
+        ),
+        child: Column(
+          children: [
+            AuditoryAppBar(context),
+            Spacer(),
+            Row(
+              children: [
+                Container(
+                    height: 219.v,
+                    width: MediaQuery.of(context).size.width * 0.40,
+                    child: !_controller.value.isInitialized
+                        ? Center(child: CircularProgressIndicator())
+                        : CameraPreview(_controller)),
+                GestureDetector(
+                  onTap: _onTap,
+                  child: _videoPlayerController.value.isInitialized
+                      ? SizedBox(
+                          height: 219.v,
+                          width: MediaQuery.of(context).size.width * 0.40,
+                          child: AspectRatio(
+                            aspectRatio:
+                                _videoPlayerController.value.aspectRatio,
+                            child: Center(
+                                child: Chewie(controller: _chewieController!)),
+                          ),
                         )
-                      ],
-                    ),
-                  ),
-      )
+                      : Center(child: CircularProgressIndicator()),
+                ),
+              ],
+            ),
+            Spacer()
+          ],
+        ),
+      ),
+    ));
+  }
+
+  Future<void> _initializeCameraController(
+      CameraDescription cameraDescription) async {
+    final CameraController cameraController = CameraController(
+      cameraDescription,
+      kIsWeb ? ResolutionPreset.max : ResolutionPreset.medium,
+      enableAudio: false,
+      imageFormatGroup: ImageFormatGroup.jpeg,
     );
+
+    _controller = cameraController;
+
+    // If the controller is updated then update the UI.
+    cameraController.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+      if (cameraController.value.hasError) {}
+    });
+
+    if (mounted) {
+      setState(() {});
+    }
   }
 }
