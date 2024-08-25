@@ -97,10 +97,10 @@ class HomeScreenState extends State<HomeScreen> {
             ClipRect(
               child: GestureDetector(
                 onTap: () {
-                  provider.setScreenInfo(1);
+                  
                   NavigatorService.pushNamed(
-                      AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: provider.val);
+                      AppRoutes.phonmesListScreen,
+                    );
                 },
                 child: Center(
                   // Centering the entire container

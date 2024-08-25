@@ -36,11 +36,9 @@ class _MusicManagerState extends State<MusicManager>
   void initState() {
     super.initState();
 
-    // Register as an observer
     WidgetsBinding.instance.addObserver(this);
-
-    // Start playing the music if not on an excluded screen
     _handleMusicPlayback();
+    
   }
 
   @override
