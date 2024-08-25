@@ -8,12 +8,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/analytics/screen-tracking.dart';
 import 'package:svar_new/core/utils/firebaseoptions.dart';
-import 'package:svar_new/core/utils/musicManager.dart';
 import 'package:svar_new/presentation/auditory_screen/provider/auditory_provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/home/provider/main_interaction_provider.dart';
 import 'package:svar_new/presentation/phoneme_level_one/provider/level_one_provider.dart';
-import 'package:svar_new/presentation/settings_screen/setting.dart';
 import 'package:svar_new/providers/appUpdateProvider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
@@ -125,9 +123,9 @@ class MyApp extends StatelessWidget {
                 // supportedLocales: locals,
                 // initialRoute: AppRoutes.logInSignUpScreenPotraitScreen,
                 initialRoute: auth.currentUser == null
-                    ? AppRoutes.loginSignup
+                    ? AppRoutes.discrimination
                     : AppRoutes
-                        .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                        .discrimination, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
                 // home: SettingsScreen(),
               );
