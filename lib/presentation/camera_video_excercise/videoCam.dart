@@ -26,6 +26,8 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     with WidgetsBindingObserver {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  bool isCameraReady = false;
+  bool isVideoReady = false;
 
   OverlayEntry? _overlayEntry;
 
@@ -50,7 +52,7 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     }
   }
 
-  void _initializeCamera() async {
+  Future<void> _initializeCamera() async {
     // Obtain a list of available cameras on the device.
     final cameras = await availableCameras();
 
@@ -61,14 +63,25 @@ class _VideoCamScreenState extends State<VideoCamScreen>
       frontCamera,
       kIsWeb ? ResolutionPreset.medium : ResolutionPreset.max,
     );
-
-    _initializeControllerFuture = _controller.initialize();
-    setState(() {});
+  try {
+  await _controller.initialize();
+     _controller.lockCaptureOrientation(DeviceOrientation.landscapeRight);
+    setState(() {
+      isCameraReady = true;
+    });
+    
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error: ${e.toString()}'),
+      ),
+    );
+  }
+    
   }
 
   late VideoPlayerController _videoPlayerController;
   ChewieController? _chewieController;
-  bool _showPlayButton = false;
 
   @override
   void initState() {
@@ -80,12 +93,18 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     ]);
 
     _requestCameraPermission();
+    initiliaseVideo();
+  }
+
+  void initiliaseVideo() {
     var prov = Provider.of<LingLearningProvider>(context, listen: false);
 
     _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(
         "https://firebasestorage.googleapis.com/v0/b/faceattendance-a1720.appspot.com/o/audio%2F${PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]}.mp4?alt=media"))
       ..initialize().then((_) {
-        setState(() {});
+        setState(() {
+          isVideoReady = true;
+        });
       });
     _videoPlayerController.addListener(() {
       if (_videoPlayerController.value.position ==
@@ -95,8 +114,11 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     });
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
-      autoPlay: false,
-      looping: false,
+      autoPlay: true,
+      looping: true,
+      showControls: false,
+      showControlsOnInitialize: false,
+      showOptions: false,
     );
   }
 
@@ -105,23 +127,6 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     _videoPlayerController.dispose();
     _chewieController?.dispose();
     super.dispose();
-  }
-
-  void _togglePlayPause() {
-    setState(() {
-      if (_videoPlayerController.value.isPlaying) {
-        _videoPlayerController.pause();
-      } else {
-        _videoPlayerController.play();
-      }
-      _showPlayButton = false;
-    });
-  }
-
-  void _onTap() {
-    setState(() {
-      _showPlayButton = !_showPlayButton;
-    });
   }
 
   @override
@@ -168,21 +173,35 @@ class _VideoCamScreenState extends State<VideoCamScreen>
                 Container(
                     height: 219.v,
                     width: MediaQuery.of(context).size.width * 0.40,
-                    child: !_controller.value.isInitialized
-                        ? Center(child: CircularProgressIndicator())
-                        : CameraPreview(_controller)),
-                GestureDetector(
-                  onTap: _onTap,
-                  child: _videoPlayerController.value.isInitialized
-                      ? SizedBox(
-                          height: 219.v,
-                          width: MediaQuery.of(context).size.width * 0.40,
-                          child: AspectRatio(
-                            aspectRatio:
-                                _videoPlayerController.value.aspectRatio,
-                            child: Center(
-                                child: Chewie(controller: _chewieController!)),
-                          ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 2,
+                      ),
+                    ),
+                    child: !isCameraReady
+                        ? Center(
+                            child:
+                                CircularProgressIndicator(color: Colors.orange))
+                        : Transform.flip(
+                          flipY: true,
+                          child: CameraPreview(_controller))),
+                Container(
+                  height: 219.v,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.grey,
+                      width: 2,
+                    ),
+                  ),
+                  width: MediaQuery.of(context).size.width * 0.40,
+                  child: isVideoReady
+                      ? AspectRatio(
+                          aspectRatio: _videoPlayerController.value.aspectRatio,
+                          child: Center(
+                              child: Chewie(controller: _chewieController!)),
                         )
                       : Center(child: CircularProgressIndicator()),
                 ),
