@@ -25,6 +25,7 @@ class VideoCamScreen extends StatefulWidget {
 class _VideoCamScreenState extends State<VideoCamScreen>
     with WidgetsBindingObserver {
   late CameraController _controller;
+  bool _isCameraReady = false;
   late Future<void> _initializeControllerFuture;
   bool isCameraReady = false;
   bool isVideoReady = false;
@@ -169,6 +170,7 @@ class _VideoCamScreenState extends State<VideoCamScreen>
             AuditoryAppBar(context),
             Spacer(),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
                     height: 219.v,
@@ -222,7 +224,7 @@ class _VideoCamScreenState extends State<VideoCamScreen>
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
-
+      cameraController.lockCaptureOrientation(DeviceOrientation.landscapeLeft);
     _controller = cameraController;
 
     // If the controller is updated then update the UI.
