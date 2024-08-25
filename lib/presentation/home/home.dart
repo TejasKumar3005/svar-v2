@@ -389,15 +389,6 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  onTapImgUser(BuildContext context) {
-    // TODO: implement Actions
-  }
-
-  /// Navigates to the loadingScreen when the action is triggered.
-  onTapBtnUser(BuildContext context) {
-    NavigatorService.pushNamed(
-      AppRoutes.loadingScreen,
-    );
-  }
+  
+  
 }

@@ -217,13 +217,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                     });
                                     Overlay.of(context).insert(_overlayEntry!);
 
-                                    bool response = await Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (context) =>
-                                                GifDisplayScreen()));
-                                    if (response) {
-                                      Navigator.pop(context, true);
-                                    }
+                                  
                                   } else {
                                     _toggleGlowA();
                                   }
@@ -255,13 +249,11 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                     } else {
                                       provider.incrementLevelCount(params);
                                     }
-                                    bool response = await Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (context) =>
-                                                GifDisplayScreen()));
-                                    if (response) {
-                                      Navigator.pop(context, true);
-                                    }
+                                    _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
                                   } else {
                                     _toggleGlowB();
                                   }
@@ -300,14 +292,11 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                             provider
                                                 .incrementLevelCount(params);
                                           }
-                                          bool response =
-                                              await Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          GifDisplayScreen()));
-                                          if (response) {
-                                            Navigator.pop(context, true);
-                                          }
+                                            _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
                                         } else {
                                           _toggleGlowA();
                                         }
@@ -346,14 +335,11 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                                   provider.incrementLevelCount(
                                                       params);
                                                 }
-                                                bool response = await Navigator
-                                                        .of(context)
-                                                    .push(MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            GifDisplayScreen()));
-                                                if (response) {
-                                                  Navigator.pop(context, true);
-                                                }
+                                                  _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
                                               } else {
                                                 _toggleGlowB();
                                               }
@@ -462,14 +448,11 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                               provider
                                                   .incrementLevelCount(params);
                                             }
-                                            bool response = await Navigator.of(
-                                                    context)
-                                                .push(MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        GifDisplayScreen()));
-                                            if (response) {
-                                              Navigator.pop(context, true);
-                                            }
+                                              _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
                                           } else {
                                             setState(() {
                                               isFailure = true;
@@ -533,14 +516,11 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                               provider
                                                   .incrementLevelCount(params);
                                             }
-                                            bool response = await Navigator.of(
-                                                    context)
-                                                .push(MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        GifDisplayScreen()));
-                                            if (response) {
-                                              Navigator.pop(context, true);
-                                            }
+                                            _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
                                           } else {
                                             setState(() {
                                               isFailure = true;
@@ -600,14 +580,11 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                                 provider.incrementLevelCount(
                                                     params);
                                               }
-                                              bool response = await Navigator
-                                                      .of(context)
-                                                  .push(MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          GifDisplayScreen()));
-                                              if (response) {
-                                                Navigator.pop(context, true);
-                                              }
+                                              _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
                                             } else {
                                               // Set failure state
                                               setState(() {
@@ -663,14 +640,11 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                                 provider.incrementLevelCount(
                                                     params);
                                               }
-                                              bool response = await Navigator
-                                                      .of(context)
-                                                  .push(MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          GifDisplayScreen()));
-                                              if (response) {
-                                                Navigator.pop(context, true);
-                                              }
+                                                _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
                                             } else {
                                               // Set failure state
                                               setState(() {
@@ -759,13 +733,11 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                   } else {
                                     provider.incrementLevelCount(params);
                                   }
-                                  bool response = await Navigator.of(context)
-                                      .push(MaterialPageRoute(
-                                          builder: (context) =>
-                                              GifDisplayScreen()));
-                                  if (response) {
-                                    Navigator.pop(context, true);
-                                  }
+                                  _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
                                 } else {
                                   _toggleGlowA();
                                 }
@@ -816,13 +788,11 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                                 } else {
                                   provider.incrementLevelCount(params);
                                 }
-                                bool response = await Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                        builder: (context) =>
-                                            GifDisplayScreen()));
-                                if (response) {
-                                  Navigator.pop(context, true);
-                                }
+                                _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
                               } else {
                                 _toggleGlowA();
                               }
