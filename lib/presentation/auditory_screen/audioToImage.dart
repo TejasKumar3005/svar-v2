@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/auditory_screen/animation_play.dart';
+import 'package:svar_new/presentation/auditory_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/auditory_screen/provider/auditory_provider.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 
@@ -94,6 +95,7 @@ class AudiotoimageScreenState
   }
 
   int sel = 0;
+    OverlayEntry? _overlayEntry;
 
   @override
   Widget build(BuildContext context) {
@@ -179,13 +181,11 @@ class AudiotoimageScreenState
                                   } else {
                                     provider.incrementLevelCount(widget.params);
                                   }
-                                  bool response = await Navigator.of(context)
-                                      .push(MaterialPageRoute(
-                                          builder: (context) =>
-                                              GifDisplayScreen()));
-                                  if (response) {
-                                    Navigator.pop(context, true);
-                                  }
+                                  _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
                                 } else {
                                   _toggleGlowA();
                                 }
@@ -237,13 +237,11 @@ class AudiotoimageScreenState
                                       provider
                                           .incrementLevelCount(widget.params);
                                     }
-                                    bool response = await Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (context) =>
-                                                GifDisplayScreen()));
-                                    if (response) {
-                                      Navigator.pop(context, true);
-                                    }
+                                    _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
                                   } else {
                                     // failure
                                     _toggleGlowB();
