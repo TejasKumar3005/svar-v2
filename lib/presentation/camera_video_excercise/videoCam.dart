@@ -185,7 +185,7 @@ class _VideoCamScreenState extends State<VideoCamScreen>
                     child: !isCameraReady
                         ? Center(
                             child:
-                                CircularProgressIndicator(color:  PrimaryColors.deepOrangeA700))
+                                CircularProgressIndicator(color:  PrimaryColors().deepOrangeA700))
                         : Transform.flip(
                           flipY: true,
                           child: CameraPreview(_controller))),
@@ -205,7 +205,7 @@ class _VideoCamScreenState extends State<VideoCamScreen>
                           child: Center(
                               child: Chewie(controller: _chewieController!)),
                         )
-                      : Center(child: CircularProgressIndicator(color: PrimaryColors.deepOrangeA700)),
+                      : Center(child: CircularProgressIndicator(color: PrimaryColors().deepOrangeA700)),
                 ),
               ],
             ),
