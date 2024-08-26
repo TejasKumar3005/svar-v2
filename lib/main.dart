@@ -123,9 +123,9 @@ class MyApp extends StatelessWidget {
                 // supportedLocales: locals,
                 // initialRoute: AppRoutes.logInSignUpScreenPotraitScreen,
                 initialRoute: auth.currentUser == null
-                    ? AppRoutes.discrimination
+                    ? AppRoutes.loginSignup
                     : AppRoutes
-                        .discrimination, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                        .login, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
                 // home: SettingsScreen(),
               );

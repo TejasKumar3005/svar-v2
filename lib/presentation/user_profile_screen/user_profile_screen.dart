@@ -178,7 +178,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           padding: EdgeInsets.symmetric(
-            horizontal: 5.h,
+            horizontal: 5.v,
             vertical: 10.v,
           ),
           decoration: AppDecoration.fillGray.copyWith(
@@ -194,216 +194,239 @@ class UserProfileScreenState extends State<UserProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // AppStatsHeader(per: 30),
-          
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.h),
+                padding: EdgeInsets.symmetric(horizontal: 12.v),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        onTapMascotscreen(context);
-                      },
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        elevation: 0,
-                        margin: EdgeInsets.all(0),
-                        color: appTheme.whiteA700,
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                            color: appTheme.whiteA700,
-                            width: 5.h,
-                          ),
-                          borderRadius: BorderRadiusStyle.roundedBorder15,
-                        ),
-                        child: Container(
-                          height: MediaQuery.of(context).size.height * 0.8,
-                          width:
-                              (MediaQuery.of(context).size.width ) * 0.45,
-                          decoration: AppDecoration.outlineWhiteA.copyWith(
+                    Expanded(
+                      flex: 1,
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: Card(
+                          clipBehavior: Clip.antiAlias,
+                          elevation: 0,
+                          margin: EdgeInsets.all(0),
+                          color: appTheme.whiteA700,
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: appTheme.whiteA700,
+                              width: 5.v,
+                            ),
                             borderRadius: BorderRadiusStyle.roundedBorder15,
                           ),
-                          child: Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SizedBox(height: 10),
-                                      CustomTextFormField(
-                                        controller: _nameController,
-                                        hintText: "name".tr,
-                                        autofocus: false,
-                                        prefix: Icon(
-                                          Icons.person,
-                                          size: 25,
-                                          color: appTheme.orangeA200,
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.8,
+                            decoration: AppDecoration.outlineWhiteA.copyWith(
+                              borderRadius: BorderRadiusStyle.roundedBorder15,
+                            ),
+                            child: Stack(
+                              alignment: Alignment.topCenter,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(height: 10),
+                                        CustomTextFormField(
+                                          controller: _nameController,
+                                          hintText: "name".tr,
+                                          autofocus: false,
+                                          prefix: Icon(
+                                            Icons.person,
+                                            size: 25,
+                                            color: appTheme.orangeA200,
+                                          ),
+                                          contentPadding: EdgeInsets.symmetric(
+                                              vertical: 6.v, horizontal: 2.v),
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return "Please enter name";
+                                            } else {
+                                              return null;
+                                            }
+                                          },
                                         ),
-                                        contentPadding: EdgeInsets.symmetric(
-                                            vertical: 6.v, horizontal: 2.h),
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return "Please enter name";
-                                          } else {
-                                            return null;
-                                          }
-                                        },
-                                      ),
-                                      SizedBox(height: 10),
-                                      CustomTextFormField(
-                                        width: 370.v,
-                                        controller: _phoneController,
-                                        prefix: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 8.0),
-                                              child: CustomImageView(
-                                                imagePath:
-                                                    ImageConstant.imgIndia,
-                                                width: 24.h,
-                                                height: 23.v,
-                                                fit: BoxFit.contain,
-                                                alignment: Alignment.center,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(left: 4),
-                                              child: SizedBox(
-                                                height: 23.v,
-                                                child: VerticalDivider(
-                                                  width: 1.h,
-                                                  thickness: 1.v,
+                                        SizedBox(height: 10),
+                                        CustomTextFormField(
+                                          width: 370.v,
+                                          controller: _phoneController,
+                                          prefix: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 8.0),
+                                                child: CustomImageView(
+                                                  imagePath:
+                                                      ImageConstant.imgIndia,
+                                                  width: 24.v,
+                                                  height: 23.v,
+                                                  fit: BoxFit.contain,
+                                                  alignment: Alignment.center,
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                              Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 4),
+                                                child: SizedBox(
+                                                  height: 23.v,
+                                                  child: VerticalDivider(
+                                                    width: 1.v,
+                                                    thickness: 1.v,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          validator: (value) {
+                                            if (value!.length < 10) {
+                                              return "Please enter valid phone number";
+                                            } else {
+                                              return null;
+                                            }
+                                          },
+                                          hintText: "lbl_9312211596".tr,
                                         ),
-                                        validator: (value) {
-                                          if (value!.length < 10) {
-                                            return "Please enter valid phone number";
-                                          } else {
+                                        SizedBox(height: 10),
+                                        CustomTextFormField(
+                                          controller: _addressController,
+                                          prefix: Icon(
+                                            Icons.location_on,
+                                            size: 25,
+                                            color: appTheme.orangeA200,
+                                          ),
+                                          hintText: "address".tr,
+                                          contentPadding: EdgeInsets.symmetric(
+                                              vertical: 6.v, horizontal: 2.v),
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return "err_msg_please_enter_valid_address"
+                                                  .tr;
+                                            }
                                             return null;
-                                          }
-                                        },
-                                        hintText: "lbl_9312211596".tr,
-                                      ),
-                                      SizedBox(height: 10),
-                                      CustomTextFormField(
-                                        controller: _addressController,
-                                        prefix: Icon(
-                                          Icons.location_on,
-                                          size: 25,
-                                          color: appTheme.orangeA200,
-                                        ),
-                                        hintText: "address".tr,
-                                        contentPadding: EdgeInsets.symmetric(
-                                            vertical: 6.v, horizontal: 2.h),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return "err_msg_please_enter_valid_address"
-                                                .tr;
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      SizedBox(height: 10),
-                                      CustomTextFormField(
-                                        controller: _emailController,
-                                        hintText: "email".tr,
-                                        textInputType:
-                                            TextInputType.emailAddress,
-                                        prefix: Icon(
-                                          size: 25,
-                                          Icons.email,
-                                          color: appTheme.orangeA200,
-                                        ),
-                                        contentPadding: EdgeInsets.symmetric(
-                                            vertical: 6.v, horizontal: 2.h),
-                                      ),
-                                      if (_showPasswordFields) ...[
-                                        SizedBox(height: 10),
-                                        CustomTextFormField(
-                                          width: 370.v,
-                                          controller:
-                                              _currentPasswordController,
-                                          suffix: GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                hide = !hide;
-                                              });
-                                            },
-                                            child: Icon(
-                                              hide
-                                                  ? Icons.visibility
-                                                  : Icons.visibility_off,
-                                              color: appTheme.orangeA200,
-                                            ),
-                                          ),
-                                          validator: (value) {
-                                            if (value!.length < 6) {
-                                              return "Password must be at least 6 characters";
-                                            } else {
-                                              return null;
-                                            }
                                           },
-                                          prefix: Icon(
-                                            Icons.lock,
-                                            size: 25,
-                                            color: appTheme.orangeA200,
-                                          ),
-                                          obscureText: hide,
-                                          hintText: "Current Password",
-                                          contentPadding: EdgeInsets.symmetric(
-                                              vertical: 6.v, horizontal: 2.h),
                                         ),
                                         SizedBox(height: 10),
                                         CustomTextFormField(
-                                          width: 370.v,
-                                          controller: _newPasswordController,
-                                          suffix: GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                hide = !hide;
-                                              });
-                                            },
-                                            child: Icon(
-                                              hide
-                                                  ? Icons.visibility
-                                                  : Icons.visibility_off,
-                                              color: appTheme.orangeA200,
-                                            ),
-                                          ),
-                                          validator: (value) {
-                                            if (value!.length < 6) {
-                                              return "Password must be at least 6 characters";
-                                            } else {
-                                              return null;
-                                            }
-                                          },
+                                          controller: _emailController,
+                                          hintText: "email".tr,
+                                          textInputType:
+                                              TextInputType.emailAddress,
                                           prefix: Icon(
-                                            Icons.lock,
                                             size: 25,
+                                            Icons.email,
                                             color: appTheme.orangeA200,
                                           ),
-                                          obscureText: hide,
-                                          hintText: "New Password",
                                           contentPadding: EdgeInsets.symmetric(
-                                              vertical: 6.v, horizontal: 2.h),
+                                              vertical: 6.v, horizontal: 2.v),
                                         ),
+                                        if (_showPasswordFields) ...[
+                                          SizedBox(height: 10),
+                                          CustomTextFormField(
+                                            width: 370.v,
+                                            controller:
+                                                _currentPasswordController,
+                                            suffix: GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  hide = !hide;
+                                                });
+                                              },
+                                              child: Icon(
+                                                hide
+                                                    ? Icons.visibility
+                                                    : Icons.visibility_off,
+                                                color: appTheme.orangeA200,
+                                              ),
+                                            ),
+                                            validator: (value) {
+                                              if (value!.length < 6) {
+                                                return "Password must be at least 6 characters";
+                                              } else {
+                                                return null;
+                                              }
+                                            },
+                                            prefix: Icon(
+                                              Icons.lock,
+                                              size: 25,
+                                              color: appTheme.orangeA200,
+                                            ),
+                                            obscureText: hide,
+                                            hintText: "Current Password",
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    vertical: 6.v,
+                                                    horizontal: 2.v),
+                                          ),
+                                          SizedBox(height: 10),
+                                          CustomTextFormField(
+                                            width: 370.v,
+                                            controller: _newPasswordController,
+                                            suffix: GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  hide = !hide;
+                                                });
+                                              },
+                                              child: Icon(
+                                                hide
+                                                    ? Icons.visibility
+                                                    : Icons.visibility_off,
+                                                color: appTheme.orangeA200,
+                                              ),
+                                            ),
+                                            validator: (value) {
+                                              if (value!.length < 6) {
+                                                return "Password must be at least 6 characters";
+                                              } else {
+                                                return null;
+                                              }
+                                            },
+                                            prefix: Icon(
+                                              Icons.lock,
+                                              size: 25,
+                                              color: appTheme.orangeA200,
+                                            ),
+                                            obscureText: hide,
+                                            hintText: "New Password",
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    vertical: 6.v,
+                                                    horizontal: 2.v),
+                                          ),
+                                          SizedBox(height: 10),
+                                          ElevatedButton(
+                                            onPressed: () async {
+                                              await _updatePassword();
+                                            },
+                                            child: Text('Change Password'),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  appTheme.orangeA200,
+                                              foregroundColor: Colors.white,
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 24, vertical: 12),
+                                              textStyle: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                         SizedBox(height: 10),
                                         ElevatedButton(
                                           onPressed: () async {
-                                            await _updatePassword();
+                                            await _updateUserData();
                                           },
-                                          child: Text('Change Password'),
+                                          child: Text('Save Changes'),
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor:
                                                 appTheme.orangeA200,
@@ -417,251 +440,244 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                           ),
                                         ),
                                       ],
-                                      SizedBox(height: 10),
-                                      ElevatedButton(
-                                        onPressed: () async {
-                                          await _updateUserData();
-                                        },
-                                        child: Text('Save Changes'),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: appTheme.orangeA200,
-                                          foregroundColor: Colors.white,
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 24, vertical: 12),
-                                          textStyle: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: (MediaQuery.of(context).size.width ) * 0.45,
-                      height: 245.v,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 6.h,
-                        vertical: 4.v,
-                      ),
-                      decoration:
-                          AppDecoration.outlineWhiteDeepOrangeA200.copyWith(
-                        borderRadius: BorderRadiusStyle.roundedBorder10,
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                width: 280.h,
-                                height: 149.v,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 7.h,
-                                  vertical: 7.v,
-                                ),
-                                decoration:
-                                    AppDecoration.fillDeepOrange10.copyWith(
-                                  borderRadius:
-                                      BorderRadiusStyle.roundedBorder10,
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.45, 
-                                      height: 40.v,
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 6.h,
-                                        vertical: 2.v,
-                                      ),
-                                      decoration: AppDecoration
-                                          .outlineFilledBlue
-                                          .copyWith(
-                                        borderRadius:
-                                            BorderRadiusStyle.roundedBorder5,
-                                      ),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "lbl_your_score".tr,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: CustomTextStyles
-                                                .labelMediumGray90002,
-                                          ),
-                                          SizedBox(height: 2.v),
-                                          Container(
-                                            height: 15.v,
-                                            width: 80.h,
-                                            decoration: BoxDecoration(
-                                              color: appTheme.gray200,
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                3.h,
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(height: 2.v)
-                                        ],
-                                      ),
                                     ),
-                                    Container(
-                                      width: double.maxFinite,
-                                      height: 40.v,
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 6.h,
-                                        vertical: 2.v,
-                                      ),
-                                      decoration: AppDecoration
-                                          .outlineFilledBlue
-                                          .copyWith(
-                                        borderRadius:
-                                            BorderRadiusStyle.roundedBorder5,
-                                      ),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            "lbl_coins_earned".tr,
-                                            style: CustomTextStyles
-                                                .labelMediumGray90002,
-                                          ),
-                                          SizedBox(height: 2.v),
-                                          Container(
-                                            height: 15.v,
-                                            width: 80.h,
-                                            decoration: BoxDecoration(
-                                              color: appTheme.gray200,
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                3.h,
-                                              ),
-                                            ),
-                                            child: Center(
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Text(
-                                                    "lbl_234".tr,
-                                                    style: CustomTextStyles
-                                                        .labelMediumGray90002,
-                                                  ),
-                                                  CustomImageView(
-                                                    imagePath:
-                                                        ImageConstant.imgCoin,
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(height: 2.v)
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      width:
-                                          ((MediaQuery.of(context).size.width -
-                                                          44.h) *
-                                                      0.45 -
-                                                  12.h) *
-                                              0.48 *
-                                              0.7,
-                                      height: 30.v,
-                                      decoration: BoxDecoration(
-                                        color: appTheme.yellow500,
-                                        borderRadius: BorderRadius.circular(
-                                          6.h,
-                                        ),
-                                        border: Border.all(
-                                          color: appTheme.whiteA700,
-                                          width: 2.h,
-                                          strokeAlign:
-                                              BorderSide.strokeAlignOutside,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10.v),
 
-                          Container(
-                            height: 65.v,
-                            width: (MediaQuery.of(context).size.width ) *
-                                0.45,
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12.h,
-                              vertical: 4.v,
-                            ),
-                            decoration: AppDecoration.fillDeepOrange10.copyWith(
-                              borderRadius: BorderRadiusStyle.roundedBorder10,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                CustomImageView(
-                                  width: ((MediaQuery.of(context).size.width -
-                                                  44.h) *
-                                              0.45 -
-                                          24.h -
-                                          30.h) /
-                                      3,
-                                  height: 55.v,
-                                  fit: BoxFit.contain,
-                                  imagePath: "assets/images/badge_g.png",
-                                ),
-                                CustomImageView(
-                                  width: ((MediaQuery.of(context).size.width -
-                                                  44.h) *
-                                              0.45 -
-                                          24.h -
-                                          30.h) /
-                                      3,
-                                  height: 55.v,
-                                  fit: BoxFit.contain,
-                                  imagePath: "assets/images/badge_s.png",
-                                ),
-                                CustomImageView(
-                                  width: ((MediaQuery.of(context).size.width -
-                                                  44.h) *
-                                              0.45 -
-                                          24.h -
-                                          30.h) /
-                                      3,
-                                  height: 55.v,
-                                  fit: BoxFit.contain,
-                                  imagePath: "assets/images/badge_b.png",
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          // SizedBox(height: 5.v)
-                        ],
+                        ),
                       ),
-                    )
+                    ),
+                    SizedBox(width: 10.v),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        height: 245.v,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6.v,
+                          vertical: 4.v,
+                        ),
+                        decoration:
+                            AppDecoration.outlineWhiteDeepOrangeA200.copyWith(
+                          borderRadius: BorderRadiusStyle.roundedBorder10,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  width: 340
+                                      .v, // Use a width that scales with the width of the device
+                                  height: 149
+                                      .v, // Keep the height scaling with the height of the device
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 7
+                                        .v, // Use width-based padding for consistency
+                                    vertical: 7.v,
+                                  ),
+                                  decoration:
+                                      AppDecoration.fillDeepOrange10.copyWith(
+                                    borderRadius:
+                                        BorderRadiusStyle.roundedBorder10,
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        width: MediaQuery.of(context)
+                                                .size
+                                                .width *
+                                            0.4, // Consistent width based on screen width
+                                        height: 40.v,
+                                        decoration: AppDecoration
+                                            .outlineFilledBlue
+                                            .copyWith(
+                                          borderRadius:
+                                              BorderRadiusStyle.roundedBorder5,
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "lbl_your_score".tr,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: CustomTextStyles
+                                                  .labelMediumGray90002,
+                                            ),
+                                            SizedBox(height: 2.v),
+                                            Container(
+                                              height: 15.v,
+                                              width: 80
+                                                  .v, // Width scaled based on device width
+                                              decoration: BoxDecoration(
+                                                color: appTheme.gray200,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  3.v,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(height: 2.v)
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        width: MediaQuery.of(context)
+                                                .size
+                                                .width *
+                                            0.4, // Consistent width based on screen width
+                                        height: 40.v,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 6
+                                              .v, // Use width-based padding for consistency
+                                          vertical: 2.v,
+                                        ),
+                                        decoration: AppDecoration
+                                            .outlineFilledBlue
+                                            .copyWith(
+                                          borderRadius:
+                                              BorderRadiusStyle.roundedBorder5,
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              "lbl_coins_earned".tr,
+                                              style: CustomTextStyles
+                                                  .labelMediumGray90002,
+                                            ),
+                                            SizedBox(height: 2.v),
+                                            Container(
+                                              height: 15.v,
+                                              width: 80
+                                                  .v, // Width scaled based on device width
+                                              decoration: BoxDecoration(
+                                                color: appTheme.gray200,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  3.v,
+                                                ),
+                                              ),
+                                              child: Center(
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Text(
+                                                      "lbl_234".tr,
+                                                      style: CustomTextStyles
+                                                          .labelMediumGray90002,
+                                                    ),
+                                                    CustomImageView(
+                                                      imagePath:
+                                                          ImageConstant.imgCoin,
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(height: 2.v)
+                                          ],
+                                        ),
+                                      ),
+                                      Container(
+                                        width: MediaQuery.of(context)
+                                                .size
+                                                .width *
+                                            0.3, // Consistent width based on screen width
+                                        height: 30.v,
+                                        decoration: BoxDecoration(
+                                          color: appTheme.yellow500,
+                                          borderRadius: BorderRadius.circular(
+                                            6.v,
+                                          ),
+                                          border: Border.all(
+                                            color: appTheme.whiteA700,
+                                            width: 2
+                                                .v, // Use width-based stroke for consistency
+                                            strokeAlign:
+                                                BorderSide.strokeAlignOutside,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10.v),
+                            Container(
+                              height: 65.v,
+                              width: (MediaQuery.of(context).size.width) * 0.45,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.v,
+                                vertical: 4.v,
+                              ),
+                              decoration:
+                                  AppDecoration.fillDeepOrange10.copyWith(
+                                borderRadius: BorderRadiusStyle.roundedBorder10,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  CustomImageView(
+                                    width: ((MediaQuery.of(context).size.width -
+                                                    44.v) *
+                                                0.45 -
+                                            24.v -
+                                            30.v) /
+                                        3,
+                                    height: 55.v,
+                                    fit: BoxFit.contain,
+                                    imagePath: "assets/images/badge_g.png",
+                                  ),
+                                  CustomImageView(
+                                    width: ((MediaQuery.of(context).size.width -
+                                                    44.v) *
+                                                0.45 -
+                                            24.v -
+                                            30.v) /
+                                        3,
+                                    height: 55.v,
+                                    fit: BoxFit.contain,
+                                    imagePath: "assets/images/badge_s.png",
+                                  ),
+                                  CustomImageView(
+                                    width: ((MediaQuery.of(context).size.width -
+                                                    44.v) *
+                                                0.45 -
+                                            24.v -
+                                            30.v) /
+                                        3,
+                                    height: 55.v,
+                                    fit: BoxFit.contain,
+                                    imagePath: "assets/images/badge_b.png",
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
+
               SizedBox(height: 3.v)
             ],
           ),
@@ -680,25 +696,25 @@ class UserProfileScreenState extends State<UserProfileScreen> {
   }) {
     return SizedBox(
       height: 55.v,
-      width: 35.h,
+      width: 35.v,
       child: Stack(
         alignment: Alignment.bottomRight,
         children: [
           CustomImageView(
             imagePath: television,
             height: 31.v,
-            width: 20.h,
+            width: 20.v,
             radius: BorderRadius.circular(
-              2.h,
+              2.v,
             ),
             alignment: Alignment.bottomLeft,
           ),
           CustomImageView(
             imagePath: userEleven,
             height: 31.v,
-            width: 20.h,
+            width: 20.v,
             radius: BorderRadius.circular(
-              2.h,
+              2.v,
             ),
             alignment: Alignment.bottomRight,
           ),
@@ -706,36 +722,36 @@ class UserProfileScreenState extends State<UserProfileScreen> {
             alignment: Alignment.topCenter,
             child: SizedBox(
               height: 32.v,
-              width: 30.h,
+              width: 30.v,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   CustomImageView(
                     imagePath: inboxOne,
                     height: 32.v,
-                    width: 30.h,
+                    width: 30.v,
                     alignment: Alignment.center,
                   ),
                   Align(
                     alignment: Alignment.center,
                     child: SizedBox(
                       height: 23.v,
-                      width: 20.h,
+                      width: 20.v,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
                           CustomImageView(
                             imagePath: closeNine,
                             height: 23.v,
-                            width: 20.h,
+                            width: 20.v,
                             alignment: Alignment.center,
                           ),
                           CustomImageView(
                             imagePath: ImageConstant.imgStar14,
                             height: 17.v,
-                            width: 15.h,
+                            width: 15.v,
                             radius: BorderRadius.circular(
-                              1.h,
+                              1.v,
                             ),
                             alignment: Alignment.center,
                           )
