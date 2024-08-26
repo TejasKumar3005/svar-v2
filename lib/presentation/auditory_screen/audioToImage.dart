@@ -130,7 +130,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                         onTap: () async {
                           playAudio(widget.dtcontainer.getAudioUrl());
 
-                          // Get the audio samples using the audiowaveform package
+                    
                           // List<double> samples =
                           //     await _player.getCurrentAudioData();
 
