@@ -8,7 +8,7 @@ import 'package:svar_new/presentation/auditory_screen/provider/auditory_provider
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
-
+import 'package:svar_new/core/utils/audioSampleExtractor.dart';
 class AudiotoimageScreen extends StatefulWidget {
   final dynamic dtcontainer;
   final String params;
@@ -91,6 +91,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   }
 
   int sel = 0;
+  List<double> samples = [];
   OverlayEntry? _overlayEntry;
 
   @override
@@ -128,14 +129,17 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                     Center(
                       child: GestureDetector(
                         onTap: () async {
+                          AudioSampleExtractor extractor = AudioSampleExtractor();
+                          samples = await extractor.getAudioSamples(widget.dtcontainer.getAudioUrl());
+                          setState(() {
+                            
+                          });
                           playAudio(widget.dtcontainer.getAudioUrl());
 
                           // Get the audio samples using the audiowaveform package
-                          // List<double> samples =
-                          //     await _player.getCurrentAudioData();
+                        
 
-                          // // Update the waveform with the audio samples
-                          // _waveController.updateSamples(samples);
+
                         },
                         child: Stack(
                           children: [
@@ -145,19 +149,18 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                               width: MediaQuery.of(context).size.width / 2,
                               fit: BoxFit.fill,
                             ),
-                            // Positioned(
-                            //   top: 0,
-                            //   left: 0,
-                            //   right: 0,
-                            //   child: PolygonWaveform(
-                            //     samples: _waveController
-                            //         .samples, // Use the updated samples
-                            //     height: 20.v,
-                            //     width: MediaQuery.of(context).size.width / 2,
-                            //     inactiveColor: Colors.white.withOpacity(0.5),
-                            //     activeColor: Colors.white,
-                            //   ),
-                            // ),
+                            Positioned(
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              child: PolygonWaveform(
+                                samples: samples, // Use the updated samples
+                                height: 20.v,
+                                width: MediaQuery.of(context).size.width / 2,
+                                inactiveColor: Colors.white.withOpacity(0.5),
+                                activeColor: Colors.white,
+                              ),
+                            ),
                           ],
                         ),
                       ),
