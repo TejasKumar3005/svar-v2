@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:svar_new/presentation/auditory_screen/auditory.dart';
+import 'package:svar_new/presentation/Identification_screen/Identification.dart';
 import 'package:svar_new/presentation/camera_video_excercise/videoCam.dart';
 import 'package:svar_new/presentation/discrimination/discrimination.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_screen.dart';
@@ -48,8 +48,8 @@ class AppRoutes {
 
   
 
-  static const String auditory =
-      '/auditory_screen';
+  static const String identification =
+      '/Identification_screen';
 
 
   static const String setting="/setting_screen";
@@ -93,8 +93,8 @@ register:RegisterScreen.builder,
         phonemsLevelScreenTwoScreen: PhonemsLevelScreenTwoScreen.builder,
         phonemsLevelScreenOneScreen: PhonemeLevelOneScreen.builder,
       setting:SettingsScreen.builder,
-        auditory:
-            AuditoryScreen
+        identification:
+            IdentificationScreen
                 .builder, // will have to change the route to learning pathway
       
         

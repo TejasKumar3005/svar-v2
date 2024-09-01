@@ -2,9 +2,9 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/presentation/auditory_screen/animation_play.dart';
-import 'package:svar_new/presentation/auditory_screen/celebration_overlay.dart';
-import 'package:svar_new/presentation/auditory_screen/provider/auditory_provider.dart';
+import 'package:svar_new/presentation/Identification_screen/animation_play.dart';
+import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
+import 'package:svar_new/presentation/Identification_screen/provider/identification_provider.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
@@ -96,7 +96,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var provider = context.watch<AuditoryProvider>();
+    var provider = context.watch<IdentificationProvider>();
     return SafeArea(
       child: Scaffold(
         extendBody: true,

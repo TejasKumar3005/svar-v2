@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../data/models/levelManagementModel/visual.dart';
 
 
-class AuditoryProvider
+class IdentificationProvider
     extends ChangeNotifier {
 
 

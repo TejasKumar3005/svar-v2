@@ -126,7 +126,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         List<dynamic> lis = [type, dtcontainer, params];
         print("lis is $lis");
 
-        bool result = await NavigatorService.pushNamed(AppRoutes.auditory,
+        bool result = await NavigatorService.pushNamed(AppRoutes.identification,
             arguments: lis);
 
         if (result) {
