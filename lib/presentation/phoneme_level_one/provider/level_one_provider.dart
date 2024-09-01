@@ -3,23 +3,29 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 
-
-
 /// A provider class for the PhonemsLevelScreenOneScreen.
 ///
 /// This provider manages the state of the PhonemsLevelScreenOneScreen, including the
 /// current phonemsLevelScreenOneModelObj
 class PhonemsLevelOneProvider extends ChangeNotifier {
-
-
   String? type;
   FigToWord? instance_of_fig_to_word;
   WordToFiG? instance_of_word_to_fig;
   ImageToAudio? instance_of_image_to_audio;
   AudioToImage? instance_of_audio_to_image;
+  HalfMuted? instance_of_half_muted;
+  DiffHalf? instance_of_diff_half;
+  MutedUnmuted? instance_of_muted_unmuted;
+  DiffSounds? instance_of_diff_sounds;
+  OddOne? instance_of_odd_one;
   int? level;
 
   bool _loading = false;
+  HalfMuted? get halfmuted => instance_of_half_muted;
+  DiffHalf? get diffhalf => instance_of_diff_half;
+  MutedUnmuted? get mutedunmuted => instance_of_muted_unmuted;
+  DiffSounds? get diffsounds => instance_of_diff_sounds;
+  OddOne? get oddone => instance_of_odd_one;
   ImageToAudio? get imgtoaudio => instance_of_image_to_audio;
   AudioToImage? get audiotoimage => instance_of_audio_to_image;
   FigToWord? get figtoword => instance_of_fig_to_word;
@@ -28,28 +34,63 @@ class PhonemsLevelOneProvider extends ChangeNotifier {
   bool get loading => _loading;
   String? get ty => type;
 
-  Future<Map<String, dynamic>?> fetchData(int val, int level) async {
-    String dbname = val == 1 ? "levels" : "Auditory";
+  Future<Map<String, dynamic>?> fetchData(String docName, int level) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    DocumentSnapshot doc =
-        await firestore.collection(dbname).doc("Level").get();
-    try {
-      if (doc.exists) {
-        Map<String, dynamic> data = doc.get("data") as Map<String, dynamic>;
-        String finder = "Level$level";
 
-        List<dynamic> received_data = data[finder];
-        // debugPrint(received_data.toString());
-        // taking a random index data which will be showed on the screen
-        Map<String, dynamic> levelinfo =
-            received_data[0] as Map<String, dynamic>;
-        return levelinfo;
-      }
-    } catch (e) {
-      debugPrint("in catach section");
+    // Reference the document inside the 'Auditory' collection
+    DocumentSnapshot doc =
+        await firestore.collection("Auditory").doc(docName).get();
+
+    // Check if the document exists
+    if (!doc.exists) {
+      debugPrint(
+          "Document $docName does not exist in the Auditory collection.");
       return null;
     }
-    return null;
+
+    try {
+      // Proceed only if the document exists
+      Map<String, dynamic> data = doc.get("data") as Map<String, dynamic>;
+      String finder = "Level$level";
+
+      List<dynamic> receivedData = data[finder];
+      // Taking a random index data which will be shown on the screen
+      Map<String, dynamic> levelInfo = receivedData[0] as Map<String, dynamic>;
+      return levelInfo;
+    } catch (e) {
+      debugPrint("Error fetching data: $e");
+      return null;
+    }
+  }
+
+  Future<int?> fetchNumberOfLevels(String docName) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Reference the document inside the 'Auditory' collection
+    DocumentSnapshot doc =
+        await firestore.collection("Auditory").doc(docName).get();
+
+    // Check if the document exists
+    if (!doc.exists) {
+      debugPrint(
+          "Document $docName does not exist in the Auditory collection.");
+      return null;
+    }
+
+    try {
+      // Fetch the 'data' field as a Map
+      Map<String, dynamic> data = doc.get("data") as Map<String, dynamic>;
+
+      // Count the number of levels by checking the keys in the 'data' map
+      int numberOfLevels =
+          data.keys.where((key) => key.startsWith('Level')).length;
+
+      debugPrint("Number of levels in $docName: $numberOfLevels");
+      return numberOfLevels;
+    } catch (e) {
+      debugPrint("Error fetching the number of levels: $e");
+      return null;
+    }
   }
 
   Future<double?> fetchCurrenLevelOfUser(String userId, String origin) async {
