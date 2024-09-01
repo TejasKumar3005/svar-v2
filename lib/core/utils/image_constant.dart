@@ -26,7 +26,7 @@ class ImageConstant {
  
 
   static String imgDetection = '$imagePath/Detection.png';  
-  static String imgDescription = '$imagePath/Description.png';
+  static String imgDiscrimination = '$imagePath/Description.png';
   static String imgIdentification = '$imagePath/Identification.png';  
   
 

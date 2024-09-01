@@ -40,6 +40,107 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
   @override
   Widget build(BuildContext context) {
+     var obj = ModalRoute.of(context)?.settings.arguments as Map<String,dynamic>;
+
+     void _handleAuditory(BuildContext context, int level, String params) async {
+    final levelProvider =
+        Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+    final String type;
+    try {
+      final Map<String, dynamic>? data =
+          await levelProvider.fetchData(obj["exerciseType"], level);
+      type = data!["type"];
+      if (type == "video") {
+        bool result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => VideoPlayerScreen(videoUrl: data["video"])),
+        );
+        if (params != "completed") {
+          await levelProvider.incrementLevelCount("auditory");
+        }
+        if (result) {
+          debugPrint("set state is called for rebuilding the widget for ady");
+          String origin = val == 0 ? "Auditory" : "Quizes";
+          await _fetchCurrentLevel(origin);
+        }
+      }
+    } catch (e) {}
+  }
+
+     void _handleLevel(BuildContext context, int level, String params) async {
+  
+    try {
+      debugPrint("entering in level section");
+      final levelProvider =
+          Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+      final String type;
+      debugPrint("data fetching");
+      final Map<String, dynamic>? data =
+          await levelProvider.fetchData(obj["exerciseType"], level);
+      type = data!["type"];
+      if (type == "video") {
+        debugPrint("in video setion");
+        bool result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoPlayerScreen(videoUrl: data["video"]),
+          ),
+        );
+        if (params != "completed") {
+          await levelProvider.incrementLevelCount("Quizes");
+        }
+        if (result) {
+          debugPrint("set state is called for rebuilding the widget");
+          String origin = val == 0 ? "Auditory" : "Quizes";
+          await _fetchCurrentLevel(origin);
+        }
+      } else if (type == "speech") {
+        debugPrint("in speech section");
+        bool result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SpeakingPhonemeScreen(
+              text: (data["text"] as List)
+                  .map((item) => Map<String, dynamic>.from(item))
+                  .toList(),
+              videoUrl: data["video_url"],
+              testSpeech: data["test_speech"],
+            ),
+          ),
+        );
+        if (params != "completed") {
+          await levelProvider.incrementLevelCount("SpeechTests");
+        }
+        if (result) {
+          debugPrint("set state is called for rebuilding the widget");
+          String origin = val == 0 ? "Auditory" : "SpeechTests";
+          await _fetchCurrentLevel(origin);
+        }
+      } else {
+        final Object dtcontainer;
+        dtcontainer = retrieveObject(type, data);
+
+        debugPrint("data is ");
+        debugPrint(data.toString());
+        List<dynamic> lis = [type, dtcontainer, params];
+        print("lis is $lis");
+
+        bool result = await NavigatorService.pushNamed(AppRoutes.auditory,
+            arguments: lis);
+
+        if (result) {
+          debugPrint("set state is called for rebuilding the widget");
+          String origin = val == 0 ? "Auditory" : "Quizes";
+          await _fetchCurrentLevel(origin);
+        }
+      }
+    } catch (e) {
+      debugPrint("catch section");
+    }
+  }
+
+   
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -59,7 +160,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
           ),
           child: LevelMap(
             levelMapParams: LevelMapParams(
-              levelCount: 23,
+              levelCount: obj["numberOfLevels"],
               currentLevel: currentLevelCount, // provider.level!.toDouble(),
               enableVariationBetweenCurves: true,
               pathColor: appTheme.amber90001,
@@ -139,104 +240,13 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         ),
       ),
     );
+
+  
   }
 
-  void _handleLevel(BuildContext context, int level, String params) async {
-    try {
-      debugPrint("entering in level section");
-      final levelProvider =
-          Provider.of<PhonemsLevelOneProvider>(context, listen: false);
-      final String type;
-      debugPrint("data fetching");
-      final Map<String, dynamic>? data =
-          await levelProvider.fetchData("0", level);
-      type = data!["type"];
-      if (type == "video") {
-        debugPrint("in video setion");
-        bool result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VideoPlayerScreen(videoUrl: data["video"]),
-          ),
-        );
-        if (params != "completed") {
-          await levelProvider.incrementLevelCount("Quizes");
-        }
-        if (result) {
-          debugPrint("set state is called for rebuilding the widget");
-          String origin = val == 0 ? "Auditory" : "Quizes";
-          await _fetchCurrentLevel(origin);
-        }
-      } else if (type == "speech") {
-        debugPrint("in speech section");
-        bool result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SpeakingPhonemeScreen(
-              text: (data["text"] as List)
-                  .map((item) => Map<String, dynamic>.from(item))
-                  .toList(),
-              videoUrl: data["video_url"],
-              testSpeech: data["test_speech"],
-            ),
-          ),
-        );
-        if (params != "completed") {
-          await levelProvider.incrementLevelCount("SpeechTests");
-        }
-        if (result) {
-          debugPrint("set state is called for rebuilding the widget");
-          String origin = val == 0 ? "Auditory" : "SpeechTests";
-          await _fetchCurrentLevel(origin);
-        }
-      } else {
-        final Object dtcontainer;
-        dtcontainer = retrieveObject(type, data);
+ 
 
-        debugPrint("data is ");
-        debugPrint(data.toString());
-        List<dynamic> lis = [type, dtcontainer, params];
-        print("lis is $lis");
-
-        bool result = await NavigatorService.pushNamed(AppRoutes.auditory,
-            arguments: lis);
-
-        if (result) {
-          debugPrint("set state is called for rebuilding the widget");
-          String origin = val == 0 ? "Auditory" : "Quizes";
-          await _fetchCurrentLevel(origin);
-        }
-      }
-    } catch (e) {
-      debugPrint("catch section");
-    }
-  }
-
-  void _handleAuditory(BuildContext context, int level, String params) async {
-    final levelProvider =
-        Provider.of<PhonemsLevelOneProvider>(context, listen: false);
-    final String type;
-    try {
-      final Map<String, dynamic>? data =
-          await levelProvider.fetchData("0", level);
-      type = data!["type"];
-      if (type == "video") {
-        bool result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => VideoPlayerScreen(videoUrl: data["video"])),
-        );
-        if (params != "completed") {
-          await levelProvider.incrementLevelCount("auditory");
-        }
-        if (result) {
-          debugPrint("set state is called for rebuilding the widget for ady");
-          String origin = val == 0 ? "Auditory" : "Quizes";
-          await _fetchCurrentLevel(origin);
-        }
-      }
-    } catch (e) {}
-  }
+ 
 
   Object retrieveObject(String type, Map<String, dynamic> data) {
     if (type == "ImageToAudio") {
