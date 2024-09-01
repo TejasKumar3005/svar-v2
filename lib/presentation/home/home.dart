@@ -8,6 +8,7 @@ import 'package:svar_new/providers/appUpdateProvider.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
 import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key})
@@ -38,7 +39,6 @@ class HomeScreenState extends State<HomeScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-
   }
 
   @override
@@ -97,11 +97,31 @@ class HomeScreenState extends State<HomeScreen> {
           items: [
             ClipRect(
               child: GestureDetector(
-                onTap: () {
-                  
-                  NavigatorService.pushNamed(
-                      AppRoutes.phonmesListScreen,
+                onTap: () async {
+                  // Set the screen type first
+                  provider.setScreenInfo("Detection");
+
+                  // Fetch the number of levels asynchronously
+                  int? levels = await fetchNumberOfLevels(
+                      provider.exerciseType ??
+                          ""); // Ensure exerciseType is not null
+
+                  if (levels != null) {
+                    // Set the number of levels in the provider
+                    provider.setNumberOfLevels(levels);
+
+                    // Navigate to the next screen with the levels as an argument
+                    NavigatorService.pushNamed(
+                      AppRoutes.phonemsLevelScreenOneScreen,
+                      arguments: {
+                        'exerciseType': provider.exerciseType,
+                        'numberOfLevels': levels,
+                      },
                     );
+                  } else {
+                    // Handle the case when fetching levels fails
+                    debugPrint("Failed to fetch the number of levels.");
+                  }
                 },
                 child: Center(
                   // Centering the entire container
@@ -152,11 +172,31 @@ class HomeScreenState extends State<HomeScreen> {
             ),
             ClipRect(
               child: GestureDetector(
-                onTap: () {
-                  provider.setScreenInfo("Words");
-                  NavigatorService.pushNamed(
+                onTap: () async {
+                  // Set the screen type first
+                  provider.setScreenInfo("Level");
+
+                  // Fetch the number of levels asynchronously
+                  int? levels = await fetchNumberOfLevels(
+                      provider.exerciseType ??
+                          ""); // Ensure exerciseType is not null
+
+                  if (levels != null) {
+                    // Set the number of levels in the provider
+                    provider.setNumberOfLevels(levels);
+
+                    // Navigate to the next screen with the levels as an argument
+                    NavigatorService.pushNamed(
                       AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: provider.excerciseType);
+                      arguments: {
+                        'exerciseType': provider.exerciseType,
+                        'numberOfLevels': levels,
+                      },
+                    );
+                  } else {
+                    // Handle the case when fetching levels fails
+                    debugPrint("Failed to fetch the number of levels.");
+                  }
                 },
                 child: Center(
                   // Centering the entire container
@@ -207,11 +247,31 @@ class HomeScreenState extends State<HomeScreen> {
             ),
             ClipRect(
               child: GestureDetector(
-                onTap: () {
-                  provider.setScreenInfo("Identification");
-                  NavigatorService.pushNamed(
+                onTap: () async {
+                  // Set the screen type first
+                  provider.setScreenInfo("Detection");
+
+                  // Fetch the number of levels asynchronously
+                  int? levels = await fetchNumberOfLevels(
+                      provider.exerciseType ??
+                          ""); // Ensure exerciseType is not null
+
+                  if (levels != null) {
+                    // Set the number of levels in the provider
+                    provider.setNumberOfLevels(levels);
+
+                    // Navigate to the next screen with the levels as an argument
+                    NavigatorService.pushNamed(
                       AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: provider.excerciseType);
+                      arguments: {
+                        'exerciseType': provider.exerciseType,
+                        'numberOfLevels': levels,
+                      },
+                    );
+                  } else {
+                    // Handle the case when fetching levels fails
+                    debugPrint("Failed to fetch the number of levels.");
+                  }
                 },
                 child: Center(
                   // Centering the entire container
@@ -262,11 +322,31 @@ class HomeScreenState extends State<HomeScreen> {
             ),
             ClipRect(
               child: GestureDetector(
-                onTap: () {
-                  provider.setScreenInfo("Detection");
-                  NavigatorService.pushNamed(
+                onTap: () async {
+                  // Set the screen type first
+                  provider.setScreenInfo("Discrimination");
+
+                  // Fetch the number of levels asynchronously
+                  int? levels = await fetchNumberOfLevels(
+                      provider.exerciseType ??
+                          ""); // Ensure exerciseType is not null
+
+                  if (levels != null) {
+                    // Set the number of levels in the provider
+                    provider.setNumberOfLevels(levels);
+
+                    // Navigate to the next screen with the levels as an argument
+                    NavigatorService.pushNamed(
                       AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: provider.excerciseType);
+                      arguments: {
+                        'exerciseType': provider.exerciseType,
+                        'numberOfLevels': levels,
+                      },
+                    );
+                  } else {
+                    // Handle the case when fetching levels fails
+                    debugPrint("Failed to fetch the number of levels.");
+                  }
                 },
                 child: Center(
                   // Centering the entire container
@@ -279,7 +359,7 @@ class HomeScreenState extends State<HomeScreen> {
                       children: [
                         // Background Image
                         Image.asset(
-                          ImageConstant.imgDescription,
+                          ImageConstant.imgDiscrimination,
                           fit: BoxFit.fill,
                           width: MediaQuery.of(context).size.width * 0.6,
                           height: MediaQuery.of(context).size.width * 0.3,
@@ -317,11 +397,31 @@ class HomeScreenState extends State<HomeScreen> {
             ),
             ClipRect(
               child: GestureDetector(
-                onTap: () {
-                  provider.setScreenInfo("Discrimination");
-                  NavigatorService.pushNamed(
-                      AppRoutes.discrimination,
-                      arguments: provider.excerciseType);
+                onTap: () async {
+                  // Set the screen type first
+                  provider.setScreenInfo("Identification");
+
+                  // Fetch the number of levels asynchronously
+                  int? levels = await fetchNumberOfLevels(
+                      provider.exerciseType ??
+                          ""); // Ensure exerciseType is not null
+
+                  if (levels != null) {
+                    // Set the number of levels in the provider
+                    provider.setNumberOfLevels(levels);
+
+                    // Navigate to the next screen with the levels as an argument
+                    NavigatorService.pushNamed(
+                      AppRoutes.phonemsLevelScreenOneScreen,
+                      arguments: {
+                        'exerciseType': provider.exerciseType,
+                        'numberOfLevels': levels,
+                      },
+                    );
+                  } else {
+                    // Handle the case when fetching levels fails
+                    debugPrint("Failed to fetch the number of levels.");
+                  }
                 },
                 child: Center(
                   // Centering the entire container
@@ -390,6 +490,33 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-  
-  
+}
+
+Future<int?> fetchNumberOfLevels(String docName) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  // Reference the document inside the 'Auditory' collection
+  DocumentSnapshot doc =
+      await firestore.collection("Auditory").doc(docName).get();
+
+  // Check if the document exists
+  if (!doc.exists) {
+    debugPrint("Document $docName does not exist in the Auditory collection.");
+    return null;
+  }
+
+  try {
+    // Fetch the 'data' field as a Map
+    Map<String, dynamic> data = doc.get("data") as Map<String, dynamic>;
+
+    // Count the number of levels by checking the keys in the 'data' map
+    int numberOfLevels =
+        data.keys.where((key) => key.startsWith('Level')).length;
+
+    debugPrint("Number of levels in $docName: $numberOfLevels");
+    return numberOfLevels;
+  } catch (e) {
+    debugPrint("Error fetching the number of levels: $e");
+    return null;
+  }
 }

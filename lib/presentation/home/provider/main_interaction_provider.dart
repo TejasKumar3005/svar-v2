@@ -8,11 +8,16 @@ import 'package:flutter/material.dart';
 
 // ignore_for_file: must_be_immutable
 class MainInteractionProvider extends ChangeNotifier {
+  String? exerciseType;
+  int? numberOfLevels;
 
-
-  String? excerciseType;
   void setScreenInfo(String type) {
-    excerciseType = type;
+    exerciseType = type;
+    notifyListeners();
+  }
+
+  void setNumberOfLevels(int levels) {
+    numberOfLevels = levels;
     notifyListeners();
   }
 
