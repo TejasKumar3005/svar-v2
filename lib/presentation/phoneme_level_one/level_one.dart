@@ -149,7 +149,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       final String type;
       debugPrint("data fetching");
       final Map<String, dynamic>? data =
-          await levelProvider.fetchData(1, level);
+          await levelProvider.fetchData("0", level);
       type = data!["type"];
       if (type == "video") {
         debugPrint("in video setion");
@@ -218,7 +218,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     final String type;
     try {
       final Map<String, dynamic>? data =
-          await levelProvider.fetchData(0, level);
+          await levelProvider.fetchData("0", level);
       type = data!["type"];
       if (type == "video") {
         bool result = await Navigator.push(

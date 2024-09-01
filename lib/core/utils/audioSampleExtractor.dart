@@ -16,9 +16,20 @@ class AudioSampleExtractor {
   return tempFilePath;
 }
   // Function to get audio samples
-  Future<List<double>> getAudioSamples(String url) async {
+  Future<List<double>> getNetorkAudioSamples(String url) async {
     try {
       final filePath = await downloadAudioFile(url);
+
+      final List<dynamic> samples = await _channel.invokeMethod('getAudioSamples', {'filePath': filePath});
+      return samples.cast<double>();
+    } on PlatformException catch (e) {
+      print("Failed to get audio samples: '${e.message}'.");
+      return [];
+    }
+  }
+  Future<List<double>> getAssetAudioSamples(String filePath) async {
+    try {
+      
 
       final List<dynamic> samples = await _channel.invokeMethod('getAudioSamples', {'filePath': filePath});
       return samples.cast<double>();
