@@ -10,9 +10,9 @@ import 'package:flutter/material.dart';
 class MainInteractionProvider extends ChangeNotifier {
 
 
-  int? val;
-  void setScreenInfo(int x) {
-    val = x;
+  String? excerciseType;
+  void setScreenInfo(String type) {
+    excerciseType = type;
     notifyListeners();
   }
 

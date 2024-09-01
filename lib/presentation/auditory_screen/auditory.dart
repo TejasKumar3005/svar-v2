@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:svar_new/presentation/auditory_screen/audioToImage.dart';
 import 'package:svar_new/presentation/auditory_screen/animation_play.dart';
 import 'package:svar_new/presentation/auditory_screen/celebration_overlay.dart';
+import 'package:svar_new/presentation/discrimination/discrimination.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -105,11 +106,11 @@ class AuditoryScreenState extends State<AuditoryScreen> {
     String params = obj[2] as String;
 
     return type != "AudioToImage"
-        ? SafeArea(
+        ? (type=="AudioToAudio"?Discrimination():SafeArea(
             child: Scaffold(
               extendBody: true,
               extendBodyBehindAppBar: true,
-              backgroundColor: appTheme.gray300,
+              backgroundColor: appTheme.gray300,                  
               body: Stack(
                 children: [
                   // SVG background
@@ -166,7 +167,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
                 ],
               ),
             ),
-          )
+          ))
         : AudiotoimageScreen(
             dtcontainer: dtcontainer,
             params: params,

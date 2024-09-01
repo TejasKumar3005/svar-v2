@@ -110,3 +110,24 @@ class AudioToImage {
     return audio_url;
   }
 }
+
+
+class AudioToAudio{
+  final List<String> audio_list;
+  final int correct_output;
+  AudioToAudio._({required this.audio_list, required this.correct_output});
+  factory AudioToAudio.fromJson(Map<String, dynamic> json){
+    return AudioToAudio._(
+      audio_list: List<String>.from(json["audio_list"]),
+      correct_output: json["correct_output"] as int
+    );
+  }
+  List<String> getAudioList(){
+    return audio_list;
+  }
+  int getCorrectOutput(){
+    return correct_output;
+  }
+
+  
+}

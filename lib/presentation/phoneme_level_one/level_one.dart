@@ -14,8 +14,7 @@ class PhonemeLevelOneScreen extends StatefulWidget {
   PhonemeLevelOneScreen({Key? key}) : super(key: key);
 
   @override
-  PhonemeLevelOneScreenState createState() =>
-      PhonemeLevelOneScreenState();
+  PhonemeLevelOneScreenState createState() => PhonemeLevelOneScreenState();
 
   static Widget builder(BuildContext context) {
     return ChangeNotifierProvider(
@@ -25,22 +24,19 @@ class PhonemeLevelOneScreen extends StatefulWidget {
   }
 }
 
-class PhonemeLevelOneScreenState
-    extends State<PhonemeLevelOneScreen> {
+class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   late double currentLevelCount = 1;
   bool _initialized = false;
-   int val = 1;
+  int val = 1;
 
   @override
   void initState() {
-      SystemChrome.setPreferredOrientations([
+    SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
     super.initState();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -171,37 +167,38 @@ class PhonemeLevelOneScreenState
           String origin = val == 0 ? "Auditory" : "Quizes";
           await _fetchCurrentLevel(origin);
         }
-      }  else if (type == "speech") {
-      debugPrint("in speech section");
-      bool result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SpeakingPhonemeScreen(
-            text: (data["text"] as List).map((item) => Map<String, dynamic>.from(item)).toList(),
-            videoUrl: data["video_url"],
-            testSpeech: data["test_speech"],
+      } else if (type == "speech") {
+        debugPrint("in speech section");
+        bool result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SpeakingPhonemeScreen(
+              text: (data["text"] as List)
+                  .map((item) => Map<String, dynamic>.from(item))
+                  .toList(),
+              videoUrl: data["video_url"],
+              testSpeech: data["test_speech"],
+            ),
           ),
-        ),
-      );
-      if (params != "completed") {
-        await levelProvider.incrementLevelCount("SpeechTests");
-      }
-      if (result) {
-        debugPrint("set state is called for rebuilding the widget");
-        String origin = val == 0 ? "Auditory" : "SpeechTests";
-        await _fetchCurrentLevel(origin);
-      }
-    }else {
+        );
+        if (params != "completed") {
+          await levelProvider.incrementLevelCount("SpeechTests");
+        }
+        if (result) {
+          debugPrint("set state is called for rebuilding the widget");
+          String origin = val == 0 ? "Auditory" : "SpeechTests";
+          await _fetchCurrentLevel(origin);
+        }
+      } else {
         final Object dtcontainer;
         dtcontainer = retrieveObject(type, data);
-      
+
         debugPrint("data is ");
         debugPrint(data.toString());
         List<dynamic> lis = [type, dtcontainer, params];
         print("lis is $lis");
-        
-        bool result = await NavigatorService.pushNamed(
-            AppRoutes.auditory,
+
+        bool result = await NavigatorService.pushNamed(AppRoutes.auditory,
             arguments: lis);
 
         if (result) {
@@ -212,7 +209,6 @@ class PhonemeLevelOneScreenState
       }
     } catch (e) {
       debugPrint("catch section");
-      
     }
   }
 
@@ -239,9 +235,7 @@ class PhonemeLevelOneScreenState
           await _fetchCurrentLevel(origin);
         }
       }
-    } catch (e) {
-      
-    }
+    } catch (e) {}
   }
 
   Object retrieveObject(String type, Map<String, dynamic> data) {
@@ -258,6 +252,9 @@ class PhonemeLevelOneScreenState
       debugPrint("in audio to image section ");
       AudioToImage audioToImage = AudioToImage.fromJson(data);
       return audioToImage;
+    } else if (type == "AudioToAudio") {
+      AudioToAudio audioToAudio = AudioToAudio.fromJson(data);
+      return audioToAudio;
     } else
       return "unexpected value";
   }
@@ -271,9 +268,11 @@ class PhonemeLevelOneScreenState
 
       if (user != null) {
         final String uid = user.uid;
-        var data =
-            await FirebaseFirestore.instance.collection('patients').doc(uid).get();
-            print("jnnnnackc ");
+        var data = await FirebaseFirestore.instance
+            .collection('patients')
+            .doc(uid)
+            .get();
+        print("jnnnnackc ");
         print(data);
         setState(() {
           currentLevelCount = data[screen] >= 1 || data[screen] == null
@@ -284,7 +283,6 @@ class PhonemeLevelOneScreenState
     } catch (e) {
       debugPrint("error in fetching current level");
       debugPrint(e.toString());
-      
     }
   }
 }

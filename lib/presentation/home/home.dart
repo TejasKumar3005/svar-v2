@@ -38,6 +38,7 @@ class HomeScreenState extends State<HomeScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    
   }
 
   @override
@@ -152,10 +153,10 @@ class HomeScreenState extends State<HomeScreen> {
             ClipRect(
               child: GestureDetector(
                 onTap: () {
-                  provider.setScreenInfo(1);
+                  provider.setScreenInfo("Words");
                   NavigatorService.pushNamed(
                       AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: provider.val);
+                      arguments: provider.excerciseType);
                 },
                 child: Center(
                   // Centering the entire container
@@ -207,10 +208,10 @@ class HomeScreenState extends State<HomeScreen> {
             ClipRect(
               child: GestureDetector(
                 onTap: () {
-                  provider.setScreenInfo(1);
+                  provider.setScreenInfo("Identification");
                   NavigatorService.pushNamed(
                       AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: provider.val);
+                      arguments: provider.excerciseType);
                 },
                 child: Center(
                   // Centering the entire container
@@ -262,10 +263,10 @@ class HomeScreenState extends State<HomeScreen> {
             ClipRect(
               child: GestureDetector(
                 onTap: () {
-                  provider.setScreenInfo(1);
+                  provider.setScreenInfo("Detection");
                   NavigatorService.pushNamed(
                       AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: provider.val);
+                      arguments: provider.excerciseType);
                 },
                 child: Center(
                   // Centering the entire container
@@ -317,10 +318,10 @@ class HomeScreenState extends State<HomeScreen> {
             ClipRect(
               child: GestureDetector(
                 onTap: () {
-                  provider.setScreenInfo(1);
+                  provider.setScreenInfo("Discrimination");
                   NavigatorService.pushNamed(
                       AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: provider.val);
+                      arguments: provider.excerciseType);
                 },
                 child: Center(
                   // Centering the entire container
