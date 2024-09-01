@@ -14,7 +14,7 @@ List<dynamic> therapyCenters = [];
         dob: "",
         doj: "",
         access_token: "",
-        
+        levelMap: LevelMap(detection: 0,discrimination: 0,identification: 0,level: 0),
       );
 
   Map<String, dynamic> parentaltips = {};    

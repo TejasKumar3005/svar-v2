@@ -48,7 +48,9 @@ class AppStatsHeader extends StatelessWidget {
                     ImageConstant.imgBarcode,
                     height: 10.v,
                     fit: BoxFit.contain,
-                    width: (130 * (provider.userModel.auditory_current_level! / 10)).h,
+                    width: (130 *
+                            (provider.userModel.auditory_current_level! / 10))
+                        .h,
                     alignment: Alignment.centerLeft,
                   ),
                 ),
@@ -209,7 +211,6 @@ class AppStatsHeader extends StatelessWidget {
                   ),
                 ),
               ),
-              
               Positioned(
                 right: 3.h,
                 child: Text(
@@ -228,7 +229,6 @@ class AppStatsHeader extends StatelessWidget {
             ],
           ),
         ),
-      
       ],
     );
   }

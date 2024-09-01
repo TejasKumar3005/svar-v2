@@ -1,5 +1,28 @@
 import 'package:svar_new/data/models/gift.dart';
-
+import 'package:svar_new/widgets/custom_level_map/level_map.dart';
+class LevelMap{
+  int detection;
+  int discrimination;
+  int identification;
+  int level;
+  LevelMap({required this.detection, required this.discrimination, required this.identification, required this.level});
+  factory LevelMap.fromJson(Map<String, dynamic> json) {
+    return LevelMap(
+      detection: json['Detection'] as int,
+      discrimination: json['Discrimination'] as int,
+      identification: json['Identification'] as int,
+      level: json['Level'] as int,
+    );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      "Detection": this.detection,
+      "Discrimination": this.discrimination,
+      "Identification": this.identification,
+      "Level": this.level,
+    };
+  }
+}
 class UserModel {
   List<String>? parentNames;
   String name;
@@ -23,6 +46,7 @@ class UserModel {
   int? coins;
   String? therapist;
   String? batch;
+  LevelMap levelMap;
   // GameStatsModel gameStats = GameStatsModel(
   //     gifts: [],
   //     progressScore: 0.0,
@@ -50,7 +74,8 @@ class UserModel {
       this.score,
       this.coins,
       this.address,
-      this.therapist ,  this.batch
+      this.therapist ,  this.batch,
+    required  this.levelMap
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -62,7 +87,7 @@ class UserModel {
         uid: json['uid'] ?? "",
         profile: json['profile'] ?? "",
         dob: json['dob'] ?? "",
-      
+
         gender: json['gender'] ?? 0,
         location: json['location'] ?? [0, 0],
         access_token: json['access_token'] ?? "",
@@ -73,7 +98,8 @@ class UserModel {
         score: json['score'] ?? 0,
         coins: json['coins'] ?? 0,
         address: json['address'] ?? "",  therapist: json['therapist'] ?? "",
-      batch: json['batch'] ?? ""
+      batch: json['batch'] ?? "",
+      levelMap:json['LevelMap']!=null? LevelMap.fromJson(json['LevelMap']): LevelMap(detection: 0,discrimination: 0,identification: 0,level: 0),
     );
   }
 
@@ -106,7 +132,8 @@ class UserModel {
       "coins": this.coins,
       "address": this.address,
       "therapist": this.therapist,
-      "batch": this.batch
+      "batch": this.batch,
+      "levelMap": this.levelMap!.toJson(),
       // "gift_purchase_history": list_gifts,
       // "currently_scheduled_gift": this.currently_scheduled_gift == null
       //     ? null

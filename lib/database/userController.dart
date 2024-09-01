@@ -113,6 +113,7 @@ final CollectionReference therapyCenterCollection =
       if (documentSnapshot.data() != null) {
         Map<String, dynamic> map =
             documentSnapshot.data()! as Map<String, dynamic>;
+            print(map);
         userModel = UserModel.fromJson(map);
         // userModel.gameStats.levels_on = await loadJsonFromAsset().then((value) => value.map((e) => Level.fromJson(e)).toList());
         Provider.of<UserDataProvider>(buildContext!, listen: false)

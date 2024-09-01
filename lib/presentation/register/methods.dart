@@ -30,7 +30,8 @@ class RegisterFormMethods {
                           auditory_current_level: 0,
                           score: 0,
                           therapist: null,
-                          batch:null
+                          batch:null,
+                          levelMap: LevelMap(detection: 0,discrimination: 0,identification: 0,level: 0),
                         ),therapyCenterId)
         .then((value) => {
               if (value)

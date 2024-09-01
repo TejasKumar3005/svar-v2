@@ -30,7 +30,7 @@ class _DiscriminationState extends State<Discrimination> {
     "chha.mp3",
   ];
   int selectedOption = -1;
-  String type = "4";
+  String type = "DiffSounds";
   List<double> samples = [];
   @override
   Widget build(BuildContext context) {
@@ -85,13 +85,13 @@ class _DiscriminationState extends State<Discrimination> {
 
   Widget discriminationOptions() {
     switch (type) {
-      case "1":
+      case "DiffSounds":
         return DiscriType1();
-      case "2-4":
+      case "OddOne":
         return DiscriType24();
-      case "3":
+      case "DiffHalf":
         return DiscriType3();
-      case "4":
+      case "MaleFemale":
         return DiscriType4();
       default:
         return DiscriType1();
