@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/core/utils/audioSampleExtractor.dart';
+
+import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
@@ -30,10 +30,16 @@ class _DiscriminationState extends State<Discrimination> {
     "chha.mp3",
   ];
   int selectedOption = -1;
-  String type = "DiffSounds";
+
   List<double> samples = [];
   @override
   Widget build(BuildContext context) {
+    
+    var obj = ModalRoute.of(context)?.settings.arguments as Map<String,dynamic>;
+    String type = obj["type"] as String;
+    dynamic data = obj["data"] as dynamic;
+    
+
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -76,46 +82,46 @@ class _DiscriminationState extends State<Discrimination> {
             SizedBox(
               height: 20.v,
             ),
-            discriminationOptions(),
+            discriminationOptions(type, data),
           ],
         ),
       ),
     );
   }
 
-  Widget discriminationOptions() {
+  Widget discriminationOptions( String type, dynamic data) {
     switch (type) {
       case "DiffSounds":
-        return DiscriType1();
+        return DiffSoundsW(data as DiffSounds);
       case "OddOne":
-        return DiscriType24();
+        return OddOneW(data as OddOne);
       case "DiffHalf":
-        return DiscriType3();
+        return DiffHalfW(data as DiffHalf);
       case "MaleFemale":
-        return DiscriType4();
+        return MaleFemaleW(data as MaleFemale);
       default:
-        return DiscriType1();
+        return DiffSoundsW(data as DiffSounds);
     }
   }
 
-  Widget DiscriType4() {
+  Widget MaleFemaleW(MaleFemale maleFemale) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildOption("", PrimaryColors().deepOrangeA200, 0),
+        _buildOption("", PrimaryColors().deepOrangeA200, 0,maleFemale.videoUrl),
         SizedBox(
           height: 20.v,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Artboard("img_mascot"),
+            Artboard(maleFemale.images.isEmpty ? "img_mascot" : maleFemale.images[0]),
             SizedBox(
               width: 20.h,
             ),
-            Artboard("img_mascot"),
+            Artboard(maleFemale.images.isEmpty ? "img_mascot" : maleFemale.images[1]),
           ],
         ),
         SizedBox(
@@ -162,7 +168,8 @@ class _DiscriminationState extends State<Discrimination> {
             width: 100,
             height: 100,
             fit: BoxFit.contain,
-            imagePath: "assets/images/$image.png",
+            
+            imagePath: image,
           ),
           Positioned(
             top: 0,
@@ -179,14 +186,16 @@ class _DiscriminationState extends State<Discrimination> {
     );
   }
 
-  Widget DiscriType3() {
+  Widget DiffHalfW(DiffHalf diffHalf) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildOption("A", PrimaryColors().deepOrangeA200, 0),
+        _buildOption("A", PrimaryColors().deepOrangeA200, 0,diffHalf.videoUrls[0]),
+        
         SizedBox(
           height: 20.v,
         ),
+
         Container(
           height: 40,
 
@@ -233,18 +242,18 @@ class _DiscriminationState extends State<Discrimination> {
     );
   }
 
-  Widget DiscriType1() {
+  Widget DiffSoundsW(DiffSounds diffSounds) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildOption("A", PrimaryColors().deepOrangeA200, 0),
+            _buildOption("A", PrimaryColors().deepOrangeA200, 0,diffSounds.videoUrls[0]),
             SizedBox(
               width: 30.h,
             ),
-            _buildOption("B", PrimaryColors().deepOrangeA200, 1),
+            _buildOption("B", PrimaryColors().deepOrangeA200, 1,diffSounds.videoUrls[1]),
           ],
         ),
         SizedBox(
@@ -267,8 +276,8 @@ class _DiscriminationState extends State<Discrimination> {
     );
   }
 
-  Widget DiscriType24() {
-    switch (audios.length) {
+  Widget OddOneW(OddOne oddOne) {
+    switch (oddOne.videoUrls.length) {
       case 2:
         // Statements executed when the expression equals value1
         return Column(
@@ -276,11 +285,11 @@ class _DiscriminationState extends State<Discrimination> {
           children: [
             Row(
               children: [
-                _buildOption("A", PrimaryColors().deepOrangeA200, 0),
+                _buildOption("A", PrimaryColors().deepOrangeA200, 0,oddOne.videoUrls[0]),
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption("B", PrimaryColors().deepOrangeA200, 1),
+                _buildOption("B", PrimaryColors().deepOrangeA200, 1,oddOne.videoUrls[1]),
               ],
             ),
           ],
@@ -292,11 +301,11 @@ class _DiscriminationState extends State<Discrimination> {
           children: [
             Row(
               children: [
-                _buildOption("A", PrimaryColors().deepOrangeA200, 0),
+                _buildOption("A", PrimaryColors().deepOrangeA200, 0,oddOne.videoUrls[0]),
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption("B", PrimaryColors().deepOrangeA200, 1),
+                _buildOption("B", PrimaryColors().deepOrangeA200, 1,oddOne.videoUrls[1]),
               ],
             ),
             SizedBox(
@@ -305,7 +314,7 @@ class _DiscriminationState extends State<Discrimination> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildOption("C", PrimaryColors().deepOrangeA200, 2),
+                _buildOption("C", PrimaryColors().deepOrangeA200, 2,oddOne.videoUrls[2]),
               ],
             )
           ],
@@ -319,11 +328,11 @@ class _DiscriminationState extends State<Discrimination> {
           children: [
               Row(
               children: [
-                _buildOption("A", PrimaryColors().deepOrangeA200, 0),
+                _buildOption("A", PrimaryColors().deepOrangeA200, 0,oddOne.videoUrls[0]),
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption("B", PrimaryColors().deepOrangeA200, 1),
+                _buildOption("B", PrimaryColors().deepOrangeA200, 1,oddOne.videoUrls[1]),
               ],
             ),
             SizedBox(
@@ -331,11 +340,11 @@ class _DiscriminationState extends State<Discrimination> {
             ),
             Row(
               children: [
-                _buildOption("C", PrimaryColors().deepOrangeA200, 2),
+                _buildOption("C", PrimaryColors().deepOrangeA200, 2,oddOne.videoUrls[2]),
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption("D", PrimaryColors().deepOrangeA200, 3),
+                _buildOption("D", PrimaryColors().deepOrangeA200, 3,oddOne.videoUrls[3]),
               ],
             ),
           ],
@@ -344,7 +353,7 @@ class _DiscriminationState extends State<Discrimination> {
     }
   }
 
-  Widget _buildOption(String text, Color color, int index) {
+  Widget _buildOption(String text, Color color, int index,String audio) {
     {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -390,7 +399,7 @@ class _DiscriminationState extends State<Discrimination> {
                       // AudioSampleExtractor audioSampleExtractor =
                       //     AudioSampleExtractor();
                       // audioSampleExtractor.getAssetAudioSamples(audios[index]);
-                      playAudio.playMusic(audios[index], "mp3", false);
+                      playAudio.playMusic(audio, "mp3", false);
                     },
                   ),
                   SizedBox(

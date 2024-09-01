@@ -54,6 +54,7 @@ class _DetectionState extends State<Detection> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,

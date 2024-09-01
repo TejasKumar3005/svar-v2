@@ -111,21 +111,20 @@ class AudioToImage {
   }
 }
 
-
-class AudioToAudio{
+class AudioToAudio {
   final List<String> audio_list;
   final int correct_output;
   AudioToAudio._({required this.audio_list, required this.correct_output});
-  factory AudioToAudio.fromJson(Map<String, dynamic> json){
+  factory AudioToAudio.fromJson(Map<String, dynamic> json) {
     return AudioToAudio._(
-      audio_list: List<String>.from(json["audio_list"]),
-      correct_output: json["correct_output"] as int
-    );
+        audio_list: List<String>.from(json["audio_list"]),
+        correct_output: json["correct_output"] as int);
   }
-  List<String> getAudioList(){
+  List<String> getAudioList() {
     return audio_list;
   }
-  int getCorrectOutput(){
+
+  int getCorrectOutput() {
     return correct_output;
   }
 }
@@ -194,7 +193,6 @@ class HalfMuted {
   }
 }
 
-
 class DiffSounds {
   final int level;
   final String type;
@@ -259,7 +257,6 @@ class OddOne {
   }
 }
 
-
 class DiffHalf {
   final int level;
   final String type;
@@ -290,4 +287,32 @@ class DiffHalf {
   String getType() {
     return type;
   }
+}
+
+class MaleFemale {
+  final int level;
+  final String type;
+  final String videoUrl;
+  final List<String> images;
+
+  MaleFemale._({
+    required this.level,
+    required this.type,
+    required this.videoUrl,
+    required this.images,
+  });
+
+  factory MaleFemale.fromJson(Map<String, dynamic> json) {
+    return MaleFemale._(
+      level: json['level'] as int,
+      type: json['type'] as String,
+      videoUrl: json['video_url'][0] as String,
+      images: json["images"]?? [] // Accessing the first item
+    );
+  }
+
+  String getVideoUrl() {
+    return videoUrl;
+  }
+
 }
