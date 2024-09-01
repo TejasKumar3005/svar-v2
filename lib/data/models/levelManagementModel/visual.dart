@@ -85,21 +85,21 @@ class FigToWord {
 }
 
 class AudioToImage {
-  final String audio_url;
+  final String video_url;
   final String correct_output;
-  final List<String> image_list;
+  final List<String> image_url;
   AudioToImage._(
-      {required this.audio_url,
+      {required this.video_url,
       required this.correct_output,
-      required this.image_list});
+      required this.image_url});
   factory AudioToImage.fromJson(Map<String, dynamic> json) {
     return AudioToImage._(
-        audio_url: json["audio_url"] as String,
+        video_url: json["video_url"] as String,
         correct_output: json["correct_output"] as String,
-        image_list: List<String>.from(json["image_list"]));
+        image_url: List<String>.from(json["image_url"]));
   }
   List<String> getImageUrlList() {
-    return image_list;
+    return image_url;
   }
 
   String getCorrectOutput() {
@@ -107,7 +107,7 @@ class AudioToImage {
   }
 
   String getAudioUrl() {
-    return audio_url;
+    return video_url;
   }
 }
 
@@ -128,6 +128,166 @@ class AudioToAudio{
   int getCorrectOutput(){
     return correct_output;
   }
+}
 
-  
+class MutedUnmuted {
+  final int level;
+  final String type;
+  final List<String> videoUrls;
+
+  MutedUnmuted._({
+    required this.level,
+    required this.type,
+    required this.videoUrls,
+  });
+
+  factory MutedUnmuted.fromJson(Map<String, dynamic> json) {
+    return MutedUnmuted._(
+      level: json['level'] as int,
+      type: json['type'] as String,
+      videoUrls: List<String>.from(json['video_url']),
+    );
+  }
+
+  List<String> getVideoUrls() {
+    return videoUrls;
+  }
+
+  int getLevel() {
+    return level;
+  }
+
+  String getType() {
+    return type;
+  }
+}
+
+class HalfMuted {
+  final int level;
+  final String type;
+  final String videoUrl;
+
+  HalfMuted._({
+    required this.level,
+    required this.type,
+    required this.videoUrl,
+  });
+
+  factory HalfMuted.fromJson(Map<String, dynamic> json) {
+    return HalfMuted._(
+      level: json['level'] as int,
+      type: json['type'] as String,
+      videoUrl: json['video_url'][0] as String, // Accessing the first item
+    );
+  }
+
+  String getVideoUrl() {
+    return videoUrl;
+  }
+
+  int getLevel() {
+    return level;
+  }
+
+  String getType() {
+    return type;
+  }
+}
+
+
+class DiffSounds {
+  final int level;
+  final String type;
+  final List<String> videoUrls;
+
+  DiffSounds._({
+    required this.level,
+    required this.type,
+    required this.videoUrls,
+  });
+
+  factory DiffSounds.fromJson(Map<String, dynamic> json) {
+    return DiffSounds._(
+      level: json['level'] as int,
+      type: json['type'] as String,
+      videoUrls: List<String>.from(json['video_url']),
+    );
+  }
+
+  List<String> getVideoUrls() {
+    return videoUrls;
+  }
+
+  int getLevel() {
+    return level;
+  }
+
+  String getType() {
+    return type;
+  }
+}
+
+class OddOne {
+  final int level;
+  final String type;
+  final List<String> videoUrls;
+
+  OddOne._({
+    required this.level,
+    required this.type,
+    required this.videoUrls,
+  });
+
+  factory OddOne.fromJson(Map<String, dynamic> json) {
+    return OddOne._(
+      level: json['level'] as int,
+      type: json['type'] as String,
+      videoUrls: List<String>.from(json['video_url']),
+    );
+  }
+
+  List<String> getVideoUrls() {
+    return videoUrls;
+  }
+
+  int getLevel() {
+    return level;
+  }
+
+  String getType() {
+    return type;
+  }
+}
+
+
+class DiffHalf {
+  final int level;
+  final String type;
+  final List<String> videoUrls;
+
+  DiffHalf._({
+    required this.level,
+    required this.type,
+    required this.videoUrls,
+  });
+
+  factory DiffHalf.fromJson(Map<String, dynamic> json) {
+    return DiffHalf._(
+      level: json['level'] as int,
+      type: json['type'] as String,
+      videoUrls: List<String>.from(json['video_url']),
+    );
+  }
+
+  List<String> getVideoUrls() {
+    return videoUrls;
+  }
+
+  int getLevel() {
+    return level;
+  }
+
+  String getType() {
+    return type;
+  }
 }
