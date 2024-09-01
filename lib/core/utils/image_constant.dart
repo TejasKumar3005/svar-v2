@@ -10,7 +10,8 @@ class ImageConstant {
   static String thumbnailAuditory = '$imagePath/Auditory.png';
   static String thumbnailPhonemes = '$imagePath/Phonemes.png';
   static String thumbnailBarakhadi = '$imagePath/Barakhadi.jpg';
-
+ 
+    static String imgStopBtn='$imagePath/svg/stopBtn.svg';
   static String imgCoinSvg = '$imagePath/svg/Simple_Coin.svg';
   static String imgArrowLeftYellow = "$imagePath/svg/LeftArrow_BTN_IconButton.svg";
   static String imgArrowRightGreen = "$imagePath/svg/RightArrow_BTN_IconButton.svg";

@@ -25,6 +25,7 @@ enum ButtonType {
   Same,
   Video1,
   Video2,
+  Stop
  
 }
 
@@ -163,14 +164,20 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.Video1:
         imagePath = ImageConstant.imgVideo1btn;
-        width = 35;
-        height = 35;
+        width = 170;
+        height = 80;
         isSvg = true;
         break;
       case ButtonType.Video2:
         imagePath = ImageConstant.imgVideo2btn;
-        width = 35;
-        height = 35;
+        width = 170;
+        height = 80;
+        isSvg = true;
+        break;  
+      case ButtonType.Stop:
+        imagePath = ImageConstant.imgStopBtn;
+        width = 170;
+        height = 80;
         isSvg = true;
         break;    
 

@@ -97,31 +97,15 @@ class HomeScreenState extends State<HomeScreen> {
           items: [
             ClipRect(
               child: GestureDetector(
-                onTap: () async {
+                onTap: ()  {
                   // Set the screen type first
-                  provider.setScreenInfo("Detection");
-
-                  // Fetch the number of levels asynchronously
-                  int? levels = await fetchNumberOfLevels(
-                      provider.exerciseType ??
-                          ""); // Ensure exerciseType is not null
-
-                  if (levels != null) {
-                    // Set the number of levels in the provider
-                    provider.setNumberOfLevels(levels);
-
+                
                     // Navigate to the next screen with the levels as an argument
                     NavigatorService.pushNamed(
-                      AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: {
-                        'exerciseType': provider.exerciseType,
-                        'numberOfLevels': levels,
-                      },
+                      AppRoutes.phonmesListScreen,
+                    
                     );
-                  } else {
-                    // Handle the case when fetching levels fails
-                    debugPrint("Failed to fetch the number of levels.");
-                  }
+                  
                 },
                 child: Center(
                   // Centering the entire container
