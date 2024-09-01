@@ -126,7 +126,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         List<dynamic> lis = [type, dtcontainer, params];
         print("lis is $lis");
 
-        bool result = await NavigatorService.pushNamed(AppRoutes.auditory,
+        bool result = await NavigatorService.pushNamed(AppRoutes.identification,
             arguments: lis);
 
         if (result) {
@@ -248,51 +248,78 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
  
 
-  Object retrieveObject(String type, Map<String, dynamic> data) {
-    if (type == "ImageToAudio") {
-      ImageToAudio imageToAudio = ImageToAudio.fromJson(data);
-      return imageToAudio;
-    } else if (type == "WordToFig") {
-      WordToFiG wordToFiG = WordToFiG.fromJson(data);
-      return wordToFiG;
-    } else if (type == "FigToWord") {
-      FigToWord figToWord = FigToWord.fromJson(data);
-      return figToWord;
-    } else if (type == "AudioToImage") {
-      debugPrint("in audio to image section ");
-      AudioToImage audioToImage = AudioToImage.fromJson(data);
-      return audioToImage;
-    } else if (type == "AudioToAudio") {
-      AudioToAudio audioToAudio = AudioToAudio.fromJson(data);
-      return audioToAudio;
-    } else
-      return "unexpected value";
+Object retrieveObject(String type, Map<String, dynamic> data) {
+  if (type == "ImageToAudio") {
+    ImageToAudio imageToAudio = ImageToAudio.fromJson(data);
+    return imageToAudio;
+  } else if (type == "WordToFig") {
+    WordToFiG wordToFiG = WordToFiG.fromJson(data);
+    return wordToFiG;
+  } else if (type == "FigToWord") {
+    FigToWord figToWord = FigToWord.fromJson(data);
+    return figToWord;
+  } else if (type == "AudioToImage") {
+    debugPrint("in audio to image section");
+    AudioToImage audioToImage = AudioToImage.fromJson(data);
+    return audioToImage;
+  } else if (type == "AudioToAudio") {
+    AudioToAudio audioToAudio = AudioToAudio.fromJson(data);
+    return audioToAudio;
+  } else if (type == "Muted&Unmuted") {
+    MutedUnmuted mutedUnmuted = MutedUnmuted.fromJson(data);
+    return mutedUnmuted;
+  } else if (type == "HalfMuted") {
+    HalfMuted halfMuted = HalfMuted.fromJson(data);
+    return halfMuted;
+  } else if (type == "DiffSounds") {
+    DiffSounds diffSounds = DiffSounds.fromJson(data);
+    return diffSounds;
+  } else if (type == "OddOne") {
+    OddOne oddOne = OddOne.fromJson(data);
+    return oddOne;
+  } else if (type == "DiffHalf") {
+    DiffHalf diffHalf = DiffHalf.fromJson(data);
+    return diffHalf;
+  } else {
+    return "unexpected value";
   }
+}
 
-  Future<void> _fetchCurrentLevel(String origin) async {
-    try {
-      final User? user = FirebaseAuth.instance.currentUser;
-      String screen = origin == "Quizes"
-          ? "phoneme_current_level"
-          : "auditory_current_level";
 
-      if (user != null) {
-        final String uid = user.uid;
-        var data = await FirebaseFirestore.instance
-            .collection('patients')
-            .doc(uid)
-            .get();
-        print("jnnnnackc ");
-        print(data);
+  Future<void> _fetchCurrentLevel(String type) async {
+  try {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      final String uid = user.uid;
+
+      // Fetch the current user's document from Firestore
+      var data = await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(uid)
+          .get();
+
+      if (data.exists) {
+        // Get the 'LevelMap' field from the document
+        Map<String, dynamic> levelMap = data['LevelMap'] as Map<String, dynamic>? ?? {};
+
+        // Fetch the level for the specified type
+        var levelData = levelMap[type] ?? 1; // Default to 1 if the type is not found
+
+        double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
+
+        // Update the state
         setState(() {
-          currentLevelCount = data[screen] >= 1 || data[screen] == null
-              ? data[screen].toDouble()
-              : 1.0;
+          currentLevelCount = currentLevel;
         });
+      } else {
+        debugPrint("No data found for user $uid.");
       }
-    } catch (e) {
-      debugPrint("error in fetching current level");
-      debugPrint(e.toString());
     }
+  } catch (e) {
+    debugPrint("Error in fetching current level");
+    debugPrint(e.toString());
   }
+}
+
 }

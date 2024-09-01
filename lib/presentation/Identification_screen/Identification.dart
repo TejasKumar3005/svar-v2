@@ -1,19 +1,19 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
-import 'package:svar_new/presentation/auditory_screen/audioToImage.dart';
-import 'package:svar_new/presentation/auditory_screen/animation_play.dart';
-import 'package:svar_new/presentation/auditory_screen/celebration_overlay.dart';
+import 'package:svar_new/presentation/Identification_screen/audioToImage.dart';
+import 'package:svar_new/presentation/Identification_screen/animation_play.dart';
+import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/discrimination/discrimination.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:video_player/video_player.dart';
-import 'provider/auditory_provider.dart';
+import 'provider/identification_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class AuditoryScreen extends StatefulWidget {
-  const AuditoryScreen({Key? key})
+class IdentificationScreen extends StatefulWidget {
+  const IdentificationScreen({Key? key})
       : super(
           key: key,
         );
@@ -23,13 +23,13 @@ class AuditoryScreen extends StatefulWidget {
 
   static Widget builder(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => AuditoryProvider(),
-      child: AuditoryScreen(),
+      create: (context) => IdentificationProvider(),
+      child: IdentificationScreen(),
     );
   }
 }
 
-class AuditoryScreenState extends State<AuditoryScreen> {
+class AuditoryScreenState extends State<IdentificationScreen> {
   late bool _isGlowingA;
   late bool _isGlowingB;
   late AudioPlayer _player;
@@ -99,7 +99,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var provider = context.watch<AuditoryProvider>();
+    var provider = context.watch<IdentificationProvider>();
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
@@ -175,7 +175,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
   }
 
   /// Section Widget
-  Widget _buildOptionGRP(BuildContext context, AuditoryProvider provider,
+  Widget _buildOptionGRP(BuildContext context, IdentificationProvider provider,
       String type, dynamic dtcontainer, String params) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.h),
@@ -225,7 +225,7 @@ class AuditoryScreenState extends State<AuditoryScreen> {
     );
   }
 
-  Widget buildDynamicOptions(String quizType, AuditoryProvider provider,
+  Widget buildDynamicOptions(String quizType, IdentificationProvider provider,
       dynamic dtcontainer, String params) {
     switch (quizType) {
       case "ImageToAudio":
