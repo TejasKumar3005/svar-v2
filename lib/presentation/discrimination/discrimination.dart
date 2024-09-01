@@ -1,7 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/core/utils/audioSampleExtractor.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
@@ -28,6 +31,7 @@ class _DiscriminationState extends State<Discrimination> {
   ];
   int selectedOption = -1;
   String type = "4";
+  List<double> samples = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,25 +100,27 @@ class _DiscriminationState extends State<Discrimination> {
 
   Widget DiscriType4() {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _buildOption("", PrimaryColors().deepOrangeA200, 0),
         SizedBox(
           height: 20.v,
         ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Artboard("mascot"),
+            Artboard("img_mascot"),
             SizedBox(
               width: 20.h,
             ),
-            Artboard("mascot"),
+            Artboard("img_mascot"),
           ],
         ),
         SizedBox(
           height: 20.v,
         ),
-
         Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -126,13 +132,13 @@ class _DiscriminationState extends State<Discrimination> {
             ),
           ],
         ),
-        
       ],
     );
   }
 
   Widget Artboard(String image) {
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.v),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -159,8 +165,8 @@ class _DiscriminationState extends State<Discrimination> {
             imagePath: "assets/images/$image.png",
           ),
           Positioned(
-            top: 10,
-            left: 10,
+            top: 0,
+            left: 0,
             child: CustomImageView(
               width: 40,
               height: 40,
@@ -177,7 +183,7 @@ class _DiscriminationState extends State<Discrimination> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildOption("", PrimaryColors().deepOrangeA200, 0),
+        _buildOption("A", PrimaryColors().deepOrangeA200, 0),
         SizedBox(
           height: 20.v,
         ),
@@ -192,12 +198,12 @@ class _DiscriminationState extends State<Discrimination> {
                 activeTrackColor:
                     PrimaryColors().blue20001, // Green part of the slider
                 inactiveTrackColor:
-                    PrimaryColors().teal90001, // Light blue part of the slider
+                    Colors.white, // Light blue part of the slider
                 trackHeight: 20.0,
 
                 thumbShape: RectangularImageThumb(
                   thumbWidth: 50.0, // Set the width of the thumb
-                  thumbHeight: 30.0, // Set the height of the thumb
+                  thumbHeight: 50.0, // Set the height of the thumb
                   thumbImagePath:
                       'assets/images/thumb.png', // Path to the thumb image
                 ),
@@ -232,20 +238,25 @@ class _DiscriminationState extends State<Discrimination> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildOption("A", PrimaryColors().deepOrangeA200, 0),
             SizedBox(
-              width: 20.h,
+              width: 30.h,
             ),
-            _buildOption("B", PrimaryColors().green900, 1),
+            _buildOption("B", PrimaryColors().deepOrangeA200, 1),
           ],
         ),
         SizedBox(
           height: 20.v,
         ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CustomButton(type: ButtonType.Same, onPressed: () {}),
+            CustomButton(
+              
+
+              type: ButtonType.Same, onPressed: () {}),
             SizedBox(
               width: 20.h,
             ),
@@ -269,7 +280,7 @@ class _DiscriminationState extends State<Discrimination> {
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption("B", PrimaryColors().green900, 1),
+                _buildOption("B", PrimaryColors().deepOrangeA200, 1),
               ],
             ),
           ],
@@ -285,7 +296,7 @@ class _DiscriminationState extends State<Discrimination> {
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption("B", PrimaryColors().green900, 1),
+                _buildOption("B", PrimaryColors().deepOrangeA200, 1),
               ],
             ),
             SizedBox(
@@ -294,7 +305,7 @@ class _DiscriminationState extends State<Discrimination> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildOption("C", PrimaryColors().blueA200, 2),
+                _buildOption("C", PrimaryColors().deepOrangeA200, 2),
               ],
             )
           ],
@@ -306,7 +317,27 @@ class _DiscriminationState extends State<Discrimination> {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildOption("", PrimaryColors().deepOrangeA200, 0),
+              Row(
+              children: [
+                _buildOption("A", PrimaryColors().deepOrangeA200, 0),
+                SizedBox(
+                  width: 20.h,
+                ),
+                _buildOption("B", PrimaryColors().deepOrangeA200, 1),
+              ],
+            ),
+            SizedBox(
+              height: 20.v,
+            ),
+            Row(
+              children: [
+                _buildOption("C", PrimaryColors().deepOrangeA200, 2),
+                SizedBox(
+                  width: 20.h,
+                ),
+                _buildOption("D", PrimaryColors().deepOrangeA200, 3),
+              ],
+            ),
           ],
         );
       // Statements executed when none of the values match the value of the expression
@@ -343,16 +374,12 @@ class _DiscriminationState extends State<Discrimination> {
               ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                color: color,
-                border: selectedOption == index
-                    ? Border.all(
+                color: selectedOption != index ? color : PrimaryColors().green30001,
+                border: Border.all(
                         color: Colors.black,
-                        width: 5,
+                        width: 3,
                       )
-                    : Border.all(
-                        color: Colors.green,
-                        width: 8,
-                      ),
+                    
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -360,17 +387,38 @@ class _DiscriminationState extends State<Discrimination> {
                   CustomButton(
                     type: ButtonType.ImagePlay,
                     onPressed: () {
+                      // AudioSampleExtractor audioSampleExtractor =
+                      //     AudioSampleExtractor();
+                      // audioSampleExtractor.getAssetAudioSamples(audios[index]);
                       playAudio.playMusic(audios[index], "mp3", false);
                     },
                   ),
                   SizedBox(
                     width: 10.h,
                   ),
-                  CustomImageView(
+                  
+
+                  Stack(
+                    children: [
+                    CustomImageView(
                     width: MediaQuery.of(context).size.width * 0.4 - 90,
                     height: 60,
                     fit: BoxFit.fill,
                     imagePath: "assets/images/spectrum.png",
+                  ),
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: PolygonWaveform(
+                          samples: samples, // Use the updated samples
+                          height: 60,
+                          width: MediaQuery.of(context).size.width * 0.4 - 90,
+                          inactiveColor: Colors.white.withOpacity(0.5),
+                          activeColor: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -130,7 +130,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                       child: GestureDetector(
                         onTap: () async {
                           AudioSampleExtractor extractor = AudioSampleExtractor();
-                          samples = await extractor.getAudioSamples(widget.dtcontainer.getAudioUrl());
+                          samples = await extractor.getNetorkAudioSamples(widget.dtcontainer.getAudioUrl());
                           setState(() {
                             
                           });

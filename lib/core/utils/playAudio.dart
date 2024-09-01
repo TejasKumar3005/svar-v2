@@ -28,7 +28,7 @@ class PlayAudio {
 
     // Play the audio
     await audioPlayer.play(
-      UrlSource('assets/audio/bgm/$url', mimeType: mime),
+      UrlSource('assets/audio/$url', mimeType: mime),
     );
   }
 

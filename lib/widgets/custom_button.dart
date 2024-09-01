@@ -139,14 +139,14 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.Change:
         imagePath = ImageConstant.imgChangebtn;
-        width = 35;
-        height = 35;
+        width = 170;
+        height = 80;
         isSvg = true;
         break;
       case ButtonType.Diff:
         imagePath = ImageConstant.imgDiffbtn;
-        width = 35;
-        height = 35;
+        width = 170;
+        height =80;
         isSvg = true;
         break;
       case ButtonType.Tip2:
@@ -157,8 +157,8 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.Same:
         imagePath = ImageConstant.imgSamebtn;
-        width = 35;
-        height = 35;
+        width = 170;
+        height =80;
         isSvg = true;
         break;
       case ButtonType.Video1:
