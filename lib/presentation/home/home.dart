@@ -38,7 +38,7 @@ class HomeScreenState extends State<HomeScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    
+
   }
 
   @override
@@ -320,7 +320,7 @@ class HomeScreenState extends State<HomeScreen> {
                 onTap: () {
                   provider.setScreenInfo("Discrimination");
                   NavigatorService.pushNamed(
-                      AppRoutes.phonemsLevelScreenOneScreen,
+                      AppRoutes.discrimination,
                       arguments: provider.excerciseType);
                 },
                 child: Center(
