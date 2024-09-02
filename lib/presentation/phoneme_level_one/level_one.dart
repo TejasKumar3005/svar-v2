@@ -147,46 +147,51 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
   
 
-  void _handleIdentification(BuildContext context, int level, String params) async {
-    // Fetch data and redirect to IdentificationPage
-    try {
-      final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
-      final Map<String, dynamic>? data = await levelProvider.fetchData('Identification', level);
-      String type = data!["type"];
+ void _handleIdentification(BuildContext context, int level, String params) async {
+  // Fetch data and redirect to IdentificationPage
+  try {
+    final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+    final Map<String, dynamic>? data = await levelProvider.fetchData('Identification', level);
+    String type = data!["type"];
 
-      Widget quizWidget = identificationOptions(type, data);
+    // Construct the object using the retrieveObject function
+    final Object dtcontainer = retrieveObject(type, data);
 
-      bool result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => IdentificationScreen(quizWidget: quizWidget),
-        ),
-      );
+    debugPrint("Data is: $data");
+    List<dynamic> argumentsList = [type, dtcontainer, params];
+    print("Arguments list is: $argumentsList");
 
-      if (params != "completed") {
-        await levelProvider.incrementLevelCount("Identification");
-      }
-      if (result) {
-        await _fetchCurrentLevel('Identification');
-      }
-    } catch (e) {
-      debugPrint("Error in Identification handling: $e");
+    // Navigate to the appropriate screen using NavigatorService
+    bool result = await NavigatorService.pushNamed(AppRoutes.identification, arguments: argumentsList);
+
+    if (params != "completed") {
+      await levelProvider.incrementLevelCount("Identification");
     }
+    if (result) {
+      await _fetchCurrentLevel('Identification');
+    }
+  } catch (e) {
+    debugPrint("Error in Identification handling: $e");
   }
+}
 
-  void _handleLevel(BuildContext context, int level, String params) async {
-    // Fetch data and redirect to Level handling page
-    try {
-      final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
-      final Map<String, dynamic>? data = await levelProvider.fetchData('Level', level);
-      String type = data!["type"];
 
-      Widget quizWidget = identificationOptions(type, data);
+ void _handleLevel(BuildContext context, int level, String params) async {
+  try {
+    debugPrint("Entering in level section");
+    final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
 
+    // Fetch data for the given level
+    final Map<String, dynamic>? data = await levelProvider.fetchData('Level', level);
+    String type = data!["type"];
+
+    // Handle different types based on the data
+    if (type == "video") {
+      debugPrint("In video section");
       bool result = await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => IdentificationPage(quizWidget: quizWidget),
+          builder: (context) => VideoPlayerScreen(videoUrl: data["video"]),
         ),
       );
 
@@ -196,10 +201,35 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       if (result) {
         await _fetchCurrentLevel('Level');
       }
-    } catch (e) {
-      debugPrint("Error in Level handling: $e");
+    } else if (type == "speech") {
+      debugPrint("In speech section");
+      bool result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SpeakingPhonemeScreen(
+            text: (data["text"] as List)
+                .map((item) => Map<String, dynamic>.from(item))
+                .toList(),
+            videoUrl: data["video_url"],
+            testSpeech: data["test_speech"],
+          ),
+        ),
+      );
+
+      if (params != "completed") {
+        await levelProvider.incrementLevelCount("SpeechTests");
+      }
+      if (result) {
+        await _fetchCurrentLevel('SpeechTests');
+      }
+    } else {
+      debugPrint("Unexpected type: $type");
     }
+  } catch (e) {
+    debugPrint("Error in Level handling: $e");
   }
+}
+
 
  @override
 Widget build(BuildContext context) {
@@ -351,4 +381,4 @@ Object retrieveObject(String type, Map<String, dynamic> data) {
   }
 }
 
-}
+

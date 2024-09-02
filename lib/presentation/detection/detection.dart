@@ -8,10 +8,17 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 
 class Detection extends StatefulWidget {
-  const Detection({super.key});
+  final Widget quizWidget; // Add quizWidget as a parameter
+
+  const Detection({Key? key, required this.quizWidget}) : super(key: key);
 
   @override
   State<Detection> createState() => _DetectionState();
+
+  static Widget builder(BuildContext context) {
+    // Provide a default quizWidget for demonstration purposes
+    return Detection(quizWidget: Container());
+  }
 }
 
 class _DetectionState extends State<Detection> {
@@ -75,14 +82,14 @@ class _DetectionState extends State<Detection> {
             SizedBox(
               height: 26.v,
             ),
-            detectionQuiz(),
+          widget.quizWidget,
           ],
         ),
       ),
     );
   }
 
-  Widget detectionQuiz() {
+  Widget detectionQuiz(quizType) {
     switch (quizType) {
       case "video":
         return MutedUnmuted();
