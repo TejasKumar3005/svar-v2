@@ -11,10 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key})
-      : super(
-          key: key,
-        );
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   HomeScreenState createState() => HomeScreenState();
@@ -70,9 +67,7 @@ class HomeScreenState extends State<HomeScreen> {
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10.h,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 10.h),
                     child: AppStatsHeader(per: 40),
                   ),
                   Spacer(),
@@ -95,368 +90,55 @@ class HomeScreenState extends State<HomeScreen> {
         width: MediaQuery.of(context).size.width * 0.95,
         child: CarouselSlider(
           items: [
-            ClipRect(
-              child: GestureDetector(
-                onTap: ()  {
-                  // Set the screen type first
-                
-                    // Navigate to the next screen with the levels as an argument
-                    NavigatorService.pushNamed(
-                      AppRoutes.phonmesListScreen,
-                    
-                    );
-                  
-                },
-                child: Center(
-                  // Centering the entire container
-                  child: Container(
-                    width: MediaQuery.of(context).size.width *
-                        0.6, // Increased width for the container
-                    height: MediaQuery.of(context).size.width *
-                        0.3, // Increased height for the container
-                    child: Stack(
-                      children: [
-                        // Background Image
-                        Image.asset(
-                          ImageConstant.thumbnailBarakhadi,
-                          fit: BoxFit.fill,
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          height: MediaQuery.of(context).size.width * 0.3,
-                        ),
-                        if (_currentIndex == 0)
-                          Center(
-                            child: Container(
-                              height: 101
-                                  .adaptSize, // Increased size of play button container
-                              width: 101
-                                  .adaptSize, // Increased size of play button container
-                              padding: EdgeInsets.all(20.h),
-                              decoration: AppDecoration.outlineWhiteA.copyWith(
-                                color: AppDecoration.fillDeepOrange.color,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular((121.adaptSize) / 2),
-                                ),
-                              ),
-                              alignment: Alignment.center,
-                              child: SvgPicture.asset(
-                                ImageConstant.imgPlayBtn,
-                                height: 45
-                                    .adaptSize, // Increased size of play button
-                                width: 45
-                                    .adaptSize, // Increased size of play button
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            // Carousel item for "phonmesListScreen"
+            buildCarouselItem(
+              context,
+              provider,
+              "phonmesListScreen",
+              ImageConstant.thumbnailBarakhadi,
+              0,
+              () {
+                NavigatorService.pushNamed(AppRoutes.phonmesListScreen);
+              },
             ),
-            ClipRect(
-              child: GestureDetector(
-                onTap: () async {
-                  // Set the screen type first
-                  provider.setScreenInfo("Level");
-
-                  // Fetch the number of levels asynchronously
-                  int? levels = await fetchNumberOfLevels(
-                      provider.exerciseType ??
-                          ""); // Ensure exerciseType is not null
-
-                  if (levels != null) {
-                    // Set the number of levels in the provider
-                    provider.setNumberOfLevels(levels);
-
-                    // Navigate to the next screen with the levels as an argument
-                    NavigatorService.pushNamed(
-                      AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: {
-                        'exerciseType': provider.exerciseType,
-                        'numberOfLevels': levels,
-                      },
-                    );
-                  } else {
-                    // Handle the case when fetching levels fails
-                    debugPrint("Failed to fetch the number of levels.");
-                  }
-                },
-                child: Center(
-                  // Centering the entire container
-                  child: Container(
-                    width: MediaQuery.of(context).size.width *
-                        0.6, // Increased width for the container
-                    height: MediaQuery.of(context).size.width *
-                        0.3, // Increased height for the container
-                    child: Stack(
-                      children: [
-                        // Background Image
-                        Image.asset(
-                          ImageConstant.thumbnailPhonemes,
-                          fit: BoxFit.fill,
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          height: MediaQuery.of(context).size.width * 0.3,
-                        ),
-                        if (_currentIndex == 1)
-                          Center(
-                            child: Container(
-                              height: 101
-                                  .adaptSize, // Increased size of play button container
-                              width: 101
-                                  .adaptSize, // Increased size of play button container
-                              padding: EdgeInsets.all(20.h),
-                              decoration: AppDecoration.outlineWhiteA.copyWith(
-                                color: AppDecoration.fillDeepOrange.color,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular((121.adaptSize) / 2),
-                                ),
-                              ),
-                              alignment: Alignment.center,
-                              child: SvgPicture.asset(
-                                ImageConstant.imgPlayBtn,
-                                height: 45
-                                    .adaptSize, // Increased size of play button
-                                width: 45
-                                    .adaptSize, // Increased size of play button
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            // Carousel item for "Level"
+            buildCarouselItem(
+              context,
+              provider,
+              "Level",
+              ImageConstant.thumbnailPhonemes,
+              1,
+              () => handleExercise(provider, "Level", context),
             ),
-            ClipRect(
-              child: GestureDetector(
-                onTap: () async {
-                  // Set the screen type first
-                  provider.setScreenInfo("Detection");
-
-                  // Fetch the number of levels asynchronously
-                  int? levels = await fetchNumberOfLevels(
-                      provider.exerciseType ??
-                          ""); // Ensure exerciseType is not null
-
-                  if (levels != null) {
-                    // Set the number of levels in the provider
-                    provider.setNumberOfLevels(levels);
-
-                    // Navigate to the next screen with the levels as an argument
-                    NavigatorService.pushNamed(
-                      AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: {
-                        'exerciseType': provider.exerciseType,
-                        'numberOfLevels': levels,
-                      },
-                    );
-                  } else {
-                    // Handle the case when fetching levels fails
-                    debugPrint("Failed to fetch the number of levels.");
-                  }
-                },
-                child: Center(
-                  // Centering the entire container
-                  child: Container(
-                    width: MediaQuery.of(context).size.width *
-                        0.6, // Increased width for the container
-                    height: MediaQuery.of(context).size.width *
-                        0.3, // Increased height for the container
-                    child: Stack(
-                      children: [
-                        // Background Image
-                        Image.asset(
-                          ImageConstant.imgDetection,
-                          fit: BoxFit.fill,
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          height: MediaQuery.of(context).size.width * 0.3,
-                        ),
-                        if (_currentIndex == 2)
-                          Center(
-                            child: Container(
-                              height: 101
-                                  .adaptSize, // Increased size of play button container
-                              width: 101
-                                  .adaptSize, // Increased size of play button container
-                              padding: EdgeInsets.all(20.h),
-                              decoration: AppDecoration.outlineWhiteA.copyWith(
-                                color: AppDecoration.fillDeepOrange.color,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular((121.adaptSize) / 2),
-                                ),
-                              ),
-                              alignment: Alignment.center,
-                              child: SvgPicture.asset(
-                                ImageConstant.imgPlayBtn,
-                                height: 45
-                                    .adaptSize, // Increased size of play button
-                                width: 45
-                                    .adaptSize, // Increased size of play button
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            // Carousel item for "Detection"
+            buildCarouselItem(
+              context,
+              provider,
+              "Detection",
+              ImageConstant.imgDetection,
+              2,
+              () => handleExercise(provider, "Detection", context),
             ),
-            ClipRect(
-              child: GestureDetector(
-                onTap: () async {
-                  // Set the screen type first
-                  provider.setScreenInfo("Discrimination");
-
-                  // Fetch the number of levels asynchronously
-                  int? levels = await fetchNumberOfLevels(
-                      provider.exerciseType ??
-                          ""); // Ensure exerciseType is not null
-
-                  if (levels != null) {
-                    // Set the number of levels in the provider
-                    provider.setNumberOfLevels(levels);
-
-                    // Navigate to the next screen with the levels as an argument
-                    NavigatorService.pushNamed(
-                      AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: {
-                        'exerciseType': provider.exerciseType,
-                        'numberOfLevels': levels,
-                      },
-                    );
-                  } else {
-                    // Handle the case when fetching levels fails
-                    debugPrint("Failed to fetch the number of levels.");
-                  }
-                },
-                child: Center(
-                  // Centering the entire container
-                  child: Container(
-                    width: MediaQuery.of(context).size.width *
-                        0.6, // Increased width for the container
-                    height: MediaQuery.of(context).size.width *
-                        0.3, // Increased height for the container
-                    child: Stack(
-                      children: [
-                        // Background Image
-                        Image.asset(
-                          ImageConstant.imgDiscrimination,
-                          fit: BoxFit.fill,
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          height: MediaQuery.of(context).size.width * 0.3,
-                        ),
-                        if (_currentIndex == 3)
-                          Center(
-                            child: Container(
-                              height: 101
-                                  .adaptSize, // Increased size of play button container
-                              width: 101
-                                  .adaptSize, // Increased size of play button container
-                              padding: EdgeInsets.all(20.h),
-                              decoration: AppDecoration.outlineWhiteA.copyWith(
-                                color: AppDecoration.fillDeepOrange.color,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular((121.adaptSize) / 2),
-                                ),
-                              ),
-                              alignment: Alignment.center,
-                              child: SvgPicture.asset(
-                                ImageConstant.imgPlayBtn,
-                                height: 45
-                                    .adaptSize, // Increased size of play button
-                                width: 45
-                                    .adaptSize, // Increased size of play button
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            // Carousel item for "Discrimination"
+            buildCarouselItem(
+              context,
+              provider,
+              "Discrimination",
+              ImageConstant.imgDiscrimination,
+              3,
+              () => handleExercise(provider, "Discrimination", context),
             ),
-            ClipRect(
-              child: GestureDetector(
-                onTap: () async {
-                  // Set the screen type first
-                  provider.setScreenInfo("Identification");
-
-                  // Fetch the number of levels asynchronously
-                  int? levels = await fetchNumberOfLevels(
-                      provider.exerciseType ??
-                          ""); // Ensure exerciseType is not null
-
-                  if (levels != null) {
-                    // Set the number of levels in the provider
-                    provider.setNumberOfLevels(levels);
-
-                    // Navigate to the next screen with the levels as an argument
-                    NavigatorService.pushNamed(
-                      AppRoutes.phonemsLevelScreenOneScreen,
-                      arguments: {
-                        'exerciseType': provider.exerciseType,
-                        'numberOfLevels': levels,
-                      },
-                    );
-                  } else {
-                    // Handle the case when fetching levels fails
-                    debugPrint("Failed to fetch the number of levels.");
-                  }
-                },
-                child: Center(
-                  // Centering the entire container
-                  child: Container(
-                    width: MediaQuery.of(context).size.width *
-                        0.6, // Increased width for the container
-                    height: MediaQuery.of(context).size.width *
-                        0.3, // Increased height for the container
-                    child: Stack(
-                      children: [
-                        // Background Image
-                        Image.asset(
-                          ImageConstant.imgIdentification,
-                          fit: BoxFit.fill,
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          height: MediaQuery.of(context).size.width * 0.3,
-                        ),
-                        if (_currentIndex == 4)
-                          Center(
-                            child: Container(
-                              height: 101
-                                  .adaptSize, // Increased size of play button container
-                              width: 101
-                                  .adaptSize, // Increased size of play button container
-                              padding: EdgeInsets.all(20.h),
-                              decoration: AppDecoration.outlineWhiteA.copyWith(
-                                color: AppDecoration.fillDeepOrange.color,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular((121.adaptSize) / 2),
-                                ),
-                              ),
-                              alignment: Alignment.center,
-                              child: SvgPicture.asset(
-                                ImageConstant.imgPlayBtn,
-                                height: 45
-                                    .adaptSize, // Increased size of play button
-                                width: 45
-                                    .adaptSize, // Increased size of play button
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            // Carousel item for "Identification"
+            buildCarouselItem(
+              context,
+              provider,
+              "Identification",
+              ImageConstant.imgIdentification,
+              4,
+              () => handleExercise(provider, "Identification", context),
             ),
+            // Additional carousel item (Replace with actual content)
           ],
-
-          //Slider Container properties
           options: CarouselOptions(
             autoPlay: true,
             autoPlayCurve: Curves.decelerate,
@@ -474,33 +156,112 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
 
-Future<int?> fetchNumberOfLevels(String docName) async {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  // Reference the document inside the 'Auditory' collection
-  DocumentSnapshot doc =
-      await firestore.collection("Auditory").doc(docName).get();
-
-  // Check if the document exists
-  if (!doc.exists) {
-    debugPrint("Document $docName does not exist in the Auditory collection.");
-    return null;
+// Helper function to build each carousel item
+  Widget buildCarouselItem(
+    BuildContext context,
+    MainInteractionProvider provider,
+    String exerciseType,
+    String imagePath,
+    int index,
+    VoidCallback onTap,
+  ) {
+    return ClipRect(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.6,
+            height: MediaQuery.of(context).size.width * 0.3,
+            child: Stack(
+              children: [
+                // Background Image
+                Image.asset(
+                  imagePath,
+                  fit: BoxFit.fill,
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  height: MediaQuery.of(context).size.width * 0.3,
+                ),
+                if (_currentIndex == index)
+                  Center(
+                    child: Container(
+                      height: 101.adaptSize,
+                      width: 101.adaptSize,
+                      padding: EdgeInsets.all(20.h),
+                      decoration: AppDecoration.outlineWhiteA.copyWith(
+                        color: AppDecoration.fillDeepOrange.color,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular((121.adaptSize) / 2),
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: SvgPicture.asset(
+                        ImageConstant.imgPlayBtn,
+                        height: 45.adaptSize,
+                        width: 45.adaptSize,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
-  try {
-    // Fetch the 'data' field as a Map
-    Map<String, dynamic> data = doc.get("data") as Map<String, dynamic>;
+// Function to handle exercise types and navigate accordingly
+  Future<void> handleExercise(MainInteractionProvider provider,
+      String exerciseType, BuildContext context) async {
+    provider.setScreenInfo(exerciseType);
 
-    // Count the number of levels by checking the keys in the 'data' map
-    int numberOfLevels =
-        data.keys.where((key) => key.startsWith('Level')).length;
+    // Fetch the number of levels asynchronously
+    int? levels = await fetchNumberOfLevels(provider.exerciseType ?? "");
 
-    debugPrint("Number of levels in $docName: $numberOfLevels");
-    return numberOfLevels;
-  } catch (e) {
-    debugPrint("Error fetching the number of levels: $e");
-    return null;
+    if (levels != null) {
+      provider.setNumberOfLevels(levels);
+
+      // Navigate to the next screen with the levels as an argument
+      NavigatorService.pushNamed(
+        AppRoutes.phonemsLevelScreenOneScreen,
+        arguments: {
+          'exerciseType': provider.exerciseType,
+          'numberOfLevels': levels,
+        },
+      );
+    } else {
+      debugPrint("Failed to fetch the number of levels.");
+    }
+  }
+
+  Future<int?> fetchNumberOfLevels(String docName) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Reference the document inside the 'Auditory' collection
+    DocumentSnapshot doc =
+        await firestore.collection("Auditory").doc(docName).get();
+
+    // Check if the document exists
+    if (!doc.exists) {
+      debugPrint(
+          "Document $docName does not exist in the Auditory collection.");
+      return null;
+    }
+
+    try {
+      // Fetch the 'data' field as a Map
+      Map<String, dynamic> data = doc.get("data") as Map<String, dynamic>;
+
+      // Count the number of levels by checking the keys in the 'data' map
+      int numberOfLevels =
+          data.keys.where((key) => key.startsWith('Level')).length;
+
+      debugPrint("Number of levels in $docName: $numberOfLevels");
+      return numberOfLevels;
+    } catch (e) {
+      debugPrint("Error fetching the number of levels: $e");
+      return null;
+    }
   }
 }

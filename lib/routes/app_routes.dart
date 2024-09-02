@@ -85,19 +85,17 @@ class AppRoutes {
         welcomeScreenPotraitScreen: WelcomeScreenPotraitScreen.builder,
         loginSignup: LoginSignUpScreen.builder,
         login: LoginScreen.builder,
-register:RegisterScreen.builder,
+        register:RegisterScreen.builder,
         home: HomeScreen.builder,
         exitScreen: ExitScreen.builder,
         loadingScreen: LoadingScreen.builder,
         welcomeScreen: WelcomeScreen.builder,
         phonemsLevelScreenTwoScreen: PhonemsLevelScreenTwoScreen.builder,
         phonemsLevelScreenOneScreen: PhonemeLevelOneScreen.builder,
-      setting:SettingsScreen.builder,
+        setting:SettingsScreen.builder,
         identification:
             IdentificationScreen
                 .builder, // will have to change the route to learning pathway
-      
-        
         phonmesListScreen: PhonmesListScreen.builder,
         lingLearningScreen: LingLearningScreen.builder,
         speakingphonemeScreen: SpeakingPhonemeScreen.builder,

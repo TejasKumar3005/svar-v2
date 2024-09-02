@@ -11,12 +11,17 @@ import 'package:svar_new/core/utils/playAudio.dart';
 import './customthumb.dart';
 
 class Discrimination extends StatefulWidget {
-  const Discrimination({super.key});
+  final String type; // The type of the quiz
+  final dynamic data; // The data for the quiz
+
+  const Discrimination({Key? key, required this.type, required this.data}) : super(key: key);
 
   @override
   State<Discrimination> createState() => _DiscriminationState();
+
   static Widget builder(BuildContext context) {
-    return Discrimination();
+    // Provide default values for demonstration purposes
+    return Discrimination(type: "DiffSounds", data: {});
   }
 }
 
@@ -30,16 +35,10 @@ class _DiscriminationState extends State<Discrimination> {
     "chha.mp3",
   ];
   int selectedOption = -1;
-
   List<double> samples = [];
+
   @override
   Widget build(BuildContext context) {
-    
-    var obj = ModalRoute.of(context)?.settings.arguments as Map<String,dynamic>;
-    String type = obj["type"] as String;
-    dynamic data = obj["data"] as dynamic;
-    
-
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -82,12 +81,13 @@ class _DiscriminationState extends State<Discrimination> {
             SizedBox(
               height: 20.v,
             ),
-            discriminationOptions(type, data),
+            discriminationOptions(widget.type, widget.data), // Use the passed widget here
           ],
         ),
       ),
     );
   }
+
 
   Widget discriminationOptions( String type, dynamic data) {
     switch (type) {
