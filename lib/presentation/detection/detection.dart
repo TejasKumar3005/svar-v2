@@ -8,16 +8,17 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 
 class Detection extends StatefulWidget {
-  final Widget quizWidget; // Add quizWidget as a parameter
 
-  const Detection({Key? key, required this.quizWidget}) : super(key: key);
+  final String type; // Add type as a parameter
+
+  const Detection({Key? key,  required this.type}) : super(key: key);
 
   @override
   State<Detection> createState() => _DetectionState();
 
   static Widget builder(BuildContext context) {
-    // Provide a default quizWidget for demonstration purposes
-    return Detection(quizWidget: Container());
+    // Provide default values for demonstration purposes
+    return Detection( type: 'default');
   }
 }
 
@@ -82,7 +83,7 @@ class _DetectionState extends State<Detection> {
             SizedBox(
               height: 26.v,
             ),
-          widget.quizWidget,
+          detectionQuiz(context, widget.type),
           ],
         ),
       ),

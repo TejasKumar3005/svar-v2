@@ -103,13 +103,13 @@ void _handleDetection(BuildContext context, int level, String params) async {
     String type = data!["type"]; // Extract the type from the fetched data
 
     // Get the appropriate quiz widget based on the type
-    Widget quizWidget = detectionQuiz(type);
+   
 
     // Navigate to the Detection screen, passing the quiz widget
     bool result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Detection(quizWidget: quizWidget),
+        builder: (context) => Detection(type: type),
       ),
     );
 

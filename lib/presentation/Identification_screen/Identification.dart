@@ -106,7 +106,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     String params = obj[2] as String;
 
     return type != "AudioToImage"
-        ? (type=="AudioToAudio"?Discrimination():SafeArea(
+        ? (type=="AudioToAudio"?Container():SafeArea(
             child: Scaffold(
               extendBody: true,
               extendBodyBehindAppBar: true,
