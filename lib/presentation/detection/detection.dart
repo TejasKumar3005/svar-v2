@@ -89,21 +89,21 @@ class _DetectionState extends State<Detection> {
     );
   }
 
-  Widget detectionQuiz(quizType) {
+  Widget detectionQuiz(BuildContext context,String quizType) {
     switch (quizType) {
       case "video":
-        return MutedUnmuted();
+        return MutedUnmuted(context);
       case "HalfMuted":
-        return HalfMuted();
+        return HalfMuted(context);
       case "MutedUnmuted":
-        return MutedUnmuted();
+        return MutedUnmuted(context);
 
       default:
         return Container();
     }
   }
 
-  Widget MutedUnmuted() {
+  Widget MutedUnmuted(BuildContext context) {
     return Column(
       children: [
         Container(
@@ -187,7 +187,7 @@ class _DetectionState extends State<Detection> {
     );
   }
 
-  Widget HalfMuted() {
+  Widget HalfMuted(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

@@ -93,32 +93,39 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 }
 
   // Functions to handle redirection
-  void _handleDetection(BuildContext context, int level, String params) async {
-    // Fetch data and redirect to DetectionPage
-    try {
-      final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
-      final Map<String, dynamic>? data = await levelProvider.fetchData('Detection', level);
-      String type = data!["type"];
+void _handleDetection(BuildContext context, int level, String params) async {
+  // Fetch data and redirect to DetectionPage
+  try {
+    final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+    
+    // Fetch the data for the 'Detection' type
+    final Map<String, dynamic>? data = await levelProvider.fetchData('Detection', level);
+    String type = data!["type"]; // Extract the type from the fetched data
 
-      Widget quizWidget = detectionQuiz(type);
+    // Get the appropriate quiz widget based on the type
+    Widget quizWidget = detectionQuiz(type);
 
-      bool result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Detection(quizWidget: quizWidget),
-        ),
-      );
+    // Navigate to the Detection screen, passing the quiz widget
+    bool result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Detection(quizWidget: quizWidget),
+      ),
+    );
 
-      if (params != "completed") {
-        await levelProvider.incrementLevelCount("Detection");
-      }
-      if (result) {
-        await _fetchCurrentLevel('Detection');
-      }
-    } catch (e) {
-      debugPrint("Error in Detection handling: $e");
+    // Check if the level is completed and increment the level count accordingly
+    if (params != "completed") {
+      await levelProvider.incrementLevelCount("Detection");
     }
+    if (result) {
+      await _fetchCurrentLevel('Detection');
+    }
+  } catch (e) {
+    debugPrint("Error in Detection handling: $e");
   }
+}
+
+
 
  void _handleDiscrimination(BuildContext context, int level, String params) async {
   // Fetch data and redirect to DiscriminationPage
@@ -227,6 +234,43 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     }
   } catch (e) {
     debugPrint("Error in Level handling: $e");
+  }
+}
+
+
+ Future<void> _fetchCurrentLevel(String type) async {
+  try {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      final String uid = user.uid;
+
+      // Fetch the current user's document from Firestore
+      var data = await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(uid)
+          .get();
+
+      if (data.exists) {
+        // Get the 'LevelMap' field from the document
+        Map<String, dynamic> levelMap = data['LevelMap'] as Map<String, dynamic>? ?? {};
+
+        // Fetch the level for the specified type
+        var levelData = levelMap[type] ?? 1; // Default to 1 if the type is not found
+
+        double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
+
+        // Update the state
+        setState(() {
+          currentLevelCount = currentLevel;
+        });
+      } else {
+        debugPrint("No data found for user $uid.");
+      }
+    }
+  } catch (e) {
+    debugPrint("Error in fetching current level");
+    debugPrint(e.toString());
   }
 }
 
@@ -345,40 +389,6 @@ Object retrieveObject(String type, Map<String, dynamic> data) {
 }
 
 
-  Future<void> _fetchCurrentLevel(String type) async {
-  try {
-    final User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      final String uid = user.uid;
-
-      // Fetch the current user's document from Firestore
-      var data = await FirebaseFirestore.instance
-          .collection('patients')
-          .doc(uid)
-          .get();
-
-      if (data.exists) {
-        // Get the 'LevelMap' field from the document
-        Map<String, dynamic> levelMap = data['LevelMap'] as Map<String, dynamic>? ?? {};
-
-        // Fetch the level for the specified type
-        var levelData = levelMap[type] ?? 1; // Default to 1 if the type is not found
-
-        double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
-
-        // Update the state
-        setState(() {
-          currentLevelCount = currentLevel;
-        });
-      } else {
-        debugPrint("No data found for user $uid.");
-      }
-    }
-  } catch (e) {
-    debugPrint("Error in fetching current level");
-    debugPrint(e.toString());
-  }
-}
+ 
 
 
