@@ -28,7 +28,7 @@ class PhonemeLevelOneScreen extends StatefulWidget {
 }
 
 class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
-  late double currentLevelCount = 1;
+  late double currentLevelCount = 4;
   bool _initialized = false;
   int val = 1;
 
@@ -105,16 +105,16 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
       switch (exerciseType) {
         case "Detection":
-          _handleDetection(context, currentLevelCount.toInt(), "notcompleted");
+          _handleDetection(context, level, "notcompleted");
           break;
         case "Discrimination":
-          _handleDiscrimination(context, currentLevelCount.toInt(), "notcompleted");
+          _handleDiscrimination(context, level, "notcompleted");
           break;
         case "Identification":
-          _handleIdentification(context, currentLevelCount.toInt(), "notcompleted");
+          _handleIdentification(context, level, "notcompleted");
           break;
         case "Level":
-          _handleLevel(context, currentLevelCount.toInt(), "notcompleted");
+          _handleLevel(context,level, "notcompleted");
           break;
         default:
           debugPrint("Unexpected exercise type: $exerciseType");
@@ -230,6 +230,9 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         ),
       );
     } else {
+      print("Type is not video");
+      print(type);
+      print(data);
       // Handle other types
       final Object dtcontainer = retrieveObject(type, data);
 
@@ -239,6 +242,8 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       NavigatorService.pushNamed(AppRoutes.identification, arguments: argumentsList);
     }
   } catch (e) {
+   
+
     debugPrint("Error in Identification handling: $e");
   }
 }
@@ -324,12 +329,12 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   @override
   Widget build(BuildContext context) {
     try {
-      // var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
-      // if (obj == null) {
-      //   debugPrint("No arguments found on this route.");
-      //   return Container();
-      // }
+      if (obj == null) {
+        debugPrint("No arguments found on this route.");
+        return Container();
+      }
 
       var provider = context.watch<UserDataProvider>();
 
@@ -352,8 +357,8 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
             ),
             child: LevelMap(
               levelMapParams: LevelMapParams(
-                levelCount: 23,
-                //  obj["numberOfLevels"],
+                levelCount:
+                 obj["numberOfLevels"],
                 currentLevel: 1,
                 //  provider.userModel.toJson()["LevelMap"][obj["exerciseType"]],
                 enableVariationBetweenCurves: true,
@@ -408,6 +413,8 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
 Object retrieveObject(String type, Map<String, dynamic> data) {
   if (type == "ImageToAudio") {
+    print("In Image to audio section");
+    print(ImageToAudio.fromJson(data));
     return ImageToAudio.fromJson(data);
   } else if (type == "WordToFig") {
     return WordToFiG.fromJson(data);
