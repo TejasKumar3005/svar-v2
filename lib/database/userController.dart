@@ -1,6 +1,7 @@
 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/userModel.dart';
@@ -129,4 +130,39 @@ final CollectionReference therapyCenterCollection =
       return false;
     }
   }
+  Future<void> incrementLevelCount(String auditoryType) async {
+  
+      try {
+        String? uid = FirebaseAuth.instance.currentUser?.uid;
+        DocumentReference userRef =
+            FirebaseFirestore.instance.collection('users').doc(uid);
+        await FirebaseFirestore.instance.runTransaction((transaction) async {
+          DocumentSnapshot snapshot = await transaction.get(userRef);
+          var provider = Provider.of<UserDataProvider>(buildContext!, listen: false);
+
+          if (snapshot.exists) {
+            Map<String,dynamic> levels = (snapshot.data()
+                as Map<String, dynamic>?)?['LevelMap'];
+                int currentLevelCount = levels[auditoryType];
+                
+            int newLevelCount = currentLevelCount + 1;
+            levels[auditoryType] = newLevelCount;
+
+            transaction
+                .update(userRef, {'LevelMap': levels});
+                var data = provider.userModel;
+                data.levelMap=LevelMap.fromJson(levels);
+                provider.setUser(data);
+          } else {
+            throw Exception('User not found!');
+          }
+        });
+
+        print('levelCount incremented successfully!');
+      } catch (e) {
+        print('Error incrementing levelCount: $e');
+      }
+    
+  }
+
 }

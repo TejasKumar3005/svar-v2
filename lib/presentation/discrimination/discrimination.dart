@@ -5,16 +5,20 @@ import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
 import 'package:svar_new/core/app_export.dart';
 
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
+import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
+import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
 import './customthumb.dart';
 
 class Discrimination extends StatefulWidget {
   final String type; // The type of the quiz
-  final dynamic data; // The data for the quiz
+  final Map<String, dynamic> data; // The data for the quiz
 
-  const Discrimination({Key? key, required this.type, required this.data}) : super(key: key);
+  const Discrimination({Key? key, required this.type, required this.data})
+      : super(key: key);
 
   @override
   State<Discrimination> createState() => _DiscriminationState();
@@ -36,9 +40,11 @@ class _DiscriminationState extends State<Discrimination> {
   ];
   int selectedOption = -1;
   List<double> samples = [];
+  OverlayEntry? _overlayEntry;
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -81,47 +87,93 @@ class _DiscriminationState extends State<Discrimination> {
             SizedBox(
               height: 20.v,
             ),
-            discriminationOptions(widget.type, widget.data), // Use the passed widget here
+            discriminationOptions(
+                widget.type, widget.data), // Use the passed widget here
           ],
         ),
       ),
     );
   }
 
-
-  Widget discriminationOptions( String type, dynamic data) {
+  Widget discriminationOptions(String type, Map<String, dynamic> d) {
     switch (type) {
       case "DiffSounds":
-        return DiffSoundsW(data as DiffSounds);
+        var data = DiffSounds.fromJson(d);
+        return DiffSoundsW(data);
       case "OddOne":
-        return OddOneW(data as OddOne);
+        var data = OddOne.fromJson(d);
+        return OddOneW(data);
       case "DiffHalf":
-        return DiffHalfW(data as DiffHalf);
+        var data = DiffHalf.fromJson(d);
+        return DiffHalfW(data);
       case "MaleFemale":
-        return MaleFemaleW(data as MaleFemale);
+        var data = MaleFemale.fromJson(d);
+        return MaleFemaleW(data);
       default:
-        return DiffSoundsW(data as DiffSounds);
+        return Container();
     }
   }
 
   Widget MaleFemaleW(MaleFemale maleFemale) {
+    var obj=ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    var provider = Provider.of<UserDataProvider>(context, listen: false);
     return Column(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildOption("", PrimaryColors().deepOrangeA200, 0,maleFemale.videoUrl),
+
+        _buildOption(
+            color:  PrimaryColors().deepOrangeA200,index:  0,audio: [maleFemale.videoUrl],correctOutput:  maleFemale.correct_output,type: "MaleFemale"),
         SizedBox(
           height: 20.v,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Artboard(maleFemale.images.isEmpty ? "img_mascot" : maleFemale.images[0]),
+            GestureDetector(
+              onTap: (){
+
+                if (maleFemale.correct_output == maleFemale.images[0]) {
+                print("Correct");
+                if(obj["level"]>provider.userModel.toJson()["levelMap"]["Discrimination"]!){
+                
+                UserData(buildContext: context).incrementLevelCount("Discrimination");
+                }
+
+                  _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
+              }
+              },
+              child: Artboard(maleFemale.images.isEmpty
+                  ? "img_mascot"
+                  : maleFemale.images[0]),
+            ),
             SizedBox(
               width: 20.h,
             ),
-            Artboard(maleFemale.images.isEmpty ? "img_mascot" : maleFemale.images[1]),
+            GestureDetector(
+              onTap: () {
+                if (maleFemale.correct_output == maleFemale.images[1]) {
+                print("Correct");
+                if(obj["level"]>provider.userModel.toJson()["levelMap"]["Discrimination"]!){
+                
+                UserData(buildContext: context).incrementLevelCount("Discrimination");
+                }
+                  _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
+              }
+              },
+              child: Artboard(maleFemale.images.isEmpty
+                  ? "img_mascot"
+                  : maleFemale.images[1]),
+            ),
           ],
         ),
         SizedBox(
@@ -168,7 +220,6 @@ class _DiscriminationState extends State<Discrimination> {
             width: 100,
             height: 100,
             fit: BoxFit.contain,
-            
             imagePath: image,
           ),
           Positioned(
@@ -190,12 +241,11 @@ class _DiscriminationState extends State<Discrimination> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildOption("A", PrimaryColors().deepOrangeA200, 0,diffHalf.videoUrls[0]),
-        
+        _buildOption(
+          text:   "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  diffHalf.videoUrls,correctOutput:  diffHalf.correct_output),
         SizedBox(
           height: 20.v,
         ),
-
         Container(
           height: 40,
 
@@ -249,11 +299,13 @@ class _DiscriminationState extends State<Discrimination> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildOption("A", PrimaryColors().deepOrangeA200, 0,diffSounds.videoUrls[0]),
+            _buildOption(text:  "A",color:  PrimaryColors().deepOrangeA200,index:  0,
+              audio:   diffSounds.videoUrls,correctOutput:  diffSounds.same ,type: "DiffSounds"),
             SizedBox(
               width: 30.h,
             ),
-            _buildOption("B", PrimaryColors().deepOrangeA200, 1,diffSounds.videoUrls[1]),
+            _buildOption(text:  "B",color:  PrimaryColors().deepOrangeA200,index:  1,
+              audio:   diffSounds.videoUrls,correctOutput:  diffSounds.same,type: "DiffSounds"),
           ],
         ),
         SizedBox(
@@ -262,14 +314,29 @@ class _DiscriminationState extends State<Discrimination> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CustomButton(
-              
-
-              type: ButtonType.Same, onPressed: () {}),
+            CustomButton(type: ButtonType.Same, onPressed: () {
+              if(diffSounds.same){
+                UserData(buildContext: context).incrementLevelCount("Discrimination");
+                  _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
+              }
+            }),
             SizedBox(
               width: 20.h,
             ),
-            CustomButton(type: ButtonType.Diff, onPressed: () {}),
+            CustomButton(type: ButtonType.Diff, onPressed: () {
+              if(!diffSounds.same){
+                UserData(buildContext: context).incrementLevelCount("Discrimination");
+                  _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
+              }
+            }),
           ],
         )
       ],
@@ -285,11 +352,13 @@ class _DiscriminationState extends State<Discrimination> {
           children: [
             Row(
               children: [
-                _buildOption("A", PrimaryColors().deepOrangeA200, 0,oddOne.videoUrls[0]),
+                _buildOption(
+                  text:   "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption("B", PrimaryColors().deepOrangeA200, 1,oddOne.videoUrls[1]),
+                _buildOption(
+                  text:   "B",color:  PrimaryColors().deepOrangeA200,index:  1,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
               ],
             ),
           ],
@@ -301,11 +370,13 @@ class _DiscriminationState extends State<Discrimination> {
           children: [
             Row(
               children: [
-                _buildOption("A", PrimaryColors().deepOrangeA200, 0,oddOne.videoUrls[0]),
+                _buildOption(
+                  text:   "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption("B", PrimaryColors().deepOrangeA200, 1,oddOne.videoUrls[1]),
+                _buildOption(
+                  text:   "B",color:  PrimaryColors().deepOrangeA200,index:  1,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
               ],
             ),
             SizedBox(
@@ -314,7 +385,8 @@ class _DiscriminationState extends State<Discrimination> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildOption("C", PrimaryColors().deepOrangeA200, 2,oddOne.videoUrls[2]),
+                _buildOption(
+                  text:   "C",color:  PrimaryColors().deepOrangeA200,index:  2,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
               ],
             )
           ],
@@ -326,13 +398,15 @@ class _DiscriminationState extends State<Discrimination> {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-              Row(
+            Row(
               children: [
-                _buildOption("A", PrimaryColors().deepOrangeA200, 0,oddOne.videoUrls[0]),
+                _buildOption(
+                    text:  "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption("B", PrimaryColors().deepOrangeA200, 1,oddOne.videoUrls[1]),
+                _buildOption(
+                  text:   "B",color:  PrimaryColors().deepOrangeA200,index:  1,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
               ],
             ),
             SizedBox(
@@ -340,11 +414,13 @@ class _DiscriminationState extends State<Discrimination> {
             ),
             Row(
               children: [
-                _buildOption("C", PrimaryColors().deepOrangeA200, 2,oddOne.videoUrls[2]),
+                _buildOption(
+                    text: "C",color:  PrimaryColors().deepOrangeA200,index:  2,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption("D", PrimaryColors().deepOrangeA200, 3,oddOne.videoUrls[3]),
+                _buildOption(
+                  text:   "D",color:  PrimaryColors().deepOrangeA200,index:  3,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
               ],
             ),
           ],
@@ -353,17 +429,23 @@ class _DiscriminationState extends State<Discrimination> {
     }
   }
 
-  Widget _buildOption(String text, Color color, int index,String audio) {
+  Widget _buildOption({String? text,required Color color,required int index,required List<String> audio,
+    required  dynamic correctOutput,String? type}) {
     {
+      var obj=ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+      var provider = Provider.of<UserDataProvider>(context, listen: false);
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            text + ")",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+          Visibility(
+            visible: text==null?false:true,
+            child: Text(
+              text! + ")",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           SizedBox(
@@ -371,9 +453,27 @@ class _DiscriminationState extends State<Discrimination> {
           ),
           GestureDetector(
             onTap: () {
+              if(type=="DiffSounds" || type=="MaleFemale"){
+                return;
+              }
+              
+              if (audio[index] == correctOutput) {
+                print("Correct");
+                  if(obj["level"]>provider.userModel.toJson()["levelMap"]["Discrimination"]!){
+                
+                UserData(buildContext: context).incrementLevelCount("Discrimination");
+                }
+                  _overlayEntry =
+                                        celebrationOverlay(context, () {
+                                      _overlayEntry?.remove();
+                                    });
+                                    Overlay.of(context).insert(_overlayEntry!);
+              }
+
               setState(() {
                 selectedOption = index;
               });
+              
             },
             child: Container(
               width: MediaQuery.of(context).size.width * 0.4,
@@ -382,14 +482,14 @@ class _DiscriminationState extends State<Discrimination> {
                 vertical: 5.v,
               ),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: selectedOption != index ? color : PrimaryColors().green30001,
-                border: Border.all(
-                        color: Colors.black,
-                        width: 3,
-                      )
-                    
-              ),
+                  borderRadius: BorderRadius.circular(15),
+                  color: selectedOption != index
+                      ? color
+                      : PrimaryColors().green30001,
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 3,
+                  )),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -399,22 +499,20 @@ class _DiscriminationState extends State<Discrimination> {
                       // AudioSampleExtractor audioSampleExtractor =
                       //     AudioSampleExtractor();
                       // audioSampleExtractor.getAssetAudioSamples(audios[index]);
-                      playAudio.playMusic(audio, "mp3", false);
+                      playAudio.playMusic(audio[index], "mp3", false);
                     },
                   ),
                   SizedBox(
                     width: 10.h,
                   ),
-                  
-
                   Stack(
                     children: [
-                    CustomImageView(
-                    width: MediaQuery.of(context).size.width * 0.4 - 90,
-                    height: 60,
-                    fit: BoxFit.fill,
-                    imagePath: "assets/images/spectrum.png",
-                  ),
+                      CustomImageView(
+                        width: MediaQuery.of(context).size.width * 0.4 - 90,
+                        height: 60,
+                        fit: BoxFit.fill,
+                        imagePath: "assets/images/spectrum.png",
+                      ),
                       Positioned(
                         top: 0,
                         left: 0,

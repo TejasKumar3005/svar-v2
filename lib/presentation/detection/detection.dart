@@ -8,17 +8,17 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 
 class Detection extends StatefulWidget {
-
   final String type; // Add type as a parameter
+  final Map<String, dynamic> data;
 
-  const Detection({Key? key,  required this.type}) : super(key: key);
+  const Detection({Key? key, required this.type,required this.data}) : super(key: key);
 
   @override
   State<Detection> createState() => _DetectionState();
 
   static Widget builder(BuildContext context) {
     // Provide default values for demonstration purposes
-    return Detection( type: 'default');
+    return Detection(type: 'default',data: {},);
   }
 }
 
@@ -62,7 +62,6 @@ class _DetectionState extends State<Detection> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -83,14 +82,14 @@ class _DetectionState extends State<Detection> {
             SizedBox(
               height: 26.v,
             ),
-          detectionQuiz(context, widget.type),
+            detectionQuiz(context, widget.type),
           ],
         ),
       ),
     );
   }
 
-  Widget detectionQuiz(BuildContext context,String quizType) {
+  Widget detectionQuiz(BuildContext context, String quizType) {
     switch (quizType) {
       case "video":
         return MutedUnmuted(context);
@@ -180,8 +179,8 @@ class _DetectionState extends State<Detection> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            CustomButton(type: ButtonType.Video1, onPressed: (){}),
-            CustomButton(type: ButtonType.Video2, onPressed: (){}),
+            CustomButton(type: ButtonType.Video1, onPressed: () {}),
+            CustomButton(type: ButtonType.Video2, onPressed: () {}),
           ],
         ),
       ],

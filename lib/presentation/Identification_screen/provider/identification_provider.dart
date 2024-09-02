@@ -31,8 +31,8 @@ class IdentificationProvider
     }
   }
 
-  Future<void> incrementLevelCount(String params) async {
-    if (params != "completed") {
+  Future<void> incrementLevelCount(String auditoryType) async {
+  
       try {
         String? uid = FirebaseAuth.instance.currentUser?.uid;
         DocumentReference userRef =
@@ -40,11 +40,15 @@ class IdentificationProvider
         await FirebaseFirestore.instance.runTransaction((transaction) async {
           DocumentSnapshot snapshot = await transaction.get(userRef);
           if (snapshot.exists) {
-            int currentLevelCount = (snapshot.data()
-                as Map<String, dynamic>?)?['phoneme_current_level'];
+            Map<String,dynamic> levels = (snapshot.data()
+                as Map<String, dynamic>?)?['LevelMap'];
+                int currentLevelCount = levels[auditoryType];
+                
             int newLevelCount = currentLevelCount + 1;
+            levels[auditoryType] = newLevelCount;
+
             transaction
-                .update(userRef, {'phoneme_current_level': newLevelCount});
+                .update(userRef, {'LevelMap': levels});
           } else {
             throw Exception('User not found!');
           }
@@ -54,7 +58,7 @@ class IdentificationProvider
       } catch (e) {
         print('Error incrementing levelCount: $e');
       }
-    }
+    
   }
 
   int sel = 0;

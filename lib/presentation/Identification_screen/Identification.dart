@@ -253,10 +253,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                     dtcontainer.getAudioList()[index]) {
                                   leveltracker = leveltracker + 1;
                                   if (leveltracker > 1) {
-                                    provider.incrementLevelCount("completed");
-                                  } else {
-                                    provider.incrementLevelCount(params);
-                                  }
+                                    provider.incrementLevelCount("Identification");
+                                  } 
                                   _overlayEntry =
                                       celebrationOverlay(context, () {
                                     _overlayEntry?.remove();
@@ -305,10 +303,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                       dtcontainer.getAudioList()[index]) {
                                     leveltracker = leveltracker + 1;
                                     if (leveltracker > 1) {
-                                      provider.incrementLevelCount("completed");
-                                    } else {
-                                      provider.incrementLevelCount(params);
-                                    }
+                                        provider.incrementLevelCount("Identification");
+                                    } 
                                     _overlayEntry =
                                         celebrationOverlay(context, () {
                                       _overlayEntry?.remove();
@@ -619,10 +615,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                     dtcontainer.getImageUrlList()[0]) {
                                   leveltracker = leveltracker + 1;
                                   if (leveltracker > 1) {
-                                    provider.incrementLevelCount("completed");
-                                  } else {
-                                    provider.incrementLevelCount(params);
-                                  }
+                                    provider.incrementLevelCount("Identification");
+                                  } 
                                   _overlayEntry =
                                       celebrationOverlay(context, () {
                                     _overlayEntry?.remove();
@@ -672,10 +666,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                   dtcontainer.getImageUrlList()[1]) {
                                 leveltracker = leveltracker + 1;
                                 if (leveltracker > 1) {
-                                  provider.incrementLevelCount("completed");
-                                } else {
-                                  provider.incrementLevelCount(params);
-                                }
+                                  provider.incrementLevelCount("Identification");
+                                } 
                                 _overlayEntry = celebrationOverlay(context, () {
                                   _overlayEntry?.remove();
                                 });

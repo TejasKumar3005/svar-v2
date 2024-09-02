@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/presentation/phoneme_level_one/video_player_screen.dart';
+import 'package:svar_new/providers/userDataProvider.dart';
 import 'provider/level_one_provider.dart';
 import 'package:svar_new/widgets/custom_level_map/level_map.dart';
 import 'package:svar_new/presentation/speaking_phoneme/speaking_phoneme.dart';
@@ -23,6 +24,7 @@ class PhonemeLevelOneScreen extends StatefulWidget {
       create: (context) => PhonemsLevelOneProvider(),
       child: PhonemeLevelOneScreen(),
     );
+
   }
 }
 
@@ -30,7 +32,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   late double currentLevelCount = 1;
   bool _initialized = false;
   int val = 1;
-
+  
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([
@@ -40,9 +42,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     super.initState();
 
     // Determine and redirect to the respective page after a short delay
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      _redirectToRespectivePage();
-    });
+    
   }
 
   // Function to decide which page to redirect to
@@ -83,6 +83,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     case "Identification":
       _handleIdentification(context, level, params);
       break;
+
     case "Level":
       _handleLevel(context, level, params);
       break;
@@ -94,7 +95,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
   // Functions to handle redirection
 void _handleDetection(BuildContext context, int level, String params) async {
-  // Fetch data and redirect to DetectionPage
+
   try {
     final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
     
@@ -106,20 +107,19 @@ void _handleDetection(BuildContext context, int level, String params) async {
    
 
     // Navigate to the Detection screen, passing the quiz widget
-    bool result = await Navigator.push(
+    Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Detection(type: type),
+        builder: (context) => Detection(type: type,data:data),
+          settings: RouteSettings(
+          arguments: {
+            "level": level,
+          },
+        ),
       ),
     );
 
     // Check if the level is completed and increment the level count accordingly
-    if (params != "completed") {
-      await levelProvider.incrementLevelCount("Detection");
-    }
-    if (result) {
-      await _fetchCurrentLevel('Detection');
-    }
   } catch (e) {
     debugPrint("Error in Detection handling: $e");
   }
@@ -134,19 +134,25 @@ void _handleDetection(BuildContext context, int level, String params) async {
     final Map<String, dynamic>? data = await levelProvider.fetchData('Discrimination', level);
     String type = data!["type"];
 
-    bool result = await Navigator.push(
+ Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Discrimination(type: type, data: data), // Pass type and data directly
+        builder: (context) => Discrimination(type: type, data: data),
+          settings: RouteSettings(
+          arguments: {
+            "level": level,
+          },
+        ),
+         // Pass type and data directly
       ),
     );
 
-    if (params != "completed") {
-      await levelProvider.incrementLevelCount("Discrimination");
-    }
-    if (result) {
-      await _fetchCurrentLevel('Discrimination');
-    }
+    // if (params != "completed") {
+    //   await levelProvider.incrementLevelCount("Discrimination");
+    // }
+    // if (result) {
+    //   await _fetchCurrentLevel('Discrimination');
+    // }
   } catch (e) {
     debugPrint("Error in Discrimination handling: $e");
   }
@@ -169,14 +175,14 @@ void _handleDetection(BuildContext context, int level, String params) async {
     print("Arguments list is: $argumentsList");
 
     // Navigate to the appropriate screen using NavigatorService
-    bool result = await NavigatorService.pushNamed(AppRoutes.identification, arguments: argumentsList);
+   NavigatorService.pushNamed(AppRoutes.identification, arguments: argumentsList);
 
-    if (params != "completed") {
-      await levelProvider.incrementLevelCount("Identification");
-    }
-    if (result) {
-      await _fetchCurrentLevel('Identification');
-    }
+    // if (params != "completed") {
+    //   await levelProvider.incrementLevelCount("Identification");
+    // }
+    // if (result) {
+    //   await _fetchCurrentLevel('Identification');
+    // }
   } catch (e) {
     debugPrint("Error in Identification handling: $e");
   }
@@ -195,22 +201,21 @@ void _handleDetection(BuildContext context, int level, String params) async {
     // Handle different types based on the data
     if (type == "video") {
       debugPrint("In video section");
-      bool result = await Navigator.push(
+    Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => VideoPlayerScreen(videoUrl: data["video"]),
         ),
       );
 
-      if (params != "completed") {
-        await levelProvider.incrementLevelCount("Level");
-      }
-      if (result) {
-        await _fetchCurrentLevel('Level');
-      }
+      // if (params != "completed") {
+      //   await levelProvider.incrementLevelCount("Level");
+      // }
+      // if (result) {
+      //   await _fetchCurrentLevel('Level');
+      // }
     } else if (type == "speech") {
-      debugPrint("In speech section");
-      bool result = await Navigator.push(
+      Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => SpeakingPhonemeScreen(
@@ -223,12 +228,13 @@ void _handleDetection(BuildContext context, int level, String params) async {
         ),
       );
 
-      if (params != "completed") {
-        await levelProvider.incrementLevelCount("SpeechTests");
-      }
-      if (result) {
-        await _fetchCurrentLevel('SpeechTests');
-      }
+      // if (params != "completed") {
+      //   await levelProvider.incrementLevelCount("SpeechTests");
+      // }
+      // if (result) {
+      //   await _fetchCurrentLevel('SpeechTests');
+      // }
+
     } else {
       debugPrint("Unexpected type: $type");
     }
@@ -278,7 +284,7 @@ void _handleDetection(BuildContext context, int level, String params) async {
  @override
 Widget build(BuildContext context) {
    var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-
+   var provider=context.watch<UserDataProvider>();
   return SafeArea(
     child: Scaffold(
       extendBody: true,
@@ -298,8 +304,8 @@ Widget build(BuildContext context) {
         ),
         child: LevelMap(
           levelMapParams: LevelMapParams(
-            levelCount: obj!["numberOfLevels"],
-            currentLevel: currentLevelCount,
+            levelCount: obj["numberOfLevels"],
+            currentLevel: provider.userModel.toJson()["LevelMap"][obj["exerciseType"]],
             enableVariationBetweenCurves: true,
             pathColor: appTheme.amber90001,
             shadowColor: appTheme.brown100,
@@ -314,7 +320,12 @@ Widget build(BuildContext context) {
               path: "assets/images/Locked_LVL.png",
               size: Size(104.v, 104.h),
               onTap: (int level) {
-                _handleLevelType(level, "completed");
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Level $level is locked!"),
+                    
+                  ),
+                );
               },
             ),
             completedLevelImage: ImageParams(
