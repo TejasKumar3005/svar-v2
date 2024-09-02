@@ -24,7 +24,6 @@ class PhonemeLevelOneScreen extends StatefulWidget {
       create: (context) => PhonemsLevelOneProvider(),
       child: PhonemeLevelOneScreen(),
     );
-
   }
 }
 
@@ -32,374 +31,404 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   late double currentLevelCount = 1;
   bool _initialized = false;
   int val = 1;
-  
+
   @override
   void initState() {
+    super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    super.initState();
 
-    // Determine and redirect to the respective page after a short delay
-    
+    // Ensure the context is initialized before using it
+    // Future.delayed(Duration.zero, () => _redirectToRespectivePage());
   }
 
   // Function to decide which page to redirect to
-  void _redirectToRespectivePage() {
-    var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    String exerciseType = obj["exerciseType"] as String;
+  // void _redirectToRespectivePage() {
+  //   try {
+  //     var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
-    switch (exerciseType) {
-      case "Detection":
-        _handleDetection(context, currentLevelCount.toInt(), "notcompleted");
-        break;
-      case "Discrimination":
-        _handleDiscrimination(context, currentLevelCount.toInt(), "notcompleted");
-        break;
-      case "Identification":
-        _handleIdentification(context, currentLevelCount.toInt(), "notcompleted");
-        break;
-      case "Level":
-        _handleLevel(context, currentLevelCount.toInt(), "notcompleted");
-        break;
-      default:
-        debugPrint("Unexpected exercise type");
-        break;
+  //     if (obj == null) {
+  //       debugPrint("No arguments were passed to this route.");
+  //       return;
+  //     }
+
+  //     debugPrint("Received arguments: $obj");
+  //     String? exerciseType = obj["exerciseType"] as String?;
+
+  //     if (exerciseType == null) {
+  //       debugPrint("Exercise type is null in the arguments.");
+  //       return;
+  //     }
+
+  //     debugPrint("Exercise type: $exerciseType");
+
+  //     switch (exerciseType) {
+  //       case "Detection":
+  //         _handleDetection(context, currentLevelCount.toInt(), "notcompleted");
+  //         break;
+  //       case "Discrimination":
+  //         _handleDiscrimination(context, currentLevelCount.toInt(), "notcompleted");
+  //         break;
+  //       case "Identification":
+  //         _handleIdentification(context, currentLevelCount.toInt(), "notcompleted");
+  //         break;
+  //       case "Level":
+  //         _handleLevel(context, currentLevelCount.toInt(), "notcompleted");
+  //         break;
+  //       default:
+  //         debugPrint("Unexpected exercise type: $exerciseType");
+  //         break;
+  //     }
+  //   } catch (e) {
+  //     debugPrint("Error in _redirectToRespectivePage: $e");
+  //   }
+  // }
+
+  void _handleLevelType(int level, String params) {
+    try {
+      var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+      if (obj == null) {
+        debugPrint("No arguments were passed to this route.");
+        return;
+      }
+
+      debugPrint("Handling level type with arguments: $obj");
+      String? exerciseType = obj["exerciseType"] as String?;
+
+      if (exerciseType == null) {
+        debugPrint("Exercise type is null in the arguments.");
+        return;
+      }
+
+      switch (exerciseType) {
+        case "Detection":
+          _handleDetection(context, currentLevelCount.toInt(), "notcompleted");
+          break;
+        case "Discrimination":
+          _handleDiscrimination(context, currentLevelCount.toInt(), "notcompleted");
+          break;
+        case "Identification":
+          _handleIdentification(context, currentLevelCount.toInt(), "notcompleted");
+          break;
+        case "Level":
+          _handleLevel(context, currentLevelCount.toInt(), "notcompleted");
+          break;
+        default:
+          debugPrint("Unexpected exercise type: $exerciseType");
+          break;
+      }
+    } catch (e) {
+      debugPrint("Error in _handleLevelType: $e");
     }
   }
 
-  void _handleLevelType(int level, String params) {
-  var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-  String exerciseType = obj!["exerciseType"] as String;
-
-  switch (exerciseType) {
-    case "Detection":
-      _handleDetection(context, level, params);
-      break;
-    case "Discrimination":
-      _handleDiscrimination(context, level, params);
-      break;
-    case "Identification":
-      _handleIdentification(context, level, params);
-      break;
-
-    case "Level":
-      _handleLevel(context, level, params);
-      break;
-    default:
-      debugPrint("Unexpected exercise type");
-      break;
-  }
-}
-
   // Functions to handle redirection
-void _handleDetection(BuildContext context, int level, String params) async {
+  void _handleDetection(BuildContext context, int level, String params) async {
+    try {
+      debugPrint("Handling Detection for level: $level");
+      final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
 
-  try {
-    final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
-    
-    // Fetch the data for the 'Detection' type
-    final Map<String, dynamic>? data = await levelProvider.fetchData('Detection', level);
-    String type = data!["type"]; // Extract the type from the fetched data
+      final Map<String, dynamic>? data = await levelProvider.fetchData('Detection', level);
+      
+      if (data == null) {
+        debugPrint("No data fetched for Detection at level $level.");
+        return;
+      }
 
-    // Get the appropriate quiz widget based on the type
-   
+      String? type = data["type"];
+      if (type == null) {
+        debugPrint("Type is null in the fetched data.");
+        return;
+      }
 
-    // Navigate to the Detection screen, passing the quiz widget
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Detection(type: type,data:data),
+      debugPrint("Fetched type for Detection: $type");
+      
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Detection(type: type, data: data),
           settings: RouteSettings(
-          arguments: {
-            "level": level,
-          },
+            arguments: {
+              "level": level,
+            },
+          ),
         ),
-      ),
-    );
-
-    // Check if the level is completed and increment the level count accordingly
-  } catch (e) {
-    debugPrint("Error in Detection handling: $e");
+      );
+    } catch (e) {
+      debugPrint("Error in Detection handling: $e");
+    }
   }
-}
 
+  void _handleDiscrimination(BuildContext context, int level, String params) async {
+    try {
+      final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+      final Map<String, dynamic>? data = await levelProvider.fetchData('Discrimination', level);
 
+      if (data == null) {
+        debugPrint("No data fetched for Discrimination at level $level.");
+        return;
+      }
 
- void _handleDiscrimination(BuildContext context, int level, String params) async {
-  // Fetch data and redirect to DiscriminationPage
-  try {
-    final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
-    final Map<String, dynamic>? data = await levelProvider.fetchData('Discrimination', level);
-    String type = data!["type"];
+      String? type = data["type"];
+      if (type == null) {
+        debugPrint("Type is null in the fetched data.");
+        return;
+      }
 
- Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Discrimination(type: type, data: data),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Discrimination(type: type, data: data),
           settings: RouteSettings(
-          arguments: {
-            "level": level,
-          },
+            arguments: {
+              "level": level,
+            },
+          ),
         ),
-         // Pass type and data directly
-      ),
-    );
-
-    // if (params != "completed") {
-    //   await levelProvider.incrementLevelCount("Discrimination");
-    // }
-    // if (result) {
-    //   await _fetchCurrentLevel('Discrimination');
-    // }
-  } catch (e) {
-    debugPrint("Error in Discrimination handling: $e");
+      );
+    } catch (e) {
+      debugPrint("Error in Discrimination handling: $e");
+    }
   }
-}
-
-  
 
  void _handleIdentification(BuildContext context, int level, String params) async {
-  // Fetch data and redirect to IdentificationPage
   try {
     final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
     final Map<String, dynamic>? data = await levelProvider.fetchData('Identification', level);
-    String type = data!["type"];
 
-    // Construct the object using the retrieveObject function
-    final Object dtcontainer = retrieveObject(type, data);
+    if (data == null) {
+      debugPrint("No data fetched for Identification at level $level.");
+      return;
+    }
 
+    String? type = data["type"];
+    if (type == null) {
+      debugPrint("Type is null in the fetched data.");
+      return;
+    }
+
+    debugPrint("Fetched type for Identification: $type");
     debugPrint("Data is: $data");
-    List<dynamic> argumentsList = [type, dtcontainer, params];
-    print("Arguments list is: $argumentsList");
 
-    // Navigate to the appropriate screen using NavigatorService
-   NavigatorService.pushNamed(AppRoutes.identification, arguments: argumentsList);
+    // Check if the type is 'video' and handle accordingly
+    if (type == "video") {
+      String? videoUrl = data["video_url"];
+      if (videoUrl == null) {
+        debugPrint("Video URL is null in the fetched data.");
+        return;
+      }
 
-    // if (params != "completed") {
-    //   await levelProvider.incrementLevelCount("Identification");
-    // }
-    // if (result) {
-    //   await _fetchCurrentLevel('Identification');
-    // }
+      debugPrint("Navigating to Video Player Screen with URL: $videoUrl");
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
+        ),
+      );
+    } else {
+      // Handle other types
+      final Object dtcontainer = retrieveObject(type, data);
+
+      List<dynamic> argumentsList = [type, dtcontainer, params];
+      debugPrint("Arguments list is: $argumentsList");
+
+      NavigatorService.pushNamed(AppRoutes.identification, arguments: argumentsList);
+    }
   } catch (e) {
     debugPrint("Error in Identification handling: $e");
   }
 }
 
 
- void _handleLevel(BuildContext context, int level, String params) async {
-  try {
-    debugPrint("Entering in level section");
-    final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+  void _handleLevel(BuildContext context, int level, String params) async {
+    try {
+      debugPrint("Entering in level section");
+      final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
 
-    // Fetch data for the given level
-    final Map<String, dynamic>? data = await levelProvider.fetchData('Level', level);
-    String type = data!["type"];
+      final Map<String, dynamic>? data = await levelProvider.fetchData('Level', level);
 
-    // Handle different types based on the data
-    if (type == "video") {
-      debugPrint("In video section");
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoPlayerScreen(videoUrl: data["video"]),
-        ),
-      );
-
-      // if (params != "completed") {
-      //   await levelProvider.incrementLevelCount("Level");
-      // }
-      // if (result) {
-      //   await _fetchCurrentLevel('Level');
-      // }
-    } else if (type == "speech") {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SpeakingPhonemeScreen(
-            text: (data["text"] as List)
-                .map((item) => Map<String, dynamic>.from(item))
-                .toList(),
-            videoUrl: data["video_url"],
-            testSpeech: data["test_speech"],
-          ),
-        ),
-      );
-
-      // if (params != "completed") {
-      //   await levelProvider.incrementLevelCount("SpeechTests");
-      // }
-      // if (result) {
-      //   await _fetchCurrentLevel('SpeechTests');
-      // }
-
-    } else {
-      debugPrint("Unexpected type: $type");
-    }
-  } catch (e) {
-    debugPrint("Error in Level handling: $e");
-  }
-}
-
-
- Future<void> _fetchCurrentLevel(String type) async {
-  try {
-    final User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      final String uid = user.uid;
-
-      // Fetch the current user's document from Firestore
-      var data = await FirebaseFirestore.instance
-          .collection('patients')
-          .doc(uid)
-          .get();
-
-      if (data.exists) {
-        // Get the 'LevelMap' field from the document
-        Map<String, dynamic> levelMap = data['LevelMap'] as Map<String, dynamic>? ?? {};
-
-        // Fetch the level for the specified type
-        var levelData = levelMap[type] ?? 1; // Default to 1 if the type is not found
-
-        double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
-
-        // Update the state
-        setState(() {
-          currentLevelCount = currentLevel;
-        });
-      } else {
-        debugPrint("No data found for user $uid.");
+      if (data == null) {
+        debugPrint("No data fetched for Level at level $level.");
+        return;
       }
+
+      String? type = data["type"];
+      if (type == null) {
+        debugPrint("Type is null in the fetched data.");
+        return;
+      }
+
+      debugPrint("Fetched type for Level: $type");
+
+      if (type == "video") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoPlayerScreen(videoUrl: data["video"]),
+          ),
+        );
+      } else if (type == "speech") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SpeakingPhonemeScreen(
+              text: (data["text"] as List).map((item) => Map<String, dynamic>.from(item)).toList(),
+              videoUrl: data["video_url"],
+              testSpeech: data["test_speech"],
+            ),
+          ),
+        );
+      } else {
+        debugPrint("Unexpected type: $type");
+      }
+    } catch (e) {
+      debugPrint("Error in Level handling: $e");
     }
-  } catch (e) {
-    debugPrint("Error in fetching current level");
-    debugPrint(e.toString());
+  }
+
+  Future<void> _fetchCurrentLevel(String type) async {
+    try {
+      final User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        final String uid = user.uid;
+
+        var data = await FirebaseFirestore.instance
+            .collection('patients')
+            .doc(uid)
+            .get();
+
+        if (data.exists) {
+          Map<String, dynamic> levelMap = data['LevelMap'] as Map<String, dynamic>? ?? {};
+          var levelData = levelMap[type] ?? 1;
+
+          double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
+
+          setState(() {
+            currentLevelCount = currentLevel;
+          });
+        } else {
+          debugPrint("No data found for user $uid.");
+        }
+      }
+    } catch (e) {
+      debugPrint("Error in fetching current level");
+      debugPrint(e.toString());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    try {
+      // var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+      // if (obj == null) {
+      //   debugPrint("No arguments found on this route.");
+      //   return Container();
+      // }
+
+      var provider = context.watch<UserDataProvider>();
+
+      return SafeArea(
+        child: Scaffold(
+          extendBody: true,
+          extendBodyBehindAppBar: true,
+          body: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment(0.47, 0.06),
+                end: Alignment(0.59, 1.61),
+                colors: [
+                  appTheme.lightGreen400,
+                  appTheme.teal800,
+                ],
+              ),
+            ),
+            child: LevelMap(
+              levelMapParams: LevelMapParams(
+                levelCount: 23,
+                //  obj["numberOfLevels"],
+                currentLevel: 1,
+                //  provider.userModel.toJson()["LevelMap"][obj["exerciseType"]],
+                enableVariationBetweenCurves: true,
+                pathColor: appTheme.amber90001,
+                shadowColor: appTheme.brown100,
+                currentLevelImage: ImageParams(
+                  path: "assets/images/Current_LVL.png",
+                  size: Size(104.v, 104.h),
+                  onTap: (int level) {
+                    _handleLevelType(level, "notcompleted");
+                  },
+                ),
+                lockedLevelImage: ImageParams(
+                  path: "assets/images/Locked_LVL.png",
+                  size: Size(104.v, 104.h),
+                  onTap: (int level) {
+                     _handleLevelType(level, "notcompleted");
+                  },
+                ),
+                completedLevelImage: ImageParams(
+                  path: "assets/images/Complete_LVL.png",
+                  size: Size(104.v, 104.h),
+                  onTap: (int level) {
+                    _handleLevelType(level, "completed");
+                  },
+                ),
+                dashLengthFactor: 0.01,
+                pathStrokeWidth: 10.h,
+                bgImagesToBePaintedRandomly: [
+                  ImageParams(
+                    path: "assets/images/img_bush.png",
+                    size: Size(80, 80),
+                    repeatCountPerLevel: 0.5,
+                  ),
+                  ImageParams(
+                    path: "assets/images/img_tree.png",
+                    size: Size(80, 80),
+                    repeatCountPerLevel: 0.5,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint("Error in building the widget: $e");
+      return Container();
+    }
   }
 }
-
-
- @override
-Widget build(BuildContext context) {
-   var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-   var provider=context.watch<UserDataProvider>();
-  return SafeArea(
-    child: Scaffold(
-      extendBody: true,
-      extendBodyBehindAppBar: true,
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment(0.47, 0.06),
-            end: Alignment(0.59, 1.61),
-            colors: [
-              appTheme.lightGreen400,
-              appTheme.teal800,
-            ],
-          ),
-        ),
-        child: LevelMap(
-          levelMapParams: LevelMapParams(
-            levelCount: obj["numberOfLevels"],
-            currentLevel: provider.userModel.toJson()["LevelMap"][obj["exerciseType"]],
-            enableVariationBetweenCurves: true,
-            pathColor: appTheme.amber90001,
-            shadowColor: appTheme.brown100,
-            currentLevelImage: ImageParams(
-              path: "assets/images/Current_LVL.png",
-              size: Size(104.v, 104.h),
-              onTap: (int level) {
-                _handleLevelType(level, "notcompleted");
-              },
-            ),
-            lockedLevelImage: ImageParams(
-              path: "assets/images/Locked_LVL.png",
-              size: Size(104.v, 104.h),
-              onTap: (int level) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("Level $level is locked!"),
-                    
-                  ),
-                );
-              },
-            ),
-            completedLevelImage: ImageParams(
-              path: "assets/images/Complete_LVL.png",
-              size: Size(104.v, 104.h),
-              onTap: (int level) {
-                _handleLevelType(level, "completed");
-              },
-            ),
-            dashLengthFactor: 0.01,
-            pathStrokeWidth: 10.h,
-            bgImagesToBePaintedRandomly: [
-              ImageParams(
-                path: "assets/images/img_bush.png",
-                size: Size(80, 80),
-                repeatCountPerLevel: 0.5,
-              ),
-              ImageParams(
-                path: "assets/images/img_tree.png",
-                size: Size(80, 80),
-                repeatCountPerLevel: 0.5,
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-}
-
- 
-
- 
 
 Object retrieveObject(String type, Map<String, dynamic> data) {
   if (type == "ImageToAudio") {
-    ImageToAudio imageToAudio = ImageToAudio.fromJson(data);
-    return imageToAudio;
+    return ImageToAudio.fromJson(data);
   } else if (type == "WordToFig") {
-    WordToFiG wordToFiG = WordToFiG.fromJson(data);
-    return wordToFiG;
+    return WordToFiG.fromJson(data);
   } else if (type == "FigToWord") {
-    FigToWord figToWord = FigToWord.fromJson(data);
-    return figToWord;
+    return FigToWord.fromJson(data);
   } else if (type == "AudioToImage") {
-    debugPrint("in audio to image section");
-    AudioToImage audioToImage = AudioToImage.fromJson(data);
-    return audioToImage;
+    debugPrint("In audio to image section");
+    return AudioToImage.fromJson(data);
   } else if (type == "AudioToAudio") {
-    AudioToAudio audioToAudio = AudioToAudio.fromJson(data);
-    return audioToAudio;
+    return AudioToAudio.fromJson(data);
   } else if (type == "Muted&Unmuted") {
-    MutedUnmuted mutedUnmuted = MutedUnmuted.fromJson(data);
-    return mutedUnmuted;
+    return MutedUnmuted.fromJson(data);
   } else if (type == "HalfMuted") {
-    HalfMuted halfMuted = HalfMuted.fromJson(data);
-    return halfMuted;
+    return HalfMuted.fromJson(data);
   } else if (type == "DiffSounds") {
-    DiffSounds diffSounds = DiffSounds.fromJson(data);
-    return diffSounds;
+    return DiffSounds.fromJson(data);
   } else if (type == "OddOne") {
-    OddOne oddOne = OddOne.fromJson(data);
-    return oddOne;
+    return OddOne.fromJson(data);
   } else if (type == "DiffHalf") {
-    DiffHalf diffHalf = DiffHalf.fromJson(data);
-    return diffHalf;
+    return DiffHalf.fromJson(data);
   } else {
     return "unexpected value";
   }
 }
-
-
- 
-
-

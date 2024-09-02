@@ -34,34 +34,53 @@ class PhonemsLevelOneProvider extends ChangeNotifier {
   bool get loading => _loading;
   String? get ty => type;
 
-  Future<Map<String, dynamic>?> fetchData(String docName, int level) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
+ Future<Map<String, dynamic>?> fetchData(String docName, int level) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    // Reference the document inside the 'Auditory' collection
-    DocumentSnapshot doc =
-        await firestore.collection("Auditory").doc(docName).get();
+  // Reference the document inside the 'Auditory' collection
+  DocumentSnapshot doc =
+      await firestore.collection("Auditory").doc(docName).get();
 
-    // Check if the document exists
-    if (!doc.exists) {
-      debugPrint(
-          "Document $docName does not exist in the Auditory collection.");
-      return null;
-    }
-
-    try {
-      // Proceed only if the document exists
-      Map<String, dynamic> data = doc.get("data") as Map<String, dynamic>;
-      String finder = "Level$level";
-
-      List<dynamic> receivedData = data[finder];
-      // Taking a random index data which will be shown on the screen
-      Map<String, dynamic> levelInfo = receivedData[0] as Map<String, dynamic>;
-      return levelInfo;
-    } catch (e) {
-      debugPrint("Error fetching data: $e");
-      return null;
-    }
+  // Check if the document exists
+  if (!doc.exists) {
+    debugPrint(
+        "Document $docName does not exist in the Auditory collection.");
+    return null;
   }
+
+  try {
+    // Proceed only if the document exists
+    Map<String, dynamic>? data = doc.get("data") as Map<String, dynamic>?;
+
+    if (data == null) {
+      debugPrint("The 'data' field is null or not in the correct format.");
+      return null;
+    }
+
+    String finder = "Level$level";
+
+    // Check if the key exists and is a list
+    if (data.containsKey(finder) && data[finder] is List) {
+      List<dynamic> receivedData = data[finder] as List<dynamic>;
+
+      // Ensure the list is not empty and contains a map
+      if (receivedData.isNotEmpty && receivedData[0] is Map<String, dynamic>) {
+        Map<String, dynamic> levelInfo = receivedData[0] as Map<String, dynamic>;
+        return levelInfo;
+      } else {
+        debugPrint("No data found for the level or data is not in the correct format.");
+        return null;
+      }
+    } else {
+      debugPrint("The level $finder does not exist or is not in the correct format.");
+      return null;
+    }
+  } catch (e) {
+    debugPrint("Error fetching data: $e");
+    return null;
+  }
+}
+
 
   Future<int?> fetchNumberOfLevels(String docName) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
