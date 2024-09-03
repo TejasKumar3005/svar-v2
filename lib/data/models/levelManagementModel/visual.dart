@@ -1,6 +1,5 @@
 import 'dart:core';
 
-
 class ImageToAudio {
   final String image_url;
   final List<String> audio_url_list;
@@ -131,19 +130,16 @@ class AudioToAudio {
 }
 
 class MutedUnmuted {
-  final int level;
   final String type;
   final List<String> video_url;
 
   MutedUnmuted._({
-    required this.level,
     required this.type,
     required this.video_url,
   });
 
   factory MutedUnmuted.fromJson(Map<String, dynamic> json) {
     return MutedUnmuted._(
-      level: json['level'] as int,
       type: json['type'] as String,
       video_url: List<String>.from(json['video_url']),
     );
@@ -151,10 +147,6 @@ class MutedUnmuted {
 
   List<String> getVideoUrls() {
     return video_url;
-  }
-
-  int getLevel() {
-    return level;
   }
 
   String getType() {
@@ -163,54 +155,35 @@ class MutedUnmuted {
 }
 
 class HalfMuted {
-  final int level;
-  final String type;
   final String video_url;
 
   HalfMuted._({
-    required this.level,
-    required this.type,
     required this.video_url,
   });
 
   factory HalfMuted.fromJson(Map<String, dynamic> json) {
     return HalfMuted._(
-      level: json['level'] as int,
-      type: json['type'] as String,
-      video_url: json['video_url'][0] as String, // Accessing the first item
+      video_url: json['video_url'] as String, // Accessing the first item
     );
   }
 
   String getVideoUrl() {
     return video_url;
   }
-
-  int getLevel() {
-    return level;
-  }
-
-  String getType() {
-    return type;
-  }
 }
 
 class DiffSounds {
-  final int level;
   final bool same;
-  final String type;
+
   final List<String> video_url;
 
   DiffSounds._({
-    required this.level,
-    required this.type,
     required this.video_url,
     required this.same,
   });
 
   factory DiffSounds.fromJson(Map<String, dynamic> json) {
     return DiffSounds._(
-      level: json['level'] as int,
-      type: json['type'] as String,
       video_url: List<String>.from(json['video_url']),
       same: json['same'] as bool,
     );
@@ -219,33 +192,19 @@ class DiffSounds {
   List<String> getVideoUrls() {
     return video_url;
   }
-
-  int getLevel() {
-    return level;
-  }
-
-  String getType() {
-    return type;
-  }
 }
 
 class OddOne {
-  final int level;
-  final String type;
   final String correct_output;
   final List<String> video_url;
 
   OddOne._({
-    required this.level,
-    required this.type,
     required this.video_url,
     required this.correct_output,
   });
 
   factory OddOne.fromJson(Map<String, dynamic> json) {
     return OddOne._(
-      level: json['level'] as int,
-      type: json['type'] as String,
       video_url: List<String>.from(json['video_url']),
       correct_output: json['correct_output'] as String,
     );
@@ -254,66 +213,38 @@ class OddOne {
   List<String> getVideoUrls() {
     return video_url;
   }
-
-  int getLevel() {
-    return level;
-  }
-
-  String getType() {
-    return type;
-  }
 }
 
 class DiffHalf {
-  final int level;
-  final String type;
   final double correct_output;
-  final double tolerance ;
+  final double tolerance;
   final List<String> video_url;
 
   DiffHalf._({
-    required this.level,
-    required this.type,
     required this.video_url,
     required this.correct_output,
     required this.tolerance,
-
   });
 
   factory DiffHalf.fromJson(Map<String, dynamic> json) {
     return DiffHalf._(
-      level: json['level'] as int,
-      type: json['type'] as String,
       video_url: List<String>.from(json['video_url']),
       correct_output: json['correct_output'] as double,
       tolerance: json['tolerance'] as double,
-
     );
   }
 
   List<String> getVideoUrls() {
     return video_url;
   }
-
-  int getLevel() {
-    return level;
-  }
-
-  String getType() {
-    return type;
-  }
 }
 
 class MaleFemale {
-  final int level;
-  final String type;
   final String video_url;
   final String correct_output;
   final List<String> images;
 
   MaleFemale._({
-    required this.level,
-    required this.type,
     required this.video_url,
     required this.images,
     required this.correct_output,
@@ -321,10 +252,8 @@ class MaleFemale {
 
   factory MaleFemale.fromJson(Map<String, dynamic> json) {
     return MaleFemale._(
-      level: json['level'] as int,
-      type: json['type'] as String,
       video_url: json['video_url'][0] as String,
-      images: json["images"]?? [] // Accessing the first item
+      images: json["images"] ?? [] // Accessing the first item
       ,
       correct_output: json['correct_output'] as String,
     );
@@ -333,5 +262,4 @@ class MaleFemale {
   String getVideoUrl() {
     return video_url;
   }
-
 }
