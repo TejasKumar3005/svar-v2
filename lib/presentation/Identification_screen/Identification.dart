@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
+import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/Identification_screen/audioToImage.dart';
 import 'package:svar_new/presentation/Identification_screen/animation_play.dart';
 import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
@@ -253,7 +254,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                     dtcontainer.getAudioList()[index]) {
                                   leveltracker = leveltracker + 1;
                                   if (leveltracker > 1) {
-                                    provider.incrementLevelCount("Identification");
+                                  UserData(buildContext: context).incrementLevelCount("Identification");
                                   } 
                                   _overlayEntry =
                                       celebrationOverlay(context, () {
@@ -303,7 +304,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                       dtcontainer.getAudioList()[index]) {
                                     leveltracker = leveltracker + 1;
                                     if (leveltracker > 1) {
-                                        provider.incrementLevelCount("Identification");
+                                        UserData(buildContext: context).incrementLevelCount("Identification");
                                     } 
                                     _overlayEntry =
                                         celebrationOverlay(context, () {
@@ -615,7 +616,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                     dtcontainer.getImageUrlList()[0]) {
                                   leveltracker = leveltracker + 1;
                                   if (leveltracker > 1) {
-                                    provider.incrementLevelCount("Identification");
+                                  UserData(buildContext: context).incrementLevelCount("Identification");
                                   } 
                                   _overlayEntry =
                                       celebrationOverlay(context, () {
@@ -666,7 +667,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                   dtcontainer.getImageUrlList()[1]) {
                                 leveltracker = leveltracker + 1;
                                 if (leveltracker > 1) {
-                                  provider.incrementLevelCount("Identification");
+                                  UserData(buildContext: context).incrementLevelCount("Identification");
                                 } 
                                 _overlayEntry = celebrationOverlay(context, () {
                                   _overlayEntry?.remove();

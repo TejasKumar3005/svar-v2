@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/Identification_screen/animation_play.dart';
 import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/Identification_screen/provider/identification_provider.dart';
@@ -199,10 +200,8 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                   // success
                                   leveltracker = leveltracker + 1;
                                   if (leveltracker > 1) {
-                                    provider.incrementLevelCount("completed");
-                                  } else {
-                                    provider.incrementLevelCount(widget.params);
-                                  }
+                                  UserData(buildContext: context).incrementLevelCount("Identification");
+                                  } 
                                   _overlayEntry =
                                       celebrationOverlay(context, () {
                                     _overlayEntry?.remove();
@@ -254,11 +253,8 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                     // success
                                     leveltracker = leveltracker + 1;
                                     if (leveltracker > 1) {
-                                      provider.incrementLevelCount("completed");
-                                    } else {
-                                      provider
-                                          .incrementLevelCount(widget.params);
-                                    }
+                                      UserData(buildContext: context).incrementLevelCount("Identification");
+                                    } 
                                     _overlayEntry =
                                         celebrationOverlay(context, () {
                                       _overlayEntry?.remove();

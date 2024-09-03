@@ -127,6 +127,7 @@ class _VideoCamScreenState extends State<VideoCamScreen>
   void dispose() {
     _videoPlayerController.dispose();
     _chewieController?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
