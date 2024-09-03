@@ -170,7 +170,7 @@ class HomeScreenState extends State<HomeScreen> {
               children: [
                 Image.asset(
                   imagePath,
-                  fit: BoxFit.fill,
+                  fit: BoxFit.contain,
                   width: MediaQuery.of(context).size.width * 0.6,
                   height: MediaQuery.of(context).size.width * 0.3,
                 ),
