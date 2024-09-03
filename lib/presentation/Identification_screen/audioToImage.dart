@@ -204,37 +204,44 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     );
   }
 
-  Widget _buildAnimatedContainer(String imagePath, VoidCallback onTapCallback) {
-    return Expanded(
-      child: AnimatedContainer(
-        duration: Duration(seconds: 1),
-        height: 120.v,
-        decoration: AppDecoration.fillCyan.copyWith(
-          border: Border.all(
-            color: appTheme.black900,
-            width: 2.adaptSize,
-          ),
-          image: DecorationImage(
-              image: AssetImage("assets/images/radial_ray_bluegreen.png")),
-          borderRadius: BorderRadiusStyle.roundedBorder10,
-          boxShadow: _isGlowingA
-              ? [
-                  BoxShadow(
-                    color: Color.fromARGB(255, 202, 1, 1).withOpacity(0.6),
-                    spreadRadius: 10,
-                    blurRadius: 5,
-                  ),
-                ]
-              : [],
+Widget _buildAnimatedContainer(String imagePath, VoidCallback onTapCallback) {
+  return Expanded(
+    child: AnimatedContainer(
+      duration: Duration(seconds: 1),
+      height: 202.0, // Set a fixed height for the container
+      decoration: AppDecoration.fillCyan.copyWith(
+        border: Border.all(
+          color: appTheme.black900,
+          width: 2.adaptSize,
         ),
-        child: GestureDetector(
-          onTap: onTapCallback,
+        image: DecorationImage(
+          image: AssetImage("assets/images/radial_ray_bluegreen.png"),
+          fit: BoxFit.cover, // Ensures the background image covers the entire container
+        ),
+        borderRadius: BorderRadiusStyle.roundedBorder10,
+        boxShadow: _isGlowingA
+            ? [
+                BoxShadow(
+                  color: Color.fromARGB(255, 202, 1, 1).withOpacity(0.6),
+                  spreadRadius: 10,
+                  blurRadius: 5,
+                ),
+              ]
+            : [],
+      ),
+      child: GestureDetector(
+        onTap: onTapCallback,
+        child: FittedBox(
+          fit: BoxFit.fill, // Ensures the child fits within the available space
           child: CustomImageView(
-            fit: BoxFit.contain,
             imagePath: imagePath,
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+
+
 }
