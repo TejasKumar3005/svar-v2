@@ -19,7 +19,7 @@ void showQuitDialog(BuildContext context) {
 
 Widget QuitDialog(BuildContext context) {
   return Container(
-    width: MediaQuery.of(context).size.width * 0.8,
+    width: MediaQuery.of(context).size.width * 0.6,
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
@@ -129,7 +129,7 @@ Widget QuitDialog(BuildContext context) {
                             ),
                             SizedBox(height: 22.v),
                             SizedBox(
-                              width: 170.h,
+                            
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment:

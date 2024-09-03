@@ -43,4 +43,7 @@ class PlayAudio {
   Future<void> setVolume(double volume) async {
     await audioPlayer.setVolume(volume);
   }
+  void dispose() {
+    audioPlayer.dispose();
+  }
 }

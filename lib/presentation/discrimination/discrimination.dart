@@ -43,8 +43,14 @@ class _DiscriminationState extends State<Discrimination> {
   OverlayEntry? _overlayEntry;
 
   @override
+  void dispose() {
+    playAudio.stopMusic();
+    playAudio.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -65,21 +71,26 @@ class _DiscriminationState extends State<Discrimination> {
             SizedBox(
               height: 26.v,
             ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.7,
-              padding: EdgeInsets.symmetric(
-                vertical: 5.v,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(22),
-              ),
-              child: Center(
-                child: Text(
-                  "Pick the odd One Out",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+            Visibility(
+              visible: widget.type != "MaleFemale" && widget.type != "DiffHalf",
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.7,
+                padding: EdgeInsets.symmetric(
+                  vertical: 5.v,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Center(
+                  child: Text(
+                    widget.type == "OddOne"
+                        ? ("Pick the odd One Out").toUpperCase()
+                        : ("SAME OR DIferent?").toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -115,16 +126,20 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget MaleFemaleW(MaleFemale maleFemale) {
-    var obj=ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    var obj =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
     var provider = Provider.of<UserDataProvider>(context, listen: false);
     return Column(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-
         _buildOption(
-            color:  PrimaryColors().deepOrangeA200,index:  0,audio: [maleFemale.video_url],correctOutput:  maleFemale.correct_output,type: "MaleFemale"),
+            color: PrimaryColors().deepOrangeA200,
+            index: 0,
+            audio: [maleFemale.video_url],
+            correctOutput: maleFemale.correct_output,
+            type: "MaleFemale"),
         SizedBox(
           height: 20.v,
         ),
@@ -132,21 +147,22 @@ class _DiscriminationState extends State<Discrimination> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GestureDetector(
-              onTap: (){
-
+              onTap: () {
                 if (maleFemale.correct_output == maleFemale.images[0]) {
-                print("Correct");
-                if(obj["level"]>provider.userModel.toJson()["levelMap"]["Discrimination"]!){
-                
-                UserData(buildContext: context).incrementLevelCount("Discrimination");
-                }
+                  print("Correct");
+                  if (obj["level"] >
+                      provider.userModel.toJson()["levelMap"]
+                          ["Discrimination"]!) {
+                    UserData(buildContext: context)
+                        .incrementLevelCount("Discrimination")
+                        .then((value) {});
+                  }
 
-                  _overlayEntry =
-                                        celebrationOverlay(context, () {
-                                      _overlayEntry?.remove();
-                                    });
-                                    Overlay.of(context).insert(_overlayEntry!);
-              }
+                  _overlayEntry = celebrationOverlay(context, () {
+                    _overlayEntry?.remove();
+                  });
+                  Overlay.of(context).insert(_overlayEntry!);
+                }
               },
               child: Artboard(maleFemale.images.isEmpty
                   ? "img_mascot"
@@ -158,17 +174,19 @@ class _DiscriminationState extends State<Discrimination> {
             GestureDetector(
               onTap: () {
                 if (maleFemale.correct_output == maleFemale.images[1]) {
-                print("Correct");
-                if(obj["level"]>provider.userModel.toJson()["levelMap"]["Discrimination"]!){
-                
-                UserData(buildContext: context).incrementLevelCount("Discrimination");
+                  print("Correct");
+                  if (obj["level"] >
+                      provider.userModel.toJson()["levelMap"]
+                          ["Discrimination"]!) {
+                    UserData(buildContext: context)
+                        .incrementLevelCount("Discrimination")
+                        .then((value) {});
+                  }
+                  _overlayEntry = celebrationOverlay(context, () {
+                    _overlayEntry?.remove();
+                  });
+                  Overlay.of(context).insert(_overlayEntry!);
                 }
-                  _overlayEntry =
-                                        celebrationOverlay(context, () {
-                                      _overlayEntry?.remove();
-                                    });
-                                    Overlay.of(context).insert(_overlayEntry!);
-              }
               },
               child: Artboard(maleFemale.images.isEmpty
                   ? "img_mascot"
@@ -242,7 +260,11 @@ class _DiscriminationState extends State<Discrimination> {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildOption(
-          text:   "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  diffHalf.video_url,correctOutput:  diffHalf.correct_output),
+            text: "A",
+            color: PrimaryColors().deepOrangeA200,
+            index: 0,
+            audio: diffHalf.video_url,
+            correctOutput: diffHalf.correct_output),
         SizedBox(
           height: 20.v,
         ),
@@ -293,19 +315,32 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget DiffSoundsW(DiffSounds diffSounds) {
+    var obj =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    var provider = Provider.of<UserDataProvider>(context, listen: false);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildOption(text:  "A",color:  PrimaryColors().deepOrangeA200,index:  0,
-              audio:   diffSounds.video_url,correctOutput:  diffSounds.same ,type: "DiffSounds"),
+            _buildOption(
+                text: "A",
+                color: PrimaryColors().deepOrangeA200,
+                index: 0,
+                audio: diffSounds.video_url,
+                correctOutput: diffSounds.same,
+                type: "DiffSounds"),
             SizedBox(
               width: 30.h,
             ),
-            _buildOption(text:  "B",color:  PrimaryColors().deepOrangeA200,index:  1,
-              audio:   diffSounds.video_url,correctOutput:  diffSounds.same,type: "DiffSounds"),
+            _buildOption(
+                text: "B",
+                color: PrimaryColors().deepOrangeA200,
+                index: 1,
+                audio: diffSounds.video_url,
+                correctOutput: diffSounds.same,
+                type: "DiffSounds"),
           ],
         ),
         SizedBox(
@@ -314,29 +349,43 @@ class _DiscriminationState extends State<Discrimination> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CustomButton(type: ButtonType.Same, onPressed: () {
-              if(diffSounds.same){
-                UserData(buildContext: context).incrementLevelCount("Discrimination");
-                  _overlayEntry =
-                                        celebrationOverlay(context, () {
-                                      _overlayEntry?.remove();
-                                    });
-                                    Overlay.of(context).insert(_overlayEntry!);
-              }
-            }),
+            CustomButton(
+                type: ButtonType.Same,
+                onPressed: () {
+                  if (diffSounds.same) {
+                    if (obj["level"] >
+                        provider.userModel.toJson()["levelMap"]
+                            ["Discrimination"]!) {
+                      UserData(buildContext: context)
+                          .incrementLevelCount("Discrimination")
+                          .then((value) {});
+                    }
+                    _overlayEntry = celebrationOverlay(context, () {
+                      _overlayEntry?.remove();
+                    });
+                    Overlay.of(context).insert(_overlayEntry!);
+                  }
+                }),
             SizedBox(
               width: 20.h,
             ),
-            CustomButton(type: ButtonType.Diff, onPressed: () {
-              if(!diffSounds.same){
-                UserData(buildContext: context).incrementLevelCount("Discrimination");
-                  _overlayEntry =
-                                        celebrationOverlay(context, () {
-                                      _overlayEntry?.remove();
-                                    });
-                                    Overlay.of(context).insert(_overlayEntry!);
-              }
-            }),
+            CustomButton(
+                type: ButtonType.Diff,
+                onPressed: () {
+                  if (!diffSounds.same) {
+                    if (obj["level"] >
+                        provider.userModel.toJson()["levelMap"]
+                            ["Discrimination"]!) {
+                      UserData(buildContext: context)
+                          .incrementLevelCount("Discrimination")
+                          .then((value) {});
+                    }
+                    _overlayEntry = celebrationOverlay(context, () {
+                      _overlayEntry?.remove();
+                    });
+                    Overlay.of(context).insert(_overlayEntry!);
+                  }
+                }),
           ],
         )
       ],
@@ -353,12 +402,20 @@ class _DiscriminationState extends State<Discrimination> {
             Row(
               children: [
                 _buildOption(
-                  text:   "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
+                    text: "A",
+                    color: PrimaryColors().deepOrangeA200,
+                    index: 0,
+                    audio: oddOne.video_url,
+                    correctOutput: oddOne.correct_output),
                 SizedBox(
                   width: 20.h,
                 ),
                 _buildOption(
-                  text:   "B",color:  PrimaryColors().deepOrangeA200,index:  1,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
+                    text: "B",
+                    color: PrimaryColors().deepOrangeA200,
+                    index: 1,
+                    audio: oddOne.video_url,
+                    correctOutput: oddOne.correct_output),
               ],
             ),
           ],
@@ -371,12 +428,20 @@ class _DiscriminationState extends State<Discrimination> {
             Row(
               children: [
                 _buildOption(
-                  text:   "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
+                    text: "A",
+                    color: PrimaryColors().deepOrangeA200,
+                    index: 0,
+                    audio: oddOne.video_url,
+                    correctOutput: oddOne.correct_output),
                 SizedBox(
                   width: 20.h,
                 ),
                 _buildOption(
-                  text:   "B",color:  PrimaryColors().deepOrangeA200,index:  1,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
+                    text: "B",
+                    color: PrimaryColors().deepOrangeA200,
+                    index: 1,
+                    audio: oddOne.video_url,
+                    correctOutput: oddOne.correct_output),
               ],
             ),
             SizedBox(
@@ -386,7 +451,11 @@ class _DiscriminationState extends State<Discrimination> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildOption(
-                  text:   "C",color:  PrimaryColors().deepOrangeA200,index:  2,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
+                    text: "C",
+                    color: PrimaryColors().deepOrangeA200,
+                    index: 2,
+                    audio: oddOne.video_url,
+                    correctOutput: oddOne.correct_output),
               ],
             )
           ],
@@ -401,12 +470,20 @@ class _DiscriminationState extends State<Discrimination> {
             Row(
               children: [
                 _buildOption(
-                    text:  "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
+                    text: "A",
+                    color: PrimaryColors().deepOrangeA200,
+                    index: 0,
+                    audio: oddOne.video_url,
+                    correctOutput: oddOne.correct_output),
                 SizedBox(
                   width: 20.h,
                 ),
                 _buildOption(
-                  text:   "B",color:  PrimaryColors().deepOrangeA200,index:  1,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
+                    text: "B",
+                    color: PrimaryColors().deepOrangeA200,
+                    index: 1,
+                    audio: oddOne.video_url,
+                    correctOutput: oddOne.correct_output),
               ],
             ),
             SizedBox(
@@ -415,12 +492,20 @@ class _DiscriminationState extends State<Discrimination> {
             Row(
               children: [
                 _buildOption(
-                    text: "C",color:  PrimaryColors().deepOrangeA200,index:  2,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
+                    text: "C",
+                    color: PrimaryColors().deepOrangeA200,
+                    index: 2,
+                    audio: oddOne.video_url,
+                    correctOutput: oddOne.correct_output),
                 SizedBox(
                   width: 20.h,
                 ),
                 _buildOption(
-                  text:   "D",color:  PrimaryColors().deepOrangeA200,index:  3,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
+                    text: "D",
+                    color: PrimaryColors().deepOrangeA200,
+                    index: 3,
+                    audio: oddOne.video_url,
+                    correctOutput: oddOne.correct_output),
               ],
             ),
           ],
@@ -429,17 +514,23 @@ class _DiscriminationState extends State<Discrimination> {
     }
   }
 
-  Widget _buildOption({String? text,required Color color,required int index,required List<String> audio,
-    required  dynamic correctOutput,String? type}) {
+  Widget _buildOption(
+      {String? text,
+      required Color color,
+      required int index,
+      required List<String> audio,
+      required dynamic correctOutput,
+      String? type}) {
     {
-      var obj=ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+      var obj =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
       var provider = Provider.of<UserDataProvider>(context, listen: false);
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
           Visibility(
-            visible: text==null?false:true,
+            visible: text == null ? false : true,
             child: Text(
               text! + ")",
               style: TextStyle(
@@ -453,27 +544,27 @@ class _DiscriminationState extends State<Discrimination> {
           ),
           GestureDetector(
             onTap: () {
-              if(type=="DiffSounds" || type=="MaleFemale"){
+              if (type == "DiffSounds" || type == "MaleFemale") {
                 return;
               }
-              
+
               if (audio[index] == correctOutput) {
                 print("Correct");
-                  if(obj["level"]>provider.userModel.toJson()["levelMap"]["Discrimination"]!){
-                
-                UserData(buildContext: context).incrementLevelCount("Discrimination");
+                if (obj["level"] >
+                    provider.userModel.toJson()["levelMap"]
+                        ["Discrimination"]!) {
+                  UserData(buildContext: context)
+                      .incrementLevelCount("Discrimination");
                 }
-                  _overlayEntry =
-                                        celebrationOverlay(context, () {
-                                      _overlayEntry?.remove();
-                                    });
-                                    Overlay.of(context).insert(_overlayEntry!);
+                _overlayEntry = celebrationOverlay(context, () {
+                  _overlayEntry?.remove();
+                });
+                Overlay.of(context).insert(_overlayEntry!);
               }
 
               setState(() {
                 selectedOption = index;
               });
-              
             },
             child: Container(
               width: MediaQuery.of(context).size.width * 0.4,

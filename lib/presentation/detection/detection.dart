@@ -2,8 +2,11 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
+import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/discrimination/customthumb.dart';
+import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 
@@ -11,14 +14,18 @@ class Detection extends StatefulWidget {
   final String type; // Add type as a parameter
   final Map<String, dynamic> data;
 
-  const Detection({Key? key, required this.type,required this.data}) : super(key: key);
+  const Detection({Key? key, required this.type, required this.data})
+      : super(key: key);
 
   @override
   State<Detection> createState() => _DetectionState();
 
   static Widget builder(BuildContext context) {
     // Provide default values for demonstration purposes
-    return Detection(type: 'default',data: {},);
+    return Detection(
+      type: 'default',
+      data: {},
+    );
   }
 }
 
@@ -32,34 +39,74 @@ class _DetectionState extends State<Detection> {
     "assets/audios/3.mp3",
     "assets/audios/4.mp3",
   ];
-  late VideoPlayerController _videoPlayerController;
-  ChewieController? _chewieController;
-  bool isVideoReady = false;
-  void initiliaseVideo(String videoUrl) {
-    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(
-      videoUrl,
-    ))
-      ..initialize().then((_) {
-        setState(() {
-          isVideoReady = true;
-        });
-      });
-    _videoPlayerController.addListener(() {
-      if (_videoPlayerController.value.position ==
-          _videoPlayerController.value.duration) {
-        Navigator.pop(context, true);
-      }
-    });
-    _chewieController = ChewieController(
-      videoPlayerController: _videoPlayerController,
-      autoPlay: true,
-      looping: true,
-      showControls: false,
-      showControlsOnInitialize: false,
-      showOptions: false,
-    );
+  late VideoPlayerController _videoPlayerController1;
+  late VideoPlayerController _videoPlayerController2;
+  ChewieController? _chewieController1;
+  ChewieController? _chewieController2;
+  bool isVideoReady1 = false;
+  bool isVideoReady2 = false;
+
+  @override
+  void initState() {
+    if (widget.type == "MutedUnmuted") {
+      initiliaseVideo(widget.data["video_url"][0], 1);
+      initiliaseVideo(widget.data["video_url"][1], 2);
+    }
+    super.initState();
   }
 
+  void initiliaseVideo(String videoUrl, int video) {
+    if (video == 1) {
+      _videoPlayerController1 = VideoPlayerController.networkUrl(Uri.parse(
+        videoUrl,
+      ))
+        ..initialize().then((_) {
+          setState(() {
+            isVideoReady1 = true;
+          });
+        });
+      _videoPlayerController1.addListener(() {
+        if (_videoPlayerController1.value.position ==
+            _videoPlayerController1.value.duration) {
+          Navigator.pop(context, true);
+        }
+      });
+      _chewieController1 = ChewieController(
+        videoPlayerController: _videoPlayerController1,
+        autoPlay: true,
+        looping: true,
+        showControls: false,
+        showControlsOnInitialize: false,
+        showOptions: false,
+      );
+    } else {
+      _videoPlayerController2 = VideoPlayerController.networkUrl(Uri.parse(
+        videoUrl,
+      ))
+        ..initialize().then((_) {
+          setState(() {
+            isVideoReady2 = true;
+          });
+        });
+
+      _videoPlayerController2.addListener(() {
+        if (_videoPlayerController2.value.position ==
+            _videoPlayerController2.value.duration) {
+          Navigator.pop(context, true);
+        }
+      });
+      _chewieController2 = ChewieController(
+        videoPlayerController: _videoPlayerController2,
+        autoPlay: true,
+        looping: true,
+        showControls: false,
+        showControlsOnInitialize: false,
+        showOptions: false,
+      );
+    }
+  }
+
+  OverlayEntry? _overlayEntry;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +139,7 @@ class _DetectionState extends State<Detection> {
   Widget detectionQuiz(BuildContext context, String quizType) {
     switch (quizType) {
       case "video":
-        return MutedUnmuted(context);
+        return Container();
       case "HalfMuted":
         return HalfMuted(context);
       case "MutedUnmuted":
@@ -104,6 +151,9 @@ class _DetectionState extends State<Detection> {
   }
 
   Widget MutedUnmuted(BuildContext context) {
+    var obj =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    var provider = Provider.of<UserDataProvider>(context, listen: false);
     return Column(
       children: [
         Container(
@@ -117,7 +167,7 @@ class _DetectionState extends State<Detection> {
           ),
           child: Center(
             child: Text(
-              "Pick the odd One Out",
+              ("Tap on the video which has sound").toUpperCase(),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -141,11 +191,11 @@ class _DetectionState extends State<Detection> {
                 ),
               ),
               width: MediaQuery.of(context).size.width * 0.40,
-              child: isVideoReady
+              child: isVideoReady1
                   ? AspectRatio(
-                      aspectRatio: _videoPlayerController.value.aspectRatio,
-                      child:
-                          Center(child: Chewie(controller: _chewieController!)),
+                      aspectRatio: _videoPlayerController1.value.aspectRatio,
+                      child: Center(
+                          child: Chewie(controller: _chewieController1!)),
                     )
                   : Center(
                       child: CircularProgressIndicator(
@@ -161,11 +211,11 @@ class _DetectionState extends State<Detection> {
                 ),
               ),
               width: MediaQuery.of(context).size.width * 0.40,
-              child: isVideoReady
+              child: isVideoReady2
                   ? AspectRatio(
-                      aspectRatio: _videoPlayerController.value.aspectRatio,
-                      child:
-                          Center(child: Chewie(controller: _chewieController!)),
+                      aspectRatio: _videoPlayerController2.value.aspectRatio,
+                      child: Center(
+                          child: Chewie(controller: _chewieController2!)),
                     )
                   : Center(
                       child: CircularProgressIndicator(
@@ -179,8 +229,42 @@ class _DetectionState extends State<Detection> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            CustomButton(type: ButtonType.Video1, onPressed: () {}),
-            CustomButton(type: ButtonType.Video2, onPressed: () {}),
+            CustomButton(
+                type: ButtonType.Video1,
+                onPressed: () {
+                  if (widget.data["correct_output"] ==
+                      widget.data["video_url"][0]) {
+                    if (obj["level"] >
+                        provider.userModel.toJson()["levelMap"]
+                            ["Detection"]!) {
+                      UserData(buildContext: context)
+                          .incrementLevelCount("Detection")
+                          .then((value) {});
+                    }
+                    _overlayEntry = celebrationOverlay(context, () {
+                      _overlayEntry?.remove();
+                    });
+                    Overlay.of(context).insert(_overlayEntry!);
+                  }
+                }),
+            CustomButton(
+                type: ButtonType.Video2,
+                onPressed: () {
+                  if (widget.data["correct_output"] ==
+                      widget.data["video_url"][1]) {
+                      if (obj["level"] >
+                        provider.userModel.toJson()["levelMap"]
+                            ["Detection"]!) {
+                      UserData(buildContext: context)
+                          .incrementLevelCount("Detection")
+                          .then((value) {});
+                    }
+                    _overlayEntry = celebrationOverlay(context, () {
+                      _overlayEntry?.remove();
+                    });
+                    Overlay.of(context).insert(_overlayEntry!);
+                  }
+                }),
           ],
         ),
       ],

@@ -135,7 +135,7 @@ final CollectionReference therapyCenterCollection =
       try {
         String? uid = FirebaseAuth.instance.currentUser?.uid;
         DocumentReference userRef =
-            FirebaseFirestore.instance.collection('users').doc(uid);
+            FirebaseFirestore.instance.collection('patients').doc(uid);
         await FirebaseFirestore.instance.runTransaction((transaction) async {
           DocumentSnapshot snapshot = await transaction.get(userRef);
           var provider = Provider.of<UserDataProvider>(buildContext!, listen: false);

@@ -153,7 +153,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                       PhonmesListModel()
                           .onTapCharacter(context, model.character!);
                           
-                      Navigator.pushNamed(context, AppRoutes.videoCamScreen,
+                      Navigator.pushNamed(context, AppRoutes.lingLearningScreen,
                           arguments: model.character);
                     },
                     child: GridItemWidget(model),

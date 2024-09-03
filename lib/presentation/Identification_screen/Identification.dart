@@ -310,6 +310,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                         celebrationOverlay(context, () {
                                       _overlayEntry?.remove();
                                     });
+                                    
                                     Overlay.of(context).insert(_overlayEntry!);
                                   } else {
                                     index % 2 == 0

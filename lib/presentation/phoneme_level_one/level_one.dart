@@ -174,8 +174,17 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         List<dynamic> argumentsList = [type, dtcontainer, params];
         debugPrint("Arguments list is: $argumentsList");
 
-        NavigatorService.pushNamed(AppRoutes.detection,
-            arguments: argumentsList);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Detection(type: type, data: data),
+          settings: RouteSettings(
+            arguments: {
+              "level": level,
+            },
+          ),
+        ),
+      );
       }
     } catch (e) {
       debugPrint("Error in Detection handling: $e");
