@@ -51,7 +51,7 @@ class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
       },
     );
     successTrigger!.fire();
-    Timer(Duration(seconds: 3), () {
+    Timer(Duration(seconds: 10), () {
     widget.removeOverlay();
     Navigator.pop(context, true);
     });

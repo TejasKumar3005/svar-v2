@@ -125,7 +125,7 @@ class MyApp extends StatelessWidget {
                 initialRoute: auth.currentUser == null
                     ? AppRoutes.loginSignup
                     : AppRoutes
-                        .login, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                        .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
                 // home: SettingsScreen(),
               );
