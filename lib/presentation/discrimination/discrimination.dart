@@ -124,7 +124,7 @@ class _DiscriminationState extends State<Discrimination> {
       children: [
 
         _buildOption(
-            color:  PrimaryColors().deepOrangeA200,index:  0,audio: [maleFemale.videoUrl],correctOutput:  maleFemale.correct_output,type: "MaleFemale"),
+            color:  PrimaryColors().deepOrangeA200,index:  0,audio: [maleFemale.video_url],correctOutput:  maleFemale.correct_output,type: "MaleFemale"),
         SizedBox(
           height: 20.v,
         ),
@@ -242,7 +242,7 @@ class _DiscriminationState extends State<Discrimination> {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildOption(
-          text:   "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  diffHalf.videoUrls,correctOutput:  diffHalf.correct_output),
+          text:   "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  diffHalf.video_url,correctOutput:  diffHalf.correct_output),
         SizedBox(
           height: 20.v,
         ),
@@ -300,12 +300,12 @@ class _DiscriminationState extends State<Discrimination> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _buildOption(text:  "A",color:  PrimaryColors().deepOrangeA200,index:  0,
-              audio:   diffSounds.videoUrls,correctOutput:  diffSounds.same ,type: "DiffSounds"),
+              audio:   diffSounds.video_url,correctOutput:  diffSounds.same ,type: "DiffSounds"),
             SizedBox(
               width: 30.h,
             ),
             _buildOption(text:  "B",color:  PrimaryColors().deepOrangeA200,index:  1,
-              audio:   diffSounds.videoUrls,correctOutput:  diffSounds.same,type: "DiffSounds"),
+              audio:   diffSounds.video_url,correctOutput:  diffSounds.same,type: "DiffSounds"),
           ],
         ),
         SizedBox(
@@ -344,7 +344,7 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget OddOneW(OddOne oddOne) {
-    switch (oddOne.videoUrls.length) {
+    switch (oddOne.video_url.length) {
       case 2:
         // Statements executed when the expression equals value1
         return Column(
@@ -353,12 +353,12 @@ class _DiscriminationState extends State<Discrimination> {
             Row(
               children: [
                 _buildOption(
-                  text:   "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
+                  text:   "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
                 SizedBox(
                   width: 20.h,
                 ),
                 _buildOption(
-                  text:   "B",color:  PrimaryColors().deepOrangeA200,index:  1,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
+                  text:   "B",color:  PrimaryColors().deepOrangeA200,index:  1,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
               ],
             ),
           ],
@@ -371,12 +371,12 @@ class _DiscriminationState extends State<Discrimination> {
             Row(
               children: [
                 _buildOption(
-                  text:   "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
+                  text:   "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
                 SizedBox(
                   width: 20.h,
                 ),
                 _buildOption(
-                  text:   "B",color:  PrimaryColors().deepOrangeA200,index:  1,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
+                  text:   "B",color:  PrimaryColors().deepOrangeA200,index:  1,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
               ],
             ),
             SizedBox(
@@ -386,7 +386,7 @@ class _DiscriminationState extends State<Discrimination> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildOption(
-                  text:   "C",color:  PrimaryColors().deepOrangeA200,index:  2,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
+                  text:   "C",color:  PrimaryColors().deepOrangeA200,index:  2,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
               ],
             )
           ],
@@ -401,12 +401,12 @@ class _DiscriminationState extends State<Discrimination> {
             Row(
               children: [
                 _buildOption(
-                    text:  "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
+                    text:  "A",color:  PrimaryColors().deepOrangeA200,index:  0,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
                 SizedBox(
                   width: 20.h,
                 ),
                 _buildOption(
-                  text:   "B",color:  PrimaryColors().deepOrangeA200,index:  1,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
+                  text:   "B",color:  PrimaryColors().deepOrangeA200,index:  1,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
               ],
             ),
             SizedBox(
@@ -415,12 +415,12 @@ class _DiscriminationState extends State<Discrimination> {
             Row(
               children: [
                 _buildOption(
-                    text: "C",color:  PrimaryColors().deepOrangeA200,index:  2,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
+                    text: "C",color:  PrimaryColors().deepOrangeA200,index:  2,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
                 SizedBox(
                   width: 20.h,
                 ),
                 _buildOption(
-                  text:   "D",color:  PrimaryColors().deepOrangeA200,index:  3,audio:  oddOne.videoUrls,correctOutput:  oddOne.correct_output),
+                  text:   "D",color:  PrimaryColors().deepOrangeA200,index:  3,audio:  oddOne.video_url,correctOutput:  oddOne.correct_output),
               ],
             ),
           ],

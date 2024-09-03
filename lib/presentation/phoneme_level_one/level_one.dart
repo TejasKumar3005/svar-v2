@@ -126,41 +126,58 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   }
 
   // Functions to handle redirection
-  void _handleDetection(BuildContext context, int level, String params) async {
-    try {
-      debugPrint("Handling Detection for level: $level");
-      final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+void _handleDetection(BuildContext context, int level, String params) async {
+  try {
+    debugPrint("Handling Detection for level: $level");
+    final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
 
-      final Map<String, dynamic>? data = await levelProvider.fetchData('Detection', level);
-      
-      if (data == null) {
-        debugPrint("No data fetched for Detection at level $level.");
+    final Map<String, dynamic>? data = await levelProvider.fetchData('Detection', level);
+    
+    if (data == null) {
+      debugPrint("No data fetched for Detection at level $level.");
+      return;
+    }
+
+    String? type = data["type"];
+    if (type == null) {
+      debugPrint("Type is null in the fetched data.");
+      return;
+    }
+
+    debugPrint("Fetched type for Detection: $type");
+
+   if (type == "video") {
+      String? videoUrl = data["video_url"];
+      if (videoUrl == null) {
+        debugPrint("Video URL is null in the fetched data.");
         return;
       }
 
-      String? type = data["type"];
-      if (type == null) {
-        debugPrint("Type is null in the fetched data.");
-        return;
-      }
+      debugPrint("Navigating to Video Player Screen with URL: $videoUrl");
 
-      debugPrint("Fetched type for Detection: $type");
-      
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Detection(type: type, data: data),
-          settings: RouteSettings(
-            arguments: {
-              "level": level,
-            },
-          ),
+          builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
         ),
       );
-    } catch (e) {
-      debugPrint("Error in Detection handling: $e");
+    } else {
+      print("Type is not video");
+      print(type);
+      print(data);
+      // Handle other types
+      final Object dtcontainer = retrieveObject(type, data);
+
+      List<dynamic> argumentsList = [type, dtcontainer, params];
+      debugPrint("Arguments list is: $argumentsList");
+
+      NavigatorService.pushNamed(AppRoutes.detection, arguments: argumentsList);
     }
+  } catch (e) {
+    debugPrint("Error in Detection handling: $e");
   }
+}
+
 
   void _handleDiscrimination(BuildContext context, int level, String params) async {
     try {

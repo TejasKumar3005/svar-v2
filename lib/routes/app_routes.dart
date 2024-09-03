@@ -19,6 +19,7 @@ import '../presentation/exit_screen/exit_screen.dart';
 import '../presentation/loading_screen/loading_screen.dart';
 import  '../presentation/speaking_phoneme/speaking_phoneme.dart';
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
+import 'package:svar_new/presentation/detection/detection.dart';
 
 class AppRoutes {
   static const String welcomeScreenPotraitScreen =
@@ -78,6 +79,7 @@ class AppRoutes {
   static const String initialRoute = '/initialRoute';
   static const String userProfileScreen = '/user_profile';
   static const String discrimination = '/discrimination';
+  static const String detection = '/detection'; 
 
 
   static Map<String, WidgetBuilder> get routes => {
@@ -95,7 +97,8 @@ class AppRoutes {
         setting:SettingsScreen.builder,
         identification:
             IdentificationScreen
-                .builder, // will have to change the route to learning pathway
+                .builder,
+        detection:Detection.builder,         // will have to change the route to learning pathway
         phonmesListScreen: PhonmesListScreen.builder,
         lingLearningScreen: LingLearningScreen.builder,
         speakingphonemeScreen: SpeakingPhonemeScreen.builder,
