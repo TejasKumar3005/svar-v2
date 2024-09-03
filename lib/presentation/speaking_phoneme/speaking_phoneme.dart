@@ -129,9 +129,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
           CustomButton(
             type: ButtonType.Back,
             onPressed: () {
-              NavigatorService.pushNamed(
-                AppRoutes.phonmesListScreen,
-              );
+              NavigatorService.goBack();
             },
           ),
           Spacer(),

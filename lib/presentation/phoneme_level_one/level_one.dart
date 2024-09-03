@@ -88,7 +88,8 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
   void _handleLevelType(int level, String params) {
     try {
-      var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      var obj =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
       if (obj == null) {
         debugPrint("No arguments were passed to this route.");
@@ -114,7 +115,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
           _handleIdentification(context, level, "notcompleted");
           break;
         case "Level":
-          _handleLevel(context,level, "notcompleted");
+          _handleLevel(context, level, "notcompleted");
           break;
         default:
           debugPrint("Unexpected exercise type: $exerciseType");
@@ -126,63 +127,68 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   }
 
   // Functions to handle redirection
-void _handleDetection(BuildContext context, int level, String params) async {
-  try {
-    debugPrint("Handling Detection for level: $level");
-    final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+  void _handleDetection(BuildContext context, int level, String params) async {
+    try {
+      debugPrint("Handling Detection for level: $level");
+      final levelProvider =
+          Provider.of<PhonemsLevelOneProvider>(context, listen: false);
 
-    final Map<String, dynamic>? data = await levelProvider.fetchData('Detection', level);
-    
-    if (data == null) {
-      debugPrint("No data fetched for Detection at level $level.");
-      return;
-    }
+      final Map<String, dynamic>? data =
+          await levelProvider.fetchData('Detection', level);
 
-    String? type = data["type"];
-    if (type == null) {
-      debugPrint("Type is null in the fetched data.");
-      return;
-    }
-
-    debugPrint("Fetched type for Detection: $type");
-
-   if (type == "video") {
-      String? videoUrl = data["video_url"];
-      if (videoUrl == null) {
-        debugPrint("Video URL is null in the fetched data.");
+      if (data == null) {
+        debugPrint("No data fetched for Detection at level $level.");
         return;
       }
 
-      debugPrint("Navigating to Video Player Screen with URL: $videoUrl");
+      String? type = data["type"];
+      if (type == null) {
+        debugPrint("Type is null in the fetched data.");
+        return;
+      }
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
-        ),
-      );
-    } else {
-      print("Type is not video");
-      print(type);
-      print(data);
-      // Handle other types
-      final Object dtcontainer = retrieveObject(type, data);
+      debugPrint("Fetched type for Detection: $type");
 
-      List<dynamic> argumentsList = [type, dtcontainer, params];
-      debugPrint("Arguments list is: $argumentsList");
+      if (type == "video") {
+        String? videoUrl = data["video_url"];
+        if (videoUrl == null) {
+          debugPrint("Video URL is null in the fetched data.");
+          return;
+        }
 
-      NavigatorService.pushNamed(AppRoutes.detection, arguments: argumentsList);
+        debugPrint("Navigating to Video Player Screen with URL: $videoUrl");
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
+          ),
+        );
+      } else {
+        print("Type is not video");
+        print(type);
+        print(data);
+        // Handle other types
+        final Object dtcontainer = retrieveObject(type, data);
+
+        List<dynamic> argumentsList = [type, dtcontainer, params];
+        debugPrint("Arguments list is: $argumentsList");
+
+        NavigatorService.pushNamed(AppRoutes.detection,
+            arguments: argumentsList);
+      }
+    } catch (e) {
+      debugPrint("Error in Detection handling: $e");
     }
-  } catch (e) {
-    debugPrint("Error in Detection handling: $e");
   }
-}
 
-
-  void _handleDiscrimination(BuildContext context, int level, String params) async {
+  void _handleDiscrimination(
+      BuildContext context, int level, String params) async {
     try {
-      final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
-      final Map<String, dynamic>? data = await levelProvider.fetchData('Discrimination', level);
+      final levelProvider =
+          Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+      final Map<String, dynamic>? data =
+          await levelProvider.fetchData('Discrimination', level);
 
       if (data == null) {
         debugPrint("No data fetched for Discrimination at level $level.");
@@ -211,67 +217,70 @@ void _handleDetection(BuildContext context, int level, String params) async {
     }
   }
 
- void _handleIdentification(BuildContext context, int level, String params) async {
-  try {
-    final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
-    final Map<String, dynamic>? data = await levelProvider.fetchData('Identification', level);
+  void _handleIdentification(
+      BuildContext context, int level, String params) async {
+    try {
+      final levelProvider =
+          Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+      final Map<String, dynamic>? data =
+          await levelProvider.fetchData('Identification', level);
 
-    if (data == null) {
-      debugPrint("No data fetched for Identification at level $level.");
-      return;
-    }
-
-    String? type = data["type"];
-    if (type == null) {
-      debugPrint("Type is null in the fetched data.");
-      return;
-    }
-
-    debugPrint("Fetched type for Identification: $type");
-    debugPrint("Data is: $data");
-
-    // Check if the type is 'video' and handle accordingly
-    if (type == "video") {
-      String? videoUrl = data["video_url"];
-      if (videoUrl == null) {
-        debugPrint("Video URL is null in the fetched data.");
+      if (data == null) {
+        debugPrint("No data fetched for Identification at level $level.");
         return;
       }
 
-      debugPrint("Navigating to Video Player Screen with URL: $videoUrl");
+      String? type = data["type"];
+      if (type == null) {
+        debugPrint("Type is null in the fetched data.");
+        return;
+      }
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
-        ),
-      );
-    } else {
-      print("Type is not video");
-      print(type);
-      print(data);
-      // Handle other types
-      final Object dtcontainer = retrieveObject(type, data);
+      debugPrint("Fetched type for Identification: $type");
+      debugPrint("Data is: $data");
 
-      List<dynamic> argumentsList = [type, dtcontainer, params];
-      debugPrint("Arguments list is: $argumentsList");
+      // Check if the type is 'video' and handle accordingly
+      if (type == "video") {
+        String? videoUrl = data["video_url"];
+        if (videoUrl == null) {
+          debugPrint("Video URL is null in the fetched data.");
+          return;
+        }
 
-      NavigatorService.pushNamed(AppRoutes.identification, arguments: argumentsList);
+        debugPrint("Navigating to Video Player Screen with URL: $videoUrl");
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
+          ),
+        );
+      } else {
+        print("Type is not video");
+        print(type);
+        print(data);
+        // Handle other types
+        final Object dtcontainer = retrieveObject(type, data);
+
+        List<dynamic> argumentsList = [type, dtcontainer, params];
+        debugPrint("Arguments list is: $argumentsList");
+
+        NavigatorService.pushNamed(AppRoutes.identification,
+            arguments: argumentsList);
+      }
+    } catch (e) {
+      debugPrint("Error in Identification handling: $e");
     }
-  } catch (e) {
-   
-
-    debugPrint("Error in Identification handling: $e");
   }
-}
-
 
   void _handleLevel(BuildContext context, int level, String params) async {
     try {
       debugPrint("Entering in level section");
-      final levelProvider = Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+      final levelProvider =
+          Provider.of<PhonemsLevelOneProvider>(context, listen: false);
 
-      final Map<String, dynamic>? data = await levelProvider.fetchData('Level', level);
+      final Map<String, dynamic>? data =
+          await levelProvider.fetchData('Level', level);
 
       if (data == null) {
         debugPrint("No data fetched for Level at level $level.");
@@ -298,14 +307,22 @@ void _handleDetection(BuildContext context, int level, String params) async {
           context,
           MaterialPageRoute(
             builder: (context) => SpeakingPhonemeScreen(
-              text: (data["text"] as List).map((item) => Map<String, dynamic>.from(item)).toList(),
+              text: (data["text"] as List)
+                  .map((item) => Map<String, dynamic>.from(item))
+                  .toList(),
               videoUrl: data["video_url"],
               testSpeech: data["test_speech"],
             ),
           ),
         );
       } else {
-        debugPrint("Unexpected type: $type");
+        final Object dtcontainer = retrieveObject(type, data);
+
+        List<dynamic> argumentsList = [type, dtcontainer, params];
+        debugPrint("Arguments list is: $argumentsList");
+
+        NavigatorService.pushNamed(AppRoutes.identification,
+            arguments: argumentsList);
       }
     } catch (e) {
       debugPrint("Error in Level handling: $e");
@@ -325,7 +342,8 @@ void _handleDetection(BuildContext context, int level, String params) async {
             .get();
 
         if (data.exists) {
-          Map<String, dynamic> levelMap = data['LevelMap'] as Map<String, dynamic>? ?? {};
+          Map<String, dynamic> levelMap =
+              data['LevelMap'] as Map<String, dynamic>? ?? {};
           var levelData = levelMap[type] ?? 1;
 
           double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
@@ -346,7 +364,8 @@ void _handleDetection(BuildContext context, int level, String params) async {
   @override
   Widget build(BuildContext context) {
     try {
-      var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      var obj =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
       if (obj == null) {
         debugPrint("No arguments found on this route.");
@@ -374,8 +393,7 @@ void _handleDetection(BuildContext context, int level, String params) async {
             ),
             child: LevelMap(
               levelMapParams: LevelMapParams(
-                levelCount:
-                 obj["numberOfLevels"],
+                levelCount: obj["numberOfLevels"],
                 currentLevel: 1,
                 //  provider.userModel.toJson()["LevelMap"][obj["exerciseType"]],
                 enableVariationBetweenCurves: true,
@@ -392,7 +410,7 @@ void _handleDetection(BuildContext context, int level, String params) async {
                   path: "assets/images/Locked_LVL.png",
                   size: Size(104.v, 104.h),
                   onTap: (int level) {
-                     _handleLevelType(level, "notcompleted");
+                    _handleLevelType(level, "notcompleted");
                   },
                 ),
                 completedLevelImage: ImageParams(

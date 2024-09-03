@@ -95,9 +95,9 @@ class AudioToImage {
       required this.image_url});
   factory AudioToImage.fromJson(Map<String, dynamic> json) {
     return AudioToImage._(
-        video_url: json["video_url"] as String,
+        video_url: json["audio_url"] as String,
         correct_output: json["correct_output"] as String,
-        image_url: List<String>.from(json["image_url"]));
+        image_url: List<String>.from(json["image_list"]));
   }
   List<String> getImageUrlList() {
     return image_url;
