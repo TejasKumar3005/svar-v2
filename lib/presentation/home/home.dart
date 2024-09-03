@@ -90,7 +90,6 @@ class HomeScreenState extends State<HomeScreen> {
         width: MediaQuery.of(context).size.width * 0.95,
         child: CarouselSlider(
           items: [
-            // Carousel item for "phonmesListScreen"
             buildCarouselItem(
               context,
               provider,
@@ -101,7 +100,6 @@ class HomeScreenState extends State<HomeScreen> {
                 NavigatorService.pushNamed(AppRoutes.phonmesListScreen);
               },
             ),
-            // Carousel item for "Level"
             buildCarouselItem(
               context,
               provider,
@@ -110,7 +108,6 @@ class HomeScreenState extends State<HomeScreen> {
               1,
               () => handleExercise(provider, "Level", context),
             ),
-            // Carousel item for "Detection"
             buildCarouselItem(
               context,
               provider,
@@ -119,7 +116,6 @@ class HomeScreenState extends State<HomeScreen> {
               2,
               () => handleExercise(provider, "Detection", context),
             ),
-            // Carousel item for "Discrimination"
             buildCarouselItem(
               context,
               provider,
@@ -128,7 +124,6 @@ class HomeScreenState extends State<HomeScreen> {
               3,
               () => handleExercise(provider, "Discrimination", context),
             ),
-            // Carousel item for "Identification"
             buildCarouselItem(
               context,
               provider,
@@ -137,7 +132,6 @@ class HomeScreenState extends State<HomeScreen> {
               4,
               () => handleExercise(provider, "Identification", context),
             ),
-            // Additional carousel item (Replace with actual content)
           ],
           options: CarouselOptions(
             autoPlay: true,
@@ -157,7 +151,6 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-// Helper function to build each carousel item
   Widget buildCarouselItem(
     BuildContext context,
     MainInteractionProvider provider,
@@ -175,7 +168,6 @@ class HomeScreenState extends State<HomeScreen> {
             height: MediaQuery.of(context).size.width * 0.3,
             child: Stack(
               children: [
-                // Background Image
                 Image.asset(
                   imagePath,
                   fit: BoxFit.fill,
@@ -211,18 +203,18 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-// Function to handle exercise types and navigate accordingly
   Future<void> handleExercise(MainInteractionProvider provider,
       String exerciseType, BuildContext context) async {
+    debugPrint("Handling exercise: $exerciseType");
     provider.setScreenInfo(exerciseType);
 
-    // Fetch the number of levels asynchronously
     int? levels = await fetchNumberOfLevels(provider.exerciseType ?? "");
 
     if (levels != null) {
       provider.setNumberOfLevels(levels);
+      debugPrint("Exercise Type: ${provider.exerciseType}");
+      debugPrint("Number of Levels: $levels");
 
-      // Navigate to the next screen with the levels as an argument
       NavigatorService.pushNamed(
         AppRoutes.phonemsLevelScreenOneScreen,
         arguments: {
@@ -231,37 +223,60 @@ class HomeScreenState extends State<HomeScreen> {
         },
       );
     } else {
-      debugPrint("Failed to fetch the number of levels.");
+      debugPrint("Failed to fetch the number of levels for $exerciseType.");
     }
   }
 
   Future<int?> fetchNumberOfLevels(String docName) async {
+    debugPrint("Fetching number of levels for document: $docName");
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    // Reference the document inside the 'Auditory' collection
+    QuerySnapshot querySnapshot = await firestore.collection("Auditory").get();
+
+    querySnapshot.docs.forEach((doc) {
+      debugPrint("Document found in Auditory collection: ${doc.id}");
+    });
+
+    docName = docName.trim();
+    debugPrint("Trimmed document name: $docName");
+
     DocumentSnapshot doc =
         await firestore.collection("Auditory").doc(docName).get();
 
-    // Check if the document exists
     if (!doc.exists) {
-      debugPrint(
-          "Document $docName does not exist in the Auditory collection.");
+      debugPrint("Document $docName does not exist in the Auditory collection.");
       return null;
     }
 
     try {
-      // Fetch the 'data' field as a Map
-      Map<String, dynamic> data = doc.get("data") as Map<String, dynamic>;
+      if (doc.data() != null && doc.data() is Map<String, dynamic>) {
+        Map<String, dynamic> documentData = doc.data() as Map<String, dynamic>;
 
-      // Count the number of levels by checking the keys in the 'data' map
-      int numberOfLevels =
-          data.keys.where((key) => key.startsWith('Level')).length;
+        if (documentData.containsKey('data') &&
+            documentData['data'] is Map<String, dynamic>) {
+          Map<String, dynamic> data = documentData['data'] as Map<String, dynamic>;
 
-      debugPrint("Number of levels in $docName: $numberOfLevels");
-      return numberOfLevels;
+          int numberOfLevels = 0;
+
+          data.forEach((key, value) {
+            if (key.startsWith('Level') && value is List && value.isNotEmpty) {
+              numberOfLevels++;
+              debugPrint("Data inside $key: $value");
+            }
+          });
+
+          debugPrint("Number of levels in $docName: $numberOfLevels");
+          return numberOfLevels;
+        } else {
+          debugPrint("The 'data' field is missing or not in the correct format in document $docName.");
+        }
+      } else {
+        debugPrint("The document does not contain valid data.");
+      }
     } catch (e) {
       debugPrint("Error fetching the number of levels: $e");
-      return null;
     }
+
+    return null;
   }
 }
