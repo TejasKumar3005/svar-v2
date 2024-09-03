@@ -10,6 +10,7 @@ import 'package:svar_new/presentation/Identification_screen/provider/identificat
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
 import 'package:svar_new/core/utils/audioSampleExtractor.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 
 class AudiotoimageScreen extends StatefulWidget {
   final dynamic dtcontainer;
@@ -109,12 +110,12 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
           child: Stack(
             children: [
               // Use SVG background image
-             Positioned.fill(
-                    child: SvgPicture.asset(
-                      ImageConstant.imgAuditorybg, // Replace with your SVG path
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+              Positioned.fill(
+                child: SvgPicture.asset(
+                  ImageConstant.imgAuditorybg, // Replace with your SVG path
+                  fit: BoxFit.cover,
+                ),
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
                 child: Column(
@@ -129,33 +130,51 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                         children: [
                           Center(
                             child: GestureDetector(
-                              onTap: () async {
-                                AudioSampleExtractor extractor = AudioSampleExtractor();
-                                samples = await extractor.getNetorkAudioSamples(widget.dtcontainer.getAudioUrl());
-                                setState(() {});
-                                playAudio(widget.dtcontainer.getAudioUrl());
-                              },
-                              child: Stack(
-                                children: [
-                                  SvgPicture.asset(
-                                    "assets/images/svg/Audio-Bar.svg",
-                                    height: 50.v,
-                                    width: MediaQuery.of(context).size.width / 2,
-                                    fit: BoxFit.fill,
-                                  ),
-                                  Positioned(
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    child: PolygonWaveform(
-                                      samples: samples,
-                                      height: 20.v,
-                                      width: MediaQuery.of(context).size.width / 2,
-                                      inactiveColor: Colors.white.withOpacity(0.5),
-                                      activeColor: Colors.white,
+                              onTap: () {},
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 3.h,
+                                  vertical: 5.v,
+                                ),
+                                decoration: BoxDecoration(
+                                    color: const Color.fromARGB(255, 255, 128, 0),
+                                    borderRadius: BorderRadius.circular(15),
+                                    border: Border.all(
+                                      color: Colors.black,
+                                      width: 3,
+                                    )),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    CustomButton(
+                                      type: ButtonType.ImagePlay,
+                                      onPressed: () async {
+                                        AudioSampleExtractor extractor =
+                                            AudioSampleExtractor();
+                                        samples = await extractor
+                                            .getNetorkAudioSamples(widget
+                                                .dtcontainer
+                                                .getAudioUrl());
+                                        setState(() {});
+                                        playAudio(
+                                            widget.dtcontainer.getAudioUrl());
+                                      },
                                     ),
-                                  ),
-                                ],
+                                    SizedBox(
+                                      width: 10.h,
+                                    ),
+                                    CustomImageView(
+                                      width: MediaQuery.of(context).size.width *
+                                              0.4 -
+                                          90,
+                                      height: 60,
+                                      fit: BoxFit.fill,
+                                      imagePath: "assets/images/spectrum.png",
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -163,10 +182,12 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                           Row(
                             children: [
                               _buildAnimatedContainer(
-                                  widget.dtcontainer.getImageUrlList()[0], _toggleGlowA),
+                                  widget.dtcontainer.getImageUrlList()[0],
+                                  _toggleGlowA),
                               SizedBox(width: 50.h),
                               _buildAnimatedContainer(
-                                  widget.dtcontainer.getImageUrlList()[1], _toggleGlowB),
+                                  widget.dtcontainer.getImageUrlList()[1],
+                                  _toggleGlowB),
                             ],
                           ),
                         ],
