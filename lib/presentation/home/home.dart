@@ -2,9 +2,8 @@ import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/core/utils/playBgm.dart';
+
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
-import 'package:svar_new/providers/appUpdateProvider.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
 import 'package:flutter/services.dart';
