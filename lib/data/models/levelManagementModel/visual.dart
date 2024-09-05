@@ -241,21 +241,18 @@ class DiffHalf {
 
 class MaleFemale {
   final String video_url;
-  final String correct_output;
-  final List<String> images;
+
+
 
   MaleFemale._({
     required this.video_url,
-    required this.images,
-    required this.correct_output,
+ 
   });
 
   factory MaleFemale.fromJson(Map<String, dynamic> json) {
     return MaleFemale._(
       video_url: json['video_url'][0] as String,
-      images: json["images"] ?? [] // Accessing the first item
-      ,
-      correct_output: json['correct_output'] as String,
+
     );
   }
 
