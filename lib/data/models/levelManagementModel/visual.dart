@@ -217,20 +217,20 @@ class OddOne {
 
 class DiffHalf {
   final double correct_output;
-  final double tolerance;
+
   final List<String> video_url;
 
   DiffHalf._({
     required this.video_url,
     required this.correct_output,
-    required this.tolerance,
+
   });
 
   factory DiffHalf.fromJson(Map<String, dynamic> json) {
     return DiffHalf._(
       video_url: List<String>.from(json['video_url']),
       correct_output: json['correct_output'] as double,
-      tolerance: json['tolerance'] as double,
+
     );
   }
 
@@ -240,23 +240,25 @@ class DiffHalf {
 }
 
 class MaleFemale {
-  final String video_url;
-
-
+  final List<String> video_url;
+  final String correct_output;
 
   MaleFemale._({
     required this.video_url,
- 
+    required this.correct_output, 
   });
 
   factory MaleFemale.fromJson(Map<String, dynamic> json) {
     return MaleFemale._(
-      video_url: json['video_url'][0] as String,
-
+      video_url: List<String>.from(json['video_url']),
+      correct_output: json['correct_output'] as String,
     );
   }
 
-  String getVideoUrl() {
+  List<String> getVideoUrl() {
     return video_url;
   }
+  String getCorrectOutput() {
+    return correct_output;
+  } 
 }
