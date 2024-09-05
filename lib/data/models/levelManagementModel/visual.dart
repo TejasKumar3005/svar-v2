@@ -240,7 +240,7 @@ class DiffHalf {
 }
 
 class MaleFemale {
-  final List<String> video_url;
+  final String video_url;
   final String correct_output;
 
   MaleFemale._({
@@ -250,12 +250,12 @@ class MaleFemale {
 
   factory MaleFemale.fromJson(Map<String, dynamic> json) {
     return MaleFemale._(
-      video_url: List<String>.from(json['video_url']),
+      video_url: json['video_url'],
       correct_output: json['correct_output'] as String,
     );
   }
 
-  List<String> getVideoUrl() {
+  String getVideoUrl() {
     return video_url;
   }
   String getCorrectOutput() {

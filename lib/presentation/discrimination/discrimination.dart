@@ -148,7 +148,7 @@ class _DiscriminationState extends State<Discrimination> {
         _buildOption(
             color: PrimaryColors().deepOrangeA200,
             index: 0,
-            audio: maleFemale.video_url,
+            audio: [maleFemale.video_url],
             correctOutput: maleFemale.correct_output,
             type: "MaleFemale"),
         SizedBox(
