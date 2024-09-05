@@ -137,12 +137,8 @@ class _VideoCamScreenState extends State<VideoCamScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
   
-
-    // App state changed before we got the chance to initialize.
-  
-
     if (state == AppLifecycleState.inactive) {
-      _controller!.dispose();
+      _controller.dispose();
     } else if (state == AppLifecycleState.resumed) {
       if (_controller != null && !_controller.value.isInitialized) {
       _initializeCamera().then((_) {

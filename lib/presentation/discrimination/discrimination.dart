@@ -1,5 +1,7 @@
+import 'dart:math';
 import 'dart:ui';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -41,6 +43,12 @@ class _DiscriminationState extends State<Discrimination> {
   int selectedOption = -1;
   List<double> samples = [];
   OverlayEntry? _overlayEntry;
+
+  bool isPlaying = false;
+
+  Duration totalDuration = Duration(seconds: 0);
+  Duration position = Duration(seconds: 0);
+  double currentProgress = 0.0;
 
   @override
   void dispose() {
@@ -590,7 +598,35 @@ class _DiscriminationState extends State<Discrimination> {
                       // AudioSampleExtractor audioSampleExtractor =
                       //     AudioSampleExtractor();
                       // audioSampleExtractor.getAssetAudioSamples(audios[index]);
-                      playAudio.playMusic(audio[index], "mp3", false);
+                      if (type == "DiffSounds") {
+                        playAudio.audioPlayer.onPlayerStateChanged
+                            .listen((state) {
+                          if (state == PlayerState.completed) {
+                            if (currentIndex < audio.length - 1) {
+                              currentIndex++;
+                              playAudio.playMusic(
+                                  audio[currentIndex], "mp3", false);
+                            }
+                          }
+                          setState(() {
+                            isPlaying = state == PlayerState.playing;
+                          });
+                        });
+                        playAudio.audioPlayer.onDurationChanged
+                            .listen((duration) {
+                          setState(() {
+                            totalDuration = duration;
+                          });
+                        });
+                        playAudio.audioPlayer.onPositionChanged.listen((pos) {
+                          setState(() {
+                            position = pos;
+                            currentProgress = position.inSeconds.toDouble();
+                          });
+                        });
+                      } else {
+                        playAudio.playMusic(audio[index], "mp3", false);
+                      }
                     },
                   ),
                   SizedBox(
