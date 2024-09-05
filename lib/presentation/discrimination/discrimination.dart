@@ -148,7 +148,7 @@ class _DiscriminationState extends State<Discrimination> {
         _buildOption(
             color: PrimaryColors().deepOrangeA200,
             index: 0,
-            audio: [maleFemale.video_url],
+            audio: maleFemale.video_url,
             correctOutput: maleFemale.correct_output,
             type: "MaleFemale"),
         SizedBox(
@@ -175,9 +175,7 @@ class _DiscriminationState extends State<Discrimination> {
                   Overlay.of(context).insert(_overlayEntry!);
                 }
               },
-              child: Artboard(maleFemale.images.isEmpty
-                  ? "img_mascot"
-                  : maleFemale.images[0]),
+              child: Artboard("female"),
             ),
             SizedBox(
               width: 20.h,
@@ -199,9 +197,7 @@ class _DiscriminationState extends State<Discrimination> {
                   Overlay.of(context).insert(_overlayEntry!);
                 }
               },
-              child: Artboard(maleFemale.images.isEmpty
-                  ? "img_mascot"
-                  : maleFemale.images[1]),
+              child: Artboard("male"),
             ),
           ],
         ),
