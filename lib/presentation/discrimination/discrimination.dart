@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
@@ -48,7 +49,9 @@ class _DiscriminationState extends State<Discrimination> {
 
   Duration totalDuration = Duration(seconds: 0);
   Duration position = Duration(seconds: 0);
+  int currentIndex = 0;
   double currentProgress = 0.0;
+  Timer? playTimer;
 
   @override
   void dispose() {
@@ -156,7 +159,7 @@ class _DiscriminationState extends State<Discrimination> {
           children: [
             GestureDetector(
               onTap: () {
-                if (maleFemale.correct_output == maleFemale.images[0]) {
+                if (maleFemale.correct_output == "female") {
                   print("Correct");
                   if (obj["level"] >
                       provider.userModel.toJson()["levelMap"]
@@ -181,7 +184,7 @@ class _DiscriminationState extends State<Discrimination> {
             ),
             GestureDetector(
               onTap: () {
-                if (maleFemale.correct_output == maleFemale.images[1]) {
+                if (maleFemale.correct_output == "male") {
                   print("Correct");
                   if (obj["level"] >
                       provider.userModel.toJson()["levelMap"]
@@ -264,6 +267,9 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget DiffHalfW(DiffHalf diffHalf) {
+      var obj =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    var provider = Provider.of<UserDataProvider>(context, listen: false);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -272,7 +278,8 @@ class _DiscriminationState extends State<Discrimination> {
             color: PrimaryColors().deepOrangeA200,
             index: 0,
             audio: diffHalf.video_url,
-            correctOutput: diffHalf.correct_output),
+            correctOutput: diffHalf.correct_output,
+            type: "DiffHalf"),
         SizedBox(
           height: 20.v,
         ),
@@ -303,10 +310,12 @@ class _DiscriminationState extends State<Discrimination> {
                 overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
               ),
               child: Slider(
-                value: 0.2,
-                onChanged: (value) {},
+                value: currentProgress,
+                onChanged: (value) {
+
+                },
                 min: 0.0,
-                max: 1.0,
+                max: 10.0,
               ),
             ),
           ),
@@ -316,7 +325,21 @@ class _DiscriminationState extends State<Discrimination> {
         ),
         CustomButton(
           type: ButtonType.Change,
-          onPressed: () {},
+          onPressed: () {
+            if (currentProgress>4 && currentProgress<6) {
+              if (obj["level"] >
+                      provider.userModel.toJson()["levelMap"]
+                          ["Discrimination"]!) {
+                    UserData(buildContext: context)
+                        .incrementLevelCount("Discrimination")
+                        .then((value) {});
+                  }
+              _overlayEntry = celebrationOverlay(context, () {
+                _overlayEntry?.remove();
+              });
+              Overlay.of(context).insert(_overlayEntry!);
+            }
+          },
         ),
       ],
     );
@@ -522,6 +545,19 @@ class _DiscriminationState extends State<Discrimination> {
     }
   }
 
+  void setupTimer(List<String> audioUrls) {
+    playTimer?.cancel(); // Cancel any existing timer
+    playTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+      currentIndex++;
+      if (currentIndex < audioUrls.length) {
+        playAudio.playMusic(audioUrls[currentIndex], "mp3", false);
+      } else {
+        timer.cancel();
+        playAudio.stopMusic();
+      }
+    });
+  }
+
   Widget _buildOption(
       {String? text,
       required Color color,
@@ -598,34 +634,25 @@ class _DiscriminationState extends State<Discrimination> {
                       // AudioSampleExtractor audioSampleExtractor =
                       //     AudioSampleExtractor();
                       // audioSampleExtractor.getAssetAudioSamples(audios[index]);
-                      if (type == "DiffSounds") {
-                        playAudio.audioPlayer.onPlayerStateChanged
-                            .listen((state) {
-                          if (state == PlayerState.completed) {
-                            if ( currentIndex < audio.length - 1) {
-                              currentIndex++;
-                              playAudio.playMusic(
-                                  audio[currentIndex], "mp3", false);
-                            }
-                          }
+                      if (type == "DiffHalf") {
+                        if (playAudio.audioPlayer.state ==
+                            PlayerState.playing) {
+                          playAudio.audioPlayer.pause();
+                        } else {
+                            playAudio.audioPlayer.onPositionChanged
+                            .listen((position) {
                           setState(() {
-                            isPlaying = state == PlayerState.playing;
-                          });
-                        });
-                        playAudio.audioPlayer.onDurationChanged
-                            .listen((duration) {
-                          setState(() {
-                            totalDuration = duration;
-                          });
-                        });
-                        playAudio.audioPlayer.onPositionChanged.listen((pos) {
-                          setState(() {
-                            position = pos;
                             currentProgress = position.inSeconds.toDouble();
                           });
                         });
+
+                          playAudio.playMusic(
+                              audio[currentIndex], "mp3", false);
+                              setupTimer(audio);
+                        }
                       } else {
                         playAudio.playMusic(audio[index], "mp3", false);
+                        
                       }
                     },
                   ),

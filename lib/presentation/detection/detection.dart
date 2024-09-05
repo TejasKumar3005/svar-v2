@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -6,6 +8,7 @@ import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/discrimination/customthumb.dart';
+import 'package:svar_new/presentation/phoneme_level_one/video_player_screen.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
@@ -45,7 +48,9 @@ class _DetectionState extends State<Detection> {
   ChewieController? _chewieController2;
   bool isVideoReady1 = false;
   bool isVideoReady2 = false;
-
+  Timer? volumeTimer;
+  double currentProgress = 0.0;
+  double totalDuration = 0.0;
   @override
   void initState() {
     if (widget.type == "MutedUnmuted") {
@@ -139,7 +144,9 @@ class _DetectionState extends State<Detection> {
   Widget detectionQuiz(BuildContext context, String quizType) {
     switch (quizType) {
       case "video":
-        return Container();
+        return VideoPlayerScreen(
+          videoUrl: widget.data["video_url"],
+        );
       case "HalfMuted":
         return HalfMuted(context);
       case "MutedUnmuted":
@@ -232,11 +239,9 @@ class _DetectionState extends State<Detection> {
             CustomButton(
                 type: ButtonType.Video1,
                 onPressed: () {
-                  if (widget.data["correct_output"] ==
-                      widget.data["video_url"][0]) {
+                  if (widget.data["muted"] == 1) {
                     if (obj["level"] >
-                        provider.userModel.toJson()["levelMap"]
-                            ["Detection"]!) {
+                        provider.userModel.toJson()["levelMap"]["Detection"]!) {
                       UserData(buildContext: context)
                           .incrementLevelCount("Detection")
                           .then((value) {});
@@ -250,11 +255,9 @@ class _DetectionState extends State<Detection> {
             CustomButton(
                 type: ButtonType.Video2,
                 onPressed: () {
-                  if (widget.data["correct_output"] ==
-                      widget.data["video_url"][1]) {
-                      if (obj["level"] >
-                        provider.userModel.toJson()["levelMap"]
-                            ["Detection"]!) {
+                  if (widget.data["muted"] == 0) {
+                    if (obj["level"] >
+                        provider.userModel.toJson()["levelMap"]["Detection"]!) {
                       UserData(buildContext: context)
                           .incrementLevelCount("Detection")
                           .then((value) {});
@@ -272,6 +275,9 @@ class _DetectionState extends State<Detection> {
   }
 
   Widget HalfMuted(BuildContext context) {
+      var obj =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    var provider = Provider.of<UserDataProvider>(context, listen: false);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -281,7 +287,21 @@ class _DetectionState extends State<Detection> {
         ),
         CustomButton(
           type: ButtonType.Stop,
-          onPressed: () {},
+          onPressed: () {
+            playAudio.stopMusic();
+            if(currentProgress>4 && currentProgress<6){
+                if (obj["level"] >
+                        provider.userModel.toJson()["levelMap"]["Detection"]!) {
+                      UserData(buildContext: context)
+                          .incrementLevelCount("Detection")
+                          .then((value) {});
+                    }
+                    _overlayEntry = celebrationOverlay(context, () {
+                      _overlayEntry?.remove();
+                    });
+                    Overlay.of(context).insert(_overlayEntry!);
+            }
+          },
         ),
         SizedBox(
           height: 20.v,
@@ -313,10 +333,10 @@ class _DetectionState extends State<Detection> {
                 overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
               ),
               child: Slider(
-                value: 0.2,
+                value: currentProgress,
                 onChanged: (value) {},
                 min: 0.0,
-                max: 1.0,
+                max: totalDuration>4?totalDuration: 10.0,
               ),
             ),
           ),
@@ -368,7 +388,33 @@ class _DetectionState extends State<Detection> {
                       // AudioSampleExtractor audioSampleExtractor =
                       //     AudioSampleExtractor();
                       // audioSampleExtractor.getAssetAudioSamples(audios[index]);
-                      playAudio.playMusic(audios[index], "mp3", false);
+                      if (widget.type == "HalfMuted") {
+                        playAudio.setVolume(0.0); // Set volume to 20%
+
+                        playAudio.audioPlayer.onPositionChanged
+                            .listen((position) {
+                          setState(() {
+                            currentProgress = position.inSeconds.toDouble();
+                          });
+                        });
+                          playAudio.audioPlayer.onDurationChanged
+                            .listen((duration) {
+                          setState(() {
+                            totalDuration = duration.inSeconds.toDouble();
+                          });
+                        });
+
+                        playAudio.playMusic(
+                            widget.data["video_url"], "mp3", false);
+
+                      
+
+                        volumeTimer = Timer(Duration(seconds: 5), () {
+                          playAudio.setVolume(1); // Set volume to maximum
+                        });
+                      } else {
+                        playAudio.playMusic(audios[index], "mp3", false);
+                      }
                     },
                   ),
                   SizedBox(
