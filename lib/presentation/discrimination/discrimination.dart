@@ -602,7 +602,7 @@ class _DiscriminationState extends State<Discrimination> {
                         playAudio.audioPlayer.onPlayerStateChanged
                             .listen((state) {
                           if (state == PlayerState.completed) {
-                            if (currentIndex < audio.length - 1) {
+                            if ( currentIndex < audio.length - 1) {
                               currentIndex++;
                               playAudio.playMusic(
                                   audio[currentIndex], "mp3", false);
