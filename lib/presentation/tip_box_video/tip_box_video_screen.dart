@@ -41,7 +41,7 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
     stop();
     var prov=Provider.of<LingLearningProvider>(context,listen: false);
 
-    _videoPlayerController = VideoPlayerController.asset("assets/phonemes/${PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]}.mp4")
+    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse( "https://firebasestorage.googleapis.com/v0/b/faceattendance-a1720.appspot.com/o/audio%2F${PhonmesListModel().addedPhonemes.contains(PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]) ?PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]:"B"}.mp4?alt=media"))
       ..initialize().then((_) {
         setState(() {});
       });

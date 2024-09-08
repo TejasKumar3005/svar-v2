@@ -115,7 +115,9 @@ class _DetectionState extends State<Detection> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body:widget.type=="video"?VideoPlayerScreen(
+          videoUrl: widget.data["video_url"],
+        ): Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
@@ -381,47 +383,66 @@ class _DetectionState extends State<Detection> {
                   )),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CustomButton(
-                    type: ButtonType.ImagePlay,
-                    onPressed: () {
-                      // AudioSampleExtractor audioSampleExtractor =
-                      //     AudioSampleExtractor();
-                      // audioSampleExtractor.getAssetAudioSamples(audios[index]);
+                  GestureDetector(
+                    onTap: (){
                       if (widget.type == "HalfMuted") {
-                        playAudio.setVolume(0.0); // Set volume to 20%
-
-                        playAudio.audioPlayer.onPositionChanged
-                            .listen((position) {
-                          setState(() {
-                            currentProgress = position.inSeconds.toDouble();
-                          });
-                        });
-                          playAudio.audioPlayer.onDurationChanged
-                            .listen((duration) {
-                          setState(() {
-                            totalDuration = duration.inSeconds.toDouble();
-                          });
-                        });
-
-                        playAudio.playMusic(
-                            widget.data["video_url"], "mp3", false);
-
-                      
-
-                        volumeTimer = Timer(Duration(seconds: 5), () {
-                          playAudio.setVolume(1); // Set volume to maximum
-                        });
-                      } else {
-                        playAudio.playMusic(audios[index], "mp3", false);
-                      }
+                              playAudio.setVolume(0.0); // Set volume to 20%
+                        
+                              playAudio.audioPlayer.onPositionChanged
+                                  .listen((position) {
+                                setState(() {
+                                  currentProgress = position.inSeconds.toDouble();
+                                });
+                              });
+                                playAudio.audioPlayer.onDurationChanged
+                                  .listen((duration) {
+                                setState(() {
+                                  totalDuration = duration.inSeconds.toDouble();
+                                });
+                              });
+                        
+                              playAudio.playMusic(
+                                  widget.data["video_url"], "mp3", false);
+                        
+                            
+                        
+                              volumeTimer = Timer(Duration(seconds: 5), () {
+                                playAudio.setVolume(1); // Set volume to maximum
+                              });
+                            } else {
+                              playAudio.playMusic(audios[index], "mp3", false);
+                            }
                     },
+                    child: Row(
+                      children: [
+                        CustomButton(
+                          type: ButtonType.ImagePlay,
+                          onPressed: () {
+                          
+                            
+                          },
+                        ),
+                          SizedBox(
+                          width: 10.h,
+                        ),
+                      ],
+                    ),
+                  ),
+                
+                    Container(
+                    height: 50,
+                    width: 8,
+                    decoration: BoxDecoration(
+                    color: Colors.white,
+                    ),
                   ),
                   SizedBox(
                     width: 10.h,
                   ),
                   CustomImageView(
-                    width: MediaQuery.of(context).size.width * 0.4 - 90,
+                    width: MediaQuery.of(context).size.width * 0.4 - 98,
                     height: 60,
                     fit: BoxFit.fill,
                     imagePath: "assets/images/spectrum.png",

@@ -50,6 +50,9 @@ class PhonmesListModel {
     'त्र': 'TR',
     'ज्ञ': 'GY'
   };
+  List<String> addedPhonemes = [
+    "B","CH","D","DH","G","F","HH","JH","L","M","N","OW","P","R","S","SH","T","TH","V","Y"
+  ];
   List<GridItemModel> gridItemList = [
     // GridItemModel(character: 'क'),
     // GridItemModel(character: 'ख'),

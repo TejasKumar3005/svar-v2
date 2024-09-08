@@ -2,30 +2,31 @@ import 'dart:core';
 
 class ImageToAudio {
   final String image_url;
-  final List<String> audio_url_list;
-  final String correct_audio_url;
+  final List<String> audio_list;
+  final String correct_output;
 
   ImageToAudio._(
+      
       {required this.image_url,
-      required this.audio_url_list,
-      required this.correct_audio_url});
+      required this.audio_list,
+      required this.correct_output});
 
   factory ImageToAudio.fromJson(Map<String, dynamic> json) {
     return ImageToAudio._(
         image_url: json["image_url"] as String,
-        audio_url_list: List<String>.from(json["audio_list"]),
-        correct_audio_url: json["correct_output"] as String);
+        audio_list: List<String>.from(json["audio_list"]),
+        correct_output: json["correct_output"] as String);
   }
   String getImageUrl() {
     return image_url;
   }
 
   List<String> getAudioList() {
-    return audio_url_list;
+    return audio_list;
   }
 
   String getCorrectOutput() {
-    return correct_audio_url;
+    return correct_output;
   }
 }
 
@@ -85,21 +86,21 @@ class FigToWord {
 }
 
 class AudioToImage {
-  final String video_url;
+  final String audio_url;
   final String correct_output;
-  final List<String> image_url;
+  final List<String> image_list;
   AudioToImage._(
-      {required this.video_url,
+      {required this.audio_url,
       required this.correct_output,
-      required this.image_url});
+      required this.image_list});
   factory AudioToImage.fromJson(Map<String, dynamic> json) {
     return AudioToImage._(
-        video_url: json["audio_url"] as String,
+        audio_url: json["audio_url"] as String,
         correct_output: json["correct_output"] as String,
-        image_url: List<String>.from(json["image_list"]));
+        image_list: List<String>.from(json["image_list"]));
   }
   List<String> getImageUrlList() {
-    return image_url;
+    return image_list;
   }
 
   String getCorrectOutput() {
@@ -107,7 +108,7 @@ class AudioToImage {
   }
 
   String getAudioUrl() {
-    return video_url;
+    return audio_url;
   }
 }
 

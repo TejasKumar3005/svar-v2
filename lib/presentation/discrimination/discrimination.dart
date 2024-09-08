@@ -97,7 +97,7 @@ class _DiscriminationState extends State<Discrimination> {
                   child: Text(
                     widget.type == "OddOne"
                         ? ("Pick the odd One Out").toUpperCase()
-                        : ("SAME OR DIferent?").toUpperCase(),
+                        : ("SAME OR DIfferent?").toUpperCase(),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -175,7 +175,7 @@ class _DiscriminationState extends State<Discrimination> {
                   Overlay.of(context).insert(_overlayEntry!);
                 }
               },
-              child: Artboard("female"),
+              child: Artboard("assets/images/female.png"),
             ),
             SizedBox(
               width: 20.h,
@@ -197,7 +197,7 @@ class _DiscriminationState extends State<Discrimination> {
                   Overlay.of(context).insert(_overlayEntry!);
                 }
               },
-              child: Artboard("male"),
+              child: Artboard("assets/images/male.png"),
             ),
           ],
         ),
@@ -623,59 +623,68 @@ class _DiscriminationState extends State<Discrimination> {
                   )),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CustomButton(
-                    type: ButtonType.ImagePlay,
-                    onPressed: () {
-                      // AudioSampleExtractor audioSampleExtractor =
-                      //     AudioSampleExtractor();
-                      // audioSampleExtractor.getAssetAudioSamples(audios[index]);
+                  GestureDetector(
+                    onTap: () {
                       if (type == "DiffHalf") {
                         if (playAudio.audioPlayer.state ==
                             PlayerState.playing) {
                           playAudio.audioPlayer.pause();
                         } else {
-                            playAudio.audioPlayer.onPositionChanged
-                            .listen((position) {
-                          setState(() {
-                            currentProgress = position.inSeconds.toDouble();
+                          playAudio.audioPlayer.onPositionChanged
+                              .listen((position) {
+                            setState(() {
+                              currentProgress = position.inSeconds.toDouble();
+                            });
                           });
-                        });
 
-                          playAudio.playMusic(
-                              audio[currentIndex], "mp3", false);
-                              setupTimer(audio);
+                          playAudio.playMusic(audio[index], "mp3", false);
+                          setupTimer(audio);
                         }
                       } else {
                         playAudio.playMusic(audio[index], "mp3", false);
-                        
                       }
                     },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CustomButton(
+                          type: ButtonType.ImagePlay,
+                          onPressed: () {
+                          
+                          },
+                        ),
+                        SizedBox(
+                          width: 10.h,
+                        ),
+                      ],
+                    ),
                   ),
-                  SizedBox(
+                  Container(
+                    height: 50,
+                    width: 8,
+                    decoration: BoxDecoration(
+                    color: Colors.white,
+                    ),
+                  ),
+                    SizedBox(
                     width: 10.h,
                   ),
-                  Stack(
-                    children: [
-                      CustomImageView(
-                        width: MediaQuery.of(context).size.width * 0.4 - 90,
-                        height: 60,
-                        fit: BoxFit.fill,
-                        imagePath: "assets/images/spectrum.png",
-                      ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: PolygonWaveform(
-                          samples: samples, // Use the updated samples
+                  GestureDetector(
+                    onTap: (){
+                      if(type=="OddOne"){
+                        setState(() {
+                          selectedOption = index;
+                        });
+                      }
+                    },
+                    child: CustomImageView(
+                          width: MediaQuery.of(context).size.width * 0.4 - 98,
                           height: 60,
-                          width: MediaQuery.of(context).size.width * 0.4 - 90,
-                          inactiveColor: Colors.white.withOpacity(0.5),
-                          activeColor: Colors.white,
+                          fit: BoxFit.fill,
+                          imagePath: "assets/images/spectrum.png",
                         ),
-                      ),
-                    ],
                   ),
                 ],
               ),

@@ -101,9 +101,9 @@ class _VideoCamScreenState extends State<VideoCamScreen>
 
   void initiliaseVideo() {
     var prov = Provider.of<LingLearningProvider>(context, listen: false);
-
+    
     _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(
-        "https://firebasestorage.googleapis.com/v0/b/faceattendance-a1720.appspot.com/o/audio%2F${PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]}.mp4?alt=media"))
+       "https://images.svar.in/phonemes/${PhonmesListModel().addedPhonemes.contains(PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]) ?PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]:"B"}.mp4"))
       ..initialize().then((_) {
         setState(() {
           isVideoReady = true;
