@@ -278,7 +278,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                   },
                                   height: 100.v,
                                   fit: BoxFit.contain,
-                                  imagePath: ImageConstant.imgVol,
+                                  imagePath: ImageConstant.imgnewVol,
                                 ),
                               ),
                             ),
