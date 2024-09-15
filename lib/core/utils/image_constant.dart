@@ -31,7 +31,7 @@ class ImageConstant {
   static String imgIdentification = '$imagePath/Identification.png';  
   
 
-  static String imgVol = '$imagePath/svg/Vol.svg';
+  static String imgVol = '$imagePath/svg/newVol.svg';
 
   static String imgLoginBTn = "$imagePath/svg/Log In_BTN_IconButton.svg";
   static String imgSignUpBTn = "$imagePath/svg/Sign Up_BTN_IconButton.svg";

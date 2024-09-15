@@ -41,6 +41,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   int sel = 0;
   List<double> samples = [];
   OverlayEntry? _overlayEntry;
+  // Variable to store the correct answer
 
   @override
   void initState() {
@@ -53,6 +54,15 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     _isGlowingA = false;
     _isGlowingB = false;
     leveltracker = 0;
+
+    // Fetch correct answer from the database
+    fetchCorrectAnswer();
+  }
+
+  // Function to fetch the correct answer from the database
+  void fetchCorrectAnswer() {
+    // Assuming you have a method in your database controller to get the correct answer
+    String correctOutput = widget.dtcontainer.getCorrectOutput();
   }
 
   @override
@@ -63,19 +73,37 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
 
   Future<void> playAudio(String url) async {
     try {
-      _player = AudioPlayer();
       await _player.play(UrlSource(url));
     } catch (e) {
       print('Error initializing player: $e');
     }
   }
+void _handleOptionTap(int index, String optionType) {
+  // Fetch the correct output from dtcontainer
+  String correctOutput = widget.dtcontainer.getCorrectOutput();
+  String selectedOption = widget.dtcontainer.getAudioList()[index];
 
-  void _toggleGlowA() {
+  // Check if the selected option matches the correct output
+  if (correctOutput == selectedOption) {
+    // Correct answer logic here
+    print('Correct answer selected');
+  } else {
+    // If the selected option is incorrect, apply red glow
+    if (optionType == "A") {
+      _toggleGlowA(true); // Incorrect answer, apply red glow to option A
+    } else if (optionType == "B") {
+      _toggleGlowB(true); // Incorrect answer, apply red glow to option B
+    }
+  }
+}
+
+
+  void _toggleGlowA(bool isError) {
     setState(() {
       _isGlowingA = true;
     });
 
-    // Revert the glow effect after 1 second
+    // Apply red glow for incorrect answer, or remove glow after 1 second
     Future.delayed(Duration(seconds: 1), () {
       setState(() {
         _isGlowingA = false;
@@ -83,12 +111,12 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     });
   }
 
-  void _toggleGlowB() {
+  void _toggleGlowB(bool isError) {
     setState(() {
       _isGlowingB = true;
     });
 
-    // Revert the glow effect after 1 second
+    // Apply red glow for incorrect answer, or remove glow after 1 second
     Future.delayed(Duration(seconds: 1), () {
       setState(() {
         _isGlowingB = false;
@@ -109,10 +137,9 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: [
-              // Use SVG background image
               Positioned.fill(
                 child: SvgPicture.asset(
-                  ImageConstant.imgAuditorybg, // Replace with your SVG path
+                  ImageConstant.imgAuditorybg,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -138,12 +165,13 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                   vertical: 5.v,
                                 ),
                                 decoration: BoxDecoration(
-                                    color: const Color.fromARGB(255, 255, 128, 0),
-                                    borderRadius: BorderRadius.circular(15),
-                                    border: Border.all(
-                                      color: Colors.black,
-                                      width: 3,
-                                    )),
+                                  color: const Color.fromARGB(255, 255, 128, 0),
+                                  borderRadius: BorderRadius.circular(15),
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 3,
+                                  ),
+                                ),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
@@ -157,9 +185,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                             .getNetorkAudioSamples(widget
                                                 .dtcontainer
                                                 .getAudioUrl());
-                                        setState(() {});
-                                        playAudio(
-                                            widget.dtcontainer.getAudioUrl());
+                                        playAudio(widget.dtcontainer.getAudioUrl()[0]);
                                       },
                                     ),
                                     SizedBox(
@@ -183,11 +209,11 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                             children: [
                               _buildAnimatedContainer(
                                   widget.dtcontainer.getImageUrlList()[0],
-                                  _toggleGlowA),
+                                  () => _handleOptionTap(widget.dtcontainer.getImageUrlList()[0], "A")),
                               SizedBox(width: 50.h),
                               _buildAnimatedContainer(
                                   widget.dtcontainer.getImageUrlList()[1],
-                                  _toggleGlowB),
+                                  () => _handleOptionTap(widget.dtcontainer.getImageUrlList()[1], "B")),
                             ],
                           ),
                         ],
@@ -204,44 +230,42 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     );
   }
 
-Widget _buildAnimatedContainer(String imagePath, VoidCallback onTapCallback) {
-  return Expanded(
-    child: AnimatedContainer(
-      duration: Duration(seconds: 1),
-      height: 202.0, // Set a fixed height for the container
-      decoration: AppDecoration.fillCyan.copyWith(
-        border: Border.all(
-          color: appTheme.black900,
-          width: 2.adaptSize,
+  Widget _buildAnimatedContainer(String imagePath, VoidCallback onTapCallback) {
+    return Expanded(
+      child: AnimatedContainer(
+        duration: Duration(seconds: 1),
+        height: 202.0,
+        decoration: AppDecoration.fillCyan.copyWith(
+          border: Border.all(
+            color: appTheme.black900,
+            width: 2.adaptSize,
+          ),
+          image: DecorationImage(
+            image: AssetImage("assets/images/radial_ray_bluegreen.png"),
+            fit: BoxFit.cover,
+          ),
+          borderRadius: BorderRadiusStyle.roundedBorder10,
+          boxShadow: (_isGlowingA && imagePath == widget.dtcontainer.getImageUrlList()[0]) ||
+                  (_isGlowingB && imagePath == widget.dtcontainer.getImageUrlList()[1])
+              ? [
+                  BoxShadow(
+                    color: Color.fromARGB(255, 255, 0, 0).withOpacity(0.6), // Red glow
+                    spreadRadius: 10,
+                    blurRadius: 5,
+                  ),
+                ]
+              : [],
         ),
-        image: DecorationImage(
-          image: AssetImage("assets/images/radial_ray_bluegreen.png"),
-          fit: BoxFit.cover, // Ensures the background image covers the entire container
-        ),
-        borderRadius: BorderRadiusStyle.roundedBorder10,
-        boxShadow: _isGlowingA
-            ? [
-                BoxShadow(
-                  color: Color.fromARGB(255, 202, 1, 1).withOpacity(0.6),
-                  spreadRadius: 10,
-                  blurRadius: 5,
-                ),
-              ]
-            : [],
-      ),
-      child: GestureDetector(
-        onTap: onTapCallback,
-        child: FittedBox(
-          fit: BoxFit.fill, // Ensures the child fits within the available space
-          child: CustomImageView(
-            imagePath: imagePath,
+        child: GestureDetector(
+          onTap: onTapCallback,
+          child: FittedBox(
+            fit: BoxFit.fill,
+            child: CustomImageView(
+              imagePath: imagePath,
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
-
-
-
+    );
+  }
 }
