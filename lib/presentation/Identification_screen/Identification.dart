@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:camera/camera.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/database/userController.dart';
@@ -259,8 +260,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                   ],
                                 ),
                                 isCorrect: () {
-                                  print(dtcontainer.getCorrectOutput());
-                                  print(dtcontainer.getAudioList()[index]);
+                             
                                   return dtcontainer.getCorrectOutput() ==
                                       dtcontainer.getAudioList()[index];
                                 },
@@ -293,214 +293,27 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                       Center(
                         child: Row(
                           children: [
-                            Expanded(
-                              flex: 1,
-                              child: AnimatedContainer(
-                                duration: Duration(seconds: 1),
-                                height:
-                                    MediaQuery.of(context).size.height * 0.35,
-                                child: Stack(
+                            if (dtcontainer.getTeList().length <= 4)
+                              ...List.generate(
+                                  dtcontainer.getAudioList().length, (index) {
+                                return Row(
                                   children: [
-                                    Container(
-                                      width: 250.h,
-                                      height: 250.v,
-                                      child: SvgPicture.asset(
-                                        isFailure
-                                            ? "assets/images/svg/Red-Opt-2.svg"
-                                            : "assets/images/svg/Opt-2.svg",
-                                        fit: BoxFit.contain,
+                                    OptionWidget(
+                                      child: TextContainer(
+                                        text: dtcontainer.getTeList()[index],
                                       ),
+                                      isCorrect: () {
+                                        return dtcontainer.getCorrectOutput() ==
+                                            dtcontainer.getTextList()[index];
+                                      },
                                     ),
-                                    Center(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () async {
-                                              if (dtcontainer
-                                                      .getCorrectOutput() ==
-                                                  dtcontainer
-                                                      .getTextList()[0]) {
-                                                // Success logic
-                                              } else {
-                                                setState(() {
-                                                  isFailure = true;
-                                                });
-                                              }
-                                            },
-                                            child: Text(
-                                              dtcontainer.getTextList()[0],
-                                              style: TextStyle(
-                                                fontSize: 40.v,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                    SizedBox(
+                                        width:
+                                           10), // Adds gap between each OptionWidget
+                                           // Adds gap between each OptionWidget
                                   ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: AnimatedContainer(
-                                duration: Duration(seconds: 1),
-                                height:
-                                    MediaQuery.of(context).size.height * 0.35,
-                                child: Stack(
-                                  children: [
-                                    Container(
-                                      width: 250.h,
-                                      height: 250.v,
-                                      child: SvgPicture.asset(
-                                        isFailure
-                                            ? "assets/images/svg/Red-Opt-2.svg"
-                                            : "assets/images/svg/Opt-2.svg",
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                    Center(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () async {
-                                              if (dtcontainer
-                                                      .getCorrectOutput() ==
-                                                  dtcontainer
-                                                      .getTextList()[1]) {
-                                                // Success logic
-                                              } else {
-                                                setState(() {
-                                                  isFailure = true;
-                                                });
-                                              }
-                                            },
-                                            child: Text(
-                                              dtcontainer.getTextList()[1],
-                                              style: TextStyle(
-                                                fontSize: 40.v,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            if (dtcontainer.getTextList().length > 2)
-                              Expanded(
-                                // flex: 1,
-                                child: AnimatedContainer(
-                                  duration: Duration(seconds: 1),
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.35,
-                                  child: Stack(
-                                    children: [
-                                      SvgPicture.asset(
-                                        isFailure
-                                            ? "assets/images/svg/Red-Opt-2.svg"
-                                            : "assets/images/svg/Opt-2.svg",
-                                        fit: BoxFit.contain,
-                                        width: double.infinity,
-                                        height: double.infinity,
-                                      ),
-                                      Center(
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () async {
-                                                if (dtcontainer
-                                                        .getCorrectOutput() ==
-                                                    dtcontainer
-                                                        .getTextList()[2]) {
-                                                  // Success logic
-                                                } else {
-                                                  setState(() {
-                                                    isFailure = true;
-                                                  });
-                                                }
-                                              },
-                                              child: Text(
-                                                dtcontainer.getTextList()[2],
-                                                style: TextStyle(
-                                                    fontSize:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.05),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            if (dtcontainer.getTextList().length > 3)
-                              Expanded(
-                                // flex: 1,
-                                child: AnimatedContainer(
-                                  duration: Duration(seconds: 1),
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.35,
-                                  child: Stack(
-                                    children: [
-                                      SvgPicture.asset(
-                                        isFailure
-                                            ? "assets/images/svg/Red-Opt-2.svg"
-                                            : "assets/images/svg/Opt-2.svg",
-                                        fit: BoxFit.contain,
-                                        width: double.infinity,
-                                        height: double.infinity,
-                                      ),
-                                      Center(
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () async {
-                                                if (dtcontainer
-                                                        .getCorrectOutput() ==
-                                                    dtcontainer
-                                                        .getTextList()[3]) {
-                                                  // Success logic
-                                                } else {
-                                                  setState(() {
-                                                    isFailure = true;
-                                                  });
-                                                }
-                                              },
-                                              child: Text(
-                                                dtcontainer.getTextList()[3],
-                                                style: TextStyle(
-                                                    fontSize:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.05),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                                );
+                              })
                           ],
                         ),
                       ),
@@ -524,109 +337,24 @@ class AuditoryScreenState extends State<IdentificationScreen> {
             mainAxisAlignment:
                 MainAxisAlignment.spaceEvenly, // Distribute space evenly
             children: [
-              Padding(
-                padding: EdgeInsets.only(right: 0.h),
-                child: AnimatedContainer(
-                  duration: Duration(seconds: 1),
-                  height: 170.v, // Adjusting height dynamically
-                  width: 170.h, // Adjusting width dynamically
-                  child: Stack(
+              if (dtcontainer.getImageUrlList().length <= 4)
+                ...List.generate(dtcontainer.getImageUrlList().length, (index) {
+                  return Row(
                     children: [
-                      SvgPicture.asset(
-                        "assets/images/svg/Opt-2.svg",
-                        fit: BoxFit
-                            .contain, // Ensuring the image doesn't overflow
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                      Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: () async {
-                                if (dtcontainer.getCorrectOutput() ==
-                                    dtcontainer.getImageUrlList()[0]) {
-                                  leveltracker = leveltracker + 1;
-                                  if (leveltracker > 1) {
-                                    UserData(buildContext: context)
-                                        .incrementLevelCount("Identification");
-                                  }
-                                  _overlayEntry =
-                                      celebrationOverlay(context, () {
-                                    _overlayEntry?.remove();
-                                  });
-                                  Overlay.of(context).insert(_overlayEntry!);
-                                } else {
-                                  _toggleGlowA();
-                                }
-                              },
-                              child: Image.network(
-                                dtcontainer.getImageUrlList()[0],
-                                fit: BoxFit
-                                    .contain, // Ensuring the image scales correctly
-                                height: 70.v,
-                                width: 90.v,
-                              ),
+                      OptionWidget(
+                        child: ImageWidget(
+                            imagePath: dtcontainer.getTextList()[index],
+                            onTapCallback:  
                             ),
-                          ],
-                        ),
+                        isCorrect: () {
+                          return dtcontainer.getCorrectOutput() ==
+                              dtcontainer.getTextList()[index];
+                        },
                       ),
+                      SizedBox(width: 10), // Adds gap between each OptionWidget
                     ],
-                  ),
-                ),
-              ),
-              // Adjust space between the two blocks
-              AnimatedContainer(
-                duration: Duration(seconds: 1),
-                height: 170.v, // Adjusting height dynamically
-                width: 170.h, // Adjusting width dynamically
-                child: Stack(
-                  children: [
-                    SvgPicture.asset(
-                      "assets/images/svg/Opt-2.svg",
-                      fit:
-                          BoxFit.contain, // Ensuring the image doesn't overflow
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
-                    Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              if (dtcontainer.getCorrectOutput() ==
-                                  dtcontainer.getImageUrlList()[1]) {
-                                leveltracker = leveltracker + 1;
-                                if (leveltracker > 1) {
-                                  UserData(buildContext: context)
-                                      .incrementLevelCount("Identification");
-                                }
-                                _overlayEntry = celebrationOverlay(context, () {
-                                  _overlayEntry?.remove();
-                                });
-                                Overlay.of(context).insert(_overlayEntry!);
-                              } else {
-                                _toggleGlowA();
-                              }
-                            },
-                            child: Image.network(
-                              dtcontainer.getImageUrlList()[1],
-                              fit: BoxFit
-                                  .contain, // Ensuring the image scales correctly
-                              height: 70.v,
-                              width: 90.v,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  );
+                })
             ],
           ),
         );

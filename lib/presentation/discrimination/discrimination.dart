@@ -15,6 +15,7 @@ import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
 import './customthumb.dart';
+import 'package:svar_new/widgets/Options.dart';
 
 class Discrimination extends StatefulWidget {
   final String type; // The type of the quiz
@@ -263,7 +264,7 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget DiffHalfW(DiffHalf diffHalf) {
-      var obj =
+    var obj =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
     var provider = Provider.of<UserDataProvider>(context, listen: false);
     return Column(
@@ -307,9 +308,7 @@ class _DiscriminationState extends State<Discrimination> {
               ),
               child: Slider(
                 value: currentProgress,
-                onChanged: (value) {
-
-                },
+                onChanged: (value) {},
                 min: 0.0,
                 max: 10.0,
               ),
@@ -322,14 +321,13 @@ class _DiscriminationState extends State<Discrimination> {
         CustomButton(
           type: ButtonType.Change,
           onPressed: () {
-            if (currentProgress>4 && currentProgress<6) {
+            if (currentProgress > 4 && currentProgress < 6) {
               if (obj["level"] >
-                      provider.userModel.toJson()["levelMap"]
-                          ["Discrimination"]!) {
-                    UserData(buildContext: context)
-                        .incrementLevelCount("Discrimination")
-                        .then((value) {});
-                  }
+                  provider.userModel.toJson()["levelMap"]["Discrimination"]!) {
+                UserData(buildContext: context)
+                    .incrementLevelCount("Discrimination")
+                    .then((value) {});
+              }
               _overlayEntry = celebrationOverlay(context, () {
                 _overlayEntry?.remove();
               });
@@ -428,21 +426,29 @@ class _DiscriminationState extends State<Discrimination> {
           children: [
             Row(
               children: [
-                _buildOption(
-                    text: "A",
-                    color: PrimaryColors().deepOrangeA200,
-                    index: 0,
-                    audio: oddOne.video_url,
-                    correctOutput: oddOne.correct_output),
+                OptionWidget(
+                  child: AudioWidget(
+                    audioLinks: [
+                      // dtcontainer.getAudioList()[0],
+                    ],
+                  ),
+                  isCorrect: () {
+                    return oddOne.correct_output == oddOne.video_url;
+                  },
+                ),
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption(
-                    text: "B",
-                    color: PrimaryColors().deepOrangeA200,
-                    index: 1,
-                    audio: oddOne.video_url,
-                    correctOutput: oddOne.correct_output),
+                OptionWidget(
+                  child: AudioWidget(
+                    audioLinks: [
+                      // dtcontainer.getAudioList()[0],
+                    ],
+                  ),
+                  isCorrect: () {
+                    return oddOne.correct_output == oddOne.video_url;
+                  },
+                ),
               ],
             ),
           ],
@@ -454,21 +460,29 @@ class _DiscriminationState extends State<Discrimination> {
           children: [
             Row(
               children: [
-                _buildOption(
-                    text: "A",
-                    color: PrimaryColors().deepOrangeA200,
-                    index: 0,
-                    audio: oddOne.video_url,
-                    correctOutput: oddOne.correct_output),
+                OptionWidget(
+                  child: AudioWidget(
+                    audioLinks: [
+                      // dtcontainer.getAudioList()[0],
+                    ],
+                  ),
+                  isCorrect: () {
+                    return oddOne.correct_output == oddOne.video_url;
+                  },
+                ),
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption(
-                    text: "B",
-                    color: PrimaryColors().deepOrangeA200,
-                    index: 1,
-                    audio: oddOne.video_url,
-                    correctOutput: oddOne.correct_output),
+                OptionWidget(
+                  child: AudioWidget(
+                    audioLinks: [
+                      // dtcontainer.getAudioList()[0],
+                    ],
+                  ),
+                  isCorrect: () {
+                    return oddOne.correct_output == oddOne.video_url;
+                  },
+                ),
               ],
             ),
             SizedBox(
@@ -477,12 +491,16 @@ class _DiscriminationState extends State<Discrimination> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildOption(
-                    text: "C",
-                    color: PrimaryColors().deepOrangeA200,
-                    index: 2,
-                    audio: oddOne.video_url,
-                    correctOutput: oddOne.correct_output),
+                OptionWidget(
+                  child: AudioWidget(
+                    audioLinks: [
+                      // dtcontainer.getAudioList()[0],
+                    ],
+                  ),
+                  isCorrect: () {
+                    return oddOne.correct_output == oddOne.video_url;
+                  },
+                ),
               ],
             )
           ],
@@ -496,21 +514,29 @@ class _DiscriminationState extends State<Discrimination> {
           children: [
             Row(
               children: [
-                _buildOption(
-                    text: "A",
-                    color: PrimaryColors().deepOrangeA200,
-                    index: 0,
-                    audio: oddOne.video_url,
-                    correctOutput: oddOne.correct_output),
+                OptionWidget(
+                  child: AudioWidget(
+                    audioLinks: [
+                      // dtcontainer.getAudioList()[0],
+                    ],
+                  ),
+                  isCorrect: () {
+                    return oddOne.correct_output == oddOne.video_url;
+                  },
+                ),
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption(
-                    text: "B",
-                    color: PrimaryColors().deepOrangeA200,
-                    index: 1,
-                    audio: oddOne.video_url,
-                    correctOutput: oddOne.correct_output),
+                OptionWidget(
+                  child: AudioWidget(
+                    audioLinks: [
+                      // dtcontainer.getAudioList()[0],
+                    ],
+                  ),
+                  isCorrect: () {
+                    return oddOne.correct_output == oddOne.video_url;
+                  },
+                ),
               ],
             ),
             SizedBox(
@@ -518,21 +544,29 @@ class _DiscriminationState extends State<Discrimination> {
             ),
             Row(
               children: [
-                _buildOption(
-                    text: "C",
-                    color: PrimaryColors().deepOrangeA200,
-                    index: 2,
-                    audio: oddOne.video_url,
-                    correctOutput: oddOne.correct_output),
+                OptionWidget(
+                  child: AudioWidget(
+                    audioLinks: [
+                      // dtcontainer.getAudioList()[0],
+                    ],
+                  ),
+                  isCorrect: () {
+                    return oddOne.correct_output == oddOne.video_url;
+                  },
+                ),
                 SizedBox(
                   width: 20.h,
                 ),
-                _buildOption(
-                    text: "D",
-                    color: PrimaryColors().deepOrangeA200,
-                    index: 3,
-                    audio: oddOne.video_url,
-                    correctOutput: oddOne.correct_output),
+                OptionWidget(
+                  child: AudioWidget(
+                    audioLinks: [
+                      // dtcontainer.getAudioList()[index],
+                    ],
+                  ),
+                  isCorrect: () {
+                    return oddOne.correct_output == oddOne.video_url;
+                  },
+                ),
               ],
             ),
           ],
@@ -606,88 +640,17 @@ class _DiscriminationState extends State<Discrimination> {
                 selectedOption = index;
               });
             },
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.4,
-              padding: EdgeInsets.symmetric(
-                horizontal: 3.h,
-                vertical: 5.v,
-              ),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: selectedOption != index
-                      ? color
-                      : PrimaryColors().green30001,
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 3,
-                  )),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (type == "DiffHalf") {
-                        if (playAudio.audioPlayer.state ==
-                            PlayerState.playing) {
-                          playAudio.audioPlayer.pause();
-                        } else {
-                          playAudio.audioPlayer.onPositionChanged
-                              .listen((position) {
-                            setState(() {
-                              currentProgress = position.inSeconds.toDouble();
-                            });
-                          });
-
-                          playAudio.playMusic(audio[index], "mp3", false);
-                          setupTimer(audio);
-                        }
-                      } else {
-                        playAudio.playMusic(audio[index], "mp3", false);
-                      }
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CustomButton(
-                          type: ButtonType.ImagePlay,
-                          onPressed: () {
-                          
-                          },
-                        ),
-                        SizedBox(
-                          width: 10.h,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 50,
-                    width: 8,
-                    decoration: BoxDecoration(
-                    color: Colors.white,
-                    ),
-                  ),
-                    SizedBox(
-                    width: 10.h,
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      if(type=="OddOne"){
-                        setState(() {
-                          selectedOption = index;
-                        });
-                      }
-                    },
-                    child: CustomImageView(
-                          width: MediaQuery.of(context).size.width * 0.4 - 98,
-                          height: 60,
-                          fit: BoxFit.fill,
-                          imagePath: "assets/images/spectrum.png",
-                        ),
-                  ),
+            child: OptionWidget(
+              child: AudioWidget(
+                audioLinks: [
+                  // dtcontainer.getAudioList()[0],
                 ],
               ),
+              isCorrect: () {
+                return true;
+                // return oddOne.correct_output ==
+                //     oddOne.video_url;
+              },
             ),
           ),
         ],

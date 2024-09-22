@@ -11,6 +11,7 @@ import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
 import 'package:svar_new/core/utils/audioSampleExtractor.dart';
 import 'package:svar_new/widgets/custom_button.dart';
+import 'package:svar_new/widgets/Options.dart';
 
 class AudiotoimageScreen extends StatefulWidget {
   final dynamic dtcontainer;
@@ -78,25 +79,25 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
       print('Error initializing player: $e');
     }
   }
-void _handleOptionTap(int index, String optionType) {
-  // Fetch the correct output from dtcontainer
-  String correctOutput = widget.dtcontainer.getCorrectOutput();
-  String selectedOption = widget.dtcontainer.getAudioList()[index];
 
-  // Check if the selected option matches the correct output
-  if (correctOutput == selectedOption) {
-    // Correct answer logic here
-    print('Correct answer selected');
-  } else {
-    // If the selected option is incorrect, apply red glow
-    if (optionType == "A") {
-      _toggleGlowA(true); // Incorrect answer, apply red glow to option A
-    } else if (optionType == "B") {
-      _toggleGlowB(true); // Incorrect answer, apply red glow to option B
+  void _handleOptionTap(int index, String optionType) {
+    // Fetch the correct output from dtcontainer
+    String correctOutput = widget.dtcontainer.getCorrectOutput();
+    String selectedOption = widget.dtcontainer.getAudioList()[index];
+
+    // Check if the selected option matches the correct output
+    if (correctOutput == selectedOption) {
+      // Correct answer logic here
+      print('Correct answer selected');
+    } else {
+      // If the selected option is incorrect, apply red glow
+      if (optionType == "A") {
+        _toggleGlowA(true); // Incorrect answer, apply red glow to option A
+      } else if (optionType == "B") {
+        _toggleGlowB(true); // Incorrect answer, apply red glow to option B
+      }
     }
   }
-}
-
 
   void _toggleGlowA(bool isError) {
     setState(() {
@@ -158,49 +159,15 @@ void _handleOptionTap(int index, String optionType) {
                           Center(
                             child: GestureDetector(
                               onTap: () {},
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 3.h,
-                                  vertical: 5.v,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color.fromARGB(255, 255, 128, 0),
-                                  borderRadius: BorderRadius.circular(15),
-                                  border: Border.all(
-                                    color: Colors.black,
-                                    width: 3,
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    CustomButton(
-                                      type: ButtonType.ImagePlay,
-                                      onPressed: () async {
-                                        AudioSampleExtractor extractor =
-                                            AudioSampleExtractor();
-                                        samples = await extractor
-                                            .getNetorkAudioSamples(widget
-                                                .dtcontainer
-                                                .getAudioUrl());
-                                        playAudio(widget.dtcontainer.getAudioUrl()[0]);
-                                      },
-                                    ),
-                                    SizedBox(
-                                      width: 10.h,
-                                    ),
-                                    CustomImageView(
-                                      width: MediaQuery.of(context).size.width *
-                                              0.4 -
-                                          90,
-                                      height: 60,
-                                      fit: BoxFit.fill,
-                                      imagePath: "assets/images/spectrum.png",
-                                    ),
+                              child: OptionWidget(
+                                child: AudioWidget(
+                                  audioLinks: [
+                                    // dtcontainer.getAudioList()[0],
                                   ],
                                 ),
+                                isCorrect: () {
+                                  return true;
+                                },
                               ),
                             ),
                           ),
@@ -209,11 +176,15 @@ void _handleOptionTap(int index, String optionType) {
                             children: [
                               _buildAnimatedContainer(
                                   widget.dtcontainer.getImageUrlList()[0],
-                                  () => _handleOptionTap(widget.dtcontainer.getImageUrlList()[0], "A")),
+                                  () => _handleOptionTap(
+                                      widget.dtcontainer.getImageUrlList()[0],
+                                      "A")),
                               SizedBox(width: 50.h),
                               _buildAnimatedContainer(
                                   widget.dtcontainer.getImageUrlList()[1],
-                                  () => _handleOptionTap(widget.dtcontainer.getImageUrlList()[1], "B")),
+                                  () => _handleOptionTap(
+                                      widget.dtcontainer.getImageUrlList()[1],
+                                      "B")),
                             ],
                           ),
                         ],
@@ -245,11 +216,14 @@ void _handleOptionTap(int index, String optionType) {
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadiusStyle.roundedBorder10,
-          boxShadow: (_isGlowingA && imagePath == widget.dtcontainer.getImageUrlList()[0]) ||
-                  (_isGlowingB && imagePath == widget.dtcontainer.getImageUrlList()[1])
+          boxShadow: (_isGlowingA &&
+                      imagePath == widget.dtcontainer.getImageUrlList()[0]) ||
+                  (_isGlowingB &&
+                      imagePath == widget.dtcontainer.getImageUrlList()[1])
               ? [
                   BoxShadow(
-                    color: Color.fromARGB(255, 255, 0, 0).withOpacity(0.6), // Red glow
+                    color: Color.fromARGB(255, 255, 0, 0)
+                        .withOpacity(0.6), // Red glow
                     spreadRadius: 10,
                     blurRadius: 5,
                   ),
