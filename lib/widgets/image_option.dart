@@ -6,11 +6,11 @@ import 'package:svar_new/core/app_export.dart';
 
 class ImageWidget extends StatefulWidget {
   final String imagePath;
-  final VoidCallback onTapCallback;
+
 
   ImageWidget({
     required this.imagePath,
-    required this.onTapCallback,
+
   });
 
   @override
@@ -48,10 +48,7 @@ class _ImageWidgetState extends State<ImageWidget> {
         ),
         child: GestureDetector(
           onTap: () {
-            setState(() {
-              _isGlowing = !_isGlowing;
-            });
-            widget.onTapCallback();
+           
           },
           child: FittedBox(
             fit: BoxFit.fill,

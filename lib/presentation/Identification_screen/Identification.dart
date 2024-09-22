@@ -49,13 +49,11 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     try {
       AudioCache.instance = AudioCache(prefix: '');
       _player = AudioPlayer();
-        File? file;
-                        CachingManager()
-                            .getCachedFile(url)
-                            .then((value) {
-                          file = value;
-                        });
-                      
+      File? file;
+      CachingManager().getCachedFile(url).then((value) {
+        file = value;
+      });
+
       await _player.play(BytesSource(file!.readAsBytesSync()));
     } catch (e) {
       print('Error initializing player: $e');
@@ -77,6 +75,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    
     _player = AudioPlayer();
     _isGlowingA = false;
     _isGlowingB = false;
@@ -117,6 +116,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
+  
     String params = obj[2] as String;
 
     return type != "AudioToImage"
@@ -244,9 +244,12 @@ class AuditoryScreenState extends State<IdentificationScreen> {
 
   Widget buildDynamicOptions(String quizType, IdentificationProvider provider,
       dynamic dtcontainer, String params) {
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    dynamic dtcontainer = obj[1] as dynamic;
     switch (quizType) {
       case "ImageToAudio":
         return dtcontainer.getAudioList().length <= 4
+        
             ? Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: 16.0), // Adjust padding as needed
@@ -254,11 +257,13 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                   height: MediaQuery.of(context).size.height *
                       0.5, // Adjust height as needed
                   width: MediaQuery.of(context).size.width *
-                      0.8, // Adjust width as needed
+                      0.8,
+                       // Adjust width as needed
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (dtcontainer.getAudioList().length <= 4)
+                      
                         ...List.generate(dtcontainer.getAudioList().length,
                             (index) {
                           return Column(
@@ -268,9 +273,9 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                   audioLinks: [
                                     dtcontainer.getAudioList()[index],
                                   ],
+                                  
                                 ),
                                 isCorrect: () {
-                             
                                   return dtcontainer.getCorrectOutput() ==
                                       dtcontainer.getAudioList()[index];
                                 },
@@ -303,14 +308,14 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                       Center(
                         child: Row(
                           children: [
-                            if (dtcontainer.getTeList().length <= 4)
+                            if (dtcontainer.getTextList().length <= 4)
                               ...List.generate(
                                   dtcontainer.getAudioList().length, (index) {
                                 return Row(
                                   children: [
                                     OptionWidget(
                                       child: TextContainer(
-                                        text: dtcontainer.getTeList()[index],
+                                        text: dtcontainer.getTextList()[index],
                                       ),
                                       isCorrect: () {
                                         return dtcontainer.getCorrectOutput() ==
@@ -319,8 +324,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                     ),
                                     SizedBox(
                                         width:
-                                           10), // Adds gap between each OptionWidget
-                                           // Adds gap between each OptionWidget
+                                            10), // Adds gap between each OptionWidget
+                                    // Adds gap between each OptionWidget
                                   ],
                                 );
                               })
@@ -353,12 +358,11 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                     children: [
                       OptionWidget(
                         child: ImageWidget(
-                            imagePath: dtcontainer.getTextList()[index],
-                            onTapCallback:  
-                            ),
+                          imagePath: dtcontainer.getImageUrlList()[index],
+                        ),
                         isCorrect: () {
                           return dtcontainer.getCorrectOutput() ==
-                              dtcontainer.getTextList()[index];
+                              dtcontainer.getImageUrlList()[index];
                         },
                       ),
                       SizedBox(width: 10), // Adds gap between each OptionWidget
