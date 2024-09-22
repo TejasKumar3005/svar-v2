@@ -13,6 +13,7 @@ import 'package:video_player/video_player.dart';
 import 'provider/identification_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
+import 'package:svar_new/widgets/Options.dart';
 
 class IdentificationScreen extends StatefulWidget {
   const IdentificationScreen({Key? key})
@@ -108,68 +109,71 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     String params = obj[2] as String;
 
     return type != "AudioToImage"
-        ? (type=="AudioToAudio"?Container():SafeArea(
-            child: Scaffold(
-              extendBody: true,
-              extendBodyBehindAppBar: true,
-              backgroundColor: appTheme.gray300,                  
-              body: Stack(
-                children: [
-                  // SVG background
-                  Positioned.fill(
-                    child: SvgPicture.asset(
-                      ImageConstant.imgAuditorybg, // Replace with your SVG path
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  // Main content
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 15.h,
-                      vertical: 10.v,
-                    ),
-                    child: Column(
-                      children: [
-                        DisciAppBar(context),
-                        Expanded(
-                          child: Stack(
-                            children: [
-                              Center(
-                                child: _buildOptionGRP(
-                                  context,
-                                  provider,
-                                  type,
-                                  dtcontainer,
-                                  params,
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    // Define what happens when the button is tapped
-                                  },
-                                  child: CustomImageView(
-                                    imagePath: ImageConstant.imgTipbtn,
-                                    height: 60.v,
-                                    width: 60.h,
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+        ? (type == "AudioToAudio"
+            ? Container()
+            : SafeArea(
+                child: Scaffold(
+                  extendBody: true,
+                  extendBodyBehindAppBar: true,
+                  backgroundColor: appTheme.gray300,
+                  body: Stack(
+                    children: [
+                      // SVG background
+                      Positioned.fill(
+                        child: SvgPicture.asset(
+                          ImageConstant
+                              .imgAuditorybg, // Replace with your SVG path
+                          fit: BoxFit.cover,
                         ),
-                      ],
-                    ),
+                      ),
+                      // Main content
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 15.h,
+                          vertical: 10.v,
+                        ),
+                        child: Column(
+                          children: [
+                            DisciAppBar(context),
+                            Expanded(
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: _buildOptionGRP(
+                                      context,
+                                      provider,
+                                      type,
+                                      dtcontainer,
+                                      params,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        // Define what happens when the button is tapped
+                                      },
+                                      child: CustomImageView(
+                                        imagePath: ImageConstant.imgTipbtn,
+                                        height: 60.v,
+                                        width: 60.h,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ))
+                ),
+              ))
         : AudiotoimageScreen(
             dtcontainer: dtcontainer,
             params: params,
@@ -243,102 +247,30 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (dtcontainer.getAudioList().length <= 3)
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: List.generate(
-                            dtcontainer.getAudioList().length,
-                            (index) => GestureDetector(
-                              onTap: () async {
-                                provider.setSelected(index);
-                                if (dtcontainer.getCorrectOutput() ==
-                                    dtcontainer.getAudioList()[index]) {
-                                  leveltracker = leveltracker + 1;
-                                  if (leveltracker > 1) {
-                                  UserData(buildContext: context).incrementLevelCount("Identification");
-                                  } 
-                                  _overlayEntry =
-                                      celebrationOverlay(context, () {
-                                    _overlayEntry?.remove();
-                                  });
-                                  Overlay.of(context).insert(_overlayEntry!);
-                                } else {
-                                  index % 2 == 0
-                                      ? _toggleGlowA()
-                                      : _toggleGlowB();
-                                }
-                              },
-                              child: AnimatedContainer(
-                                duration: Duration(seconds: 1),
-                                height: 100.v,
-                                child: CustomImageView(
-                                  onTap: () {
-                                    playAudio(
-                                        dtcontainer.getAudioList()[index]);
-                                  },
-                                  height: 100.v,
-                                  fit: BoxFit.contain,
-                                  imagePath: ImageConstant.imgnewVol,
+                      if (dtcontainer.getAudioList().length <= 4)
+                        ...List.generate(dtcontainer.getAudioList().length,
+                            (index) {
+                          return Column(
+                            children: [
+                              OptionWidget(
+                                child: AudioWidget(
+                                  audioLinks: [
+                                    dtcontainer.getAudioList()[index],
+                                  ],
                                 ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      if (dtcontainer.getAudioList().length == 4)
-                        Expanded(
-                          child: GridView.builder(
-                            // Add padding if needed
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2, // For a 2x2 grid
-                              crossAxisSpacing: 5.0,
-                              mainAxisSpacing: 5.0,
-                              childAspectRatio:
-                                  1.5, // Adjust the aspect ratio to fit all four buttons
-                            ),
-                            itemCount: dtcontainer.getAudioList().length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () async {
-                                  provider.setSelected(index);
-                                  if (dtcontainer.getCorrectOutput() ==
-                                      dtcontainer.getAudioList()[index]) {
-                                    leveltracker = leveltracker + 1;
-                                    if (leveltracker > 1) {
-                                        UserData(buildContext: context).incrementLevelCount("Identification");
-                                    } 
-                                    _overlayEntry =
-                                        celebrationOverlay(context, () {
-                                      _overlayEntry?.remove();
-                                    });
-                                    
-                                    Overlay.of(context).insert(_overlayEntry!);
-                                  } else {
-                                    index % 2 == 0
-                                        ? _toggleGlowA()
-                                        : _toggleGlowB();
-                                  }
+                                isCorrect: () {
+                                  print(dtcontainer.getCorrectOutput());
+                                  print(dtcontainer.getAudioList()[index]);
+                                  return dtcontainer.getCorrectOutput() ==
+                                      dtcontainer.getAudioList()[index];
                                 },
-                                child: AnimatedContainer(
-                                  duration: Duration(seconds: 1),
-                                  child: CustomImageView(
-                                    onTap: () {
-                                      playAudio(
-                                          dtcontainer.getAudioList()[index]);
-                                    },
-                                    height:
-                                        50.v, // Adjust the height of the images
-                                    width:
-                                        50.h, // Adjust the width of the images
-                                    fit: BoxFit.contain,
-                                    imagePath: ImageConstant.imgVol,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                     
+                              ),
+                              SizedBox(
+                                  height:
+                                      10), // Adds gap between each OptionWidget
+                            ],
+                          );
+                        }),
                     ],
                   ),
                 ),
@@ -366,7 +298,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                               child: AnimatedContainer(
                                 duration: Duration(seconds: 1),
                                 height:
-                                    MediaQuery.of(context).size.height * 0.25,
+                                    MediaQuery.of(context).size.height * 0.35,
                                 child: Stack(
                                   children: [
                                     Container(
@@ -417,7 +349,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                               child: AnimatedContainer(
                                 duration: Duration(seconds: 1),
                                 height:
-                                    MediaQuery.of(context).size.height * 0.25,
+                                    MediaQuery.of(context).size.height * 0.35,
                                 child: Stack(
                                   children: [
                                     Container(
@@ -469,7 +401,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                 child: AnimatedContainer(
                                   duration: Duration(seconds: 1),
                                   height:
-                                      MediaQuery.of(context).size.height * 0.25,
+                                      MediaQuery.of(context).size.height * 0.35,
                                   child: Stack(
                                     children: [
                                       SvgPicture.asset(
@@ -522,7 +454,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                 child: AnimatedContainer(
                                   duration: Duration(seconds: 1),
                                   height:
-                                      MediaQuery.of(context).size.height * 0.25,
+                                      MediaQuery.of(context).size.height * 0.35,
                                   child: Stack(
                                     children: [
                                       SvgPicture.asset(
@@ -618,8 +550,9 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                     dtcontainer.getImageUrlList()[0]) {
                                   leveltracker = leveltracker + 1;
                                   if (leveltracker > 1) {
-                                  UserData(buildContext: context).incrementLevelCount("Identification");
-                                  } 
+                                    UserData(buildContext: context)
+                                        .incrementLevelCount("Identification");
+                                  }
                                   _overlayEntry =
                                       celebrationOverlay(context, () {
                                     _overlayEntry?.remove();
@@ -669,8 +602,9 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                   dtcontainer.getImageUrlList()[1]) {
                                 leveltracker = leveltracker + 1;
                                 if (leveltracker > 1) {
-                                  UserData(buildContext: context).incrementLevelCount("Identification");
-                                } 
+                                  UserData(buildContext: context)
+                                      .incrementLevelCount("Identification");
+                                }
                                 _overlayEntry = celebrationOverlay(context, () {
                                   _overlayEntry?.remove();
                                 });

@@ -21,3 +21,4 @@ export 'package:svar_new/widgets/custom_icon_button.dart';
 export 'package:svar_new/widgets/custom_outlined_button.dart';
 export 'package:svar_new/widgets/custom_text_form_field.dart';
 export 'package:svar_new/widgets/appbar_trailing_iconbutton.dart';
+export 'package:svar_new/widgets/audio_widget.dart';
