@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
+import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/Identification_screen/audioToImage.dart';
 import 'package:svar_new/presentation/Identification_screen/animation_play.dart';
@@ -44,7 +47,14 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     try {
       AudioCache.instance = AudioCache(prefix: '');
       _player = AudioPlayer();
-      await _player.play(UrlSource(url));
+        File? file;
+                        CachingManager()
+                            .getCachedFile(url)
+                            .then((value) {
+                          file = value;
+                        });
+                      
+      await _player.play(BytesSource(file!.readAsBytesSync()));
     } catch (e) {
       print('Error initializing player: $e');
     }

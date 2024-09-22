@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:audioplayers/audioplayers.dart';
 
 class PlayAudio {
@@ -31,6 +33,21 @@ class PlayAudio {
       UrlSource(url, mimeType: mime),
     );
   }
+  Future<void> playMusicFromFile(File file, String mime, bool repeat) async {
+    // Stop any currently playing audio before playing a new one
+    await stopMusic();
+
+    // Set release mode to loop if needed
+    if (repeat) {
+      audioPlayer.setReleaseMode(ReleaseMode.loop);
+    }
+
+    // Play the audio
+    await audioPlayer.play(
+    BytesSource(file.readAsBytesSync(), mimeType: mime),
+    );
+  }
+
 
   // Method to stop music
   Future<void> stopMusic() async {

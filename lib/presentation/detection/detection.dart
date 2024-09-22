@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
@@ -61,15 +64,18 @@ class _DetectionState extends State<Detection> {
   }
 
   void initiliaseVideo(String videoUrl, int video) {
+    File? file;
+     CachingManager().getCachedFile(videoUrl).then((value) {
+      file = value;
+    });
     if (video == 1) {
-      _videoPlayerController1 = VideoPlayerController.networkUrl(Uri.parse(
-        videoUrl,
-      ))
-        ..initialize().then((_) {
-          setState(() {
-            isVideoReady1 = true;
-          });
-        });
+      _videoPlayerController1 =
+          VideoPlayerController.file(file!)
+            ..initialize().then((_) {
+              setState(() {
+                isVideoReady1 = true;
+              });
+            });
       _videoPlayerController1.addListener(() {
         if (_videoPlayerController1.value.position ==
             _videoPlayerController1.value.duration) {
@@ -115,31 +121,33 @@ class _DetectionState extends State<Detection> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:widget.type=="video"?VideoPlayerScreen(
-          videoUrl: widget.data["video_url"],
-        ): Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/discri_bg.png"),
-            fit: BoxFit.cover,
-          ),
-        ),
-        padding: EdgeInsets.symmetric(
-          horizontal: 15.h,
-          vertical: 10.v,
-        ),
-        child: Column(
-          children: [
-            DisciAppBar(context),
-            SizedBox(
-              height: 26.v,
+      body: widget.type == "video"
+          ? VideoPlayerScreen(
+              videoUrl: widget.data["video_url"],
+            )
+          : Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/discri_bg.png"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              padding: EdgeInsets.symmetric(
+                horizontal: 15.h,
+                vertical: 10.v,
+              ),
+              child: Column(
+                children: [
+                  DisciAppBar(context),
+                  SizedBox(
+                    height: 26.v,
+                  ),
+                  detectionQuiz(context, widget.type),
+                ],
+              ),
             ),
-            detectionQuiz(context, widget.type),
-          ],
-        ),
-      ),
     );
   }
 
@@ -277,7 +285,7 @@ class _DetectionState extends State<Detection> {
   }
 
   Widget HalfMuted(BuildContext context) {
-      var obj =
+    var obj =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
     var provider = Provider.of<UserDataProvider>(context, listen: false);
     return Column(
@@ -291,17 +299,17 @@ class _DetectionState extends State<Detection> {
           type: ButtonType.Stop,
           onPressed: () {
             playAudio.stopMusic();
-            if(currentProgress>4 && currentProgress<6){
-                if (obj["level"] >
-                        provider.userModel.toJson()["levelMap"]["Detection"]!) {
-                      UserData(buildContext: context)
-                          .incrementLevelCount("Detection")
-                          .then((value) {});
-                    }
-                    _overlayEntry = celebrationOverlay(context, () {
-                      _overlayEntry?.remove();
-                    });
-                    Overlay.of(context).insert(_overlayEntry!);
+            if (currentProgress > 4 && currentProgress < 6) {
+              if (obj["level"] >
+                  provider.userModel.toJson()["levelMap"]["Detection"]!) {
+                UserData(buildContext: context)
+                    .incrementLevelCount("Detection")
+                    .then((value) {});
+              }
+              _overlayEntry = celebrationOverlay(context, () {
+                _overlayEntry?.remove();
+              });
+              Overlay.of(context).insert(_overlayEntry!);
             }
           },
         ),
@@ -338,7 +346,7 @@ class _DetectionState extends State<Detection> {
                 value: currentProgress,
                 onChanged: (value) {},
                 min: 0.0,
-                max: totalDuration>4?totalDuration: 10.0,
+                max: totalDuration > 4 ? totalDuration : 10.0,
               ),
             ),
           ),
@@ -386,56 +394,64 @@ class _DetectionState extends State<Detection> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       if (widget.type == "HalfMuted") {
-                              playAudio.setVolume(0.0); // Set volume to 20%
-                        
-                              playAudio.audioPlayer.onPositionChanged
-                                  .listen((position) {
-                                setState(() {
-                                  currentProgress = position.inSeconds.toDouble();
-                                });
-                              });
-                                playAudio.audioPlayer.onDurationChanged
-                                  .listen((duration) {
-                                setState(() {
-                                  totalDuration = duration.inSeconds.toDouble();
-                                });
-                              });
-                        
-                              playAudio.playMusic(
-                                  widget.data["video_url"], "mp3", false);
-                        
-                            
-                        
-                              volumeTimer = Timer(Duration(seconds: 5), () {
-                                playAudio.setVolume(1); // Set volume to maximum
-                              });
-                            } else {
-                              playAudio.playMusic(audios[index], "mp3", false);
-                            }
+                        playAudio.setVolume(0.0); // Set volume to 20%
+
+                        playAudio.audioPlayer.onPositionChanged
+                            .listen((position) {
+                          setState(() {
+                            currentProgress = position.inSeconds.toDouble();
+                          });
+                        });
+                        playAudio.audioPlayer.onDurationChanged
+                            .listen((duration) {
+                          setState(() {
+                            totalDuration = duration.inSeconds.toDouble();
+                          });
+                        });
+
+                        // fetch the file from cache
+                        File? file;
+                        CachingManager()
+                            .getCachedFile(audios[index])
+                            .then((value) {
+                          file = value;
+                        });
+                        playAudio.playMusicFromFile(
+                          file!, "mp3", false);
+
+                        volumeTimer = Timer(Duration(seconds: 5), () {
+                          playAudio.setVolume(1); // Set volume to maximum
+                        });
+                      } else {
+                          File? file;
+                        CachingManager()
+                            .getCachedFile(audios[index])
+                            .then((value) {
+                          file = value;
+                        });
+                        playAudio.playMusicFromFile(
+                          file!, "mp3", false);
+                      }
                     },
                     child: Row(
                       children: [
                         CustomButton(
                           type: ButtonType.ImagePlay,
-                          onPressed: () {
-                          
-                            
-                          },
+                          onPressed: () {},
                         ),
-                          SizedBox(
+                        SizedBox(
                           width: 10.h,
                         ),
                       ],
                     ),
                   ),
-                
-                    Container(
+                  Container(
                     height: 50,
                     width: 8,
                     decoration: BoxDecoration(
-                    color: Colors.white,
+                      color: Colors.white,
                     ),
                   ),
                   SizedBox(

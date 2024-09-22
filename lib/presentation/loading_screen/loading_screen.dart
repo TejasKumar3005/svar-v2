@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:flutter/material.dart';
+import 'package:svar_new/providers/userDataProvider.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({Key? key})
@@ -31,6 +34,11 @@ class LoadingScreenState extends State<LoadingScreen>
     ]);
   }
 
+  void cacheLevels(BuildContext context) {
+  var provider=Provider.of<UserDataProvider>(context, listen: false);
+  CachingManager.cacheFilesInIsolate(provider.userModel.levelMap);
+  }
+
   void getUserData(BuildContext context) async{
    try {
     UserData userData = UserData(
@@ -43,6 +51,7 @@ class LoadingScreenState extends State<LoadingScreen>
       userData.getUserData(),
       userData.getParentalTip(),
     ]);
+  cacheLevels(context);
     Navigator.of(context).pushNamedAndRemoveUntil(
       AppRoutes.home, 
       (route) => false,

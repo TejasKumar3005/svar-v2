@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -6,6 +7,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/core/network/cacheManager.dart';
 
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
@@ -638,12 +640,27 @@ class _DiscriminationState extends State<Discrimination> {
                               currentProgress = position.inSeconds.toDouble();
                             });
                           });
+                            File? file;
+                        CachingManager()
+                            .getCachedFile(audios[index])
+                            .then((value) {
+                          file = value;
+                        });
+                        playAudio.playMusicFromFile(
+                          file!, "mp3", false);
 
-                          playAudio.playMusic(audio[index], "mp3", false);
+                        
                           setupTimer(audio);
                         }
                       } else {
-                        playAudio.playMusic(audio[index], "mp3", false);
+                          File? file;
+                        CachingManager()
+                            .getCachedFile(audios[index])
+                            .then((value) {
+                          file = value;
+                        });
+                        playAudio.playMusicFromFile(
+                          file!, "mp3", false);
                       }
                     },
                     child: Row(
