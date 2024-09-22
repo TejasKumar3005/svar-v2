@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -6,6 +7,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/core/network/cacheManager.dart';
 
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
@@ -640,17 +642,103 @@ class _DiscriminationState extends State<Discrimination> {
                 selectedOption = index;
               });
             },
-            child: OptionWidget(
-              child: AudioWidget(
-                audioLinks: [
-                  // dtcontainer.getAudioList()[0],
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.4,
+              padding: EdgeInsets.symmetric(
+                horizontal: 3.h,
+                vertical: 5.v,
+              ),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: selectedOption != index
+                      ? color
+                      : PrimaryColors().green30001,
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 3,
+                  )),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (type == "DiffHalf") {
+                        if (playAudio.audioPlayer.state ==
+                            PlayerState.playing) {
+                          playAudio.audioPlayer.pause();
+                        } else {
+                          playAudio.audioPlayer.onPositionChanged
+                              .listen((position) {
+                            setState(() {
+                              currentProgress = position.inSeconds.toDouble();
+                            });
+                          });
+                            File? file;
+                        CachingManager()
+                            .getCachedFile(audios[index])
+                            .then((value) {
+                          file = value;
+                        });
+                        playAudio.playMusicFromFile(
+                          file!, "mp3", false);
+
+                        
+                          setupTimer(audio);
+                        }
+                      } else {
+                          File? file;
+                        CachingManager()
+                            .getCachedFile(audios[index])
+                            .then((value) {
+                          file = value;
+                        });
+                        playAudio.playMusicFromFile(
+                          file!, "mp3", false);
+                      }
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CustomButton(
+                          type: ButtonType.ImagePlay,
+                          onPressed: () {
+                          
+                          },
+                        ),
+                        SizedBox(
+                          width: 10.h,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 50,
+                    width: 8,
+                    decoration: BoxDecoration(
+                    color: Colors.white,
+                    ),
+                  ),
+                    SizedBox(
+                    width: 10.h,
+                  ),
+                  GestureDetector(
+                    onTap: (){
+                      if(type=="OddOne"){
+                        setState(() {
+                          selectedOption = index;
+                        });
+                      }
+                    },
+                    child: CustomImageView(
+                          width: MediaQuery.of(context).size.width * 0.4 - 98,
+                          height: 60,
+                          fit: BoxFit.fill,
+                          imagePath: "assets/images/spectrum.png",
+                        ),
+                  ),
                 ],
               ),
-              isCorrect: () {
-                return true;
-                // return oddOne.correct_output ==
-                //     oddOne.video_url;
-              },
             ),
           ),
         ],
