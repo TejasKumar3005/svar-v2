@@ -12,6 +12,7 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:video_player/video_player.dart';
 import 'provider/identification_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:svar_new/presentation/discrimination/appbar.dart';
 
 class IdentificationScreen extends StatefulWidget {
   const IdentificationScreen({Key? key})
@@ -131,7 +132,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                     ),
                     child: Column(
                       children: [
-                        AuditoryAppBar(context),
+                        DisciAppBar(context),
                         Expanded(
                           child: Stack(
                             children: [
@@ -243,7 +244,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (dtcontainer.getAudioList().length <= 3)
-                        Row(
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: List.generate(
                             dtcontainer.getAudioList().length,
@@ -269,7 +270,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                               },
                               child: AnimatedContainer(
                                 duration: Duration(seconds: 1),
-                                height: 180.v,
+                                height: 100.v,
                                 child: CustomImageView(
                                   onTap: () {
                                     playAudio(
@@ -277,7 +278,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                   },
                                   height: 100.v,
                                   fit: BoxFit.contain,
-                                  imagePath: ImageConstant.imgVol,
+                                  imagePath: ImageConstant.imgnewVol,
                                 ),
                               ),
                             ),
