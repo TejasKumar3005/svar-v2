@@ -24,6 +24,7 @@ class CelebrationOverlayWidget extends StatefulWidget {
 class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
     Artboard? _artboard;
     SMITrigger? successTrigger;
+    SMITrigger? resetTrigger;
     @override
   void initState() {
     rootBundle.load("assets/rive/congrats.riv").then(
@@ -38,7 +39,9 @@ class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
           stateMachineController!.inputs.forEach((element) {
             if (element.name == "Trigger explosion") {
               successTrigger = element as SMITrigger;
-            } 
+            } else if (element.name == "Reset") {
+              resetTrigger = element as SMITrigger;
+            }
             
           });
         }
@@ -61,10 +64,13 @@ class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        child:Rive(
-                    artboard: _artboard!,
-                    fit: BoxFit.cover,
-                  ), 
+        child:Visibility(
+          visible: _artboard != null,
+          child: Rive(
+                      artboard: _artboard!,
+                      fit: BoxFit.cover,
+                    ),
+        ), 
 
       ),
     );
