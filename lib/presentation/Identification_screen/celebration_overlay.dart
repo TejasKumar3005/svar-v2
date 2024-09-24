@@ -1,31 +1,34 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 
-OverlayEntry celebrationOverlay(BuildContext context, Function() removeOverlay) {
+OverlayEntry celebrationOverlay(
+    BuildContext context, Function() removeOverlay) {
   return OverlayEntry(
     builder: (context) => Material(
-      color: Colors.transparent,
-      child: CelebrationOverlayWidget(removeOverlay: removeOverlay,)
-    ),
+        color: Colors.transparent,
+        child: CelebrationOverlayWidget(
+          removeOverlay: removeOverlay,
+        )),
   );
 }
 
 class CelebrationOverlayWidget extends StatefulWidget {
   Function() removeOverlay;
-   CelebrationOverlayWidget({super.key,required this.removeOverlay});
+  CelebrationOverlayWidget({super.key, required this.removeOverlay});
 
   @override
-  State<CelebrationOverlayWidget> createState() => _CelebrationOverlayWidgetState();
+  State<CelebrationOverlayWidget> createState() =>
+      _CelebrationOverlayWidgetState();
 }
 
 class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
-    Artboard? _artboard;
-    SMITrigger? successTrigger;
-    SMITrigger? resetTrigger;
-    @override
+  Artboard? _artboard;
+  SMITrigger? successTrigger;
+  SMITrigger? resetTrigger;
+  late Timer timer;
+  @override
   void initState() {
     rootBundle.load("assets/rive/congrats.riv").then(
       (data) {
@@ -42,21 +45,37 @@ class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
             } else if (element.name == "Reset") {
               resetTrigger = element as SMITrigger;
             }
-            
           });
         }
 
         setState(() => _artboard = artboard);
-
       },
     );
+
     successTrigger!.fire();
-    Timer(Duration(seconds: 10), () {
-    widget.removeOverlay();
+    // Timer(Duration(seconds: 10), () {
+    //   widget.removeOverlay();
+    //   Navigator.pop(context, true);
+    // });
+    int sec=0;
+    timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
+      sec++;
+      if(sec%2==0){
+        successTrigger!.fire();
+      }else{
+        resetTrigger!.fire();
+      }
+
+      if (sec == 10) {
+        timer.cancel();
+        widget.removeOverlay();
       Navigator.pop(context, true);
+      }
     });
+
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,14 +83,13 @@ class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        child:Visibility(
+        child: Visibility(
           visible: _artboard != null,
           child: Rive(
-                      artboard: _artboard!,
-                      fit: BoxFit.cover,
-                    ),
-        ), 
-
+            artboard: _artboard!,
+            fit: BoxFit.cover,
+          ),
+        ),
       ),
     );
   }
