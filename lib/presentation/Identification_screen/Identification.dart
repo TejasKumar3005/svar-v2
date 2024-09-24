@@ -295,7 +295,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       case "FigToWord":
         return StatefulBuilder(
           builder: (context, setState) {
-            bool isFailure = false; // State to track failure
+     // State to track failure
 
             return Container(
               height: 192.v,
