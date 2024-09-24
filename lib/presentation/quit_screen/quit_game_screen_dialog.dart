@@ -129,7 +129,7 @@ Widget QuitDialog(BuildContext context) {
                             ),
                             SizedBox(height: 22.v),
                             SizedBox(
-                            
+                            width:177,
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment:

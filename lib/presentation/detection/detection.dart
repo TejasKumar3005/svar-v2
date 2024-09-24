@@ -70,7 +70,9 @@ class _DetectionState extends State<Detection> {
     });
     if (video == 1) {
       _videoPlayerController1 =
-          VideoPlayerController.file(file!)
+          VideoPlayerController.networkUrl(Uri.parse(
+        videoUrl,
+      ))
             ..initialize().then((_) {
               setState(() {
                 isVideoReady1 = true;
@@ -385,6 +387,7 @@ class _DetectionState extends State<Detection> {
               ),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
+                  color:PrimaryColors().deepOrangeA200,
                   border: Border.all(
                     color: Colors.black,
                     width: 3,
