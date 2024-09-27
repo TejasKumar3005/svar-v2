@@ -174,17 +174,17 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         List<dynamic> argumentsList = [type, dtcontainer, params];
         debugPrint("Arguments list is: $argumentsList");
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Detection(type: type, data: data),
-          settings: RouteSettings(
-            arguments: {
-              "level": level,
-            },
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Detection(type: type, data: data),
+            settings: RouteSettings(
+              arguments: {
+                "level": level,
+              },
+            ),
           ),
-        ),
-      );
+        );
       }
     } catch (e) {
       debugPrint("Error in Detection handling: $e");
@@ -192,39 +192,39 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   }
 
   void _handleDiscrimination(
-      BuildContext context, int level, String params) async {
-    try {
-      final levelProvider =
-          Provider.of<PhonemsLevelOneProvider>(context, listen: false);
-      final Map<String, dynamic>? data =
-          await levelProvider.fetchData('Discrimination', level);
+    BuildContext context, int level, String params) async {
+  try {
+    final levelProvider =
+        Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+    final Map<String, dynamic>? data =
+        await levelProvider.fetchData('Discrimination', level);
 
-      if (data == null) {
-        debugPrint("No data fetched for Discrimination at level $level.");
-        return;
-      }
-
-      String? type = data["type"];
-      if (type == null) {
-        debugPrint("Type is null in the fetched data.");
-        return;
-      }
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Discrimination(type: type, data: data),
-          settings: RouteSettings(
-            arguments: {
-              "level": level,
-            },
-          ),
-        ),
-      );
-    } catch (e) {
-      debugPrint("Error in Discrimination handling: $e");
+    if (data == null) {
+      debugPrint("No data fetched for Discrimination at level $level.");
+      return;
     }
+
+    String? type = data["type"];
+    if (type == null) {
+      debugPrint("Type is null in the fetched data.");
+      return;
+    }
+
+     debugPrint("Fetched type for Identification: $type");
+      debugPrint("Data is: $data");
+
+    final Object dtcontainer = retrieveObject(type, data);
+    List<dynamic> argumentsList = [type,data, dtcontainer, params];
+     debugPrint("Arguments list is: $argumentsList");
+
+    // Pass the 'type' and 'data' to the Discrimination widget
+    NavigatorService.pushNamed(AppRoutes.discrimination,
+            arguments: argumentsList);
+  } catch (e) {
+    debugPrint("Error in Discrimination handling: $e");
   }
+}
+
 
   void _handleIdentification(
       BuildContext context, int level, String params) async {

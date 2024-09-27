@@ -5,7 +5,6 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/widgets/Options.dart';
 
-
 class AudioWidget extends StatefulWidget {
   final List<String> audioLinks; // Optional click function from parent
 
@@ -24,7 +23,7 @@ class _AudioWidgetState extends State<AudioWidget> {
   @override
   void initState() {
     super.initState();
-      currentIndex = 0;
+    currentIndex = 0;
     _audioPlayer = AudioPlayer();
     _progress = 0.0;
     double total_length = 0.0;
@@ -39,8 +38,7 @@ class _AudioWidgetState extends State<AudioWidget> {
       if (_audioPlayer.duration != null &&
           _audioPlayer.duration!.inSeconds > 0) {
         setState(() {
-          _progress =
-              position.inMilliseconds*1000.0 / total_length ;
+          _progress = position.inMilliseconds * 1000.0 / total_length;
         });
       }
     });
@@ -59,12 +57,11 @@ class _AudioWidgetState extends State<AudioWidget> {
               currentIndex++;
             });
             playNext();
-          }
-          else{
+          } else {
             setState(() {
-            currentIndex = 0;
-            _progress = 0.0;
-            _audioPlayer.stop();
+              currentIndex = 0;
+              _progress = 0.0;
+              _audioPlayer.stop();
             });
           }
         }
@@ -89,7 +86,7 @@ class _AudioWidgetState extends State<AudioWidget> {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-       color: Color(0xFFF47C37),
+        color: Color(0xFFF47C37),
         border: Border.all(
           color: Colors.black,
           width: 3,
@@ -101,27 +98,24 @@ class _AudioWidgetState extends State<AudioWidget> {
         children: [
           GestureDetector(
             onTap: () {
-              print("hiiiiii");
               if (_audioPlayer.playing) {
                 _audioPlayer.pause();
               } else {
                 playNext();
               }
             },
-            child:
-                CustomButton(
-                  type: ButtonType.ImagePlay,
-                  onPressed: () {
-                    print("pressed");
-                    if (_audioPlayer.playing) {
-                _audioPlayer.pause();
-              } else {
-                playNext();
-              }
-                  },
-                ),
-                ),
-        
+            child: CustomButton(
+              type: ButtonType.ImagePlay,
+              onPressed: () {
+                print("pressed");
+                if (_audioPlayer.playing) {
+                  _audioPlayer.pause();
+                } else {
+                  playNext();
+                }
+              },
+            ),
+          ),
           Container(
             height: 50,
             width: 5,
@@ -134,34 +128,35 @@ class _AudioWidgetState extends State<AudioWidget> {
             onTap: () {
               print("Clicked in gesture detector");
               // Optionally handle any other tap events here
-               if (click != null) {
+              if (click != null) {
                 click();
               }
             },
-           child:  Stack(
-            children: [
-              // First, display the original SVG (which remains white)
-              SvgPicture.asset(
-                'assets/images/svg/Spectrum.svg', // Path to your SVG
-                width: MediaQuery.of(context).size.width * 0.3, // Adjust size
-                height: 60,
-              ),
-              // Overlay only the green part based on the progress
-              Positioned.fill(
-                child: ClipRect(
-                  clipper: _ProgressClipper(
-                    progress: _progress, // Pass dynamic progress here
-                  ),
-                  child: SvgPicture.asset(
-                    'assets/images/svg/Spectrum.svg', // Same SVG path
-                    width: MediaQuery.of(context).size.width * 0.3, // Adjust size
-                    height: 60,
-                    color: Colors.green, // Green overlay only on progress
+            child: Stack(
+              children: [
+                // First, display the original SVG (which remains white)
+                SvgPicture.asset(
+                  'assets/images/svg/Spectrum.svg', // Path to your SVG
+                  width: MediaQuery.of(context).size.width * 0.3, // Adjust size
+                  height: 60,
+                ),
+                // Overlay only the green part based on the progress
+                Positioned.fill(
+                  child: ClipRect(
+                    clipper: _ProgressClipper(
+                      progress: _progress, // Pass dynamic progress here
+                    ),
+                    child: SvgPicture.asset(
+                      'assets/images/svg/Spectrum.svg', // Same SVG path
+                      width: MediaQuery.of(context).size.width *
+                          0.3, // Adjust size
+                      height: 60,
+                      color: Colors.green, // Green overlay only on progress
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           ),
         ],
       ),
