@@ -70,7 +70,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final AnalyticsService analyticsService;
-  final ScreenTracking _screenTracking;
+  ScreenTracking _screenTracking;
   final NetworkInfo _networkInfo = NetworkInfo();
 
   MyApp({required this.analyticsService})
@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    _screenTracking.context = context;
+    // _screenTracking.context = context;
     return Sizer(
       builder: (context, orientation, deviceType) {
         return MultiProvider(

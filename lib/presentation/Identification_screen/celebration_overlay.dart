@@ -32,6 +32,7 @@ class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
   void initState() {
     rootBundle.load("assets/rive/congrats.riv").then(
       (data) {
+
         final file = RiveFile.import(data);
         final artboard = file.mainArtboard;
         StateMachineController? stateMachineController =
@@ -51,8 +52,10 @@ class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
         setState(() => _artboard = artboard);
       },
     );
+  if(_artboard!=null){
 
     successTrigger!.fire();
+  }
     // Timer(Duration(seconds: 10), () {
     //   widget.removeOverlay();
     //   Navigator.pop(context, true);
@@ -60,10 +63,13 @@ class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
     int sec=0;
     timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
       sec++;
-      if(sec%2==0){
+      if(_artboard!=null){
+        
+      if(sec%2==0 ){
         successTrigger!.fire();
-      }else{
+      }else {
         resetTrigger!.fire();
+      }
       }
 
       if (sec == 10) {

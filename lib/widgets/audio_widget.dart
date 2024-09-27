@@ -28,6 +28,7 @@ class _AudioWidgetState extends State<AudioWidget> {
     _progress = 0.0;
     double total_length = 0.0;
     lengths = [];
+    
     for (int i = 0; i < widget.audioLinks.length; i++) {
       _audioPlayer.setUrl(widget.audioLinks[i]);
       lengths.add(_audioPlayer.duration!.inSeconds.toDouble());

@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
@@ -15,6 +13,7 @@ import 'package:svar_new/presentation/phoneme_level_one/video_player_screen.dart
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
+
 
 class Detection extends StatefulWidget {
   final String type; // Add type as a parameter

@@ -38,6 +38,7 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
       void stop() async {
     await PlayBgm().stopMusic();
     }
+    
     stop();
     var prov=Provider.of<LingLearningProvider>(context,listen: false);
 
