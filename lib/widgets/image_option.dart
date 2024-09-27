@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/core/app_export.dart';
-
+import "package:svar_new/widgets/Options.dart";
 
 class ImageWidget extends StatefulWidget {
   final String imagePath;
@@ -22,6 +22,7 @@ class _ImageWidgetState extends State<ImageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final click = ClickProvider.of(context)?.click;
     return Expanded(
       child: AnimatedContainer(
         duration: Duration(seconds: 1),
@@ -48,7 +49,9 @@ class _ImageWidgetState extends State<ImageWidget> {
         ),
         child: GestureDetector(
           onTap: () {
-           
+           if (click != null) {
+              click();
+            }
           },
           child: FittedBox(
             fit: BoxFit.fill,

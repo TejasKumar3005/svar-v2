@@ -21,6 +21,7 @@ class _OptionWidgetState extends State<OptionWidget> {
   OverlayEntry? _overlayEntry;
 
   void click() {
+    print("click is called ");
     if (widget.isCorrect.call()) {
       _overlayEntry = celebrationOverlay(context, () {
         _overlayEntry?.remove();

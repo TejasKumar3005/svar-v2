@@ -70,9 +70,7 @@ class _DiscriminationState extends State<Discrimination> {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     Map<String, dynamic> data = obj[1] as Map<String, dynamic>;
-    dynamic dtcontainer =
-        obj[2] as dynamic; // Ensure dtcontainer is properly retrieved
-    String params = obj[3] as String;
+    dynamic dtcontainer = obj[2] as dynamic;
 
     return Scaffold(
       body: Container(
@@ -131,9 +129,11 @@ class _DiscriminationState extends State<Discrimination> {
 
   Widget discriminationOptions(
       String type, Map<String, dynamic> d, dynamic dtcontainer) {
+  
     switch (type) {
       case "DiffSounds":
         var data = DiffSounds.fromJson(d);
+        
         return DiffSoundsW(data, dtcontainer);
       case "OddOne":
         var data = OddOne.fromJson(d);
@@ -276,53 +276,50 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget DiffHalfW(DiffHalf diffHalf, dynamic dtcontainer) {
-    var provider = Provider.of<UserDataProvider>(context, listen: false);
-    final obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>?;
+  
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // _buildOption(
-        //   text: "A",
-        //   color: PrimaryColors().deepOrangeA200,
-        //   index: 0,
-        //   audio: diffHalf.video_url,
-        //   correctOutput: diffHalf.correct_output,
-        //   type: "DiffHalf",
-        // ), // Ensure dtcontainer is passed here
+        AudioWidget(
+          
+          audioLinks: [
+            dtcontainer.getVideoUrls(),
+          ],
+        ),
+        // SizedBox(
+        //   height: 20.v,
+        // ),
+        // Container(
+        //   height: 40,
+        //   width: MediaQuery.of(context).size.width * 0.6,
+        //   child: Center(
+        //     child: SliderTheme(
+        //       data: SliderTheme.of(context).copyWith(
+        //         activeTrackColor: PrimaryColors().blue20001,
+        //         inactiveTrackColor: Colors.white,
+        //         trackHeight: 20.0,
+        //         thumbShape: RectangularImageThumb(
+        //           thumbWidth: 50.0,
+        //           thumbHeight: 50.0,
+        //           thumbImagePath: 'assets/images/thumb.png',
+        //         ),
+        //         thumbColor: PrimaryColors().orange800,
+        //         overlayColor: Colors.orange.withOpacity(0.2),
+        //         overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
+        //       ),
+        //       child: Slider(
+        //         value: currentProgress,
+        //         onChanged: (value) {},
+        //         min: 0.0,
+        //         max: 10.0,
+        //       ),
+        //     ),
+        //   ),
+        // ),
         SizedBox(
           height: 20.v,
         ),
-        Container(
-          height: 40,
-          width: MediaQuery.of(context).size.width * 0.6,
-          child: Center(
-            child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor: PrimaryColors().blue20001,
-                inactiveTrackColor: Colors.white,
-                trackHeight: 20.0,
-                thumbShape: RectangularImageThumb(
-                  thumbWidth: 50.0,
-                  thumbHeight: 50.0,
-                  thumbImagePath: 'assets/images/thumb.png',
-                ),
-                thumbColor: PrimaryColors().orange800,
-                overlayColor: Colors.orange.withOpacity(0.2),
-                overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
-              ),
-              child: Slider(
-                value: currentProgress,
-                onChanged: (value) {},
-                min: 0.0,
-                max: 10.0,
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 20.v,
-        ),
-        CustomButton(
+        OptionButton(
           type: ButtonType.Change,
           onPressed: () {
             if (currentProgress > 4 && currentProgress < 6) {
@@ -344,8 +341,8 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget DiffSoundsW(DiffSounds diffSounds, dynamic dtcontainer) {
-    var provider = Provider.of<UserDataProvider>(context, listen: false);
-    final obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>?;
+ 
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -374,7 +371,7 @@ class _DiscriminationState extends State<Discrimination> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             OptionWidget(
-              child: CustomButton(
+              child: OptionButton(
                   type: ButtonType.Same,
                   onPressed: () {
                     if (dtcontainer.getSame()) {
@@ -395,7 +392,7 @@ class _DiscriminationState extends State<Discrimination> {
               width: 20.h,
             ),
             OptionWidget(
-              child: CustomButton(
+              child: OptionButton(
                   type: ButtonType.Diff,
                   onPressed: () {
                     if (!dtcontainer.getSame()) {
@@ -409,7 +406,7 @@ class _DiscriminationState extends State<Discrimination> {
                     }
                   }),
               isCorrect: () {
-                return dtcontainer.getSame();
+                return !dtcontainer.getSame();
               },
             ),
           ],

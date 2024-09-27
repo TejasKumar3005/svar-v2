@@ -29,8 +29,7 @@ enum ButtonType {
   Video2,
   Stop
 }
-
-class CustomButton extends StatelessWidget {
+class CustomButton extends StatefulWidget {
   final ButtonType type;
   final VoidCallback onPressed;
 
@@ -41,24 +40,29 @@ class CustomButton extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final click = ClickProvider.of(context)?.click;
+  _CustomButtonState createState() => _CustomButtonState();
+}
+class _CustomButtonState extends State<CustomButton> {
+
     String imagePath = '';
     double height = 0;
     double width = 0;
     BoxFit fit = BoxFit.contain;
     bool isSvg = false;
+    late VoidCallback onPressed_state;
 
-    switch (type) {
+@override
+void initState() {
+    super.initState();
+    onPressed_state = widget.onPressed;
+    switch (widget.type) {
       case ButtonType.Play:
         imagePath = ImageConstant.playBtn;
-        width = MediaQuery.of(context).size.width * 0.7;
         height = 60;
         isSvg = true;
         break;
       case ButtonType.Settings:
         imagePath = ImageConstant.settingsBtn;
-        width = MediaQuery.of(context).size.width * 0.7;
         height = 60;
         isSvg = true;
         break;
@@ -82,7 +86,6 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.Login:
         imagePath = ImageConstant.imgLoginBTn;
-        width = MediaQuery.of(context).size.width * 0.7;
         height = 60;
         isSvg = true;
         break;
@@ -94,7 +97,6 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.SignUp:
         imagePath = ImageConstant.imgSignUpBTn;
-        width = MediaQuery.of(context).size.width * 0.7;
         height = 60;
         isSvg = true;
         break;
@@ -106,7 +108,6 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.Next:
         imagePath = ImageConstant.imgNextBtn;
-        width = MediaQuery.of(context).size.width * 0.7;
         height = 60;
         isSvg = true;
         break;
@@ -185,20 +186,29 @@ class CustomButton extends StatelessWidget {
 
       // Add cases for more button types here
     }
+}
+
+  @override
+  Widget build(BuildContext context) {
+    // final click = ClickProvider.of(context)?.click;
+
+    if (widget.type == ButtonType.Play || widget.type == ButtonType.Settings || widget.type == ButtonType.Login || widget.type == ButtonType.SignUp || widget.type == ButtonType.Next) {
+      setState(() {
+        width = MediaQuery.of(context).size.width * 0.7;
+      });
+    } 
+    
 
     return GestureDetector(
       onTap: () {
-        if (type == ButtonType.Next) {
+        if (widget.type == ButtonType.Next) {
           PlayBgm().playMusic('Next_Btn.mp3', "mp3", false);
         }
-        if (click != null) {
-          click();
-        }
-        onPressed();
+        onPressed_state();
         AnalyticsService _analyticsService;
         _analyticsService = AnalyticsService();
         _analyticsService.logEvent('button_pressed', {
-          'button_type': type.toString(),
+          'button_type': widget.type.toString(),
             "time": DateTime.now().toString()
         });
 
@@ -217,5 +227,40 @@ class CustomButton extends StatelessWidget {
               ),
       ),
     );
+  }
+}
+
+class OptionButton extends CustomButton {
+
+
+
+const OptionButton({
+    Key? key,
+    required ButtonType type,
+    required VoidCallback onPressed,
+  }) : super(key: key, type: type, onPressed: onPressed);
+
+  @override
+  _OptionButtonState createState() => _OptionButtonState();
+}
+
+class _OptionButtonState extends _CustomButtonState {
+  @override
+  void initState () {
+    super.initState();
+  }
+
+  @override
+  Widget build (BuildContext context){
+    final click = ClickProvider.of(context)?.click;
+    setState(() {
+      onPressed_state = () {
+        if (click != null) {
+          click();
+        }
+        widget.onPressed();
+      };
+    });
+    return super.build(context);
   }
 }

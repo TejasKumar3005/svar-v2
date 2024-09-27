@@ -20,6 +20,15 @@ class _AudioWidgetState extends State<AudioWidget> {
   late int currentIndex;
   late List<double> lengths;
 
+  Future <double> get_audio_length(String link) async {
+
+    var j = await _audioPlayer.setUrl(link);
+      print("j is ${j!.inMilliseconds}");
+      await _audioPlayer.load();
+      return  j != null ? j.inMilliseconds.toDouble() / 1000 : 2.0;
+
+  }
+
   @override
   void initState() {
     super.initState();
@@ -28,17 +37,26 @@ class _AudioWidgetState extends State<AudioWidget> {
     _progress = 0.0;
     double total_length = 0.0;
     lengths = [];
+    print("widget.audioLinks is ${widget.audioLinks.length}");
     for (int i = 0; i < widget.audioLinks.length; i++) {
-      _audioPlayer.setUrl(widget.audioLinks[i]);
-      _audioPlayer.load();
-      lengths.add(_audioPlayer.duration!.inSeconds.toDouble());
-      total_length += _audioPlayer.duration!.inSeconds.toDouble();
+      // double length = 0.0;
+      print("i is $i");
+      get_audio_length(widget.audioLinks[i]).then((value) {
+        print("value is $value");
+        double length = value;
+      print("length is $length");
+      lengths.add(length);
+      total_length += length;
+      print("total_length is $total_length");
+      });
     }
+    print("lengths is $lengths");
+    print("total_length is $total_length");
     _audioPlayer.positionStream.listen((position) {
       if (_audioPlayer.duration != null &&
           _audioPlayer.duration!.inSeconds > 0) {
         setState(() {
-          _progress = position.inMilliseconds * 1000.0 / total_length;
+          _progress = position.inSeconds / total_length;
         });
       }
     });
@@ -98,6 +116,7 @@ class _AudioWidgetState extends State<AudioWidget> {
         children: [
           GestureDetector(
             onTap: () {
+            print("detected");
               if (_audioPlayer.playing) {
                 _audioPlayer.pause();
               } else {
@@ -129,6 +148,7 @@ class _AudioWidgetState extends State<AudioWidget> {
               print("Clicked in gesture detector");
               // Optionally handle any other tap events here
               if (click != null) {
+                print("click is not null");
                 click();
               }
             },
