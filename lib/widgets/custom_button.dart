@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/utils/image_constant.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
+import 'package:svar_new/widgets/Options.dart';
 
 enum ButtonType {
   Play,
@@ -27,7 +28,6 @@ enum ButtonType {
   Video1,
   Video2,
   Stop
- 
 }
 
 class CustomButton extends StatelessWidget {
@@ -42,6 +42,7 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final click = ClickProvider.of(context)?.click;
     String imagePath = '';
     double height = 0;
     double width = 0;
@@ -148,7 +149,7 @@ class CustomButton extends StatelessWidget {
       case ButtonType.Diff:
         imagePath = ImageConstant.imgDiffbtn;
         width = 170;
-        height =80;
+        height = 80;
         isSvg = true;
         break;
       case ButtonType.Tip2:
@@ -160,7 +161,7 @@ class CustomButton extends StatelessWidget {
       case ButtonType.Same:
         imagePath = ImageConstant.imgSamebtn;
         width = 170;
-        height =80;
+        height = 80;
         isSvg = true;
         break;
       case ButtonType.Video1:
@@ -174,25 +175,25 @@ class CustomButton extends StatelessWidget {
         width = 170;
         height = 80;
         isSvg = true;
-        break;  
+        break;
       case ButtonType.Stop:
         imagePath = ImageConstant.imgStopBtn;
         width = 170;
         height = 80;
         isSvg = true;
-        break;    
-
+        break;
 
       // Add cases for more button types here
     }
 
     return GestureDetector(
       onTap: () {
-        if (type == ButtonType.Next){
-
+        if (type == ButtonType.Next) {
           PlayBgm().playMusic('Next_Btn.mp3', "mp3", false);
         }
-                        
+        if (click != null) {
+          click();
+        }
         onPressed();
         AnalyticsService _analyticsService;
         _analyticsService = AnalyticsService();

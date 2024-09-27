@@ -6,7 +6,6 @@ class ImageToAudio {
   final String correct_output;
 
   ImageToAudio._(
-      
       {required this.image_url,
       required this.audio_list,
       required this.correct_output});
@@ -193,6 +192,15 @@ class DiffSounds {
   List<String> getVideoUrls() {
     return video_url;
   }
+
+  bool getSame() {
+    return same;
+  }
+
+  @override
+  String toString() {
+    return 'DiffSounds{same: $same, video_url: $video_url}';
+  }
 }
 
 class OddOne {
@@ -214,6 +222,10 @@ class OddOne {
   List<String> getVideoUrls() {
     return video_url;
   }
+
+  String getCorrectOutput() {
+    return correct_output;
+  }
 }
 
 class DiffHalf {
@@ -224,14 +236,12 @@ class DiffHalf {
   DiffHalf._({
     required this.video_url,
     required this.correct_output,
-
   });
 
   factory DiffHalf.fromJson(Map<String, dynamic> json) {
     return DiffHalf._(
       video_url: List<String>.from(json['video_url']),
       correct_output: json['correct_output'] as double,
-
     );
   }
 
@@ -246,7 +256,7 @@ class MaleFemale {
 
   MaleFemale._({
     required this.video_url,
-    required this.correct_output, 
+    required this.correct_output,
   });
 
   factory MaleFemale.fromJson(Map<String, dynamic> json) {
@@ -259,7 +269,8 @@ class MaleFemale {
   String getVideoUrl() {
     return video_url;
   }
+
   String getCorrectOutput() {
     return correct_output;
-  } 
+  }
 }

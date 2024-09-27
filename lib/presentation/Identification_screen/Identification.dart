@@ -32,28 +32,27 @@ class IdentificationScreen extends StatefulWidget {
 }
 
 class AuditoryScreenState extends State<IdentificationScreen> {
-  late bool _isGlowingA;
-  late bool _isGlowingB;
+
   late AudioPlayer _player;
   late int leveltracker;
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
   OverlayEntry? _overlayEntry;
 
-  Future<void> playAudio(String url) async {
-    try {
-      AudioCache.instance = AudioCache(prefix: '');
-      _player = AudioPlayer();
-      File? file;
-      CachingManager().getCachedFile(url).then((value) {
-        file = value;
-      });
+  // Future<void> playAudio(String url) async {
+  //   try {
+  //     AudioCache.instance = AudioCache(prefix: '');
+  //     _player = AudioPlayer();
+  //     File? file;
+  //     CachingManager().getCachedFile(url).then((value) {
+  //       file = value;
+  //     });
 
-      await _player.play(BytesSource(file!.readAsBytesSync()));
-    } catch (e) {
-      print('Error initializing player: $e');
-    }
-  }
+  //     await _player.play(BytesSource(file!.readAsBytesSync()));
+  //   } catch (e) {
+  //     print('Error initializing player: $e');
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -72,37 +71,10 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     ]);
     
     _player = AudioPlayer();
-    _isGlowingA = false;
-    _isGlowingB = false;
+
     leveltracker = 0;
   }
-
-  void _toggleGlowA() {
-    setState(() {
-      _isGlowingA = true;
-    });
-
-    // Revert the glow effect after 1 second
-    Future.delayed(Duration(seconds: 1), () {
-      setState(() {
-        _isGlowingA = false;
-      });
-    });
-  }
-
-  void _toggleGlowB() {
-    setState(() {
-      _isGlowingB = true;
-    });
-
-    // Revert the glow effect after 1 second
-    Future.delayed(Duration(seconds: 1), () {
-      setState(() {
-        _isGlowingB = false;
-      });
-    });
-  }
-
+  
   int sel = 0;
 
   @override
@@ -244,7 +216,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     switch (quizType) {
       case "ImageToAudio":
         return dtcontainer.getAudioList().length <= 4
-        
             ? Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: 16.0), // Adjust padding as needed
@@ -267,8 +238,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                 child: AudioWidget(
                                   audioLinks: [
                                     dtcontainer.getAudioList()[index],
-                                  ],
-                                  
+                                  ], 
                                 ),
                                 isCorrect: () {
                                   return dtcontainer.getCorrectOutput() ==
@@ -290,7 +260,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       case "FigToWord":
         return StatefulBuilder(
           builder: (context, setState) {
-            bool isFailure = false; // State to track failure
+     // State to track failure
 
             return Container(
               height: 192.v,
