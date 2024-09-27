@@ -70,7 +70,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final AnalyticsService analyticsService;
-  final ScreenTracking _screenTracking;
+  ScreenTracking _screenTracking;
   final NetworkInfo _networkInfo = NetworkInfo();
 
   MyApp({required this.analyticsService})

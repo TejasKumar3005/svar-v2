@@ -1,4 +1,4 @@
-import 'dart:js_interop';
+// import 'dart:js_interop';
 
 import 'package:flutter/services.dart';
 import 'package:svar_new/core/analytics/analytics.dart';
