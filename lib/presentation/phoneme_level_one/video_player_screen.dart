@@ -1,6 +1,7 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
@@ -29,7 +30,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   void _initializePlayer() async {
-    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+    CachingManager cachingManager=CachingManager();
+
+    _videoPlayerController = VideoPlayerController.file((await cachingManager.getCachedFile(widget.videoUrl))!);
     await _videoPlayerController.initialize();
     _videoPlayerController.addListener(() {
       if (_videoPlayerController.value.position == _videoPlayerController.value.duration) {
