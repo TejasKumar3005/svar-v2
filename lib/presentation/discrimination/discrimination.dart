@@ -289,9 +289,8 @@ class _DiscriminationState extends State<Discrimination> {
       children: [
         AudioWidget(
           key: _childKey,
-          audioLinks: [
+          audioLinks: 
             dtcontainer.getVideoUrls(),
-          ],
         ),
         // SizedBox(
         //   height: 20.v,
@@ -326,25 +325,25 @@ class _DiscriminationState extends State<Discrimination> {
         SizedBox(
           height: 20.v,
         ),
+        OptionWidget(
+          child:
         OptionButton(
           type: ButtonType.Change,
           onPressed: () {
+          }
+        ),
+          isCorrect: () {
             List<double> total_length = _childKey.currentState!.lengths;
             double ans = total_length[0] / (total_length[1]+total_length[0]);
-            if (_childKey.currentState!.progress > ans && _childKey.currentState!.progress < ans + 0.1) {
-              // if (obj!["level"] >
-              //     provider.userModel.toJson()["levelMap"]["Discrimination"]!) {
-              //   UserData(buildContext: context)
-              //       .incrementLevelCount("Discrimination")
-              //       .then((value) {});
-              // }
-              _overlayEntry = celebrationOverlay(context, () {
-                _overlayEntry?.remove();
-              });
-              Overlay.of(context).insert(_overlayEntry!);
+            print("ans is $ans current progress is ${_childKey.currentState!.progress}");
+            if (_childKey.currentState!.progress > ans && _childKey.currentState!.progress < ans + 0.2) {
+              return true;
             }
-          },
-        ),
+            else {
+              return false;
+            }
+          }
+        )
       ],
     );
   }

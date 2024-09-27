@@ -18,49 +18,69 @@ class AudioWidgetState extends State<AudioWidget> {
   late AudioPlayer _audioPlayer;
   late double progress;
   late int currentIndex;
+  late double completed;
   late List<double> lengths;
+  late double total_length;
 
-  Future <double> get_audio_length(String link) async {
-
-    var j = await _audioPlayer.setUrl(link);
-      print("j is ${j!.inMilliseconds}");
-      await _audioPlayer.load();
-      return  j != null ? j.inMilliseconds.toDouble() / 1000 : 2.0;
-
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    currentIndex = 0;
-    _audioPlayer = AudioPlayer();
-    progress = 0.0;
-    double total_length = 0.0;
-    lengths = [];
-    print("widget.audioLinks is ${widget.audioLinks.length}");
-    for (int i = 0; i < widget.audioLinks.length; i++) {
-      // double length = 0.0;
-      print("i is $i");
-      get_audio_length(widget.audioLinks[i]).then((value) {
-        print("value is $value");
-        double length = value;
-      print("length is $length");
-      lengths.add(length);
-      total_length += length;
-      print("total_length is $total_length");
+@override
+void initState() {
+  super.initState();
+  currentIndex = 0;
+  _audioPlayer = AudioPlayer();
+  progress = 0.0;
+  completed = 0.0;
+  total_length = 0.0;
+  lengths = [];
+  
+  print("widget.audioLinks is ${widget.audioLinks.length}");
+  
+  // Call the async function to ensure the for loop runs sequentially
+  loadAudioLengths();
+  
+  // Subscribe to the audio player's position stream
+  _audioPlayer.positionStream.listen((position) {
+    if (_audioPlayer.duration != null && _audioPlayer.duration!.inSeconds > 0) {
+      setState(() {
+        progress = (completed + position.inSeconds.toDouble()) / total_length;
       });
     }
-    print("lengths is $lengths");
+  });
+}
+
+Future<void> loadAudioLengths() async {
+  for (int i = 0; i < widget.audioLinks.length; i++) {
+    print("i is $i");
+    print("audio link is ${widget.audioLinks[i]}");
+    
+    // Await the result of the async function before continuing the loop
+    double length = await get_audio_length(widget.audioLinks[i]);
+    
+    print("value is $length");
+    lengths.add(length);
+    total_length += length;
+    
+    print("length is $length");
     print("total_length is $total_length");
-    _audioPlayer.positionStream.listen((position) {
-      if (_audioPlayer.duration != null &&
-          _audioPlayer.duration!.inSeconds > 0) {
-        setState(() {
-          progress = position.inSeconds / total_length;
-        });
-      }
-    });
   }
+  
+  print("lengths is $lengths");
+  print("total_length is $total_length");
+}
+
+Future<double> get_audio_length(String link) async {
+  print("hi $link");
+  
+  var j = await _audioPlayer.setUrl(link);
+  print("bye $link");
+  
+  if (j != null) {
+    print("j is ${j.inMilliseconds}");
+    await _audioPlayer.load();  // Wait for the audio to load
+    return j.inMilliseconds.toDouble() / 1000;  // Return the length in seconds
+  } else {
+    return 5.0;  // Fallback value if the audio URL couldn't be loaded
+  }
+}
 
   Future<void> playNext() async {
     print("currentIndex: $currentIndex");
@@ -72,6 +92,7 @@ class AudioWidgetState extends State<AudioWidget> {
         if (state.processingState == ProcessingState.completed) {
           if (currentIndex < widget.audioLinks.length - 1) {
             setState(() {
+              completed += lengths[currentIndex];
               currentIndex++;
             });
             playNext();
