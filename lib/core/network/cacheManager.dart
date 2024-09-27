@@ -112,7 +112,7 @@ static Future<void> cacheFilesInIsolate(LevelMap levelMap) async {
           } else if (type == "AudioToImage") {
             AudioToImage audioToImage = AudioToImage.fromJson(levelData);
         
-            urls.add(audioToImage.audio_url);
+            urls.addAll(audioToImage.audio_url);
             urls.addAll(audioToImage.image_list);
              
           } else if (type == "AudioToAudio") {
@@ -128,7 +128,7 @@ static Future<void> cacheFilesInIsolate(LevelMap levelMap) async {
           } else if (type == "HalfMuted") {
           HalfMuted halfMuted=  HalfMuted.fromJson(levelData);
            
-            urls.add(halfMuted.video_url);
+            urls.addAll(halfMuted.video_url);
             
           } else if (type == "DiffSounds") {
             DiffSounds diffSounds= DiffSounds.fromJson(levelData);

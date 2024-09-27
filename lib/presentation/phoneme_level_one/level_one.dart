@@ -174,10 +174,8 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         List<dynamic> argumentsList = [type, dtcontainer, params];
         debugPrint("Arguments list is: $argumentsList");
 
-        NavigatorService.pushNamed(
-             AppRoutes.detection,
-             arguments: argumentsList
-        );
+        NavigatorService.pushNamed(AppRoutes.detection,
+            arguments: argumentsList);
       }
     } catch (e) {
       debugPrint("Error in Detection handling: $e");
@@ -185,40 +183,56 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   }
 
   void _handleDiscrimination(
-    BuildContext context, int level, String params) async {
-  try {
-    final levelProvider =
-        Provider.of<PhonemsLevelOneProvider>(context, listen: false);
-    final Map<String, dynamic>? data =
-        await levelProvider.fetchData('Discrimination', level);
+      BuildContext context, int level, String params) async {
+    try {
+      final levelProvider =
+          Provider.of<PhonemsLevelOneProvider>(context, listen: false);
+      final Map<String, dynamic>? data =
+          await levelProvider.fetchData('Discrimination', level);
 
-    if (data == null) {
-      debugPrint("No data fetched for Discrimination at level $level.");
-      return;
-    }
+      if (data == null) {
+        debugPrint("No data fetched for Discrimination at level $level.");
+        return;
+      }
 
-    String? type = data["type"];
-    if (type == null) {
-      debugPrint("Type is null in the fetched data.");
-      return;
-    }
+      String? type = data["type"];
+      if (type == null) {
+        debugPrint("Type is null in the fetched data.");
+        return;
+      }
 
-     debugPrint("Fetched type for Identification: $type");
+      debugPrint("Fetched type for Identification: $type");
       debugPrint("Data is: $data");
 
-    final Object dtcontainer = retrieveObject(type, data);
- 
-    List<dynamic> argumentsList = [type,data, dtcontainer, params];
-     debugPrint("Arguments list is: $argumentsList");
+      if (type == "sound") {
+        String? videoUrl = data["video_url"];
+        if (videoUrl == null) {
+          debugPrint("Video URL is null in the fetched data.");
+          return;
+        }
 
-    // Pass the 'type' and 'data' to the Discrimination widget
-    NavigatorService.pushNamed(AppRoutes.discrimination,
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
+          ),
+        );
+      } else {
+        print("Type is not video");
+
+        final Object dtcontainer = retrieveObject(type, data);
+
+        List<dynamic> argumentsList = [type, data, dtcontainer, params];
+        debugPrint("Arguments list is: $argumentsList");
+
+        // Pass the 'type' and 'data' to the Discrimination widget
+        NavigatorService.pushNamed(AppRoutes.discrimination,
             arguments: argumentsList);
-  } catch (e) {
-    debugPrint("Error in Discrimination handling: $e");
+      }
+    } catch (e) {
+      debugPrint("Error in Discrimination handling: $e");
+    }
   }
-}
-
 
   void _handleIdentification(
       BuildContext context, int level, String params) async {
@@ -374,9 +388,6 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         debugPrint("No arguments found on this route.");
         return Container();
       }
-
-      var provider = context.watch<UserDataProvider>();
-
       return SafeArea(
         child: Scaffold(
           extendBody: true,
@@ -473,6 +484,8 @@ Object retrieveObject(String type, Map<String, dynamic> data) {
     return OddOne.fromJson(data);
   } else if (type == "DiffHalf") {
     return DiffHalf.fromJson(data);
+  } else if (type == "MaleFemale") {
+    return MaleFemale.fromJson(data);
   } else {
     return "unexpected value";
   }

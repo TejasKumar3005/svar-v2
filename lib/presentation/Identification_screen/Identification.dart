@@ -39,20 +39,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   ChewieController? _chewieController;
   OverlayEntry? _overlayEntry;
 
-  // Future<void> playAudio(String url) async {
-  //   try {
-  //     AudioCache.instance = AudioCache(prefix: '');
-  //     _player = AudioPlayer();
-  //     File? file;
-  //     CachingManager().getCachedFile(url).then((value) {
-  //       file = value;
-  //     });
-
-  //     await _player.play(BytesSource(file!.readAsBytesSync()));
-  //   } catch (e) {
-  //     print('Error initializing player: $e');
-  //   }
-  // }
 
   @override
   void dispose() {
@@ -275,7 +261,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                           children: [
                             if (dtcontainer.getTextList().length <= 4)
                               ...List.generate(
-                                  dtcontainer.getAudioList().length, (index) {
+                                  dtcontainer.getTextList().length, (index) {
                                 return Row(
                                   children: [
                                     OptionWidget(

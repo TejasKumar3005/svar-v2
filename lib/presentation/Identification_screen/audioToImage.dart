@@ -37,8 +37,7 @@ class AudiotoimageScreen extends StatefulWidget {
 
 class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   late AudioPlayer _player;
-  late bool _isGlowingA;
-  late bool _isGlowingB;
+
   late int leveltracker;
   int sel = 0;
   List<double> samples = [];
@@ -102,14 +101,13 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                             child: GestureDetector(
                               child: OptionWidget(
                                 child: AudioWidget(
-                                  audioLinks: [
-                                    widget.dtcontainer.getAudioList()[0],
-                                  ],
+                                  audioLinks: 
+                                    widget.dtcontainer.getAudioUrl(),
                                 ),
                                 isCorrect: () {
                                   return widget.dtcontainer
                                           .getCorrectOutput() ==
-                                      widget.dtcontainer.getAudioList()[0];
+                                      widget.dtcontainer.getAudioUrl();
                                 },
                               ),
                             ),

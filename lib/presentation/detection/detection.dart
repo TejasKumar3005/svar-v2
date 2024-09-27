@@ -13,7 +13,8 @@ import 'package:svar_new/presentation/phoneme_level_one/video_player_screen.dart
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
-
+import 'package:svar_new/widgets/Options.dart';
+import 'package:svar_new/widgets/audio_widget.dart';
 
 class Detection extends StatefulWidget {
   const Detection({
@@ -29,10 +30,11 @@ class Detection extends StatefulWidget {
 }
 
 class _DetectionState extends State<Detection> {
+  final GlobalKey<AudioWidgetState> _childKey = GlobalKey<AudioWidgetState>();
   String quizType = "video";
   int selectedOption = -1;
   PlayAudio playAudio = PlayAudio();
- 
+
   late VideoPlayerController _videoPlayerController1;
   late VideoPlayerController _videoPlayerController2;
   ChewieController? _chewieController1;
@@ -111,36 +113,35 @@ class _DetectionState extends State<Detection> {
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
-    dynamic dtcontainer =
-        obj[1] as dynamic;
+    dynamic dtcontainer = obj[1] as dynamic;
     return Scaffold(
       body
           // ? VideoPlayerScreen(
-          //     videoUrl: 
+          //     videoUrl:
           //   )
           : Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/discri_bg.png"),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              padding: EdgeInsets.symmetric(
-                horizontal: 15.h,
-                vertical: 10.v,
-              ),
-              child: Column(
-                children: [
-                  DisciAppBar(context),
-                  SizedBox(
-                    height: 26.v,
-                  ),
-                  detectionQuiz(context, type),
-                ],
-              ),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/discri_bg.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
+        padding: EdgeInsets.symmetric(
+          horizontal: 15.h,
+          vertical: 10.v,
+        ),
+        child: Column(
+          children: [
+            DisciAppBar(context),
+            SizedBox(
+              height: 26.v,
             ),
+            detectionQuiz(context, type),
+          ],
+        ),
+      ),
     );
   }
 
@@ -161,10 +162,9 @@ class _DetectionState extends State<Detection> {
   }
 
   Widget MutedUnmuted(BuildContext context) {
-     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
-    dynamic dtcontainer =
-        obj[1] as dynamic;
+    dynamic dtcontainer = obj[1] as dynamic;
     return Column(
       children: [
         Container(
@@ -240,38 +240,22 @@ class _DetectionState extends State<Detection> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            CustomButton(
-                type: ButtonType.Video1,
-                onPressed: () {
-                  // if (data["muted"] == 1) {
-                  //   // if (obj["level"] >
-                  //   //     provider.userModel.toJson()["levelMap"]["Detection"]!) {
-                  //   //   UserData(buildContext: context)
-                  //   //       .incrementLevelCount("Detection")
-                  //   //       .then((value) {});
-                  //   // }
-                  //   _overlayEntry = celebrationOverlay(context, () {
-                  //     _overlayEntry?.remove();
-                  //   });
-                  //   Overlay.of(context).insert(_overlayEntry!);
-                  // }
-                }),
-            CustomButton(
-                type: ButtonType.Video2,
-                onPressed: () {
-                  // if (widget.data["muted"] == 0) {
-                  //   // if (obj["level"] >
-                  //   //     provider.userModel.toJson()["levelMap"]["Detection"]!) {
-                  //   //   UserData(buildContext: context)
-                  //   //       .incrementLevelCount("Detection")
-                  //   //       .then((value) {});
-                  //   // }
-                  //   _overlayEntry = celebrationOverlay(context, () {
-                  //     _overlayEntry?.remove();
-                  //   });
-                  //   Overlay.of(context).insert(_overlayEntry!);
-                  // }
-                }),
+            Expanded(
+              child: OptionWidget(
+                child: OptionButton(type: ButtonType.Video1, onPressed: () {}),
+                isCorrect: () {
+                  return true;
+                },
+              ),
+            ),
+            Expanded(
+              child: OptionWidget(
+                child: OptionButton(type: ButtonType.Video2, onPressed: () {}),
+                isCorrect: () {
+                  return false;
+                },
+              ),
+            ),
           ],
         ),
       ],
@@ -281,189 +265,34 @@ class _DetectionState extends State<Detection> {
   Widget HalfMuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
-    dynamic dtcontainer =
-        obj[1] as dynamic;
+    dynamic dtcontainer = obj[1] as dynamic;
     var provider = Provider.of<UserDataProvider>(context, listen: false);
-    return Column(
+  return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildOption("A", PrimaryColors().deepOrangeA200, 0),
-        SizedBox(
-          height: 20.v,
-        ),
-        CustomButton(
-          type: ButtonType.Stop,
-          onPressed: () {
-            playAudio.stopMusic();
-            if (currentProgress > 4 && currentProgress < 6) {
-              // if (obj["level"] >
-              //     provider.userModel.toJson()["levelMap"]["Detection"]!) {
-              //   UserData(buildContext: context)
-              //       .incrementLevelCount("Detection")
-              //       .then((value) {});
-              // }
-              _overlayEntry = celebrationOverlay(context, () {
-                _overlayEntry?.remove();
-              });
-              Overlay.of(context).insert(_overlayEntry!);
-            }
-          },
+        AudioWidget(
+          key: _childKey,
+          audioLinks: dtcontainer.getVideoUrls(),
         ),
         SizedBox(
           height: 20.v,
         ),
-        Container(
-          height: 40,
-
-          width: MediaQuery.of(context).size.width *
-              0.6, // Adjust this value to control the width of the slider
-          child: Center(
-            child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor:
-                    PrimaryColors().blue20001, // Green part of the slider
-                inactiveTrackColor:
-                    Colors.white, // Light blue part of the slider
-                trackHeight: 20.0,
-
-                thumbShape: RectangularImageThumb(
-                  thumbWidth: 50.0, // Set the width of the thumb
-                  thumbHeight: 50.0, // Set the height of the thumb
-                  thumbImagePath:
-                      'assets/images/thumb.png', // Path to the thumb image
-                ),
-                thumbColor: PrimaryColors().orange800,
-                // Orange circle
-                overlayColor: Colors.orange
-                    .withOpacity(0.2), // Overlay color when dragging
-                overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
-              ),
-              child: Slider(
-                value: currentProgress,
-                onChanged: (value) {},
-                min: 0.0,
-                max: totalDuration > 4 ? totalDuration : 10.0,
-              ),
-            ),
-          ),
-        ),
+        OptionWidget(
+            child: OptionButton(type: ButtonType.Stop, onPressed: () {}),
+            isCorrect: () {
+              List<double> total_length = _childKey.currentState!.lengths;
+              double ans =
+                  total_length[0] / (total_length[1] + total_length[0]);
+              print(
+                  "ans is $ans current progress is ${_childKey.currentState!.progress}");
+              if (_childKey.currentState!.progress > ans &&
+                  _childKey.currentState!.progress < ans + 0.1) {
+                return true;
+              } else {
+                return false;
+              }
+            })
       ],
     );
-  }
-
-  Widget _buildOption(String text, Color color, int index) {
-    {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            text + ")",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(
-            width: 10.h,
-          ),
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedOption = index;
-              });
-            },
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.4,
-              padding: EdgeInsets.symmetric(
-                horizontal: 3.h,
-                vertical: 5.v,
-              ),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: PrimaryColors().deepOrangeA200,
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 3,
-                  )),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                // children: [
-                //   GestureDetector(
-                //     onTap: () {
-                //     //   if (type == "HalfMuted") {
-                //     //     playAudio.setVolume(0.0); // Set volume to 20%
-
-                //     //     playAudio.audioPlayer.onPositionChanged
-                //     //         .listen((position) {
-                //     //       setState(() {
-                //     //         currentProgress = position.inSeconds.toDouble();
-                //     //       });
-                //     //     });
-                //     //     playAudio.audioPlayer.onDurationChanged
-                //     //         .listen((duration) {
-                //     //       setState(() {
-                //     //         totalDuration = duration.inSeconds.toDouble();
-                //     //       });
-                //     //     });
-
-                //     //     // fetch the file from cache
-                //     //     File? file;
-                //     //     CachingManager()
-                //     //         .getCachedFile(audios[index])
-                //     //         .then((value) {
-                //     //       file = value;
-                //     //     });
-                //     //     playAudio.playMusicFromFile(file!, "mp3", false);
-
-                //     //     volumeTimer = Timer(Duration(seconds: 5), () {
-                //     //       playAudio.setVolume(1); // Set volume to maximum
-                //     //     });
-                //     //   } else {
-                //     //     File? file;
-                //     //     CachingManager()
-                //     //         .getCachedFile(audios[index])
-                //     //         .then((value) {
-                //     //       file = value;
-                //     //     });
-                //     //     playAudio.playMusicFromFile(file!, "mp3", false);
-                //     //   }
-                //     },
-                //   //   child: Row(
-                //   //     children: [
-                //   //       CustomButton(
-                //   //         type: ButtonType.ImagePlay,
-                //   //         onPressed: () {},
-                //   //       ),
-                //   //       SizedBox(
-                //   //         width: 10.h,
-                //   //       ),
-                //   //     ],
-                //   //   ),
-                //   // ),
-                //   // Container(
-                //   //   height: 50,
-                //   //   width: 8,
-                //   //   decoration: BoxDecoration(
-                //   //     color: Colors.white,
-                //   //   ),
-                //   // ),
-                //   // SizedBox(
-                //   //   width: 10.h,
-                //   // ),
-                //   // CustomImageView(
-                //   //   width: MediaQuery.of(context).size.width * 0.4 - 98,
-                //   //   height: 60,
-                //   //   fit: BoxFit.fill,
-                //   //   imagePath: "assets/images/spectrum.png",
-                //   // ),
-                // ],
-              ),
-            ),
-          ),
-        ],
-      );
-    }
   }
 }
