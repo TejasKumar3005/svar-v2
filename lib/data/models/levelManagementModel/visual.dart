@@ -229,19 +229,19 @@ class OddOne {
 }
 
 class DiffHalf {
-  final double correct_output;
+  
 
   final List<String> video_url;
 
   DiffHalf._({
     required this.video_url,
-    required this.correct_output,
+    
   });
 
   factory DiffHalf.fromJson(Map<String, dynamic> json) {
     return DiffHalf._(
       video_url: List<String>.from(json['video_url']),
-      correct_output: json['correct_output'] as double,
+    
     );
   }
 

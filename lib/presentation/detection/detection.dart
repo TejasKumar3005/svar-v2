@@ -44,10 +44,10 @@ class _DetectionState extends State<Detection> {
   double totalDuration = 0.0;
   @override
   void initState() {
-    if (widget.type == "MutedUnmuted") {
-      initiliaseVideo(widget.data["video_url"][0], 1);
-      initiliaseVideo(widget.data["video_url"][1], 2);
-    }
+    // if (widget.type == "MutedUnmuted") {
+    //   initiliaseVideo(widget.data["video_url"][0], 1);
+    //   initiliaseVideo(widget.data["video_url"][1], 2);
+    // }
     super.initState();
   }
 
@@ -114,10 +114,10 @@ class _DetectionState extends State<Detection> {
     dynamic dtcontainer =
         obj[1] as dynamic;
     return Scaffold(
-      body: type == "video"
-          ? VideoPlayerScreen(
-              videoUrl: widget.data["video_url"],
-            )
+      body
+          // ? VideoPlayerScreen(
+          //     videoUrl: 
+          //   )
           : Container(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
@@ -146,10 +146,10 @@ class _DetectionState extends State<Detection> {
 
   Widget detectionQuiz(BuildContext context, String quizType) {
     switch (quizType) {
-      case "video":
-        return VideoPlayerScreen(
-          videoUrl: widget.data["video_url"],
-        );
+      // case "video":
+      //   return VideoPlayerScreen(
+      //     videoUrl: widget.data["video_url"],
+      //   );
       case "HalfMuted":
         return HalfMuted(context);
       case "MutedUnmuted":
@@ -243,34 +243,34 @@ class _DetectionState extends State<Detection> {
             CustomButton(
                 type: ButtonType.Video1,
                 onPressed: () {
-                  if (widget.data["muted"] == 1) {
-                    // if (obj["level"] >
-                    //     provider.userModel.toJson()["levelMap"]["Detection"]!) {
-                    //   UserData(buildContext: context)
-                    //       .incrementLevelCount("Detection")
-                    //       .then((value) {});
-                    // }
-                    _overlayEntry = celebrationOverlay(context, () {
-                      _overlayEntry?.remove();
-                    });
-                    Overlay.of(context).insert(_overlayEntry!);
-                  }
+                  // if (data["muted"] == 1) {
+                  //   // if (obj["level"] >
+                  //   //     provider.userModel.toJson()["levelMap"]["Detection"]!) {
+                  //   //   UserData(buildContext: context)
+                  //   //       .incrementLevelCount("Detection")
+                  //   //       .then((value) {});
+                  //   // }
+                  //   _overlayEntry = celebrationOverlay(context, () {
+                  //     _overlayEntry?.remove();
+                  //   });
+                  //   Overlay.of(context).insert(_overlayEntry!);
+                  // }
                 }),
             CustomButton(
                 type: ButtonType.Video2,
                 onPressed: () {
-                  if (widget.data["muted"] == 0) {
-                    // if (obj["level"] >
-                    //     provider.userModel.toJson()["levelMap"]["Detection"]!) {
-                    //   UserData(buildContext: context)
-                    //       .incrementLevelCount("Detection")
-                    //       .then((value) {});
-                    // }
-                    _overlayEntry = celebrationOverlay(context, () {
-                      _overlayEntry?.remove();
-                    });
-                    Overlay.of(context).insert(_overlayEntry!);
-                  }
+                  // if (widget.data["muted"] == 0) {
+                  //   // if (obj["level"] >
+                  //   //     provider.userModel.toJson()["levelMap"]["Detection"]!) {
+                  //   //   UserData(buildContext: context)
+                  //   //       .incrementLevelCount("Detection")
+                  //   //       .then((value) {});
+                  //   // }
+                  //   _overlayEntry = celebrationOverlay(context, () {
+                  //     _overlayEntry?.remove();
+                  //   });
+                  //   Overlay.of(context).insert(_overlayEntry!);
+                  // }
                 }),
           ],
         ),
@@ -389,76 +389,76 @@ class _DetectionState extends State<Detection> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (type == "HalfMuted") {
-                        playAudio.setVolume(0.0); // Set volume to 20%
+                // children: [
+                //   GestureDetector(
+                //     onTap: () {
+                //     //   if (type == "HalfMuted") {
+                //     //     playAudio.setVolume(0.0); // Set volume to 20%
 
-                        playAudio.audioPlayer.onPositionChanged
-                            .listen((position) {
-                          setState(() {
-                            currentProgress = position.inSeconds.toDouble();
-                          });
-                        });
-                        playAudio.audioPlayer.onDurationChanged
-                            .listen((duration) {
-                          setState(() {
-                            totalDuration = duration.inSeconds.toDouble();
-                          });
-                        });
+                //     //     playAudio.audioPlayer.onPositionChanged
+                //     //         .listen((position) {
+                //     //       setState(() {
+                //     //         currentProgress = position.inSeconds.toDouble();
+                //     //       });
+                //     //     });
+                //     //     playAudio.audioPlayer.onDurationChanged
+                //     //         .listen((duration) {
+                //     //       setState(() {
+                //     //         totalDuration = duration.inSeconds.toDouble();
+                //     //       });
+                //     //     });
 
-                        // fetch the file from cache
-                        File? file;
-                        CachingManager()
-                            .getCachedFile(audios[index])
-                            .then((value) {
-                          file = value;
-                        });
-                        playAudio.playMusicFromFile(file!, "mp3", false);
+                //     //     // fetch the file from cache
+                //     //     File? file;
+                //     //     CachingManager()
+                //     //         .getCachedFile(audios[index])
+                //     //         .then((value) {
+                //     //       file = value;
+                //     //     });
+                //     //     playAudio.playMusicFromFile(file!, "mp3", false);
 
-                        volumeTimer = Timer(Duration(seconds: 5), () {
-                          playAudio.setVolume(1); // Set volume to maximum
-                        });
-                      } else {
-                        File? file;
-                        CachingManager()
-                            .getCachedFile(audios[index])
-                            .then((value) {
-                          file = value;
-                        });
-                        playAudio.playMusicFromFile(file!, "mp3", false);
-                      }
-                    },
-                    child: Row(
-                      children: [
-                        CustomButton(
-                          type: ButtonType.ImagePlay,
-                          onPressed: () {},
-                        ),
-                        SizedBox(
-                          width: 10.h,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 50,
-                    width: 8,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10.h,
-                  ),
-                  CustomImageView(
-                    width: MediaQuery.of(context).size.width * 0.4 - 98,
-                    height: 60,
-                    fit: BoxFit.fill,
-                    imagePath: "assets/images/spectrum.png",
-                  ),
-                ],
+                //     //     volumeTimer = Timer(Duration(seconds: 5), () {
+                //     //       playAudio.setVolume(1); // Set volume to maximum
+                //     //     });
+                //     //   } else {
+                //     //     File? file;
+                //     //     CachingManager()
+                //     //         .getCachedFile(audios[index])
+                //     //         .then((value) {
+                //     //       file = value;
+                //     //     });
+                //     //     playAudio.playMusicFromFile(file!, "mp3", false);
+                //     //   }
+                //     },
+                //   //   child: Row(
+                //   //     children: [
+                //   //       CustomButton(
+                //   //         type: ButtonType.ImagePlay,
+                //   //         onPressed: () {},
+                //   //       ),
+                //   //       SizedBox(
+                //   //         width: 10.h,
+                //   //       ),
+                //   //     ],
+                //   //   ),
+                //   // ),
+                //   // Container(
+                //   //   height: 50,
+                //   //   width: 8,
+                //   //   decoration: BoxDecoration(
+                //   //     color: Colors.white,
+                //   //   ),
+                //   // ),
+                //   // SizedBox(
+                //   //   width: 10.h,
+                //   // ),
+                //   // CustomImageView(
+                //   //   width: MediaQuery.of(context).size.width * 0.4 - 98,
+                //   //   height: 60,
+                //   //   fit: BoxFit.fill,
+                //   //   imagePath: "assets/images/spectrum.png",
+                //   // ),
+                // ],
               ),
             ),
           ),

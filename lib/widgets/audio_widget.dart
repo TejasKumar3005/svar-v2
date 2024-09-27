@@ -11,12 +11,12 @@ class AudioWidget extends StatefulWidget {
   const AudioWidget({Key? key, required this.audioLinks}) : super(key: key);
 
   @override
-  _AudioWidgetState createState() => _AudioWidgetState();
+  AudioWidgetState createState() => AudioWidgetState();
 }
 
-class _AudioWidgetState extends State<AudioWidget> {
+class AudioWidgetState extends State<AudioWidget> {
   late AudioPlayer _audioPlayer;
-  late double _progress;
+  late double progress;
   late int currentIndex;
   late List<double> lengths;
 
@@ -34,7 +34,7 @@ class _AudioWidgetState extends State<AudioWidget> {
     super.initState();
     currentIndex = 0;
     _audioPlayer = AudioPlayer();
-    _progress = 0.0;
+    progress = 0.0;
     double total_length = 0.0;
     lengths = [];
     print("widget.audioLinks is ${widget.audioLinks.length}");
@@ -56,7 +56,7 @@ class _AudioWidgetState extends State<AudioWidget> {
       if (_audioPlayer.duration != null &&
           _audioPlayer.duration!.inSeconds > 0) {
         setState(() {
-          _progress = position.inSeconds / total_length;
+          progress = position.inSeconds / total_length;
         });
       }
     });
@@ -64,7 +64,7 @@ class _AudioWidgetState extends State<AudioWidget> {
 
   Future<void> playNext() async {
     print("currentIndex: $currentIndex");
-    print("progress: ${_progress}");
+    print("progress: ${progress}");
     if (currentIndex < widget.audioLinks.length) {
       await _audioPlayer.setUrl(widget.audioLinks[currentIndex]);
       await _audioPlayer.play();
@@ -78,7 +78,7 @@ class _AudioWidgetState extends State<AudioWidget> {
           } else {
             setState(() {
               currentIndex = 0;
-              _progress = 0.0;
+              progress = 0.0;
               _audioPlayer.stop();
             });
           }
@@ -164,7 +164,7 @@ class _AudioWidgetState extends State<AudioWidget> {
                 Positioned.fill(
                   child: ClipRect(
                     clipper: _ProgressClipper(
-                      progress: _progress, // Pass dynamic progress here
+                      progress: progress, // Pass dynamic progress here
                     ),
                     child: SvgPicture.asset(
                       'assets/images/svg/Spectrum.svg', // Same SVG path

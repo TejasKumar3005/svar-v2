@@ -19,6 +19,7 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
 import './customthumb.dart';
 import 'package:svar_new/widgets/Options.dart';
+import 'package:svar_new/widgets/audio_widget.dart';
 
 class Discrimination extends StatefulWidget {
   const Discrimination({
@@ -34,19 +35,23 @@ class Discrimination extends StatefulWidget {
 }
 
 class _DiscriminationState extends State<Discrimination> {
-  PlayAudio playAudio = PlayAudio();
+  final GlobalKey<AudioWidgetState> _childKey = GlobalKey<AudioWidgetState>();
+
   int selectedOption = -1;
   List<double> samples = [];
   OverlayEntry? _overlayEntry;
 
   bool isPlaying = false;
 
-  Duration totalDuration = Duration(seconds: 0);
-  Duration position = Duration(seconds: 0);
   int currentIndex = 0;
   double currentProgress = 0.0;
-  Timer? playTimer;
-
+  List<double> total_length = [];
+ 
+  void getAudioProgress() {
+    setState(() {
+      currentProgress = _childKey.currentState!.progress;
+    });
+  }
   @override
   void dispose() {
     // playTimer?.cancel(); // Cancel any ongoing timers
@@ -63,6 +68,8 @@ class _DiscriminationState extends State<Discrimination> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+
+
   }
 
   @override
@@ -281,7 +288,7 @@ class _DiscriminationState extends State<Discrimination> {
       mainAxisSize: MainAxisSize.min,
       children: [
         AudioWidget(
-          
+          key: _childKey,
           audioLinks: [
             dtcontainer.getVideoUrls(),
           ],
@@ -322,7 +329,9 @@ class _DiscriminationState extends State<Discrimination> {
         OptionButton(
           type: ButtonType.Change,
           onPressed: () {
-            if (currentProgress > 4 && currentProgress < 6) {
+            List<double> total_length = _childKey.currentState!.lengths;
+            double ans = total_length[0] / (total_length[1]+total_length[0]);
+            if (_childKey.currentState!.progress > ans && _childKey.currentState!.progress < ans + 0.1) {
               // if (obj!["level"] >
               //     provider.userModel.toJson()["levelMap"]["Discrimination"]!) {
               //   UserData(buildContext: context)
