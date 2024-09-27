@@ -1,4 +1,7 @@
+import 'dart:js_interop';
+
 import 'package:flutter/services.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/core/utils/validation_functions.dart';
 import 'package:svar_new/database/userController.dart';
@@ -283,8 +286,9 @@ class RegisterScreenState
                           SizedBox(height: 22.v),
                         CustomButton(
                                   type: ButtonType.Next,
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (_formKey.currentState!.validate() && dropdownValue1!="Select Therapist") {
+                                  await     AnalyticsService().logSignup(textCtrl.emailController.text);
                                       RegisterFormMethods methods =
                                           RegisterFormMethods(context: context);
                                       Map<String, dynamic> result =

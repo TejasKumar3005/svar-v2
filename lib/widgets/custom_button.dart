@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/utils/image_constant.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 
@@ -193,6 +194,13 @@ class CustomButton extends StatelessWidget {
         }
                         
         onPressed();
+        AnalyticsService _analyticsService;
+        _analyticsService = AnalyticsService();
+        _analyticsService.logEvent('button_pressed', {
+          'button_type': type.toString(),
+            "time": DateTime.now().toString()
+        });
+
       },
       child: Container(
         height: height,

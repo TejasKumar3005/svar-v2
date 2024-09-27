@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -108,9 +109,10 @@ class LoginScreenState extends State<LoginScreen> {
                             height: 15.v,
                           ),
                           GestureDetector(
-                            onTap: () {
+                            onTap: () async{
                               if (_formKey.currentState!.validate() &&
                                   !provider.loading) {
+                                await    AnalyticsService().logSignIn(provider.emailController.text);
                                 LoginFormMethods methods =
                                     LoginFormMethods(context: context);
                                 methods.login();

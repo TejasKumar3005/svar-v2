@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
   final NetworkInfo _networkInfo = NetworkInfo();
 
   MyApp({required this.analyticsService})
-      : _screenTracking = ScreenTracking(analyticsService) {
+      : _screenTracking = ScreenTracking(analyticsService,null) {
     _networkInfo.onConnectivityChanged.listen((ConnectivityResult result) {
       final isConnected = result != ConnectivityResult.none;
       showConnectivitySnackBar(isConnected);
@@ -83,6 +83,7 @@ class MyApp extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    _screenTracking.context = context;
     return Sizer(
       builder: (context, orientation, deviceType) {
         return MultiProvider(
@@ -113,6 +114,7 @@ class MyApp extends StatelessWidget {
                 scaffoldMessengerKey: globalMessengerKey,
                 debugShowCheckedModeBanner: false,
                 navigatorObservers: [_screenTracking],
+                
                 localizationsDelegates: [
                   AppLocalizationDelegate(),
                   // CountryLocalizations.delegate,
