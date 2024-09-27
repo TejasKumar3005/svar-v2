@@ -16,21 +16,15 @@ import 'package:video_player/video_player.dart';
 
 
 class Detection extends StatefulWidget {
-  final String type; // Add type as a parameter
-  final Map<String, dynamic> data;
-
-  const Detection({Key? key, required this.type, required this.data})
-      : super(key: key);
+  const Detection({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<Detection> createState() => _DetectionState();
 
   static Widget builder(BuildContext context) {
-    // Provide default values for demonstration purposes
-    return Detection(
-      type: 'default',
-      data: {},
-    );
+    return const Detection();
   }
 }
 
@@ -38,12 +32,7 @@ class _DetectionState extends State<Detection> {
   String quizType = "video";
   int selectedOption = -1;
   PlayAudio playAudio = PlayAudio();
-  List<String> audios = [
-    "assets/audios/1.mp3",
-    "assets/audios/2.mp3",
-    "assets/audios/3.mp3",
-    "assets/audios/4.mp3",
-  ];
+ 
   late VideoPlayerController _videoPlayerController1;
   late VideoPlayerController _videoPlayerController2;
   ChewieController? _chewieController1;
@@ -64,19 +53,18 @@ class _DetectionState extends State<Detection> {
 
   void initiliaseVideo(String videoUrl, int video) {
     File? file;
-     CachingManager().getCachedFile(videoUrl).then((value) {
+    CachingManager().getCachedFile(videoUrl).then((value) {
       file = value;
     });
     if (video == 1) {
-      _videoPlayerController1 =
-          VideoPlayerController.networkUrl(Uri.parse(
+      _videoPlayerController1 = VideoPlayerController.networkUrl(Uri.parse(
         videoUrl,
       ))
-            ..initialize().then((_) {
-              setState(() {
-                isVideoReady1 = true;
-              });
-            });
+        ..initialize().then((_) {
+          setState(() {
+            isVideoReady1 = true;
+          });
+        });
       _videoPlayerController1.addListener(() {
         if (_videoPlayerController1.value.position ==
             _videoPlayerController1.value.duration) {
@@ -121,8 +109,12 @@ class _DetectionState extends State<Detection> {
   OverlayEntry? _overlayEntry;
   @override
   Widget build(BuildContext context) {
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    String type = obj[0] as String;
+    dynamic dtcontainer =
+        obj[1] as dynamic;
     return Scaffold(
-      body: widget.type == "video"
+      body: type == "video"
           ? VideoPlayerScreen(
               videoUrl: widget.data["video_url"],
             )
@@ -145,7 +137,7 @@ class _DetectionState extends State<Detection> {
                   SizedBox(
                     height: 26.v,
                   ),
-                  detectionQuiz(context, widget.type),
+                  detectionQuiz(context, type),
                 ],
               ),
             ),
@@ -169,9 +161,10 @@ class _DetectionState extends State<Detection> {
   }
 
   Widget MutedUnmuted(BuildContext context) {
-    var obj =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    var provider = Provider.of<UserDataProvider>(context, listen: false);
+     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    String type = obj[0] as String;
+    dynamic dtcontainer =
+        obj[1] as dynamic;
     return Column(
       children: [
         Container(
@@ -251,12 +244,12 @@ class _DetectionState extends State<Detection> {
                 type: ButtonType.Video1,
                 onPressed: () {
                   if (widget.data["muted"] == 1) {
-                    if (obj["level"] >
-                        provider.userModel.toJson()["levelMap"]["Detection"]!) {
-                      UserData(buildContext: context)
-                          .incrementLevelCount("Detection")
-                          .then((value) {});
-                    }
+                    // if (obj["level"] >
+                    //     provider.userModel.toJson()["levelMap"]["Detection"]!) {
+                    //   UserData(buildContext: context)
+                    //       .incrementLevelCount("Detection")
+                    //       .then((value) {});
+                    // }
                     _overlayEntry = celebrationOverlay(context, () {
                       _overlayEntry?.remove();
                     });
@@ -267,12 +260,12 @@ class _DetectionState extends State<Detection> {
                 type: ButtonType.Video2,
                 onPressed: () {
                   if (widget.data["muted"] == 0) {
-                    if (obj["level"] >
-                        provider.userModel.toJson()["levelMap"]["Detection"]!) {
-                      UserData(buildContext: context)
-                          .incrementLevelCount("Detection")
-                          .then((value) {});
-                    }
+                    // if (obj["level"] >
+                    //     provider.userModel.toJson()["levelMap"]["Detection"]!) {
+                    //   UserData(buildContext: context)
+                    //       .incrementLevelCount("Detection")
+                    //       .then((value) {});
+                    // }
                     _overlayEntry = celebrationOverlay(context, () {
                       _overlayEntry?.remove();
                     });
@@ -286,8 +279,10 @@ class _DetectionState extends State<Detection> {
   }
 
   Widget HalfMuted(BuildContext context) {
-    var obj =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    String type = obj[0] as String;
+    dynamic dtcontainer =
+        obj[1] as dynamic;
     var provider = Provider.of<UserDataProvider>(context, listen: false);
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -301,12 +296,12 @@ class _DetectionState extends State<Detection> {
           onPressed: () {
             playAudio.stopMusic();
             if (currentProgress > 4 && currentProgress < 6) {
-              if (obj["level"] >
-                  provider.userModel.toJson()["levelMap"]["Detection"]!) {
-                UserData(buildContext: context)
-                    .incrementLevelCount("Detection")
-                    .then((value) {});
-              }
+              // if (obj["level"] >
+              //     provider.userModel.toJson()["levelMap"]["Detection"]!) {
+              //   UserData(buildContext: context)
+              //       .incrementLevelCount("Detection")
+              //       .then((value) {});
+              // }
               _overlayEntry = celebrationOverlay(context, () {
                 _overlayEntry?.remove();
               });
@@ -386,7 +381,7 @@ class _DetectionState extends State<Detection> {
               ),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
-                  color:PrimaryColors().deepOrangeA200,
+                  color: PrimaryColors().deepOrangeA200,
                   border: Border.all(
                     color: Colors.black,
                     width: 3,
@@ -397,7 +392,7 @@ class _DetectionState extends State<Detection> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      if (widget.type == "HalfMuted") {
+                      if (type == "HalfMuted") {
                         playAudio.setVolume(0.0); // Set volume to 20%
 
                         playAudio.audioPlayer.onPositionChanged
@@ -420,21 +415,19 @@ class _DetectionState extends State<Detection> {
                             .then((value) {
                           file = value;
                         });
-                        playAudio.playMusicFromFile(
-                          file!, "mp3", false);
+                        playAudio.playMusicFromFile(file!, "mp3", false);
 
                         volumeTimer = Timer(Duration(seconds: 5), () {
                           playAudio.setVolume(1); // Set volume to maximum
                         });
                       } else {
-                          File? file;
+                        File? file;
                         CachingManager()
                             .getCachedFile(audios[index])
                             .then((value) {
                           file = value;
                         });
-                        playAudio.playMusicFromFile(
-                          file!, "mp3", false);
+                        playAudio.playMusicFromFile(file!, "mp3", false);
                       }
                     },
                     child: Row(

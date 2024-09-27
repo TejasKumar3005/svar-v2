@@ -31,6 +31,7 @@ class _AudioWidgetState extends State<AudioWidget> {
     
     for (int i = 0; i < widget.audioLinks.length; i++) {
       _audioPlayer.setUrl(widget.audioLinks[i]);
+      _audioPlayer.load();
       lengths.add(_audioPlayer.duration!.inSeconds.toDouble());
       total_length += _audioPlayer.duration!.inSeconds.toDouble();
     }

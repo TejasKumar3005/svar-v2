@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/presentation/camera_video_excercise/permission_dialog.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
@@ -66,7 +67,7 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     );
   try {
   await _controller.initialize();
-     _controller.lockCaptureOrientation(DeviceOrientation.landscapeRight);
+    await _controller.lockCaptureOrientation(DeviceOrientation.landscapeRight);
     setState(() {
       isCameraReady = true;
     });
@@ -92,18 +93,21 @@ class _VideoCamScreenState extends State<VideoCamScreen>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+  WidgetsBinding.instance.addPostFrameCallback((_){
 
     _requestCameraPermission();
-    initiliaseVideo();
+    // initiliaseVideo();
+  });
   }
 
 
 
-  void initiliaseVideo() {
+  void initiliaseVideo() async{
     var prov = Provider.of<LingLearningProvider>(context, listen: false);
-    
-    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(
-       "https://images.svar.in/phonemes/${PhonmesListModel().addedPhonemes.contains(PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]) ?PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]:"B"}.mp4"))
+    CachingManager cachingManager =CachingManager();
+    _videoPlayerController = VideoPlayerController.file(
+      (await cachingManager.getCachedFile("https://images.svar.in/phonemes/${PhonmesListModel().addedPhonemes.contains(PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]) ?PhonmesListModel().hindiToEnglishPhonemeMap[prov.selectedCharacter]:"B"}.mp4"))!
+       )
       ..initialize().then((_) {
         setState(() {
           isVideoReady = true;
@@ -130,7 +134,7 @@ class _VideoCamScreenState extends State<VideoCamScreen>
   void dispose() {
     _videoPlayerController.dispose();
     _chewieController?.dispose();
-    _controller.dispose();
+    // _controller.dispose();
     super.dispose();
   }
 
@@ -138,7 +142,7 @@ class _VideoCamScreenState extends State<VideoCamScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
   
     if (state == AppLifecycleState.inactive) {
-      _controller.dispose();
+      // _controller.dispose();
     } else if (state == AppLifecycleState.resumed) {
       if (_controller != null && !_controller.value.isInitialized) {
       _initializeCamera().then((_) {
