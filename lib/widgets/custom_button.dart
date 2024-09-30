@@ -202,7 +202,7 @@ void initState() {
   Widget build(BuildContext context) {
     // final click = ClickProvider.of(context)?.click;
 
-    if (widget.type == ButtonType.Play || widget.type == ButtonType.Settings || widget.type == ButtonType.Login || widget.type == ButtonType.SignUp || widget.type == ButtonType.Next) {
+    if (widget.type == ButtonType.Play || widget.type == ButtonType.Settings || widget.type == ButtonType.Login || widget.type == ButtonType.SignUp || widget.type == ButtonType.Next || widget.type == ButtonType.Video1 || widget.type == ButtonType.Video2 ) {
       setState(() {
         width = MediaQuery.of(context).size.width * 0.7;
       });

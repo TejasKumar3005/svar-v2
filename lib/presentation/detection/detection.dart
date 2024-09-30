@@ -165,6 +165,7 @@ class _DetectionState extends State<Detection> {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
+
     return Column(
       children: [
         Container(
@@ -241,19 +242,30 @@ class _DetectionState extends State<Detection> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Expanded(
-              child: OptionWidget(
-                child: OptionButton(type: ButtonType.Video1, onPressed: () {}),
-                isCorrect: () {
-                  return true;
-                },
+              child: Container(
+                width: MediaQuery.of(context).size.width *
+                    0.40, // Dynamically set width
+                child: OptionWidget(
+                  child:
+                      OptionButton(type: ButtonType.Video1, onPressed: () {}),
+                  isCorrect: () {
+                    return dtcontainer.CorrectOutput();
+                  },
+                ),
               ),
             ),
+            SizedBox(width: 20), // Add spacing between buttons if needed
             Expanded(
-              child: OptionWidget(
-                child: OptionButton(type: ButtonType.Video2, onPressed: () {}),
-                isCorrect: () {
-                  return false;
-                },
+              child: Container(
+                width: MediaQuery.of(context).size.width *
+                    0.40, // Dynamically set width
+                child: OptionWidget(
+                  child:
+                      OptionButton(type: ButtonType.Video2, onPressed: () {}),
+                  isCorrect: () {
+                    return false;
+                  },
+                ),
               ),
             ),
           ],
@@ -267,7 +279,7 @@ class _DetectionState extends State<Detection> {
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
     var provider = Provider.of<UserDataProvider>(context, listen: false);
-  return Column(
+    return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         AudioWidget(
