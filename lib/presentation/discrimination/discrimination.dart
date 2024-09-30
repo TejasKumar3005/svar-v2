@@ -180,7 +180,7 @@ class _DiscriminationState extends State<Discrimination> {
                 },
               ),
             ),
-          Expanded(
+            Expanded(
               child: OptionWidget(
                 child: ImageWidget(imagePath: "assets/images/male.png"),
                 isCorrect: () {
@@ -359,8 +359,14 @@ class _DiscriminationState extends State<Discrimination> {
       case 2:
         return Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment:
+              MainAxisAlignment.center, // Center the column vertically
+          crossAxisAlignment:
+              CrossAxisAlignment.center, // Center the column horizontally
           children: [
             Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
                   child: AudioWidget(
@@ -394,8 +400,14 @@ class _DiscriminationState extends State<Discrimination> {
       case 3:
         return Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment:
+              MainAxisAlignment.center, // Center the column vertically
+          crossAxisAlignment:
+              CrossAxisAlignment.center, // Center the column horizontally
           children: [
             Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
                   child: AudioWidget(
@@ -428,7 +440,8 @@ class _DiscriminationState extends State<Discrimination> {
               height: 20.v,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
                   child: AudioWidget(
@@ -448,8 +461,14 @@ class _DiscriminationState extends State<Discrimination> {
       default:
         return Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment:
+              MainAxisAlignment.center, // Center the column vertically
+          crossAxisAlignment:
+              CrossAxisAlignment.center, // Center the column horizontally
           children: [
             Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
                   child: AudioWidget(
@@ -482,6 +501,8 @@ class _DiscriminationState extends State<Discrimination> {
               height: 20.v,
             ),
             Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
                   child: AudioWidget(

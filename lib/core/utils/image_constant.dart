@@ -24,7 +24,7 @@ class ImageConstant {
   static String imgTipbtn = "$imagePath/svg/Tip_BTN_Button.svg";
   static String imgVideo1btn = "$imagePath/svg/Video-1_BTN.svg";
   static String imgVideo2btn = "$imagePath/svg/Video-2_BTN.svg";
- 
+  static String imgSpectrum = "$imagePath/svg/Spectrum.svg";  
 
   static String imgDetection = '$imagePath/Detection.png';  
   static String imgDiscrimination = '$imagePath/Description.png';
@@ -43,7 +43,7 @@ class ImageConstant {
   static String imgShine = '$imagePath/svg/Shine.svg';
   static String imgAuditorybg = '$imagePath/BG18.svg';
   static String imgEllipse177 = '$imagePath/img_ellipse_177.png';
-  static String imgSpectrum = '$imagePath/spectrum.png';
+ 
   static String imgClap = '$imagePath/clap.png';
   static String imgReplayBtn = '$imagePath/svg/Replay.svg';
   static String imgEllipse175 = '$imagePath/img_ellipse_175.png';

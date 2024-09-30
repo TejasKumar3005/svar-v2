@@ -27,16 +27,20 @@ enum ButtonType {
   Same,
   Video1,
   Video2,
-  Stop
+  Stop,
+  Spectrum
+
 }
 class CustomButton extends StatefulWidget {
   final ButtonType type;
   final VoidCallback onPressed;
 
+
   const CustomButton({
     Key? key,
     required this.type,
     required this.onPressed,
+     
   }) : super(key: key);
 
   @override
@@ -183,6 +187,12 @@ void initState() {
         height = 80;
         isSvg = true;
         break;
+      case ButtonType.Spectrum:
+        imagePath = ImageConstant.imgSpectrum;
+        width = 60;
+        height = 60;
+        isSvg = true;
+        break;
 
       // Add cases for more button types here
     }
@@ -220,6 +230,7 @@ void initState() {
             ? SvgPicture.asset(
                 imagePath,
                 fit: fit,
+               
               )
             : Image.asset(
                 imagePath,
