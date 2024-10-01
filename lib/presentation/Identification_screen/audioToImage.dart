@@ -54,7 +54,6 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     _player = AudioPlayer();
     leveltracker = 0;
 
-
     // Fetch correct answer from the database
   }
 
@@ -101,8 +100,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                             child: GestureDetector(
                               child: OptionWidget(
                                 child: AudioWidget(
-                                  audioLinks: 
-                                    widget.dtcontainer.getAudioUrl(),
+                                  audioLinks: widget.dtcontainer.getAudioUrl(),
                                 ),
                                 isCorrect: () {
                                   return widget.dtcontainer
@@ -113,35 +111,43 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                             ),
                           ),
                           SizedBox(height: 50.v),
-                          Row(
-                            children: [
-                              if (widget.dtcontainer.getImageUrlList().length <=
-                                  4)
-                                ...List.generate(
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment
+                                  .center, // Align Row's children to the center
+                              children: [
+                                if (widget.dtcontainer
+                                        .getImageUrlList()
+                                        .length <=
+                                    4)
+                                  ...List.generate(
                                     widget.dtcontainer.getImageUrlList().length,
                                     (index) {
-                                  return Row(
-                                    children: [
-                                      OptionWidget(
-                                        child: ImageWidget(
-                                          imagePath: widget.dtcontainer
-                                              .getImageUrlList()[index],
-                                        ),
-                                        isCorrect: () {
-                                          return widget.dtcontainer
-                                                  .getCorrectOutput() ==
-                                              widget.dtcontainer
-                                                  .getImageUrlList()[index];
-                                        },
-                                      ),
-                                      SizedBox(
-                                          width:
-                                              20), 
-                                    ],
-                                  );
-                                })
-                            ],
-                          ),
+                                      return Row(
+                                        children: [
+                                          OptionWidget(
+                                            child: ImageWidget(
+                                              imagePath: widget.dtcontainer
+                                                  .getImageUrlList()[index],
+                                            ),
+                                            isCorrect: () {
+                                              return widget.dtcontainer
+                                                      .getCorrectOutput() ==
+                                                  widget.dtcontainer
+                                                      .getImageUrlList()[index];
+                                            },
+                                          ),
+                                          SizedBox(
+                                            width:
+                                                20, // Space between the widgets
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     ),
