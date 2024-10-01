@@ -136,7 +136,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                       ),
                                       SizedBox(
                                           width:
-                                              10), // Adds gap between each OptionWidget
+                                              20), 
                                     ],
                                   );
                                 })

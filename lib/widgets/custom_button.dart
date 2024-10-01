@@ -28,35 +28,37 @@ enum ButtonType {
   Video1,
   Video2,
   Stop,
-  Spectrum
-
+  Spectrum,
 }
+
 class CustomButton extends StatefulWidget {
   final ButtonType type;
   final VoidCallback onPressed;
-
+  final double? progress; // Only used for Spectrum
+  final Color? color; // Only used for Spectrum
 
   const CustomButton({
     Key? key,
     required this.type,
     required this.onPressed,
-     
+    this.progress,
+    this.color,
   }) : super(key: key);
 
   @override
   _CustomButtonState createState() => _CustomButtonState();
 }
+
 class _CustomButtonState extends State<CustomButton> {
+  String imagePath = '';
+  double height = 0;
+  double width = 0;
+  BoxFit fit = BoxFit.contain;
+  bool isSvg = false;
+  late VoidCallback onPressed_state;
 
-    String imagePath = '';
-    double height = 0;
-    double width = 0;
-    BoxFit fit = BoxFit.contain;
-    bool isSvg = false;
-    late VoidCallback onPressed_state;
-
-@override
-void initState() {
+  @override
+  void initState() {
     super.initState();
     onPressed_state = widget.onPressed;
     switch (widget.type) {
@@ -196,18 +198,66 @@ void initState() {
 
       // Add cases for more button types here
     }
-}
+  }
 
   @override
   Widget build(BuildContext context) {
-    // final click = ClickProvider.of(context)?.click;
+    // Adjust width for certain button types dynamically
+    if (widget.type == ButtonType.Play ||
+        widget.type == ButtonType.Settings ||
+        widget.type == ButtonType.Login ||
+        widget.type == ButtonType.SignUp ||
+        widget.type == ButtonType.Next ||
+        widget.type == ButtonType.Video1 ||
+        widget.type == ButtonType.Video2) {
+      width = MediaQuery.of(context).size.width * 0.7;
+    }
 
-    if (widget.type == ButtonType.Play || widget.type == ButtonType.Settings || widget.type == ButtonType.Login || widget.type == ButtonType.SignUp || widget.type == ButtonType.Next || widget.type == ButtonType.Video1 || widget.type == ButtonType.Video2 ) {
-      setState(() {
-        width = MediaQuery.of(context).size.width * 0.7;
-      });
-    } 
-    
+    // Handle Spectrum type with progress and color
+    if (widget.type == ButtonType.Spectrum) {
+      return GestureDetector(
+        onTap: () {
+          onPressed_state();
+          AnalyticsService _analyticsService = AnalyticsService();
+          _analyticsService.logEvent('button_pressed', {
+            'button_type': widget.type.toString(),
+            "time": DateTime.now().toString()
+          });
+        },
+        child: Container(
+          height: height,
+          width: width,
+          child: Stack(
+            children: [
+              // Original SVG
+              SvgPicture.asset(
+                imagePath,
+                fit: fit,
+                width: width,
+                height: height,
+              ),
+              // Overlay with progress
+              if (widget.progress != null)
+                ClipRect(
+                  clipper: _ProgressClipper(
+                    progress: widget.progress!,
+                  ),
+                  child: SvgPicture.asset(
+                    imagePath,
+                    fit: fit,
+                    width: width,
+                    height: height,
+                    colorFilter: ColorFilter.mode(
+                      widget.color ?? Colors.green,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return GestureDetector(
       onTap: () {
@@ -215,13 +265,11 @@ void initState() {
           PlayBgm().playMusic('Next_Btn.mp3', "mp3", false);
         }
         onPressed_state();
-        AnalyticsService _analyticsService;
-        _analyticsService = AnalyticsService();
+        AnalyticsService _analyticsService = AnalyticsService();
         _analyticsService.logEvent('button_pressed', {
           'button_type': widget.type.toString(),
-            "time": DateTime.now().toString()
+          "time": DateTime.now().toString()
         });
-
       },
       child: Container(
         height: height,
@@ -230,14 +278,34 @@ void initState() {
             ? SvgPicture.asset(
                 imagePath,
                 fit: fit,
-               
+                width: width,
+                height: height,
               )
             : Image.asset(
                 imagePath,
                 fit: fit,
+                width: width,
+                height: height,
               ),
       ),
     );
+  }
+}
+
+// Custom clipper for progress overlay
+class _ProgressClipper extends CustomClipper<Rect> {
+  final double progress;
+
+  _ProgressClipper({required this.progress});
+
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromLTRB(0, 0, size.width * progress, size.height);
+  }
+
+  @override
+  bool shouldReclip(_ProgressClipper oldClipper) {
+    return oldClipper.progress != progress;
   }
 }
 
@@ -267,6 +335,7 @@ class _OptionButtonState extends _CustomButtonState {
     setState(() {
       onPressed_state = () {
         if (click != null) {
+          print("click");
           click();
         }
         widget.onPressed();
