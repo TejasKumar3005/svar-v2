@@ -32,13 +32,11 @@ class IdentificationScreen extends StatefulWidget {
 }
 
 class AuditoryScreenState extends State<IdentificationScreen> {
-
   late AudioPlayer _player;
   late int leveltracker;
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
   OverlayEntry? _overlayEntry;
-
 
   @override
   void dispose() {
@@ -55,12 +53,12 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    
+
     _player = AudioPlayer();
 
     leveltracker = 0;
   }
-  
+
   int sel = 0;
 
   @override
@@ -69,7 +67,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
-  
+
     String params = obj[2] as String;
 
     return type != "AudioToImage"
@@ -208,14 +206,12 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                 child: Container(
                   height: MediaQuery.of(context).size.height *
                       0.5, // Adjust height as needed
-                  width: MediaQuery.of(context).size.width *
-                      0.8,
-                       // Adjust width as needed
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  // Adjust width as needed
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (dtcontainer.getAudioList().length <= 4)
-                      
                         ...List.generate(dtcontainer.getAudioList().length,
                             (index) {
                           return Column(
@@ -224,7 +220,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                 child: AudioWidget(
                                   audioLinks: [
                                     dtcontainer.getAudioList()[index],
-                                  ], 
+                                  ],
                                 ),
                                 isCorrect: () {
                                   return dtcontainer.getCorrectOutput() ==
@@ -246,45 +242,52 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       case "FigToWord":
         return StatefulBuilder(
           builder: (context, setState) {
-     // State to track failure
+            // State to track failure
 
             return Container(
               height: 192.v,
               width: MediaQuery.of(context).size.width * 0.4,
               child: Stack(
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Center(
-                        child: Row(
-                          children: [
-                            if (dtcontainer.getTextList().length <= 4)
-                              ...List.generate(
-                                  dtcontainer.getTextList().length, (index) {
-                                return Row(
-                                  children: [
-                                    OptionWidget(
-                                      child: TextContainer(
-                                        text: dtcontainer.getTextList()[index],
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              if (dtcontainer.getTextList().length <= 4)
+                                ...List.generate(
+                                    dtcontainer.getTextList().length, (index) {
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      OptionWidget(
+                                        child: TextContainer(
+                                          text:
+                                              dtcontainer.getTextList()[index],
+                                        ),
+                                        isCorrect: () {
+                                          return dtcontainer
+                                                  .getCorrectOutput() ==
+                                              dtcontainer.getTextList()[index];
+                                        },
                                       ),
-                                      isCorrect: () {
-                                        return dtcontainer.getCorrectOutput() ==
-                                            dtcontainer.getTextList()[index];
-                                      },
-                                    ),
-                                    SizedBox(
-                                        width:
-                                            10), // Adds gap between each OptionWidget
-                                    // Adds gap between each OptionWidget
-                                  ],
-                                );
-                              })
-                          ],
+                                      SizedBox(
+                                          width:
+                                              10), // Adds gap between each OptionWidget
+                                      // Adds gap between each OptionWidget
+                                    ],
+                                  );
+                                })
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  )
+
                   // Custom button with image at the bottom, change color on failure
                 ],
               ),

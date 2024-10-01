@@ -190,20 +190,7 @@ class _DiscriminationState extends State<Discrimination> {
             ),
           ],
         ),
-        SizedBox(
-          height: 20.v,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CustomImageView(
-              width: 100,
-              height: 100,
-              fit: BoxFit.contain,
-              imagePath: "assets/images/half_mascot.png",
-            ),
-          ],
-        ),
+       
       ],
     );
   }

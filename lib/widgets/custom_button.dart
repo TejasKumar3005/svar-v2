@@ -173,14 +173,14 @@ class _CustomButtonState extends State<CustomButton> {
         break;
       case ButtonType.Video1:
         imagePath = ImageConstant.imgVideo1btn;
-        width = 170;
-        height = 80;
+        width = 100;
+        height = 60;
         isSvg = true;
         break;
       case ButtonType.Video2:
         imagePath = ImageConstant.imgVideo2btn;
-        width = 170;
-        height = 80;
+        width = 100;
+        height = 60;
         isSvg = true;
         break;
       case ButtonType.Stop:
@@ -233,8 +233,8 @@ class _CustomButtonState extends State<CustomButton> {
               SvgPicture.asset(
                 imagePath,
                 fit: fit,
-                width: width,
-                height: height,
+                width: MediaQuery.of(context).size.width * 0.7,
+                height: MediaQuery.of(context).size.height * 0.7,
               ),
               // Overlay with progress
               if (widget.progress != null)
@@ -245,8 +245,8 @@ class _CustomButtonState extends State<CustomButton> {
                   child: SvgPicture.asset(
                     imagePath,
                     fit: fit,
-                    width: width,
-                    height: height,
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    height: MediaQuery.of(context).size.height * 0.7,
                     colorFilter: ColorFilter.mode(
                       widget.color ?? Colors.green,
                       BlendMode.srcIn,

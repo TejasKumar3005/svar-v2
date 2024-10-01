@@ -118,7 +118,7 @@ class AudioWidgetState extends State<AudioWidget> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Container(
-      width: screenWidth * 0.5, // Adjust the container width based on screen size
+      width: screenWidth * 0.4, // Adjust the container width based on screen size
       padding: const EdgeInsets.symmetric(
         horizontal: 16.0,
         vertical: 8.0,

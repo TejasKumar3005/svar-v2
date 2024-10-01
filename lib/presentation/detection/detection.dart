@@ -193,45 +193,50 @@ class _DetectionState extends State<Detection> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Container(
-              height: 219.v,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 2,
+            Expanded(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.40,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 2,
+                  ),
                 ),
+                child: isVideoReady1
+                    ? AspectRatio(
+                        aspectRatio: _videoPlayerController1.value.aspectRatio,
+                        child: Center(
+                            child: Chewie(controller: _chewieController1!)),
+                      )
+                    : Center(
+                        child: CircularProgressIndicator(
+                            color: PrimaryColors().deepOrangeA700)),
               ),
-              width: MediaQuery.of(context).size.width * 0.40,
-              child: isVideoReady1
-                  ? AspectRatio(
-                      aspectRatio: _videoPlayerController1.value.aspectRatio,
-                      child: Center(
-                          child: Chewie(controller: _chewieController1!)),
-                    )
-                  : Center(
-                      child: CircularProgressIndicator(
-                          color: PrimaryColors().deepOrangeA700)),
             ),
-            Container(
-              height: 219.v,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 2,
+            SizedBox(
+                width:
+                    20), // Add spacing between the two Expanded containers if needed
+            Expanded(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.40,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 2,
+                  ),
                 ),
+                child: isVideoReady2
+                    ? AspectRatio(
+                        aspectRatio: _videoPlayerController2.value.aspectRatio,
+                        child: Center(
+                            child: Chewie(controller: _chewieController2!)),
+                      )
+                    : Center(
+                        child: CircularProgressIndicator(
+                            color: PrimaryColors().deepOrangeA700)),
               ),
-              width: MediaQuery.of(context).size.width * 0.40,
-              child: isVideoReady2
-                  ? AspectRatio(
-                      aspectRatio: _videoPlayerController2.value.aspectRatio,
-                      child: Center(
-                          child: Chewie(controller: _chewieController2!)),
-                    )
-                  : Center(
-                      child: CircularProgressIndicator(
-                          color: PrimaryColors().deepOrangeA700)),
             ),
           ],
         ),
@@ -280,8 +285,13 @@ class _DetectionState extends State<Detection> {
     dynamic dtcontainer = obj[1] as dynamic;
     var provider = Provider.of<UserDataProvider>(context, listen: false);
     return Column(
+      
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        SizedBox(
+          height: 40.v,
+        ),
         AudioWidget(
           key: _childKey,
           audioLinks: dtcontainer.getVideoUrls(),
