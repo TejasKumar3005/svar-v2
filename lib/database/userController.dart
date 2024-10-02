@@ -210,5 +210,26 @@ final CollectionReference therapyCenterCollection =
       }
     
   }
+  Future<void> addActivity(String activity,String date,String time) async {
+  
+      try {
+        
+          await userCollection.doc(uid).update({
+        "activities": FieldValue.arrayUnion([{
+          "activity": activity,
+          "date": date,
+          "time":time
+        }])
+      });
+      
+      }  on FirebaseException catch (e) {
+      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ));
+      
+    }
+    
+  }
 
 }

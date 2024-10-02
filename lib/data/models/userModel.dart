@@ -23,6 +23,27 @@ class LevelMap{
     };
   }
 }
+class Activity{
+  String? activity;
+  String? date;
+  String? time;
+  Activity({this.activity, this.date, this.time});
+  factory Activity.fromJson(Map<String, dynamic> json) {
+    return Activity(
+      activity: json['activity'] as String,
+      date: json['date'] as String,
+      time: json['time'] as String,
+    );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      "activity": this.activity,
+      "date": this.date,
+      "time": this.time,
+    };
+  }
+}
+
 class UserModel {
   List<String>? parentNames;
   String name;
@@ -47,6 +68,7 @@ class UserModel {
   String? therapist;
   String? batch;
   LevelMap levelMap;
+  List<Activity> activities = [];
   // GameStatsModel gameStats = GameStatsModel(
   //     gifts: [],
   //     progressScore: 0.0,
@@ -75,7 +97,11 @@ class UserModel {
       this.coins,
       this.address,
       this.therapist ,  this.batch,
-    required  this.levelMap
+    required  this.levelMap,
+    this.activities = const []
+      // this.gift_purchase_history = const [],
+      // this.currently_scheduled_gift,
+      // this.gameStats
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -99,6 +125,7 @@ class UserModel {
         coins: json['coins'] ?? 0,
         address: json['address'] ?? "",  therapist: json['therapist'] ?? "",
       batch: json['batch'] ?? "",
+      activities: json['activities']!=null? (json['activities'] as List).map<Activity>((e) => Activity.fromJson(e)).toList():[],
       levelMap:json['LevelMap']!=null? LevelMap.fromJson(json['LevelMap']): LevelMap(detection: 0,discrimination: 0,identification: 0,level: 0),
     );
   }
