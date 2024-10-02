@@ -5,49 +5,84 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/widgets/Options.dart';
 
-class AudioWidget extends StatefulWidget {
-  final List<String> audioLinks; // Optional click function from parent
+// Global audio player to ensure only one instance plays at a time
+AudioPlayer globalAudioPlayer = AudioPlayer();
 
-  const AudioWidget({Key? key, required this.audioLinks}) : super(key: key);
+class AudioWidget extends StatefulWidget {
+  final List<String> audioLinks;
+  final double progress; // Pass the current progress
+  final Color spectrumColor;
+
+  const AudioWidget({
+    Key? key,
+    required this.audioLinks,
+    this.progress = 0.0,
+    this.spectrumColor = Colors.green,
+  }) : super(key: key);
 
   @override
-  _AudioWidgetState createState() => _AudioWidgetState();
+  AudioWidgetState createState() => AudioWidgetState();
 }
 
-class _AudioWidgetState extends State<AudioWidget> {
+class AudioWidgetState extends State<AudioWidget> {
   late AudioPlayer _audioPlayer;
-  late double _progress;
+  late double progress;
   late int currentIndex;
+  late double completed;
   late List<double> lengths;
+  late double totalLength;
 
   @override
   void initState() {
     super.initState();
     currentIndex = 0;
     _audioPlayer = AudioPlayer();
-    _progress = 0.0;
-    double total_length = 0.0;
+    progress = 0.0;
+    completed = 0.0;
+    totalLength = 0.0;
     lengths = [];
-    
-    for (int i = 0; i < widget.audioLinks.length; i++) {
-      _audioPlayer.setUrl(widget.audioLinks[i]);
-      _audioPlayer.load();
-      lengths.add(_audioPlayer.duration!.inSeconds.toDouble());
-      total_length += _audioPlayer.duration!.inSeconds.toDouble();
-    }
+
+    // Load audio lengths
+    loadAudioLengths();
+
+    // Listen to the audio player's position
     _audioPlayer.positionStream.listen((position) {
       if (_audioPlayer.duration != null &&
           _audioPlayer.duration!.inSeconds > 0) {
         setState(() {
-          _progress = position.inMilliseconds * 1000.0 / total_length;
+          progress = (completed + position.inSeconds.toDouble()) / totalLength;
         });
       }
     });
   }
 
+  Future<void> loadAudioLengths() async {
+    for (int i = 0; i < widget.audioLinks.length; i++) {
+      double length = await getAudioLength(widget.audioLinks[i]);
+      lengths.add(length);
+      totalLength += length;
+    }
+  }
+
+  Future<double> getAudioLength(String link) async {
+    var duration = await _audioPlayer.setUrl(link);
+    if (duration != null) {
+      await _audioPlayer.load(); // Wait for the audio to load
+      return duration.inSeconds.toDouble(); // Return length in seconds
+    } else {
+      return 5.0; // Fallback value if the audio URL couldn't be loaded
+    }
+  }
+
   Future<void> playNext() async {
-    print("currentIndex: $currentIndex");
-    print("progress: ${_progress}");
+    // Pause or stop any audio that is currently playing
+    if (globalAudioPlayer.playing) {
+      await globalAudioPlayer.stop();
+    }
+
+    // Assign the globalAudioPlayer to control playback across widgets
+    globalAudioPlayer = _audioPlayer;
+
     if (currentIndex < widget.audioLinks.length) {
       await _audioPlayer.setUrl(widget.audioLinks[currentIndex]);
       await _audioPlayer.play();
@@ -55,13 +90,14 @@ class _AudioWidgetState extends State<AudioWidget> {
         if (state.processingState == ProcessingState.completed) {
           if (currentIndex < widget.audioLinks.length - 1) {
             setState(() {
+              completed += lengths[currentIndex];
               currentIndex++;
             });
             playNext();
           } else {
             setState(() {
               currentIndex = 0;
-              _progress = 0.0;
+              progress = 0.0;
               _audioPlayer.stop();
             });
           }
@@ -79,15 +115,17 @@ class _AudioWidgetState extends State<AudioWidget> {
   @override
   Widget build(BuildContext context) {
     final click = ClickProvider.of(context)?.click;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
-      width: MediaQuery.of(context).size.width * 0.4,
-      padding: EdgeInsets.symmetric(
+      width: screenWidth * 0.4, // Adjust the container width based on screen size
+      padding: const EdgeInsets.symmetric(
         horizontal: 16.0,
         vertical: 8.0,
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: Color(0xFFF47C37),
+        color: const Color(0xFFF47C37),
         border: Border.all(
           color: Colors.black,
           width: 3,
@@ -97,87 +135,47 @@ class _AudioWidgetState extends State<AudioWidget> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          GestureDetector(
-            onTap: () {
+          CustomButton(
+            type: ButtonType.ImagePlay,
+            onPressed: () {
               if (_audioPlayer.playing) {
                 _audioPlayer.pause();
               } else {
                 playNext();
               }
             },
-            child: CustomButton(
-              type: ButtonType.ImagePlay,
-              onPressed: () {
-                print("pressed");
-                if (_audioPlayer.playing) {
-                  _audioPlayer.pause();
-                } else {
-                  playNext();
-                }
-              },
-            ),
           ),
+          const SizedBox(width: 5.0),
           Container(
             height: 50,
             width: 5,
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 255, 255, 255),
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 255, 255, 255),
             ),
           ),
-          SizedBox(width: 16.0),
-          GestureDetector(
-            onTap: () {
-              print("Clicked in gesture detector");
-              // Optionally handle any other tap events here
-              if (click != null) {
-                click();
-              }
-            },
-            child: Stack(
-              children: [
-                // First, display the original SVG (which remains white)
-                SvgPicture.asset(
-                  'assets/images/svg/Spectrum.svg', // Path to your SVG
-                  width: MediaQuery.of(context).size.width * 0.3, // Adjust size
-                  height: 60,
-                ),
-                // Overlay only the green part based on the progress
-                Positioned.fill(
-                  child: ClipRect(
-                    clipper: _ProgressClipper(
-                      progress: _progress, // Pass dynamic progress here
-                    ),
-                    child: SvgPicture.asset(
-                      'assets/images/svg/Spectrum.svg', // Same SVG path
-                      width: MediaQuery.of(context).size.width *
-                          0.3, // Adjust size
-                      height: 60,
-                      color: Colors.green, // Green overlay only on progress
-                    ),
-                  ),
-                ),
-              ],
+          const SizedBox(width: 16.0),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                if (click != null) {
+                  click();
+                }
+              },
+              child: CustomButton(
+                type: ButtonType.Spectrum,
+                onPressed: () {
+                  if (click != null) {
+                    click();
+                  }
+                },
+                progress: progress, // Pass dynamic progress
+                color: widget.spectrumColor, // Pass dynamic color
+              ),
             ),
+            // Use Expanded to handle overflow
           ),
         ],
       ),
     );
-  }
-}
-
-class _ProgressClipper extends CustomClipper<Rect> {
-  final double progress;
-
-  _ProgressClipper({required this.progress});
-
-  @override
-  Rect getClip(Size size) {
-    // Clip the SVG based on the progress
-    return Rect.fromLTWH(0, 0, size.width * progress, size.height);
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Rect> oldClipper) {
-    return true; // Reclip every time progress changes
   }
 }

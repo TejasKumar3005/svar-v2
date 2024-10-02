@@ -27,38 +27,48 @@ enum ButtonType {
   Same,
   Video1,
   Video2,
-  Stop
+  Stop,
+  Spectrum,
 }
 
-class CustomButton extends StatelessWidget {
+class CustomButton extends StatefulWidget {
   final ButtonType type;
   final VoidCallback onPressed;
+  final double? progress; // Only used for Spectrum
+  final Color? color; // Only used for Spectrum
 
   const CustomButton({
     Key? key,
     required this.type,
     required this.onPressed,
+    this.progress,
+    this.color,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final click = ClickProvider.of(context)?.click;
-    String imagePath = '';
-    double height = 0;
-    double width = 0;
-    BoxFit fit = BoxFit.contain;
-    bool isSvg = false;
+  _CustomButtonState createState() => _CustomButtonState();
+}
 
-    switch (type) {
+class _CustomButtonState extends State<CustomButton> {
+  String imagePath = '';
+  double height = 0;
+  double width = 0;
+  BoxFit fit = BoxFit.contain;
+  bool isSvg = false;
+  late VoidCallback onPressed_state;
+
+  @override
+  void initState() {
+    super.initState();
+    onPressed_state = widget.onPressed;
+    switch (widget.type) {
       case ButtonType.Play:
         imagePath = ImageConstant.playBtn;
-        width = MediaQuery.of(context).size.width * 0.7;
         height = 60;
         isSvg = true;
         break;
       case ButtonType.Settings:
         imagePath = ImageConstant.settingsBtn;
-        width = MediaQuery.of(context).size.width * 0.7;
         height = 60;
         isSvg = true;
         break;
@@ -82,7 +92,6 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.Login:
         imagePath = ImageConstant.imgLoginBTn;
-        width = MediaQuery.of(context).size.width * 0.7;
         height = 60;
         isSvg = true;
         break;
@@ -94,7 +103,6 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.SignUp:
         imagePath = ImageConstant.imgSignUpBTn;
-        width = MediaQuery.of(context).size.width * 0.7;
         height = 60;
         isSvg = true;
         break;
@@ -106,7 +114,6 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.Next:
         imagePath = ImageConstant.imgNextBtn;
-        width = MediaQuery.of(context).size.width * 0.7;
         height = 60;
         isSvg = true;
         break;
@@ -166,14 +173,14 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonType.Video1:
         imagePath = ImageConstant.imgVideo1btn;
-        width = 170;
-        height = 80;
+        width = 100;
+        height = 60;
         isSvg = true;
         break;
       case ButtonType.Video2:
         imagePath = ImageConstant.imgVideo2btn;
-        width = 170;
-        height = 80;
+        width = 100;
+        height = 60;
         isSvg = true;
         break;
       case ButtonType.Stop:
@@ -182,26 +189,87 @@ class CustomButton extends StatelessWidget {
         height = 80;
         isSvg = true;
         break;
+      case ButtonType.Spectrum:
+        imagePath = ImageConstant.imgSpectrum;
+        width = 60;
+        height = 60;
+        isSvg = true;
+        break;
 
       // Add cases for more button types here
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Adjust width for certain button types dynamically
+    if (widget.type == ButtonType.Play ||
+        widget.type == ButtonType.Settings ||
+        widget.type == ButtonType.Login ||
+        widget.type == ButtonType.SignUp ||
+        widget.type == ButtonType.Next ||
+        widget.type == ButtonType.Video1 ||
+        widget.type == ButtonType.Video2) {
+      width = MediaQuery.of(context).size.width * 0.7;
+    }
+
+    // Handle Spectrum type with progress and color
+    if (widget.type == ButtonType.Spectrum) {
+      return GestureDetector(
+        onTap: () {
+          onPressed_state();
+          AnalyticsService _analyticsService = AnalyticsService();
+          _analyticsService.logEvent('button_pressed', {
+            'button_type': widget.type.toString(),
+            "time": DateTime.now().toString()
+          });
+        },
+        child: Container(
+          height: height,
+          width: width,
+          child: Stack(
+            children: [
+              // Original SVG
+              SvgPicture.asset(
+                imagePath,
+                fit: fit,
+                width: MediaQuery.of(context).size.width * 0.7,
+                height: MediaQuery.of(context).size.height * 0.7,
+              ),
+              // Overlay with progress
+              if (widget.progress != null)
+                ClipRect(
+                  clipper: _ProgressClipper(
+                    progress: widget.progress!,
+                  ),
+                  child: SvgPicture.asset(
+                    imagePath,
+                    fit: fit,
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    colorFilter: ColorFilter.mode(
+                      widget.color ?? Colors.green,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
     }
 
     return GestureDetector(
       onTap: () {
-        if (type == ButtonType.Next) {
+        if (widget.type == ButtonType.Next) {
           PlayBgm().playMusic('Next_Btn.mp3', "mp3", false);
         }
-        if (click != null) {
-          click();
-        }
-        onPressed();
-        AnalyticsService _analyticsService;
-        _analyticsService = AnalyticsService();
+        onPressed_state();
+        AnalyticsService _analyticsService = AnalyticsService();
         _analyticsService.logEvent('button_pressed', {
-          'button_type': type.toString(),
-            "time": DateTime.now().toString()
+          'button_type': widget.type.toString(),
+          "time": DateTime.now().toString()
         });
-
       },
       child: Container(
         height: height,
@@ -210,12 +278,69 @@ class CustomButton extends StatelessWidget {
             ? SvgPicture.asset(
                 imagePath,
                 fit: fit,
+                width: width,
+                height: height,
               )
             : Image.asset(
                 imagePath,
                 fit: fit,
+                width: width,
+                height: height,
               ),
       ),
     );
+  }
+}
+
+// Custom clipper for progress overlay
+class _ProgressClipper extends CustomClipper<Rect> {
+  final double progress;
+
+  _ProgressClipper({required this.progress});
+
+  @override
+  Rect getClip(Size size) {
+    return Rect.fromLTRB(0, 0, size.width * progress, size.height);
+  }
+
+  @override
+  bool shouldReclip(_ProgressClipper oldClipper) {
+    return oldClipper.progress != progress;
+  }
+}
+
+class OptionButton extends CustomButton {
+
+
+
+const OptionButton({
+    Key? key,
+    required ButtonType type,
+    required VoidCallback onPressed,
+  }) : super(key: key, type: type, onPressed: onPressed);
+
+  @override
+  _OptionButtonState createState() => _OptionButtonState();
+}
+
+class _OptionButtonState extends _CustomButtonState {
+  @override
+  void initState () {
+    super.initState();
+  }
+
+  @override
+  Widget build (BuildContext context){
+    final click = ClickProvider.of(context)?.click;
+    setState(() {
+      onPressed_state = () {
+        if (click != null) {
+          print("click");
+          click();
+        }
+        widget.onPressed();
+      };
+    });
+    return super.build(context);
   }
 }

@@ -37,8 +37,7 @@ class AudiotoimageScreen extends StatefulWidget {
 
 class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   late AudioPlayer _player;
-  late bool _isGlowingA;
-  late bool _isGlowingB;
+
   late int leveltracker;
   int sel = 0;
   List<double> samples = [];
@@ -54,7 +53,6 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     ]);
     _player = AudioPlayer();
     leveltracker = 0;
-
 
     // Fetch correct answer from the database
   }
@@ -102,48 +100,54 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                             child: GestureDetector(
                               child: OptionWidget(
                                 child: AudioWidget(
-                                  audioLinks: [
-                                    widget.dtcontainer.getAudioList()[0],
-                                  ],
+                                  audioLinks: widget.dtcontainer.getAudioUrl(),
                                 ),
                                 isCorrect: () {
                                   return widget.dtcontainer
                                           .getCorrectOutput() ==
-                                      widget.dtcontainer.getAudioList()[0];
+                                      widget.dtcontainer.getAudioUrl();
                                 },
                               ),
                             ),
                           ),
                           SizedBox(height: 50.v),
-                          Row(
-                            children: [
-                              if (widget.dtcontainer.getImageUrlList().length <=
-                                  4)
-                                ...List.generate(
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment
+                                  .center, // Align Row's children to the center
+                              children: [
+                                if (widget.dtcontainer
+                                        .getImageUrlList()
+                                        .length <=
+                                    4)
+                                  ...List.generate(
                                     widget.dtcontainer.getImageUrlList().length,
                                     (index) {
-                                  return Row(
-                                    children: [
-                                      OptionWidget(
-                                        child: ImageWidget(
-                                          imagePath: widget.dtcontainer
-                                              .getImageUrlList()[index],
-                                        ),
-                                        isCorrect: () {
-                                          return widget.dtcontainer
-                                                  .getCorrectOutput() ==
-                                              widget.dtcontainer
-                                                  .getImageUrlList()[index];
-                                        },
-                                      ),
-                                      SizedBox(
-                                          width:
-                                              10), // Adds gap between each OptionWidget
-                                    ],
-                                  );
-                                })
-                            ],
-                          ),
+                                      return Row(
+                                        children: [
+                                          OptionWidget(
+                                            child: ImageWidget(
+                                              imagePath: widget.dtcontainer
+                                                  .getImageUrlList()[index],
+                                            ),
+                                            isCorrect: () {
+                                              return widget.dtcontainer
+                                                      .getCorrectOutput() ==
+                                                  widget.dtcontainer
+                                                      .getImageUrlList()[index];
+                                            },
+                                          ),
+                                          SizedBox(
+                                            width:
+                                                20, // Space between the widgets
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     ),

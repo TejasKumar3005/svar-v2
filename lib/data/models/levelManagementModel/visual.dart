@@ -85,7 +85,7 @@ class FigToWord {
 }
 
 class AudioToImage {
-  final String audio_url;
+  final List<String> audio_url;
   final String correct_output;
   final List<String> image_list;
   AudioToImage._(
@@ -94,7 +94,7 @@ class AudioToImage {
       required this.image_list});
   factory AudioToImage.fromJson(Map<String, dynamic> json) {
     return AudioToImage._(
-        audio_url: json["audio_url"] as String,
+        audio_url: List<String>.from(json['audio_url']),
         correct_output: json["correct_output"] as String,
         image_list: List<String>.from(json["image_list"]));
   }
@@ -106,7 +106,7 @@ class AudioToImage {
     return correct_output;
   }
 
-  String getAudioUrl() {
+  List<String> getAudioUrl() {
     return audio_url;
   }
 }
@@ -117,7 +117,7 @@ class AudioToAudio {
   AudioToAudio._({required this.audio_list, required this.correct_output});
   factory AudioToAudio.fromJson(Map<String, dynamic> json) {
     return AudioToAudio._(
-        audio_list: List<String>.from(json["audio_list"]),
+       audio_list: List<String>.from(json['audio_list']),
         correct_output: json["correct_output"] as int);
   }
   List<String> getAudioList() {
@@ -130,17 +130,14 @@ class AudioToAudio {
 }
 
 class MutedUnmuted {
-  final String type;
   final List<String> video_url;
 
   MutedUnmuted._({
-    required this.type,
     required this.video_url,
   });
 
   factory MutedUnmuted.fromJson(Map<String, dynamic> json) {
     return MutedUnmuted._(
-      type: json['type'] as String,
       video_url: List<String>.from(json['video_url']),
     );
   }
@@ -148,14 +145,10 @@ class MutedUnmuted {
   List<String> getVideoUrls() {
     return video_url;
   }
-
-  String getType() {
-    return type;
-  }
 }
 
 class HalfMuted {
-  final String video_url;
+   final List<String> video_url;
 
   HalfMuted._({
     required this.video_url,
@@ -163,11 +156,11 @@ class HalfMuted {
 
   factory HalfMuted.fromJson(Map<String, dynamic> json) {
     return HalfMuted._(
-      video_url: json['video_url'] as String, // Accessing the first item
+      video_url: List<String>.from(json['video_url']),
     );
   }
 
-  String getVideoUrl() {
+  List<String> getVideoUrls() {
     return video_url;
   }
 }
@@ -229,19 +222,15 @@ class OddOne {
 }
 
 class DiffHalf {
-  final double correct_output;
-
   final List<String> video_url;
 
   DiffHalf._({
     required this.video_url,
-    required this.correct_output,
   });
 
   factory DiffHalf.fromJson(Map<String, dynamic> json) {
     return DiffHalf._(
       video_url: List<String>.from(json['video_url']),
-      correct_output: json['correct_output'] as double,
     );
   }
 
@@ -251,7 +240,7 @@ class DiffHalf {
 }
 
 class MaleFemale {
-  final String video_url;
+  final List<String> video_url;
   final String correct_output;
 
   MaleFemale._({
@@ -261,12 +250,12 @@ class MaleFemale {
 
   factory MaleFemale.fromJson(Map<String, dynamic> json) {
     return MaleFemale._(
-      video_url: json['video_url'],
+      video_url: List<String>.from(json['video_url']),
       correct_output: json['correct_output'] as String,
     );
   }
 
-  String getVideoUrl() {
+  List<String> getVideoUrl() {
     return video_url;
   }
 

@@ -19,6 +19,7 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
 import './customthumb.dart';
 import 'package:svar_new/widgets/Options.dart';
+import 'package:svar_new/widgets/audio_widget.dart';
 
 class Discrimination extends StatefulWidget {
   const Discrimination({
@@ -34,18 +35,23 @@ class Discrimination extends StatefulWidget {
 }
 
 class _DiscriminationState extends State<Discrimination> {
-  PlayAudio playAudio = PlayAudio();
+  final GlobalKey<AudioWidgetState> _childKey = GlobalKey<AudioWidgetState>();
+
   int selectedOption = -1;
   List<double> samples = [];
   OverlayEntry? _overlayEntry;
 
   bool isPlaying = false;
 
-  Duration totalDuration = Duration(seconds: 0);
-  Duration position = Duration(seconds: 0);
   int currentIndex = 0;
   double currentProgress = 0.0;
-  Timer? playTimer;
+  List<double> total_length = [];
+
+  void getAudioProgress() {
+    setState(() {
+      currentProgress = _childKey.currentState!.progress;
+    });
+  }
 
   @override
   void dispose() {
@@ -70,9 +76,7 @@ class _DiscriminationState extends State<Discrimination> {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     Map<String, dynamic> data = obj[1] as Map<String, dynamic>;
-    dynamic dtcontainer =
-        obj[2] as dynamic; // Ensure dtcontainer is properly retrieved
-    String params = obj[3] as String;
+    dynamic dtcontainer = obj[2] as dynamic;
 
     return Scaffold(
       body: Container(
@@ -134,6 +138,7 @@ class _DiscriminationState extends State<Discrimination> {
     switch (type) {
       case "DiffSounds":
         var data = DiffSounds.fromJson(d);
+
         return DiffSoundsW(data, dtcontainer);
       case "OddOne":
         var data = OddOne.fromJson(d);
@@ -150,17 +155,16 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget MaleFemaleW(MaleFemale maleFemale, dynamic dtcontainer) {
-    var provider = Provider.of<UserDataProvider>(context, listen: false);
-    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    // print("MaleFemaleW ${dtcontainer.getVideoUrl()}");
+    print("MaleFemaleW ${dtcontainer}");
     return Column(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AudioWidget(
-          audioLinks: [
-            dtcontainer.getVideoUrl()[0], // Use dtcontainer here
-          ],
+          audioLinks: dtcontainer.getVideoUrl(),
+          // Use dtcontainer here
         ),
         SizedBox(
           height: 20.v,
@@ -168,66 +172,25 @@ class _DiscriminationState extends State<Discrimination> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: () {
-                if (dtcontainer.getCorrectOutput == "female") {
-                  // dtcontainer usage
-                  print("Correct");
-                  // if (obj!["level"] >
-                  //     provider.userModel.toJson()["levelMap"]
-                  //         ["Discrimination"]!) {
-                  //   UserData(buildContext: context)
-                  //       .incrementLevelCount("Discrimination")
-                  //       .then((value) {});
-                  // }
-
-                  _overlayEntry = celebrationOverlay(context, () {
-                    _overlayEntry?.remove();
-                  });
-                  Overlay.of(context).insert(_overlayEntry!);
-                }
-              },
-              child: Artboard("assets/images/female.png"),
+            Expanded(
+              child: OptionWidget(
+                child: ImageWidget(imagePath: "assets/images/female.png"),
+                isCorrect: () {
+                  return dtcontainer.getCorrectOutput() == "female";
+                },
+              ),
             ),
-            SizedBox(
-              width: 20.h,
-            ),
-            GestureDetector(
-              onTap: () {
-                if (dtcontainer.getCorrectOutput == "male") {
-                  // dtcontainer usage
-                  print("Correct");
-                  // if (obj!["level"] >
-                  //     provider.userModel.toJson()["levelMap"]
-                  //         ["Discrimination"]!) {
-                  //   UserData(buildContext: context)
-                  //       .incrementLevelCount("Discrimination")
-                  //       .then((value) {});
-                  // }
-                  _overlayEntry = celebrationOverlay(context, () {
-                    _overlayEntry?.remove();
-                  });
-                  Overlay.of(context).insert(_overlayEntry!);
-                }
-              },
-              child: Artboard("assets/images/male.png"),
+            Expanded(
+              child: OptionWidget(
+                child: ImageWidget(imagePath: "assets/images/male.png"),
+                isCorrect: () {
+                  return dtcontainer.getCorrectOutput() == "male";
+                },
+              ),
             ),
           ],
         ),
-        SizedBox(
-          height: 20.v,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CustomImageView(
-              width: 100,
-              height: 100,
-              fit: BoxFit.contain,
-              imagePath: "assets/images/half_mascot.png",
-            ),
-          ],
-        ),
+       
       ],
     );
   }
@@ -276,76 +239,36 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget DiffHalfW(DiffHalf diffHalf, dynamic dtcontainer) {
-    var provider = Provider.of<UserDataProvider>(context, listen: false);
-    final obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>?;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // _buildOption(
-        //   text: "A",
-        //   color: PrimaryColors().deepOrangeA200,
-        //   index: 0,
-        //   audio: diffHalf.video_url,
-        //   correctOutput: diffHalf.correct_output,
-        //   type: "DiffHalf",
-        // ), // Ensure dtcontainer is passed here
-        SizedBox(
-          height: 20.v,
-        ),
-        Container(
-          height: 40,
-          width: MediaQuery.of(context).size.width * 0.6,
-          child: Center(
-            child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                activeTrackColor: PrimaryColors().blue20001,
-                inactiveTrackColor: Colors.white,
-                trackHeight: 20.0,
-                thumbShape: RectangularImageThumb(
-                  thumbWidth: 50.0,
-                  thumbHeight: 50.0,
-                  thumbImagePath: 'assets/images/thumb.png',
-                ),
-                thumbColor: PrimaryColors().orange800,
-                overlayColor: Colors.orange.withOpacity(0.2),
-                overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
-              ),
-              child: Slider(
-                value: currentProgress,
-                onChanged: (value) {},
-                min: 0.0,
-                max: 10.0,
-              ),
-            ),
-          ),
+        AudioWidget(
+          key: _childKey,
+          audioLinks: dtcontainer.getVideoUrls(),
         ),
         SizedBox(
           height: 20.v,
         ),
-        CustomButton(
-          type: ButtonType.Change,
-          onPressed: () {
-            if (currentProgress > 4 && currentProgress < 6) {
-              // if (obj!["level"] >
-              //     provider.userModel.toJson()["levelMap"]["Discrimination"]!) {
-              //   UserData(buildContext: context)
-              //       .incrementLevelCount("Discrimination")
-              //       .then((value) {});
-              // }
-              _overlayEntry = celebrationOverlay(context, () {
-                _overlayEntry?.remove();
-              });
-              Overlay.of(context).insert(_overlayEntry!);
-            }
-          },
-        ),
+        OptionWidget(
+            child: OptionButton(type: ButtonType.Change, onPressed: () {}),
+            isCorrect: () {
+              List<double> total_length = _childKey.currentState!.lengths;
+              double ans =
+                  total_length[0] / (total_length[1] + total_length[0]);
+              print(
+                  "ans is $ans current progress is ${_childKey.currentState!.progress}");
+              if (_childKey.currentState!.progress > ans &&
+                  _childKey.currentState!.progress < ans + 0.1) {
+                return true;
+              } else {
+                return false;
+              }
+            })
       ],
     );
   }
 
   Widget DiffSoundsW(DiffSounds diffSounds, dynamic dtcontainer) {
-    var provider = Provider.of<UserDataProvider>(context, listen: false);
-    final obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>?;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -374,10 +297,10 @@ class _DiscriminationState extends State<Discrimination> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             OptionWidget(
-              child: CustomButton(
+              child: OptionButton(
                   type: ButtonType.Same,
                   onPressed: () {
-                    if (dtcontainer.getSame()) {
+                    if (!dtcontainer.getSame()) {
                       // if (obj!["level"] >
                       //     provider.userModel.toJson()["levelMap"]
                       //         ["Discrimination"]!) {
@@ -388,17 +311,17 @@ class _DiscriminationState extends State<Discrimination> {
                     }
                   }),
               isCorrect: () {
-                return dtcontainer.getSame();
+                return !dtcontainer.getSame();
               },
             ),
             SizedBox(
               width: 20.h,
             ),
             OptionWidget(
-              child: CustomButton(
+              child: OptionButton(
                   type: ButtonType.Diff,
                   onPressed: () {
-                    if (!dtcontainer.getSame()) {
+                    if (dtcontainer.getSame()) {
                       // if (obj!["level"] >
                       //     provider.userModel.toJson()["levelMap"]
                       //         ["Discrimination"]!) {
@@ -419,14 +342,18 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget OddOneW(OddOne oddOne, dynamic dtcontainer) {
-    var provider = Provider.of<UserDataProvider>(context, listen: false);
-
     switch (oddOne.video_url.length) {
       case 2:
         return Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment:
+              MainAxisAlignment.center, // Center the column vertically
+          crossAxisAlignment:
+              CrossAxisAlignment.center, // Center the column horizontally
           children: [
             Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
                   child: AudioWidget(
@@ -460,8 +387,14 @@ class _DiscriminationState extends State<Discrimination> {
       case 3:
         return Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment:
+              MainAxisAlignment.center, // Center the column vertically
+          crossAxisAlignment:
+              CrossAxisAlignment.center, // Center the column horizontally
           children: [
             Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
                   child: AudioWidget(
@@ -494,7 +427,8 @@ class _DiscriminationState extends State<Discrimination> {
               height: 20.v,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
                   child: AudioWidget(
@@ -514,8 +448,14 @@ class _DiscriminationState extends State<Discrimination> {
       default:
         return Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment:
+              MainAxisAlignment.center, // Center the column vertically
+          crossAxisAlignment:
+              CrossAxisAlignment.center, // Center the column horizontally
           children: [
             Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
                   child: AudioWidget(
@@ -548,6 +488,8 @@ class _DiscriminationState extends State<Discrimination> {
               height: 20.v,
             ),
             Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
                   child: AudioWidget(
@@ -581,169 +523,3 @@ class _DiscriminationState extends State<Discrimination> {
     }
   }
 }
-
-//   void setupTimer(List<String> audioUrls) {
-//     playTimer?.cancel(); // Cancel any existing timer
-//     playTimer = Timer.periodic(Duration(seconds: 5), (timer) {
-//       currentIndex++;
-//       if (currentIndex < audioUrls.length) {
-//         playAudio.playMusic(audioUrls[currentIndex], "mp3", false);
-//       } else {
-//         timer.cancel();
-//         playAudio.stopMusic();
-//       }
-//     });
-//   }
-
-//   Widget _buildOption(
-//       {String? text,
-//       required Color color,
-//       required int index,
-//       required List<String> audio,
-//       required dynamic correctOutput,
-//       String? type}) {
-//     {
-//       var obj =
-//           ModalRoute.of(context)?.settings.arguments as List< dynamic>;
-
-//       var provider = Provider.of<UserDataProvider>(context, listen: false);
-//       return Row(
-//         crossAxisAlignment: CrossAxisAlignment.end,
-//         mainAxisSize: MainAxisSize.min,
-//         children: [
-//           Visibility(
-//             visible: text == null ? false : true,
-//             child: Text(
-//               text! + ")",
-//               style: TextStyle(
-//                 fontSize: 20,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//           ),
-//           SizedBox(
-//             width: 10.h,
-//           ),
-//           GestureDetector(
-//             onTap: () {
-//               if (type == "DiffSounds" || type == "MaleFemale") {
-//                 return;
-//               }
-
-//               if (audio[index] == correctOutput) {
-//                 print("Correct");
-//                 // if (obj["level"] >
-//                 //     provider.userModel.toJson()["levelMap"]
-//                 //         ["Discrimination"]!) {
-//                 //   UserData(buildContext: context)
-//                 //       .incrementLevelCount("Discrimination");
-//                 // }
-//                 _overlayEntry = celebrationOverlay(context, () {
-//                   _overlayEntry?.remove();
-//                 });
-//                 Overlay.of(context).insert(_overlayEntry!);
-//               }
-
-//               setState(() {
-//                 selectedOption = index;
-//               });
-//             },
-//             child: Container(
-//               width: MediaQuery.of(context).size.width * 0.4,
-//               padding: EdgeInsets.symmetric(
-//                 horizontal: 3.h,
-//                 vertical: 5.v,
-//               ),
-//               decoration: BoxDecoration(
-//                   borderRadius: BorderRadius.circular(15),
-//                   color: selectedOption != index
-//                       ? color
-//                       : PrimaryColors().green30001,
-//                   border: Border.all(
-//                     color: Colors.black,
-//                     width: 3,
-//                   )),
-//               child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                 crossAxisAlignment: CrossAxisAlignment.center,
-//                 children: [
-//                   GestureDetector(
-//                     onTap: () {
-//                       if (type == "DiffHalf") {
-//                         if (playAudio.audioPlayer.state ==
-//                             PlayerState.playing) {
-//                           playAudio.audioPlayer.pause();
-//                         } else {
-//                           playAudio.audioPlayer.onPositionChanged
-//                               .listen((position) {
-//                             setState(() {
-//                               currentProgress = position.inSeconds.toDouble();
-//                             });
-//                           });
-//                           File? file;
-//                           CachingManager()
-//                               .getCachedFile(audios[index])
-//                               .then((value) {
-//                             file = value;
-//                           });
-//                           playAudio.playMusicFromFile(file!, "mp3", false);
-
-//                           setupTimer(audio);
-//                         }
-//                       } else {
-//                         File? file;
-//                         CachingManager()
-//                             .getCachedFile(audios[index])
-//                             .then((value) {
-//                           file = value;
-//                         });
-//                         playAudio.playMusicFromFile(file!, "mp3", false);
-//                       }
-//                     },
-//                     child: Row(
-//                       mainAxisSize: MainAxisSize.min,
-//                       children: [
-//                         CustomButton(
-//                           type: ButtonType.ImagePlay,
-//                           onPressed: () {},
-//                         ),
-//                         SizedBox(
-//                           width: 10.h,
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                   Container(
-//                     height: 50,
-//                     width: 8,
-//                     decoration: BoxDecoration(
-//                       color: Colors.white,
-//                     ),
-//                   ),
-//                   SizedBox(
-//                     width: 10.h,
-//                   ),
-//                   GestureDetector(
-//                     onTap: () {
-//                       if (type == "OddOne") {
-//                         setState(() {
-//                           selectedOption = index;
-//                         });
-//                       }
-//                     },
-//                     child: CustomImageView(
-//                       width: MediaQuery.of(context).size.width * 0.4 - 98,
-//                       height: 60,
-//                       fit: BoxFit.fill,
-//                       imagePath: "assets/images/spectrum.png",
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//         ],
-//       );
-//     }
-//   }
-// }
