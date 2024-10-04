@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
+import 'package:svar_new/widgets/Options.dart';
 class TextContainer extends StatefulWidget {
   final String text;
 
@@ -14,8 +14,10 @@ class TextContainer extends StatefulWidget {
 }
 
 class _TextContainerState extends State<TextContainer> {
+   
   @override
   Widget build(BuildContext context) {
+     final click = ClickProvider.of(context)?.click;
     return Expanded(
       flex: 1,
       child: AnimatedContainer(
@@ -35,7 +37,11 @@ class _TextContainerState extends State<TextContainer> {
             ),
             Center(
               child: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                 if (click != null) {
+                  click();
+                }
+                },
                 child: Text(
                   widget.text,
                   style: TextStyle(
