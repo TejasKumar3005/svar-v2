@@ -31,16 +31,16 @@ class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
   @override
   void initState() {
     rootBundle.load("assets/rive/congrats.riv").then(
-      (data) {
-
+      (data) async {
+        await RiveFile.initialize();
         final file = RiveFile.import(data);
         final artboard = file.mainArtboard;
         StateMachineController? stateMachineController =
             StateMachineController.fromArtboard(artboard, "State Machine 1");
         if (stateMachineController != null) {
-          artboard.addController(stateMachineController!);
+          artboard.addController(stateMachineController);
 
-          stateMachineController!.inputs.forEach((element) {
+          stateMachineController.inputs.forEach((element) {
             if (element.name == "Trigger explosion") {
               successTrigger = element as SMITrigger;
             } else if (element.name == "Reset") {
@@ -52,30 +52,31 @@ class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
         setState(() => _artboard = artboard);
       },
     );
-  if(_artboard!=null){
 
-    successTrigger!.fire();
-  }
+    print("artboard: $_artboard");
+    if (_artboard != null) {
+      print("success Called");
+      successTrigger!.fire();
+    }
     // Timer(Duration(seconds: 10), () {
     //   widget.removeOverlay();
     //   Navigator.pop(context, true);
     // });
-    int sec=0;
+    int sec = 0;
     timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
       sec++;
-      if(_artboard!=null){
-        
-      if(sec%2==0 ){
-        successTrigger!.fire();
-      }else {
-        resetTrigger!.fire();
-      }
+      if (_artboard != null) {
+        if (sec % 2 == 0) {
+          successTrigger!.fire();
+        } else {
+          resetTrigger!.fire();
+        }
       }
 
       if (sec == 10) {
         timer.cancel();
         widget.removeOverlay();
-      Navigator.pop(context, true);
+        Navigator.pop(context, true);
       }
     });
 
