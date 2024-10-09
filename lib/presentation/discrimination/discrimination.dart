@@ -71,10 +71,14 @@ class _DiscriminationState extends State<Discrimination> {
     ]);
   }
 
+  int level = 0;
+
   @override
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
+    level = obj[4] as int;
+
     Map<String, dynamic> data = obj[1] as Map<String, dynamic>;
     dynamic dtcontainer = obj[2] as dynamic;
 
@@ -190,20 +194,6 @@ class _DiscriminationState extends State<Discrimination> {
             ),
           ],
         ),
-        SizedBox(
-          height: 20.v,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CustomImageView(
-              width: 100,
-              height: 100,
-              fit: BoxFit.contain,
-              imagePath: "assets/images/half_mascot.png",
-            ),
-          ],
-        ),
       ],
     );
   }
@@ -313,14 +303,18 @@ class _DiscriminationState extends State<Discrimination> {
               child: OptionButton(
                   type: ButtonType.Same,
                   onPressed: () {
-                    if (!dtcontainer.getSame()) {
-                      // if (obj!["level"] >
-                      //     provider.userModel.toJson()["levelMap"]
-                      //         ["Discrimination"]!) {
-                      //   UserData(buildContext: context)
-                      //       .incrementLevelCount("Discrimination")
-                      //       .then((value) {});
-                      // }
+                    var provider = Provider.of<UserDataProvider>(context,
+                        listen: false);
+                    if (dtcontainer.getSame()) {
+                      if (level >
+                          provider.userModel.toJson()["levelMap"]
+                              ["Discrimination"]!) {
+                        UserData(buildContext: context)
+                            .incrementLevelCount("Discrimination")
+                            .then((value) {
+
+                            });
+                      }
                     }
                   }),
               isCorrect: () {
@@ -334,14 +328,18 @@ class _DiscriminationState extends State<Discrimination> {
               child: OptionButton(
                   type: ButtonType.Diff,
                   onPressed: () {
-                    if (dtcontainer.getSame()) {
-                      // if (obj!["level"] >
-                      //     provider.userModel.toJson()["levelMap"]
-                      //         ["Discrimination"]!) {
-                      //   UserData(buildContext: context)
-                      //       .incrementLevelCount("Discrimination")
-                      //       .then((value) {});
-                      // }
+                  var provider = Provider.of<UserDataProvider>(context,
+                        listen: false);
+                    if (!dtcontainer.getSame()) {
+                      if (level >
+                          provider.userModel.toJson()["levelMap"]
+                              ["Discrimination"]!) {
+                        UserData(buildContext: context)
+                            .incrementLevelCount("Discrimination")
+                            .then((value) {
+
+                            });
+                      }
                     }
                   }),
               isCorrect: () {

@@ -222,7 +222,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, data, dtcontainer, params];
+        List<dynamic> argumentsList = [type, data, dtcontainer, params, level];
         debugPrint("Arguments list is: $argumentsList");
 
         // Pass the 'type' and 'data' to the Discrimination widget
@@ -474,7 +474,7 @@ Object retrieveObject(String type, Map<String, dynamic> data) {
     return AudioToImage.fromJson(data);
   } else if (type == "AudioToAudio") {
     return AudioToAudio.fromJson(data);
-  } else if (type == "Muted&Unmuted") {
+  } else if (type == "MutedUnmuted") {
     return MutedUnmuted.fromJson(data);
   } else if (type == "HalfMuted") {
     return HalfMuted.fromJson(data);

@@ -50,29 +50,56 @@ class _DetectionState extends State<Detection> {
     //   initiliaseVideo(widget.data["video_url"][0], 1);
     //   initiliaseVideo(widget.data["video_url"][1], 2);
     // }
+  
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+        var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    String type = obj[0] as String;
+    dynamic dtcontainer = obj[1] as dynamic;
+    print(dtcontainer.getVideoUrls().toString());
+    if(type=="MutedUnmuted"){
+
+      initiliaseVideo(dtcontainer.getVideoUrls()[0], 1);
+      initiliaseVideo(dtcontainer.getVideoUrls()[1], 2);
+    }
+    });
     super.initState();
+  }
+   @override
+  void dispose() {
+    // Dispose of the video controllers and Chewie controllers
+    _videoPlayerController1.dispose();
+    _chewieController1?.dispose();
+    _videoPlayerController2.dispose();
+    _chewieController2?.dispose();
+
+    // Dispose of the timer if it exists
+    volumeTimer?.cancel();
+    
+    super.dispose();
   }
 
   void initiliaseVideo(String videoUrl, int video) {
-    File? file;
-    CachingManager().getCachedFile(videoUrl).then((value) {
-      file = value;
-    });
+    // File? file;
+    // CachingManager().getCachedFile(videoUrl).then((value) {
+    //   file = value;
+    // });
     if (video == 1) {
-      _videoPlayerController1 = VideoPlayerController.networkUrl(Uri.parse(
-        videoUrl,
-      ))
-        ..initialize().then((_) {
-          setState(() {
-            isVideoReady1 = true;
-          });
-        });
-      _videoPlayerController1.addListener(() {
-        if (_videoPlayerController1.value.position ==
-            _videoPlayerController1.value.duration) {
-          Navigator.pop(context, true);
-        }
-      });
+      _videoPlayerController1 =
+          VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+            ..initialize().then((_) {
+              if(mounted){
+
+              setState(() {
+                isVideoReady1 = true;
+              });
+              }
+            });
+      // _videoPlayerController1.addListener(() {
+      //   if (_videoPlayerController1.value.position ==
+      //       _videoPlayerController1.value.duration) {
+      //     Navigator.pop(context, true);
+      //   }
+      // });
       _chewieController1 = ChewieController(
         videoPlayerController: _videoPlayerController1,
         autoPlay: true,
@@ -82,21 +109,23 @@ class _DetectionState extends State<Detection> {
         showOptions: false,
       );
     } else {
-      _videoPlayerController2 = VideoPlayerController.networkUrl(Uri.parse(
-        videoUrl,
-      ))
-        ..initialize().then((_) {
-          setState(() {
-            isVideoReady2 = true;
-          });
-        });
+      _videoPlayerController2 =
+          VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+            ..initialize().then((_) {
+              if(mounted){
 
-      _videoPlayerController2.addListener(() {
-        if (_videoPlayerController2.value.position ==
-            _videoPlayerController2.value.duration) {
-          Navigator.pop(context, true);
-        }
-      });
+              setState(() {
+                isVideoReady2 = true;
+              });
+              }
+            });
+
+      // _videoPlayerController2.addListener(() {
+      //   if (_videoPlayerController2.value.position ==
+      //       _videoPlayerController2.value.duration) {
+      //     Navigator.pop(context, true);
+      //   }
+      // });
       _chewieController2 = ChewieController(
         videoPlayerController: _videoPlayerController2,
         autoPlay: true,
@@ -114,6 +143,7 @@ class _DetectionState extends State<Detection> {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
+  
     return Scaffold(
       body
           // ? VideoPlayerScreen(
@@ -193,45 +223,50 @@ class _DetectionState extends State<Detection> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Container(
-              height: 219.v,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 2,
+            Expanded(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.40,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 2,
+                  ),
                 ),
+                child: isVideoReady1
+                    ? AspectRatio(
+                        aspectRatio: _videoPlayerController1.value.aspectRatio,
+                        child: Center(
+                            child: Chewie(controller: _chewieController1!)),
+                      )
+                    : Center(
+                        child: CircularProgressIndicator(
+                            color: PrimaryColors().deepOrangeA700)),
               ),
-              width: MediaQuery.of(context).size.width * 0.40,
-              child: isVideoReady1
-                  ? AspectRatio(
-                      aspectRatio: _videoPlayerController1.value.aspectRatio,
-                      child: Center(
-                          child: Chewie(controller: _chewieController1!)),
-                    )
-                  : Center(
-                      child: CircularProgressIndicator(
-                          color: PrimaryColors().deepOrangeA700)),
             ),
-            Container(
-              height: 219.v,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 2,
+            SizedBox(
+                width:
+                    20), // Add spacing between the two Expanded containers if needed
+            Expanded(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.40,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Colors.grey,
+                    width: 2,
+                  ),
                 ),
+                child: isVideoReady2
+                    ? AspectRatio(
+                        aspectRatio: _videoPlayerController2.value.aspectRatio,
+                        child: Center(
+                            child: Chewie(controller: _chewieController2!)),
+                      )
+                    : Center(
+                        child: CircularProgressIndicator(
+                            color: PrimaryColors().deepOrangeA700)),
               ),
-              width: MediaQuery.of(context).size.width * 0.40,
-              child: isVideoReady2
-                  ? AspectRatio(
-                      aspectRatio: _videoPlayerController2.value.aspectRatio,
-                      child: Center(
-                          child: Chewie(controller: _chewieController2!)),
-                    )
-                  : Center(
-                      child: CircularProgressIndicator(
-                          color: PrimaryColors().deepOrangeA700)),
             ),
           ],
         ),
@@ -247,9 +282,11 @@ class _DetectionState extends State<Detection> {
                     0.40, // Dynamically set width
                 child: OptionWidget(
                   child:
-                      OptionButton(type: ButtonType.Video1, onPressed: () {}),
+                      OptionButton(type: ButtonType.Video1, onPressed: () {
+                      
+                      }),
                   isCorrect: () {
-                    return dtcontainer.CorrectOutput();
+                    return dtcontainer.getMuted()==1;
                   },
                 ),
               ),
@@ -263,7 +300,7 @@ class _DetectionState extends State<Detection> {
                   child:
                       OptionButton(type: ButtonType.Video2, onPressed: () {}),
                   isCorrect: () {
-                    return false;
+                    return dtcontainer.getMuted()==0;
                   },
                 ),
               ),
@@ -281,7 +318,11 @@ class _DetectionState extends State<Detection> {
     var provider = Provider.of<UserDataProvider>(context, listen: false);
     return Column(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        SizedBox(
+          height: 40.v,
+        ),
         AudioWidget(
           key: _childKey,
           audioLinks: dtcontainer.getVideoUrls(),

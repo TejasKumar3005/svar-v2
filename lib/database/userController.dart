@@ -196,6 +196,7 @@ final CollectionReference therapyCenterCollection =
 
             transaction
                 .update(userRef, {'LevelMap': levels});
+                await addActivity("Level $newLevelCount completed",DateTime.now().toString().substring(0,10),DateTime.now().toString().substring(11,16));
                 var data = provider.userModel;
                 data.levelMap=LevelMap.fromJson(levels);
                 provider.setUser(data);
@@ -210,5 +211,38 @@ final CollectionReference therapyCenterCollection =
       }
     
   }
+Future<void> addActivity(String activity, String date, String time) async {
+  try {
+    // Get the document snapshot
+    DocumentSnapshot docSnapshot = await userCollection.doc(uid).get();
+
+    // Check if the 'activities' field exists
+    if (docSnapshot.exists && docSnapshot.data() != null && (docSnapshot.data() as Map<String, dynamic>).containsKey('activities')) {
+      // If activities field exists, add the new activity to the array
+      await userCollection.doc(uid).update({
+        "activities": FieldValue.arrayUnion([{
+          "activity": activity,
+          "date": date,
+          "time": time
+        }])
+      });
+    } else {
+      // If activities field doesn't exist, create the field and add the activity
+      await userCollection.doc(uid).set({
+        "activities": [{
+          "activity": activity,
+          "date": date,
+          "time": time
+        }]
+      }, SetOptions(merge: true)); // Use merge to ensure only the activities field is added
+    }
+  } on FirebaseException catch (e) {
+    ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
+      content: Text(e.toString()),
+      backgroundColor: Colors.red,
+    ));
+  }
+}
+
 
 }

@@ -115,10 +115,10 @@ class AudioWidgetState extends State<AudioWidget> {
   @override
   Widget build(BuildContext context) {
     final click = ClickProvider.of(context)?.click;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.of(context).size.height;
 
     return Container(
-      width: screenWidth * 0.5, // Adjust the container width based on screen size
+      width: screenWidth * 0.9, // Adjust the container width based on screen size
       padding: const EdgeInsets.symmetric(
         horizontal: 16.0,
         vertical: 8.0,

@@ -32,13 +32,11 @@ class IdentificationScreen extends StatefulWidget {
 }
 
 class AuditoryScreenState extends State<IdentificationScreen> {
-
   late AudioPlayer _player;
   late int leveltracker;
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
   OverlayEntry? _overlayEntry;
-
 
   @override
   void dispose() {
@@ -55,12 +53,12 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    
+
     _player = AudioPlayer();
 
     leveltracker = 0;
   }
-  
+
   int sel = 0;
 
   @override
@@ -69,7 +67,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
-  
+
     String params = obj[2] as String;
 
     return type != "AudioToImage"
@@ -206,85 +204,96 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                 padding: EdgeInsets.symmetric(
                     horizontal: 16.0), // Adjust padding as needed
                 child: Container(
-                  height: MediaQuery.of(context).size.height *
-                      0.5, // Adjust height as needed
-                  width: MediaQuery.of(context).size.width *
-                      0.8,
-                       // Adjust width as needed
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (dtcontainer.getAudioList().length <= 4)
-                      
-                        ...List.generate(dtcontainer.getAudioList().length,
-                            (index) {
-                          return Column(
-                            children: [
-                              OptionWidget(
-                                child: AudioWidget(
-                                  audioLinks: [
-                                    dtcontainer.getAudioList()[index],
-                                  ], 
-                                ),
-                                isCorrect: () {
-                                  return dtcontainer.getCorrectOutput() ==
-                                      dtcontainer.getAudioList()[index];
-                                },
+                    height: MediaQuery.of(context).size.height *
+                        0.5, // Adjust height as needed
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    // Adjust width as needed
+                    child: Column(
+                      children: [
+                        if (dtcontainer.getAudioList().length <= 4)
+                          ...List.generate(dtcontainer.getAudioList().length,
+                              (index) {
+                            return Expanded(
+                              // Each column item will take a proportional amount of available space
+                              flex:
+                                  1, // You can modify this value to divide space differently
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                     // Adjust the flex value based on your layout needs
+                                    child: OptionWidget(
+                                      child: AudioWidget(
+                                        audioLinks: [
+                                          dtcontainer.getAudioList()[index],
+                                        ],
+                                      ),
+                                      isCorrect: () {
+                                        return dtcontainer.getCorrectOutput() ==
+                                            dtcontainer.getAudioList()[index];
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(
+                                      height:
+                                          10), // Adds gap between each OptionWidget
+                                ],
                               ),
-                              SizedBox(
-                                  height:
-                                      10), // Adds gap between each OptionWidget
-                            ],
-                          );
-                        }),
-                    ],
-                  ),
-                ),
+                            );
+                          }),
+                      ],
+                    )),
               )
             : SizedBox();
 
       case "FigToWord":
         return StatefulBuilder(
           builder: (context, setState) {
-     // State to track failure
+            // State to track failure
 
             return Container(
               height: 192.v,
               width: MediaQuery.of(context).size.width * 0.4,
               child: Stack(
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Center(
-                        child: Row(
-                          children: [
-                            if (dtcontainer.getTextList().length <= 4)
-                              ...List.generate(
-                                  dtcontainer.getTextList().length, (index) {
-                                return Row(
-                                  children: [
-                                    OptionWidget(
-                                      child: TextContainer(
-                                        text: dtcontainer.getTextList()[index],
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              if (dtcontainer.getTextList().length <= 4)
+                                ...List.generate(
+                                    dtcontainer.getTextList().length, (index) {
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      OptionWidget(
+                                        child: TextContainer(
+                                          text:
+                                              dtcontainer.getTextList()[index],
+                                        ),
+                                        isCorrect: () {
+                                          return dtcontainer
+                                                  .getCorrectOutput() ==
+                                              dtcontainer.getTextList()[index];
+                                        },
                                       ),
-                                      isCorrect: () {
-                                        return dtcontainer.getCorrectOutput() ==
-                                            dtcontainer.getTextList()[index];
-                                      },
-                                    ),
-                                    SizedBox(
-                                        width:
-                                            10), // Adds gap between each OptionWidget
-                                    // Adds gap between each OptionWidget
-                                  ],
-                                );
-                              })
-                          ],
+                                      SizedBox(
+                                          width:
+                                              10), // Adds gap between each OptionWidget
+                                      // Adds gap between each OptionWidget
+                                    ],
+                                  );
+                                })
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  )
+
                   // Custom button with image at the bottom, change color on failure
                 ],
               ),
@@ -299,29 +308,35 @@ class AuditoryScreenState extends State<IdentificationScreen> {
               0.4, // Adjusting height dynamically
           width: MediaQuery.of(context).size.width *
               0.8, // Adjusting the width to fit better
+         child: Row(
+  mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Distribute space evenly
+  children: [
+    if (dtcontainer.getImageUrlList().length <= 4)
+      ...List.generate(dtcontainer.getImageUrlList().length, (index) {
+        return Expanded( // Each item will take up available space based on the flex value
+          flex: 1, // Adjust the flex as needed to control the width ratio
           child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceEvenly, // Distribute space evenly
             children: [
-              if (dtcontainer.getImageUrlList().length <= 4)
-                ...List.generate(dtcontainer.getImageUrlList().length, (index) {
-                  return Row(
-                    children: [
-                      OptionWidget(
-                        child: ImageWidget(
-                          imagePath: dtcontainer.getImageUrlList()[index],
-                        ),
-                        isCorrect: () {
-                          return dtcontainer.getCorrectOutput() ==
-                              dtcontainer.getImageUrlList()[index];
-                        },
-                      ),
-                      SizedBox(width: 10), // Adds gap between each OptionWidget
-                    ],
-                  );
-                })
+              Expanded(
+                flex: 2, // Adjust the flex value for the OptionWidget
+                child: OptionWidget(
+                  child: ImageWidget(
+                    imagePath: dtcontainer.getImageUrlList()[index],
+                  ),
+                  isCorrect: () {
+                    return dtcontainer.getCorrectOutput() ==
+                        dtcontainer.getImageUrlList()[index];
+                  },
+                ),
+              ),
+              SizedBox(width: 10), // Adds gap between each OptionWidget
             ],
           ),
+        );
+      }),
+  ],
+)
+
         );
 
       default:

@@ -117,7 +117,7 @@ class AudioToAudio {
   AudioToAudio._({required this.audio_list, required this.correct_output});
   factory AudioToAudio.fromJson(Map<String, dynamic> json) {
     return AudioToAudio._(
-       audio_list: List<String>.from(json['audio_list']),
+        audio_list: List<String>.from(json['audio_list']),
         correct_output: json["correct_output"] as int);
   }
   List<String> getAudioList() {
@@ -131,24 +131,29 @@ class AudioToAudio {
 
 class MutedUnmuted {
   final List<String> video_url;
-
+  final int muted;
   MutedUnmuted._({
     required this.video_url,
+    required this.muted,
   });
 
   factory MutedUnmuted.fromJson(Map<String, dynamic> json) {
     return MutedUnmuted._(
       video_url: List<String>.from(json['video_url']),
+      muted: json['muted'] as int,
     );
   }
 
   List<String> getVideoUrls() {
     return video_url;
   }
+  int getMuted() {
+    return muted;
+  }
 }
 
 class HalfMuted {
-   final List<String> video_url;
+  final List<String> video_url;
 
   HalfMuted._({
     required this.video_url,
