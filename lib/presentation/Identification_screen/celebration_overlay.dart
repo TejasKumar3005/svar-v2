@@ -86,14 +86,20 @@ class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Visibility(
-          visible: _artboard != null,
-          child: Rive(
-            artboard: _artboard!,
-            fit: BoxFit.cover,
+      body: GestureDetector(
+        onTap: (){
+          widget.removeOverlay();
+          Navigator.pop(context, true);
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Visibility(
+            visible: _artboard != null,
+            child: Rive(
+              artboard: _artboard!,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       ),
