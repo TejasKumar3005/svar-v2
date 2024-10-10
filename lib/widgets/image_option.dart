@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // For SVG support
 import 'package:svar_new/widgets/Options.dart';
+import 'dart:io'; // For File
+import 'package:svar_new/core/network/cacheManager.dart'; 
+
 class ImageWidget extends StatefulWidget {
   final String imagePath;
 
@@ -19,6 +22,23 @@ class _ImageWidgetState extends State<ImageWidget> {
 
   bool _isNetworkImage(String path) {
     return path.startsWith('http'); // Check if the image is a network image
+  }
+
+  File? _cachedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCachedImage(widget.imagePath);
+  }
+
+  Future<void> _loadCachedImage(String imagePath) async {
+    if (_isNetworkImage(imagePath)) {
+      final cachedFile = await CachingManager().getCachedFile(imagePath);
+      setState(() {
+        _cachedImage = cachedFile;
+      });
+    }
   }
 
   @override
@@ -57,7 +77,15 @@ class _ImageWidgetState extends State<ImageWidget> {
 
   /// Helper function to build the appropriate image widget
   Widget _buildImageWidget(String imagePath) {
-    if (_isNetworkImage(imagePath)) {
+    if (_cachedImage != null) {
+      // If the image is cached, load it from the cache
+      return Image.file(
+        _cachedImage!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) =>
+            Icon(Icons.error), // Error icon if image fails to load
+      );
+    } else if (_isNetworkImage(imagePath)) {
       // For Network Images
       if (_isSvgImage(imagePath)) {
         return SvgPicture.network(
