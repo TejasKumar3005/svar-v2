@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // For SVG support
 import 'package:svar_new/widgets/Options.dart';
 import 'dart:io'; // For File
-import 'package:svar_new/core/network/cacheManager.dart'; 
+import 'package:svar_new/core/network/cacheManager.dart';
+import 'package:flutter/foundation.dart';
 
 class ImageWidget extends StatefulWidget {
   final String imagePath;
@@ -67,7 +68,8 @@ class _ImageWidgetState extends State<ImageWidget> {
             },
             child: FittedBox(
               fit: BoxFit.fill,
-              child: _buildImageWidget(widget.imagePath), // Helper function to select image type
+              child: _buildImageWidget(
+                  widget.imagePath), // Helper function to select image type
             ),
           ),
         ),
@@ -77,8 +79,8 @@ class _ImageWidgetState extends State<ImageWidget> {
 
   /// Helper function to build the appropriate image widget
   Widget _buildImageWidget(String imagePath) {
-    if (_cachedImage != null) {
-      // If the image is cached, load it from the cache
+    if (_cachedImage != null && !kIsWeb) {
+      // If the image is cached and not on the web, load it from the cache
       return Image.file(
         _cachedImage!,
         fit: BoxFit.cover,
@@ -113,7 +115,7 @@ class _ImageWidgetState extends State<ImageWidget> {
           imagePath,
           fit: BoxFit.contain,
         );
-      } else {
+      } else {  
         return Image.asset(
           imagePath,
           fit: BoxFit.cover,
