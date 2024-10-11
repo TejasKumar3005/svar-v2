@@ -38,12 +38,19 @@ class AnalyticsService {
     await _analytics.logAppOpen();
   }
 
-  Future<void> logEvent(String name, Map<String, dynamic> parameters) async {
+  Future<void> logEvent(String name, dynamic parameters) async {
+  if (parameters is Map<String, dynamic>) {
     await _analytics.logEvent(
       name: name,
-      parameters: parameters,
-      
+      parameters: parameters.map((key, value) => MapEntry(key, value as Object)),
+    );
+  } else if (parameters is String) {
+    await _analytics.logEvent(
+      name: name,
+      parameters: {'parameters': parameters}, // You can adjust the key as per your requirement
     );
   }
+}
+
 
 }

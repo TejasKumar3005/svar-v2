@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.svarnew.app">
     
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -10,7 +11,8 @@
 
     <application
         android:label="svar_new"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        tools:replace="android:label, android:icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

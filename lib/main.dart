@@ -75,9 +75,12 @@ class MyApp extends StatelessWidget {
 
   MyApp({required this.analyticsService})
       : _screenTracking = ScreenTracking(analyticsService,null) {
-    _networkInfo.onConnectivityChanged.listen((ConnectivityResult result) {
-      final isConnected = result != ConnectivityResult.none;
+    _networkInfo.onConnectivityChanged.listen((List<ConnectivityResult> results) {
+      if (results.isNotEmpty) {
+      final isConnected = results.first != ConnectivityResult.none;
       showConnectivitySnackBar(isConnected);
+    }
+
     });
   }
   
