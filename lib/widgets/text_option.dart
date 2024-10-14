@@ -18,9 +18,7 @@ class _TextContainerState extends State<TextContainer> {
   @override
   Widget build(BuildContext context) {
      final click = ClickProvider.of(context)?.click;
-    return Expanded(
-      flex: 1,
-      child: AnimatedContainer(
+    return  AnimatedContainer(
         duration: Duration(seconds: 1),
         height: MediaQuery.of(context).size.height * 0.35,
         child: Stack(
@@ -54,7 +52,6 @@ class _TextContainerState extends State<TextContainer> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

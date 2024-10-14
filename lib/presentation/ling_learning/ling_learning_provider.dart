@@ -30,7 +30,7 @@ class LingLearningProvider extends ChangeNotifier {
 
   Future<void> _initializeRecorder() async {
     print("audio recorder initiliased");
-    await _audioRecorder!.openAudioSession();
+    await _audioRecorder!.openRecorder();
   }
 
   Future<bool> toggleRecording(BuildContext context) async {
@@ -77,7 +77,7 @@ class LingLearningProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    _audioRecorder!.closeAudioSession();
+    _audioRecorder!.closeRecorder();
     _audioRecorder = null;
     super.dispose();
   }

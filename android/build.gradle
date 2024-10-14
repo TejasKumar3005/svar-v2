@@ -10,7 +10,7 @@ subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
 buildscript{
-    ext.kotlin_version = '1.8.0'
+    ext.kotlin_version = '2.0.0'
 }
 subprojects {
     project.evaluationDependsOn(':app')
@@ -19,3 +19,11 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+// subprojects {
+//         afterEvaluate { project ->
+//             if (project.hasProperty('android')) {
+//                 project.android { compileSdkVersion 34 }
+//             }
+//         }
+// }
