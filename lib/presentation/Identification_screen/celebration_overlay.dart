@@ -15,7 +15,7 @@ OverlayEntry celebrationOverlay(
 }
 
 class CelebrationOverlayWidget extends StatefulWidget {
-  Function() removeOverlay;
+final  Function() removeOverlay;
   CelebrationOverlayWidget({super.key, required this.removeOverlay});
 
   @override

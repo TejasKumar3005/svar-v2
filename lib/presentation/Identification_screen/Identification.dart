@@ -1,10 +1,7 @@
-import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:camera/camera.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
-import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/presentation/Identification_screen/audioToImage.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';

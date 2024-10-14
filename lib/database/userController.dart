@@ -196,7 +196,7 @@ final CollectionReference therapyCenterCollection =
 
             transaction
                 .update(userRef, {'LevelMap': levels});
-                await addActivity("Level $newLevelCount completed",DateTime.now().toString().substring(0,10),DateTime.now().toString().substring(11,16));
+                await addActivity("Level $newLevelCount completed",DateTime.now().toString().substring(0,10),DateTime.now().toString().substring(11,16),uid!);
                 var data = provider.userModel;
                 data.levelMap=LevelMap.fromJson(levels);
                 provider.setUser(data);
@@ -211,7 +211,7 @@ final CollectionReference therapyCenterCollection =
       }
     
   }
-Future<void> addActivity(String activity, String date, String time) async {
+Future<void> addActivity(String activity, String date, String time,String uid) async {
   try {
     // Get the document snapshot
     DocumentSnapshot docSnapshot = await userCollection.doc(uid).get();
