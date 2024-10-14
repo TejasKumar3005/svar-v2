@@ -48,8 +48,8 @@ class _ImageWidgetState extends State<ImageWidget> {
   Widget build(BuildContext context) {
     final click = ClickProvider.of(context)?.click;
 
-    return Expanded(
-      child: Center(
+    return 
+     Center(
         child: AnimatedContainer(
           duration: Duration(seconds: 1),
           width: MediaQuery.of(context).size.width * 0.35,
@@ -79,8 +79,8 @@ class _ImageWidgetState extends State<ImageWidget> {
             ),
           ),
         ),
-      ),
-    );
+      );
+  
   }
 
   /// Helper function to build the appropriate image widget
