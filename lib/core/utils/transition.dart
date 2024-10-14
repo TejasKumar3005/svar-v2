@@ -12,10 +12,26 @@ class RivePageRoute extends PageRouteBuilder {
       {required this.routeName, this.arguments, required this.riveFileName})
       : super(
           pageBuilder: (context, animation, secondaryAnimation) {
-            var builder = AppRoutes.routes[routeName];
-            return builder != null ? builder(context) : HomeScreen();
+
+          return FutureBuilder(
+            future: Future.delayed(Duration(seconds: 1)), // 1-second delay
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                // After the delay, return the page
+                var builder = AppRoutes.routes[routeName];
+                return builder != null ? builder(context) : HomeScreen();
+              } else {
+                // While waiting, you can show a loading indicator or a placeholder
+                return Container(); // Replace with a loading widget if desired
+              }
+            },
+          );
+
           },
-          transitionDuration: Duration(seconds: 1),
+          settings: RouteSettings(
+        arguments: arguments, // Pass arguments using RouteSettings
+      ),
+          transitionDuration: Duration(seconds: 5),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return Stack(
               children: <Widget>[
@@ -40,28 +56,6 @@ class RivePageRoute extends PageRouteBuilder {
         );
 }
 
-// class RiveAnimationTransition extends StatelessWidget {
-//   final Animation<double> animation;
-//   final String riveFileName;
-
-//   RiveAnimationTransition({required this.animation, required this.riveFileName});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return AnimatedBuilder(
-//       animation: animation,
-//       builder: (context, child) => Opacity(
-//         opacity: 1.0, // - animation.value,
-//         child: RiveAnimation.asset(
-//           riveFileName,
-//           fit: BoxFit.cover,
-//           // animations: ['Transition'],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class RiveAnimationTransition extends StatefulWidget {
   final Animation<double> animation;
   final String riveFileName;
@@ -75,40 +69,62 @@ class RiveAnimationTransition extends StatefulWidget {
 }
 
 class _RiveAnimationTransitionState extends State<RiveAnimationTransition> {
-  late RiveAnimationController _controller;
+  StateMachineController? _stateMachineController;
+  // SMITrigger? _trigger; // Example input; adjust based on your state machine
+  bool _isAnimationActive = false;
 
   @override
-  void initState() {
-    super.initState();
-    _controller = OneShotAnimation('Timeline 1', autoplay: false);
-    widget.animation.addStatusListener(_animationStatusListener);
+  void dispose() {
+    // Dispose of the state machine controller if it's been initialized
+    _stateMachineController?.dispose();
+    super.dispose();
   }
 
-  void _animationStatusListener(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
-      Future.delayed(Duration(milliseconds: 500), () {
-        if (mounted) {
-          setState(() {
-            _controller.isActive = false; // This will stop the Rive animation
-          });
-        }
+  void _onRiveInit(Artboard artboard) {
+    // Initialize the StateMachineController with the Artboard and the state machine name
+    _stateMachineController =
+        StateMachineController.fromArtboard(artboard, 'State Machine 1');
+    
+    if (_stateMachineController != null) {
+      artboard.addController(_stateMachineController!);
+      
+      // Example: Retrieve a trigger input from the state machine
+      // Replace 'TriggerName' with the actual name of your trigger
+      // _trigger = _stateMachineController!.findInput<SMITrigger>('TriggerName');
+      
+      // Activate the animation
+      setState(() {
+        _isAnimationActive = true;
       });
+      
+      // Optionally, you can activate a trigger to start the animation
+      // _trigger?.fire();
+      
+      // Listen for changes or transitions in the state machine if needed
+      // This requires additional logic based on your specific state machine setup
     }
+  }
+
+  void _handleAnimationCompletion() {
+    // This method can be called based on your state machine's logic
+    // For example, after a certain state is reached
+    Future.delayed(Duration(milliseconds: 1200), () {
+      if (mounted) {
+        setState(() {
+          _isAnimationActive = false;
+          _stateMachineController?.isActive = false; // Deactivate the controller
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return RiveAnimation.asset(
       widget.riveFileName,
-      controllers: [_controller],
+      onInit: _onRiveInit,
       fit: BoxFit.cover,
-      onInit: (_) => _controller.isActive = true, // Start animation on init
+      // Optionally, you can set `artboard` or other properties here
     );
-  }
-
-  @override
-  void dispose() {
-    widget.animation.removeStatusListener(_animationStatusListener);
-    super.dispose();
   }
 }

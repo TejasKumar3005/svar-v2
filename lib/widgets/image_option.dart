@@ -4,6 +4,8 @@ import 'package:svar_new/widgets/Options.dart';
 import 'dart:io'; // For File
 import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:flutter/foundation.dart';
+import 'package:svar_new/core/app_export.dart';
+
 
 class ImageWidget extends StatefulWidget {
   final String imagePath;
@@ -68,8 +70,12 @@ class _ImageWidgetState extends State<ImageWidget> {
             },
             child: FittedBox(
               fit: BoxFit.fill,
-              child: _buildImageWidget(
-                  widget.imagePath), // Helper function to select image type
+              child: CustomImageView(
+                          imagePath: widget.imagePath,
+                          
+                        )
+              // _buildImageWidget(
+              //     widget.imagePath), // Helper function to select image type
             ),
           ),
         ),

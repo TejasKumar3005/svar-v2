@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-
+import 'transition.dart';
 import 'dart:async';
 
 class NavigatorService {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-  static Future<dynamic> pushNamed(String routeName,
-      {dynamic arguments, String? riveFileName}) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return navigatorKey.currentState
-        ?.pushNamed(routeName, arguments: arguments);
+static Future<dynamic> pushNamed(String routeName, {dynamic arguments, String? riveFileName}) async {
+    return navigatorKey.currentState?.push(
+      RivePageRoute(
+        routeName: routeName,
+        arguments: arguments,
+        riveFileName: riveFileName ?? 'assets/rive/transition.riv',
+      ),
+    );
   }
 
   static Future<void> goBack() async {

@@ -52,6 +52,7 @@ void main() async {
   Future.wait([
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft
     ]),
     PrefUtils().init()
   ]).then((value) {

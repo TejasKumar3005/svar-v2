@@ -137,7 +137,7 @@ class LoginScreenState extends State<LoginScreen> {
                           width: screenWidth * 0.9, // Adjusted proportionally
                           height: screenHeight * 0.9, // Increased height proportion
                           child: RiveAnimation.asset(
-                            'rive/mascot-rig-final.riv', // Update with your Rive file
+                            'assets/rive/mascot-rig-final.riv', // Update with your Rive file
                             fit: BoxFit.contain,
                           ),
                         ),
