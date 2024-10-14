@@ -4,6 +4,8 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/widgets/Options.dart';
+import 'dart:async';
+
 
 // Global audio player to ensure only one instance plays at a time
 AudioPlayer globalAudioPlayer = AudioPlayer();
@@ -25,6 +27,7 @@ class AudioWidget extends StatefulWidget {
 }
 
 class AudioWidgetState extends State<AudioWidget> {
+  StreamSubscription<Duration>? _positionSubscription;
   late AudioPlayer _audioPlayer;
   late double progress;
   late int currentIndex;
@@ -45,8 +48,8 @@ class AudioWidgetState extends State<AudioWidget> {
     // Load audio lengths
     loadAudioLengths();
 
-    // Listen to the audio player's position
-    _audioPlayer.positionStream.listen((position) {
+    
+      _positionSubscription =_audioPlayer.positionStream.listen((position) {
       if (_audioPlayer.duration != null &&
           _audioPlayer.duration!.inSeconds > 0) {
         setState(() {
@@ -108,6 +111,7 @@ class AudioWidgetState extends State<AudioWidget> {
 
   @override
   void dispose() {
+    _positionSubscription?.cancel();
     _audioPlayer.dispose();
     super.dispose();
   }
