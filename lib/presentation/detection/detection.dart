@@ -57,9 +57,9 @@ class _DetectionState extends State<Detection> {
     dynamic dtcontainer = obj[1] as dynamic;
     print(dtcontainer.getVideoUrls().toString());
     if(type=="MutedUnmuted"){
-
-      initiliaseVideo(dtcontainer.getVideoUrls()[0], 1);
-      initiliaseVideo(dtcontainer.getVideoUrls()[1], 2);
+     int mutedVideoIndex = dtcontainer.getMuted();
+      initiliaseVideo(dtcontainer.getVideoUrls()[0], 1,mutedVideoIndex);
+      initiliaseVideo(dtcontainer.getVideoUrls()[1], 2,mutedVideoIndex);
     }
     });
     super.initState();
@@ -71,79 +71,71 @@ class _DetectionState extends State<Detection> {
     _chewieController1?.dispose();
     _videoPlayerController2.dispose();
     _chewieController2?.dispose();
-
     // Dispose of the timer if it exists
     volumeTimer?.cancel();
-    
     super.dispose();
   }
 
-  void initiliaseVideo(String videoUrl, int video) {
-    // File? file;
-    // CachingManager().getCachedFile(videoUrl).then((value) {
-    //   file = value;
-    // });
-    if (video == 1) {
-      _videoPlayerController1 =
-          VideoPlayerController.networkUrl(Uri.parse(videoUrl))
-            ..initialize().then((_) {
-              if(mounted){
-
+void initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) {
+  if (video == 1) {
+    _videoPlayerController1 =
+        VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+          ..initialize().then((_) {
+            if (mounted) {
               setState(() {
                 isVideoReady1 = true;
               });
-              }
-            });
-      // _videoPlayerController1.addListener(() {
-      //   if (_videoPlayerController1.value.position ==
-      //       _videoPlayerController1.value.duration) {
-      //     Navigator.pop(context, true);
-      //   }
-      // });
-      _chewieController1 = ChewieController(
-        videoPlayerController: _videoPlayerController1,
-        autoPlay: true,
-        looping: true,
-        showControls: false,
-        showControlsOnInitialize: false,
-        showOptions: false,
-      );
-    } else {
-      _videoPlayerController2 =
-          VideoPlayerController.networkUrl(Uri.parse(videoUrl))
-            ..initialize().then((_) {
-              if(mounted){
+            }
+          });
 
+    // Determine if this video should be muted based on mutedVideoIndex
+    bool isMuted = (mutedVideoIndex == 0);
+      _videoPlayerController1.setVolume(isMuted ? 0.0 : 1.0);
+    _chewieController1 = ChewieController(
+      videoPlayerController: _videoPlayerController1,
+      autoPlay: true,
+      looping: true,
+      showControls: false,
+      showControlsOnInitialize: false,
+      showOptions: false,
+      allowMuting: false,
+      autoInitialize: true,
+     
+    );
+  } else {
+    _videoPlayerController2 =
+        VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+          ..initialize().then((_) {
+            if (mounted) {
               setState(() {
                 isVideoReady2 = true;
               });
-              }
-            });
+            }
+          });
 
-      // _videoPlayerController2.addListener(() {
-      //   if (_videoPlayerController2.value.position ==
-      //       _videoPlayerController2.value.duration) {
-      //     Navigator.pop(context, true);
-      //   }
-      // });
-      _chewieController2 = ChewieController(
-        videoPlayerController: _videoPlayerController2,
-        autoPlay: true,
-        looping: true,
-        showControls: false,
-        showControlsOnInitialize: false,
-        showOptions: false,
-      );
-    }
+    // Determine if this video should be muted based on mutedVideoIndex
+    bool isMuted = (mutedVideoIndex == 1);
+      _videoPlayerController2.setVolume(isMuted ? 0.0 : 1.0);
+    _chewieController2 = ChewieController(
+      videoPlayerController: _videoPlayerController2,
+      autoPlay: true,
+      looping: true,
+      showControls: false,
+      showControlsOnInitialize: false,
+      showOptions: false,
+      allowMuting: false,
+      autoInitialize: true,
+     // Mute if required
+    );
   }
+}
 
-  OverlayEntry? _overlayEntry;
+
+
   @override
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    String type = obj[0] as String;
-    dynamic dtcontainer = obj[1] as dynamic;
-  
+    String type = obj[0] as String;  
     return Scaffold(
       body
           // ? VideoPlayerScreen(
@@ -185,7 +177,6 @@ class _DetectionState extends State<Detection> {
         return HalfMuted(context);
       case "MutedUnmuted":
         return MutedUnmuted(context);
-
       default:
         return Container();
     }
@@ -193,7 +184,6 @@ class _DetectionState extends State<Detection> {
 
   Widget MutedUnmuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
 
     return Column(
