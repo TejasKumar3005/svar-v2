@@ -3,6 +3,7 @@ import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/presentation/login/forgot-password.dart';
 import 'package:svar_new/presentation/login/login-methods.dart';
 import 'package:svar_new/presentation/login/login_provider.dart';
 import 'package:svar_new/widgets/loading.dart';
@@ -107,6 +108,24 @@ class LoginScreenState extends State<LoginScreen> {
                               context, provider),
                           SizedBox(
                             height: 15.v,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+
+                              GestureDetector(
+                                onTap: () {
+                                  showDialog(context: context, builder: (context) {
+                                    return ForgotPasswordDialog();
+                                  });
+                                },
+                                child: Text("Forgot Password?".tr,
+                                    style: TextStyle(
+                                        color: appTheme.orangeA200,
+                                        fontSize: 20.h,
+                                        fontWeight: FontWeight.bold)),
+                              ),
+                            ],
                           ),
                           GestureDetector(
                             onTap: () async{
