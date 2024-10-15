@@ -30,7 +30,8 @@ class Detection extends StatefulWidget {
 }
 
 class _DetectionState extends State<Detection> {
-  final GlobalKey<AudioWidgetState> _childKey = GlobalKey<AudioWidgetState>();
+  final GlobalKey<AudioWidgetState> _audioWidgetKey =
+      GlobalKey<AudioWidgetState>();
   String quizType = "video";
   int selectedOption = -1;
   PlayAudio playAudio = PlayAudio();
@@ -44,27 +45,24 @@ class _DetectionState extends State<Detection> {
   Timer? volumeTimer;
   double currentProgress = 0.0;
   double totalDuration = 0.0;
+
   @override
   void initState() {
-    // if (widget.type == "MutedUnmuted") {
-    //   initiliaseVideo(widget.data["video_url"][0], 1);
-    //   initiliaseVideo(widget.data["video_url"][1], 2);
-    // }
-  
     WidgetsBinding.instance.addPostFrameCallback((_) {
-        var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    String type = obj[0] as String;
-    dynamic dtcontainer = obj[1] as dynamic;
-    print(dtcontainer.getVideoUrls().toString());
-    if(type=="MutedUnmuted"){
-     int mutedVideoIndex = dtcontainer.getMuted();
-      initiliaseVideo(dtcontainer.getVideoUrls()[0], 1,mutedVideoIndex);
-      initiliaseVideo(dtcontainer.getVideoUrls()[1], 2,mutedVideoIndex);
-    }
+      var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+      String type = obj[0] as String;
+      dynamic dtcontainer = obj[1] as dynamic;
+      print(dtcontainer.getVideoUrls().toString());
+      if (type == "MutedUnmuted") {
+        int mutedVideoIndex = dtcontainer.getMuted();
+        initiliaseVideo(dtcontainer.getVideoUrls()[0], 1, mutedVideoIndex);
+        initiliaseVideo(dtcontainer.getVideoUrls()[1], 2, mutedVideoIndex);
+      }
     });
     super.initState();
   }
-   @override
+
+  @override
   void dispose() {
     // Dispose of the video controllers and Chewie controllers
     _videoPlayerController1.dispose();
@@ -76,72 +74,64 @@ class _DetectionState extends State<Detection> {
     super.dispose();
   }
 
-void initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) {
-  if (video == 1) {
-    _videoPlayerController1 =
-        VideoPlayerController.networkUrl(Uri.parse(videoUrl))
-          ..initialize().then((_) {
-            if (mounted) {
-              setState(() {
-                isVideoReady1 = true;
-              });
-            }
-          });
+  void initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) {
+    if (video == 1) {
+      _videoPlayerController1 =
+          VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+            ..initialize().then((_) {
+              if (mounted) {
+                setState(() {
+                  isVideoReady1 = true;
+                });
+              }
+            });
 
-    // Determine if this video should be muted based on mutedVideoIndex
-    bool isMuted = (mutedVideoIndex == 0);
+      // Determine if this video should be muted based on mutedVideoIndex
+      bool isMuted = (mutedVideoIndex == 0);
       _videoPlayerController1.setVolume(isMuted ? 0.0 : 1.0);
-    _chewieController1 = ChewieController(
-      videoPlayerController: _videoPlayerController1,
-      autoPlay: true,
-      looping: true,
-      showControls: false,
-      showControlsOnInitialize: false,
-      showOptions: false,
-      allowMuting: false,
-      autoInitialize: true,
-     
-    );
-  } else {
-    _videoPlayerController2 =
-        VideoPlayerController.networkUrl(Uri.parse(videoUrl))
-          ..initialize().then((_) {
-            if (mounted) {
-              setState(() {
-                isVideoReady2 = true;
-              });
-            }
-          });
+      _chewieController1 = ChewieController(
+        videoPlayerController: _videoPlayerController1,
+        autoPlay: true,
+        looping: true,
+        showControls: false,
+        showControlsOnInitialize: false,
+        showOptions: false,
+        allowMuting: false,
+        autoInitialize: true,
+      );
+    } else {
+      _videoPlayerController2 =
+          VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+            ..initialize().then((_) {
+              if (mounted) {
+                setState(() {
+                  isVideoReady2 = true;
+                });
+              }
+            });
 
-    // Determine if this video should be muted based on mutedVideoIndex
-    bool isMuted = (mutedVideoIndex == 1);
+      // Determine if this video should be muted based on mutedVideoIndex
+      bool isMuted = (mutedVideoIndex == 1);
       _videoPlayerController2.setVolume(isMuted ? 0.0 : 1.0);
-    _chewieController2 = ChewieController(
-      videoPlayerController: _videoPlayerController2,
-      autoPlay: true,
-      looping: true,
-      showControls: false,
-      showControlsOnInitialize: false,
-      showOptions: false,
-      allowMuting: false,
-      autoInitialize: true,
-     // Mute if required
-    );
+      _chewieController2 = ChewieController(
+        videoPlayerController: _videoPlayerController2,
+        autoPlay: true,
+        looping: true,
+        showControls: false,
+        showControlsOnInitialize: false,
+        showOptions: false,
+        allowMuting: false,
+        autoInitialize: true,
+      );
+    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    String type = obj[0] as String;  
+    String type = obj[0] as String;
     return Scaffold(
-      body
-          // ? VideoPlayerScreen(
-          //     videoUrl:
-          //   )
-          : Container(
+      body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
@@ -174,7 +164,12 @@ void initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) {
       //     videoUrl: widget.data["video_url"],
       //   );
       case "HalfMuted":
-        return HalfMuted(context);
+        return HalfMutedWidget(
+          key: _audioWidgetKey,
+          audioLinks:
+              (ModalRoute.of(context)?.settings.arguments as List<dynamic>)[1]
+                  .getVideoUrls(),
+        );
       case "MutedUnmuted":
         return MutedUnmuted(context);
       default:
@@ -185,7 +180,6 @@ void initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) {
   Widget MutedUnmuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     dynamic dtcontainer = obj[1] as dynamic;
-
     return Column(
       children: [
         Container(
@@ -271,12 +265,14 @@ void initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
-                  child:
-                      OptionButton(type: ButtonType.Video1, onPressed: () {
-                      
-                      }),
+                  child: OptionButton(
+                    type: ButtonType.Video1,
+                    onPressed: () {
+                      // Implement your logic here
+                    },
+                  ),
                   isCorrect: () {
-                    return dtcontainer.getMuted()==1;
+                    return (obj[1] as dynamic).getMuted() == 1;
                   },
                 ),
               ),
@@ -287,10 +283,14 @@ void initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
-                  child:
-                      OptionButton(type: ButtonType.Video2, onPressed: () {}),
+                  child: OptionButton(
+                    type: ButtonType.Video2,
+                    onPressed: () {
+                      // Implement your logic here
+                    },
+                  ),
                   isCorrect: () {
-                    return dtcontainer.getMuted()==0;
+                    return (obj[1] as dynamic).getMuted() == 0;
                   },
                 ),
               ),
@@ -300,12 +300,59 @@ void initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) {
       ],
     );
   }
+}
 
-  Widget HalfMuted(BuildContext context) {
-    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    String type = obj[0] as String;
-    dynamic dtcontainer = obj[1] as dynamic;
-    var provider = Provider.of<UserDataProvider>(context, listen: false);
+///
+/// New StatefulWidget: HalfMutedWidget
+///
+class HalfMutedWidget extends StatefulWidget {
+  final List<String> audioLinks;
+
+  const HalfMutedWidget({
+    Key? key,
+    required this.audioLinks,
+  }) : super(key: key);
+
+  @override
+  _HalfMutedWidgetState createState() => _HalfMutedWidgetState();
+}
+
+class _HalfMutedWidgetState extends State<HalfMutedWidget> {
+  final GlobalKey<AudioWidgetState> _childKey = GlobalKey<AudioWidgetState>();
+  Timer? _volumeTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Start the volume control after the first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startVolumeControl();
+    });
+  }
+
+  void _startVolumeControl() {
+    _volumeTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      if (_childKey.currentState != null) {
+        double progress = _childKey.currentState!.progress;
+        if (progress < 0.5) {
+          // Mute for the first half
+          globalAudioPlayer.setVolume(0.0);
+        } else {
+          // Unmute for the second half
+          globalAudioPlayer.setVolume(1.0);
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _volumeTimer?.cancel(); // Cancel the timer to prevent memory leaks
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -315,26 +362,46 @@ void initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) {
         ),
         AudioWidget(
           key: _childKey,
-          audioLinks: dtcontainer.getVideoUrls(),
+          audioLinks: widget.audioLinks,
         ),
         SizedBox(
           height: 20.v,
         ),
         OptionWidget(
-            child: OptionButton(type: ButtonType.Stop, onPressed: () {}),
-            isCorrect: () {
-              List<double> total_length = _childKey.currentState!.lengths;
-              double ans =
-                  total_length[0] / (total_length[1] + total_length[0]);
-              print(
-                  "ans is $ans current progress is ${_childKey.currentState!.progress}");
-              if (_childKey.currentState!.progress > ans &&
-                  _childKey.currentState!.progress < ans + 0.1) {
-                return true;
-              } else {
-                return false;
-              }
-            })
+          child: OptionButton(
+            type: ButtonType.Stop,
+            onPressed: () {
+              // Stop the audio playback
+              globalAudioPlayer.stop();
+            },
+          ),
+          isCorrect: () {
+            if (_childKey.currentState == null) return false;
+
+            List<double> total_length = _childKey.currentState!.lengths;
+            if (total_length.isEmpty) {
+              // Ensure there is at least 1 element in the list (the audio length)
+              print("Error: total_length is empty.");
+              return false;
+            }
+
+            double audioLength = total_length[
+                0]; // Since there's only one length, take the first element
+            double ans =
+                0.5; // Since you're muting the first half, the threshold is 0.5
+
+            double currentProgress = _childKey.currentState!.progress;
+            print("Current progress is $currentProgress");
+
+// Define the acceptable range, e.g., ans ± 0.1
+            const double tolerance = 0.4;
+            bool condition =
+                currentProgress > ans && currentProgress < ans + tolerance;
+            print("Condition result: $condition");
+
+            return condition;
+          },
+        ),
       ],
     );
   }
