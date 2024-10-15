@@ -36,8 +36,8 @@ class _DetectionState extends State<Detection> {
   int selectedOption = -1;
   PlayAudio playAudio = PlayAudio();
 
-  late VideoPlayerController _videoPlayerController1;
-  late VideoPlayerController _videoPlayerController2;
+  VideoPlayerController? _videoPlayerController1;
+  VideoPlayerController? _videoPlayerController2;
   ChewieController? _chewieController1;
   ChewieController? _chewieController2;
   bool isVideoReady1 = false;
@@ -48,6 +48,9 @@ class _DetectionState extends State<Detection> {
 
   @override
   void initState() {
+    super.initState();
+    
+    // Defer the video initialization to after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
       String type = obj[0] as String;
@@ -55,74 +58,88 @@ class _DetectionState extends State<Detection> {
       print(dtcontainer.getVideoUrls().toString());
       if (type == "MutedUnmuted") {
         int mutedVideoIndex = dtcontainer.getMuted();
-        initiliaseVideo(dtcontainer.getVideoUrls()[0], 1, mutedVideoIndex);
-        initiliaseVideo(dtcontainer.getVideoUrls()[1], 2, mutedVideoIndex);
+        _initializeVideoFlow(dtcontainer.getVideoUrls(), mutedVideoIndex);
       }
     });
-    super.initState();
+  }
+
+  // Initialize both videos sequentially
+  Future<void> _initializeVideoFlow(List<String> videoUrls, int mutedVideoIndex) async {
+    await initiliaseVideo(videoUrls[0], 1, mutedVideoIndex);
+    await initiliaseVideo(videoUrls[1], 2, mutedVideoIndex);
   }
 
   @override
   void dispose() {
     // Dispose of the video controllers and Chewie controllers
-    _videoPlayerController1.dispose();
+    _videoPlayerController1?.dispose();
     _chewieController1?.dispose();
-    _videoPlayerController2.dispose();
+    _videoPlayerController2?.dispose();
     _chewieController2?.dispose();
     // Dispose of the timer if it exists
     volumeTimer?.cancel();
     super.dispose();
   }
 
-  void initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) {
-    if (video == 1) {
-      _videoPlayerController1 =
-          VideoPlayerController.networkUrl(Uri.parse(videoUrl))
-            ..initialize().then((_) {
-              if (mounted) {
-                setState(() {
-                  isVideoReady1 = true;
-                });
-              }
-            });
+  Future<void> initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) async {
+    if (video == 1 && _videoPlayerController1 == null) {
+      _videoPlayerController1 = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
 
-      // Determine if this video should be muted based on mutedVideoIndex
-      bool isMuted = (mutedVideoIndex == 0);
-      _videoPlayerController1.setVolume(isMuted ? 0.0 : 1.0);
-      _chewieController1 = ChewieController(
-        videoPlayerController: _videoPlayerController1,
-        autoPlay: true,
-        looping: true,
-        showControls: false,
-        showControlsOnInitialize: false,
-        showOptions: false,
-        allowMuting: false,
-        autoInitialize: true,
-      );
-    } else {
-      _videoPlayerController2 =
-          VideoPlayerController.networkUrl(Uri.parse(videoUrl))
-            ..initialize().then((_) {
-              if (mounted) {
-                setState(() {
-                  isVideoReady2 = true;
-                });
-              }
-            });
+      try {
+        await _videoPlayerController1!.initialize();
+        if (mounted) {
+          setState(() {
+            isVideoReady1 = true;
+          });
 
-      // Determine if this video should be muted based on mutedVideoIndex
-      bool isMuted = (mutedVideoIndex == 1);
-      _videoPlayerController2.setVolume(isMuted ? 0.0 : 1.0);
-      _chewieController2 = ChewieController(
-        videoPlayerController: _videoPlayerController2,
-        autoPlay: true,
-        looping: true,
-        showControls: false,
-        showControlsOnInitialize: false,
-        showOptions: false,
-        allowMuting: false,
-        autoInitialize: true,
-      );
+          // Create the Chewie controller once the video is initialized
+          _chewieController1 = ChewieController(
+            videoPlayerController: _videoPlayerController1!,
+            autoPlay: true,
+            looping: true,
+            showControls: false,
+            showControlsOnInitialize: false,
+            showOptions: false,
+            allowMuting: false,
+            autoInitialize: true,
+          );
+
+          // Set the volume after initialization
+          bool isMuted = (mutedVideoIndex == 0);
+          _videoPlayerController1?.setVolume(isMuted ? 0.0 : 1.0);
+        }
+      } catch (e) {
+        print("Error initializing video 1: $e");
+      }
+    } else if (video == 2 && _videoPlayerController2 == null) {
+      _videoPlayerController2 = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+
+      try {
+        await _videoPlayerController2!.initialize();
+        if (mounted) {
+          setState(() {
+            isVideoReady2 = true;
+          });
+
+          // Create the Chewie controller once the video is initialized
+          _chewieController2 = ChewieController(
+            videoPlayerController: _videoPlayerController2!,
+            autoPlay: true,
+            looping: true,
+            showControls: false,
+            showControlsOnInitialize: false,
+            showOptions: false,
+            allowMuting: false,
+            autoInitialize: true,
+          );
+
+          // Set the volume after initialization
+          bool isMuted = (mutedVideoIndex == 1);
+          _videoPlayerController2?.setVolume(isMuted ? 0.0 : 1.0);
+        }
+      } catch (e) {
+        print("Error initializing video 2: $e");
+      }
     }
   }
 
@@ -219,7 +236,7 @@ class _DetectionState extends State<Detection> {
                 ),
                 child: isVideoReady1
                     ? AspectRatio(
-                        aspectRatio: _videoPlayerController1.value.aspectRatio,
+                        aspectRatio: _videoPlayerController1!.value.aspectRatio,
                         child: Center(
                             child: Chewie(controller: _chewieController1!)),
                       )
@@ -243,7 +260,7 @@ class _DetectionState extends State<Detection> {
                 ),
                 child: isVideoReady2
                     ? AspectRatio(
-                        aspectRatio: _videoPlayerController2.value.aspectRatio,
+                        aspectRatio: _videoPlayerController2!.value.aspectRatio,
                         child: Center(
                             child: Chewie(controller: _chewieController2!)),
                       )

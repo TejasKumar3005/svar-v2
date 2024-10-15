@@ -143,6 +143,7 @@ class AudioWidgetState extends State<AudioWidget> {
             type: ButtonType.ImagePlay,
             onPressed: () {
               if (_audioPlayer.playing) {
+                print("paused");
                 _audioPlayer.pause();
               } else {
                 playNext();

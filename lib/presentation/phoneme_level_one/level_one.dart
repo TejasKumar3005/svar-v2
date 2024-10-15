@@ -410,7 +410,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
                 levelCount: obj["numberOfLevels"],
                 currentLevel: 1,
                 //  provider.userModel.toJson()["LevelMap"][obj["exerciseType"]],
-                enableVariationBetweenCurves: true,
+                enableVariationBetweenCurves: false,
                 pathColor: appTheme.amber90001,
                 shadowColor: appTheme.brown100,
                 currentLevelImage: ImageParams(
