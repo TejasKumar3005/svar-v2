@@ -9,7 +9,7 @@ import 'package:svar_new/presentation/Identification_screen/celebration_overlay.
 import 'package:svar_new/presentation/Identification_screen/provider/identification_provider.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
-import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
+
 import 'package:svar_new/core/utils/audioSampleExtractor.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/Options.dart';

@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:chewie/chewie.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
+
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:flutter/material.dart';
