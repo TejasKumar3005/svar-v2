@@ -5,6 +5,9 @@ import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:rive/rive.dart';
+import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
+
+
 
 class LoginSignUpScreen extends StatefulWidget {
   const LoginSignUpScreen({Key? key}) : super(key: key);

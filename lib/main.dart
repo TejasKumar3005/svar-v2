@@ -47,6 +47,7 @@ void main() async {
   }
 
   final AnalyticsService analyticsService = AnalyticsService();
+  
   await analyticsService.logOpenApp();
 
   Future.wait([
