@@ -47,7 +47,7 @@ void main() async {
   }
 
   final AnalyticsService analyticsService = AnalyticsService();
-  await analyticsService.logOpenApp();
+  await analyticsService.logAppOpen();
 
   Future.wait([
     SystemChrome.setPreferredOrientations([

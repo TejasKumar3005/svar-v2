@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 
@@ -63,6 +64,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             padding: EdgeInsets.only(left: 1.h),
                             child: GestureDetector(
                               onTap: () {
+                                  AnalyticsService().logEvent('button_pressed', {
+          'button_type': "Back",
+          "time": DateTime.now().toString()
+        });
                                 PlayBgm()
                                     .playMusic('Back_Btn.mp3', "mp3", false);
                                 Navigator.pop(context);

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/database/authentication.dart';
 import 'package:svar_new/presentation/login/login_provider.dart';
 
@@ -22,6 +23,7 @@ class LoginFormMethods {
         .then((value) => {
               if (value)
                 {
+                  AnalyticsService().logSignIn(provider.emailController.text),
                   provider.changeState(),
                   Navigator.of(context).pushNamedAndRemoveUntil(
                       AppRoutes.loadingScreen, (route) => false)

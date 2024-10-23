@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/app_export.dart';
 
 class ForgotPasswordDialog extends StatefulWidget {
@@ -12,9 +13,18 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> _sendResetEmail() async {
+      AnalyticsService().logEvent("button_pressed", {
+        "button_type": "reset_email_send",
+          
+      });
     if (_emailController.text.isNotEmpty) {
       try {
         await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
+          AnalyticsService().logEvent("password_reset_mail", {
+        "email": _emailController.text.trim(),
+
+          
+      });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Password reset email sent')),
         );
@@ -44,6 +54,10 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
       actions: [
         TextButton(
           onPressed: () {
+              AnalyticsService().logEvent("button_pressed", {
+        "button_type": "cancel_fogot_password_dialog",
+          
+      });
             Navigator.of(context).pop(); // Close the dialog without action
           },
           child: Text("Cancel", style: TextStyle(color: Colors.red)),

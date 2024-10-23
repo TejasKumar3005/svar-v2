@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:chewie/chewie.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
@@ -334,6 +335,11 @@ class _DiscriminationState extends State<Discrimination> {
                       if (level >
                           provider.userModel.toJson()["levelMap"]
                               ["Discrimination"]!) {
+                                AnalyticsService().logEvent("level_complete", {
+                                  "name": "Discrimination",
+                                  "level": level
+                                });
+                                
                         UserData(buildContext: context)
                             .incrementLevelCount("Discrimination")
                             .then((value) {

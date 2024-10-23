@@ -1,7 +1,9 @@
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart'; // Import tutorial package
 
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
@@ -25,6 +27,15 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  late TutorialCoachMark tutorialCoachMark;
+  CarouselSliderController _carouselController = CarouselSliderController();
+
+  // Define GlobalKeys for each carousel item
+  GlobalKey keyCarouselItem0 = GlobalKey();
+  GlobalKey keyCarouselItem1 = GlobalKey();
+  GlobalKey keyCarouselItem2 = GlobalKey();
+  GlobalKey keyCarouselItem3 = GlobalKey();
+  GlobalKey keyCarouselItem4 = GlobalKey();
 
   @override
   void initState() {
@@ -35,6 +46,12 @@ class HomeScreenState extends State<HomeScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+
+    // Create the tutorial
+    createTutorial();
+
+    // Show the tutorial after layout
+    Future.delayed(Duration.zero, showTutorial);
   }
 
   @override
@@ -43,8 +60,14 @@ class HomeScreenState extends State<HomeScreen> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
-        showQuitDialog(context);
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (didPop) {
+          // Handle successful pop
+          showAboutDialog(context: context);
+        } else {
+          // Handle canceled pop
+          print('Pop was canceled');
+        }
       },
       child: SafeArea(
         child: Scaffold(
@@ -95,7 +118,12 @@ class HomeScreenState extends State<HomeScreen> {
               "phonmesListScreen",
               ImageConstant.thumbnailBarakhadi,
               0,
+              keyCarouselItem0,
               () {
+                AnalyticsService().logEvent('button_pressed', {
+                  'button_type': "Play",
+                  "levelType": "PhonemeList",
+                });
                 NavigatorService.pushNamed(AppRoutes.phonmesListScreen);
               },
             ),
@@ -105,7 +133,14 @@ class HomeScreenState extends State<HomeScreen> {
               "Level",
               ImageConstant.thumbnailPhonemes,
               1,
-              () => handleExercise(provider, "Level", context),
+              keyCarouselItem1,
+              () {
+                AnalyticsService().logEvent('button_pressed', {
+                  'button_type': "Play",
+                  "levelType": "Level",
+                });
+                handleExercise(provider, "Level", context);
+              },
             ),
             buildCarouselItem(
               context,
@@ -113,7 +148,14 @@ class HomeScreenState extends State<HomeScreen> {
               "Detection",
               ImageConstant.imgDetection,
               2,
-              () => handleExercise(provider, "Detection", context),
+              keyCarouselItem2,
+              () {
+                AnalyticsService().logEvent('button_pressed', {
+                  'button_type': "Play",
+                  "levelType": "Detection",
+                });
+                handleExercise(provider, "Detection", context);
+              },
             ),
             buildCarouselItem(
               context,
@@ -121,7 +163,14 @@ class HomeScreenState extends State<HomeScreen> {
               "Discrimination",
               ImageConstant.imgDiscrimination,
               3,
-              () => handleExercise(provider, "Discrimination", context),
+              keyCarouselItem3,
+              () {
+                AnalyticsService().logEvent('button_pressed', {
+                  'button_type': "Play",
+                  "levelType": "Discrimination",
+                });
+                handleExercise(provider, "Discrimination", context);
+              },
             ),
             buildCarouselItem(
               context,
@@ -129,16 +178,22 @@ class HomeScreenState extends State<HomeScreen> {
               "Identification",
               ImageConstant.imgIdentification,
               4,
-              () => handleExercise(provider, "Identification", context),
+              keyCarouselItem4,
+              () {
+                  AnalyticsService().logEvent('button_pressed', {
+                  'button_type': "Play",
+                  "levelType": "Identification",
+                });
+                handleExercise(provider, "Identification", context);
+              },
             ),
           ],
+          controller: _carouselController,
           options: CarouselOptions(
-            autoPlay: true,
-            autoPlayCurve: Curves.decelerate,
+            autoPlay: false, // Disable auto play to synchronize with tutorial
             enlargeCenterPage: true,
             enlargeFactor: 0.5,
             viewportFraction: 0.4,
-            autoPlayAnimationDuration: const Duration(milliseconds: 800),
             onPageChanged: (index, reason) {
               setState(() {
                 _currentIndex = index;
@@ -156,9 +211,11 @@ class HomeScreenState extends State<HomeScreen> {
     String exerciseType,
     String imagePath,
     int index,
+    GlobalKey key, // Add GlobalKey parameter
     VoidCallback onTap,
   ) {
     return ClipRect(
+      key: key, // Assign key to the item
       child: GestureDetector(
         onTap: onTap,
         child: Center(
@@ -202,6 +259,326 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void createTutorial() {
+    tutorialCoachMark = TutorialCoachMark(
+      targets: _createTargets(),
+      colorShadow: const Color.fromARGB(0, 251, 251, 251),
+      textSkip: "SKIP",
+      paddingFocus: 10,
+      opacityShadow: 0.5,
+      onFinish: () {
+        print("finish");
+      },
+      onClickTarget: (target) {
+        print('onClickTarget: $target');
+        _carouselController.nextPage(
+            duration: Duration(
+                milliseconds:
+                    800)); // Move to the next carousel item after clicking the tutorial target
+      },
+      onClickTargetWithTapPosition: (target, tapDetails) {
+        print("target: $target");
+        print(
+            "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
+        _carouselController.nextPage(
+            duration: Duration(
+                milliseconds:
+                    800)); // Move to the next carousel item after clicking the tutorial target
+      },
+      onClickOverlay: (target) {
+        print('onClickOverlay: $target');
+        _carouselController.nextPage(
+            duration: Duration(
+                milliseconds:
+                    800)); // Move to the next carousel item after clicking the tutorial overlay
+      },
+      onSkip: () {
+        print("skip");
+        return true;
+      },
+    );
+  }
+
+  List<TargetFocus> _createTargets() {
+    List<TargetFocus> targets = [];
+
+    targets.add(
+      TargetFocus(
+        identify: "CarouselItem0",
+        keyTarget: keyCarouselItem0,
+        contents: [
+          TargetContent(
+            align: ContentAlign.ontop,
+            child: const Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Multiples content",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 222, 14, 14),
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pulvinar tortor eget maximus iaculis.",
+                    style: TextStyle(color: Color.fromARGB(255, 204, 25, 25)),
+                  ),
+                )
+              ],
+            ),
+          ),
+          TargetContent(
+              align: ContentAlign.ontop,
+              child: const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Multiples content",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 156, 28, 28),
+                        fontSize: 20.0),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pulvinar tortor eget maximus iaculis.",
+                      style: TextStyle(color: Color.fromARGB(255, 227, 14, 14)),
+                    ),
+                  )
+                ],
+              ))
+        ],
+        shape: ShapeLightFocus.Circle,
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "CarouselItem1",
+        keyTarget: keyCarouselItem1,
+        contents: [
+          TargetContent(
+            align: ContentAlign.ontop,
+            child: const Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Multiples content",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 198, 28, 28),
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pulvinar tortor eget maximus iaculis.",
+                    style: TextStyle(color: Color.fromARGB(255, 187, 28, 28)),
+                  ),
+                )
+              ],
+            ),
+          ),
+          TargetContent(
+              align: ContentAlign.ontop,
+              child: const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Multiples content",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 156, 21, 21),
+                        fontSize: 20.0),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pulvinar tortor eget maximus iaculis.",
+                      style: TextStyle(color: Color.fromARGB(255, 194, 25, 25)),
+                    ),
+                  )
+                ],
+              ))
+        ],
+        shape: ShapeLightFocus.Circle,
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "CarouselItem2",
+        keyTarget: keyCarouselItem2,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            child: const Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Multiples content",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pulvinar tortor eget maximus iaculis.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
+            ),
+          ),
+          TargetContent(
+              align: ContentAlign.top,
+              child: const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Multiples content",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20.0),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pulvinar tortor eget maximus iaculis.",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                ],
+              ))
+        ],
+        shape: ShapeLightFocus.Circle,
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "CarouselItem3",
+        keyTarget: keyCarouselItem3,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            child: const Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Multiples content",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pulvinar tortor eget maximus iaculis.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
+            ),
+          ),
+          TargetContent(
+              align: ContentAlign.top,
+              child: const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Multiples content",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20.0),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pulvinar tortor eget maximus iaculis.",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                ],
+              ))
+        ],
+        shape: ShapeLightFocus.Circle,
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "CarouselItem4",
+        keyTarget: keyCarouselItem4,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            child: const Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Multiples content",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Text(
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pulvinar tortor eget maximus iaculis.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
+            ),
+          ),
+          TargetContent(
+              align: ContentAlign.ontop,
+              child: const Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Multiples content",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20.0),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pulvinar tortor eget maximus iaculis.",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                ],
+              ))
+        ],
+        shape: ShapeLightFocus.RRect,
+      ),
+    );
+    return targets;
+  }
+
+  void showTutorial() {
+    tutorialCoachMark.show(context: context);
+  }
+
   Future<void> handleExercise(MainInteractionProvider provider,
       String exerciseType, BuildContext context) async {
     debugPrint("Handling exercise: $exerciseType");
@@ -211,7 +588,7 @@ class HomeScreenState extends State<HomeScreen> {
 
     if (levels != null) {
       provider.setNumberOfLevels(levels);
-      debugPrint("Exercise Type: ${provider.exerciseType}");
+      debugPrint("Exercise Type: \${provider.exerciseType}");
       debugPrint("Number of Levels: $levels");
 
       NavigatorService.pushNamed(
@@ -233,7 +610,7 @@ class HomeScreenState extends State<HomeScreen> {
     QuerySnapshot querySnapshot = await firestore.collection("Auditory").get();
 
     querySnapshot.docs.forEach((doc) {
-      debugPrint("Document found in Auditory collection: ${doc.id}");
+      debugPrint("Document found in Auditory collection: \${doc.id}");
     });
 
     docName = docName.trim();
@@ -243,7 +620,8 @@ class HomeScreenState extends State<HomeScreen> {
         await firestore.collection("Auditory").doc(docName).get();
 
     if (!doc.exists) {
-      debugPrint("Document $docName does not exist in the Auditory collection.");
+      debugPrint(
+          "Document $docName does not exist in the Auditory collection.");
       return null;
     }
 
@@ -253,7 +631,8 @@ class HomeScreenState extends State<HomeScreen> {
 
         if (documentData.containsKey('data') &&
             documentData['data'] is Map<String, dynamic>) {
-          Map<String, dynamic> data = documentData['data'] as Map<String, dynamic>;
+          Map<String, dynamic> data =
+              documentData['data'] as Map<String, dynamic>;
 
           int numberOfLevels = 0;
 
@@ -267,7 +646,8 @@ class HomeScreenState extends State<HomeScreen> {
           debugPrint("Number of levels in $docName: $numberOfLevels");
           return numberOfLevels;
         } else {
-          debugPrint("The 'data' field is missing or not in the correct format in document $docName.");
+          debugPrint(
+              "The 'data' field is missing or not in the correct format in document $docName.");
         }
       } else {
         debugPrint("The document does not contain valid data.");

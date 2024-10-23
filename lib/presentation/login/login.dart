@@ -115,6 +115,10 @@ class LoginScreenState extends State<LoginScreen> {
 
                               GestureDetector(
                                 onTap: () {
+                                    AnalyticsService().logEvent("button_pressed", {
+        "button_type": "forgot_password",
+          
+      });
                                   showDialog(context: context, builder: (context) {
                                     return ForgotPasswordDialog();
                                   });
