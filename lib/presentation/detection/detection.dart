@@ -16,10 +16,159 @@ import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
 
-class Detection extends StatefulWidget {
-  const Detection({
+
+class VideoPlayerWidget extends StatefulWidget {
+  final String videoUrl;
+  final bool isMuted;
+
+  const VideoPlayerWidget({
     Key? key,
+    required this.videoUrl,
+    required this.isMuted,
   }) : super(key: key);
+
+  @override
+  _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
+}
+
+class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
+  late VideoPlayerController _videoPlayerController;
+  late ChewieController _chewieController;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializePlayer();
+  }
+
+  Future<void> _initializePlayer() async {
+    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+
+    try {
+      await _videoPlayerController.initialize();
+      _videoPlayerController.setVolume(widget.isMuted ? 0.0 : 1.0);
+      _chewieController = ChewieController(
+        videoPlayerController: _videoPlayerController,
+        autoPlay: true,
+        looping: true,
+        showControls: false,
+        showControlsOnInitialize: false,
+        showOptions: false,
+        allowMuting: false,
+      );
+
+      setState(() {
+        _isInitialized = true;
+      });
+    } catch (e) {
+      print("Error initializing video: $e");
+    }
+  }
+
+  @override
+  void dispose() {
+    _chewieController.dispose();
+    _videoPlayerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _isInitialized
+        ? AspectRatio(
+            aspectRatio: _videoPlayerController.value.aspectRatio,
+            child: Chewie(
+              controller: _chewieController,
+            ),
+          )
+        : Center(
+            child: CircularProgressIndicator(
+              color: Colors.deepOrangeAccent, // Replace with your primary color
+            ),
+          );
+  }
+}
+
+
+class SimpleVideoPlayer extends StatefulWidget {
+  final String videoUrl;
+  final bool isMuted;
+
+  const SimpleVideoPlayer({
+    Key? key,
+    required this.videoUrl,
+    required this.isMuted,
+  }) : super(key: key);
+
+  @override
+  _SimpleVideoPlayerState createState() => _SimpleVideoPlayerState();
+}
+
+class _SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
+  late VideoPlayerController _controller;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializePlayer();
+  }
+
+// Inside SimpleVideoPlayer
+Future<void> _initializePlayer() async {
+  _controller = VideoPlayerController.network(
+      widget.videoUrl,
+      videoPlayerOptions: VideoPlayerOptions(
+        mixWithOthers: true, // Allows audio mixing with other audio streams
+      ),
+    );
+
+
+  try {
+    await _controller.initialize();
+    _controller.setVolume(widget.isMuted ? 0.0 : 1.0);
+
+    _controller.play();
+
+    _controller.addListener(() {
+      if (_controller.value.isPlaying) {
+        print("${widget.videoUrl} is playing");
+      } else {
+        print("${widget.videoUrl} is paused");
+      }
+    });
+
+    setState(() {
+      _isInitialized = true;
+    });
+  } catch (e) {
+    print("Error initializing video: $e");
+  }
+}
+
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _isInitialized
+        ? AspectRatio(
+            aspectRatio: _controller.value.aspectRatio,
+            child: VideoPlayer(_controller),
+          )
+        : Center(child: CircularProgressIndicator());
+  }
+}
+
+
+
+class Detection extends StatefulWidget {
+  const Detection({Key? key}) : super(key: key);
 
   @override
   State<Detection> createState() => _DetectionState();
@@ -30,18 +179,11 @@ class Detection extends StatefulWidget {
 }
 
 class _DetectionState extends State<Detection> {
-  final GlobalKey<AudioWidgetState> _audioWidgetKey =
-      GlobalKey<AudioWidgetState>();
+  final GlobalKey<AudioWidgetState> _audioWidgetKey = GlobalKey<AudioWidgetState>();
   String quizType = "video";
   int selectedOption = -1;
   PlayAudio playAudio = PlayAudio();
 
-  VideoPlayerController? _videoPlayerController1;
-  VideoPlayerController? _videoPlayerController2;
-  ChewieController? _chewieController1;
-  ChewieController? _chewieController2;
-  bool isVideoReady1 = false;
-  bool isVideoReady2 = false;
   Timer? volumeTimer;
   double currentProgress = 0.0;
   double totalDuration = 0.0;
@@ -49,7 +191,7 @@ class _DetectionState extends State<Detection> {
   @override
   void initState() {
     super.initState();
-    
+
     // Defer the video initialization to after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
@@ -58,89 +200,19 @@ class _DetectionState extends State<Detection> {
       print(dtcontainer.getVideoUrls().toString());
       if (type == "MutedUnmuted") {
         int mutedVideoIndex = dtcontainer.getMuted();
-        _initializeVideoFlow(dtcontainer.getVideoUrls(), mutedVideoIndex);
+        // Initialization is handled in the VideoPlayerWidget
+        setState(() {
+          quizType = type;
+        });
       }
     });
   }
 
-  // Initialize both videos sequentially
-  Future<void> _initializeVideoFlow(List<String> videoUrls, int mutedVideoIndex) async {
-    await initiliaseVideo(videoUrls[0], 1, mutedVideoIndex);
-    await initiliaseVideo(videoUrls[1], 2, mutedVideoIndex);
-  }
-
   @override
   void dispose() {
-    // Dispose of the video controllers and Chewie controllers
-    _videoPlayerController1?.dispose();
-    _chewieController1?.dispose();
-    _videoPlayerController2?.dispose();
-    _chewieController2?.dispose();
     // Dispose of the timer if it exists
     volumeTimer?.cancel();
     super.dispose();
-  }
-
-  Future<void> initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) async {
-    if (video == 1 && _videoPlayerController1 == null) {
-      _videoPlayerController1 = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
-
-      try {
-        await _videoPlayerController1!.initialize();
-        if (mounted) {
-          setState(() {
-            isVideoReady1 = true;
-          });
-
-          // Create the Chewie controller once the video is initialized
-          _chewieController1 = ChewieController(
-            videoPlayerController: _videoPlayerController1!,
-            autoPlay: true,
-            looping: true,
-            showControls: false,
-            showControlsOnInitialize: false,
-            showOptions: false,
-            allowMuting: false,
-            autoInitialize: true,
-          );
-
-          // Set the volume after initialization
-          bool isMuted = (mutedVideoIndex == 0);
-          _videoPlayerController1?.setVolume(isMuted ? 0.0 : 1.0);
-        }
-      } catch (e) {
-        print("Error initializing video 1: $e");
-      }
-    } else if (video == 2 && _videoPlayerController2 == null) {
-      _videoPlayerController2 = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
-
-      try {
-        await _videoPlayerController2!.initialize();
-        if (mounted) {
-          setState(() {
-            isVideoReady2 = true;
-          });
-
-          // Create the Chewie controller once the video is initialized
-          _chewieController2 = ChewieController(
-            videoPlayerController: _videoPlayerController2!,
-            autoPlay: true,
-            looping: true,
-            showControls: false,
-            showControlsOnInitialize: false,
-            showOptions: false,
-            allowMuting: false,
-            autoInitialize: true,
-          );
-
-          // Set the volume after initialization
-          bool isMuted = (mutedVideoIndex == 1);
-          _videoPlayerController2?.setVolume(isMuted ? 0.0 : 1.0);
-        }
-      } catch (e) {
-        print("Error initializing video 2: $e");
-      }
-    }
   }
 
   @override
@@ -176,16 +248,11 @@ class _DetectionState extends State<Detection> {
 
   Widget detectionQuiz(BuildContext context, String quizType) {
     switch (quizType) {
-      // case "video":
-      //   return VideoPlayerScreen(
-      //     videoUrl: widget.data["video_url"],
-      //   );
       case "HalfMuted":
         return HalfMutedWidget(
           key: _audioWidgetKey,
           audioLinks:
-              (ModalRoute.of(context)?.settings.arguments as List<dynamic>)[1]
-                  .getVideoUrls(),
+              (ModalRoute.of(context)?.settings.arguments as List<dynamic>)[1].getVideoUrls(),
         );
       case "MutedUnmuted":
         return MutedUnmuted(context);
@@ -197,6 +264,9 @@ class _DetectionState extends State<Detection> {
   Widget MutedUnmuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     dynamic dtcontainer = obj[1] as dynamic;
+    List<String> videoUrls = dtcontainer.getVideoUrls();
+    int mutedVideoIndex = dtcontainer.getMuted();
+
     return Column(
       children: [
         Container(
@@ -234,20 +304,13 @@ class _DetectionState extends State<Detection> {
                     width: 2,
                   ),
                 ),
-                child: isVideoReady1
-                    ? AspectRatio(
-                        aspectRatio: _videoPlayerController1!.value.aspectRatio,
-                        child: Center(
-                            child: Chewie(controller: _chewieController1!)),
-                      )
-                    : Center(
-                        child: CircularProgressIndicator(
-                            color: PrimaryColors().deepOrangeA700)),
+                child: SimpleVideoPlayer(
+                  videoUrl: videoUrls[0],
+                  isMuted: mutedVideoIndex == 0,
+                ),
               ),
             ),
-            SizedBox(
-                width:
-                    20), // Add spacing between the two Expanded containers if needed
+            SizedBox(width: 20), // Add spacing between the two Expanded containers if needed
             Expanded(
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.40,
@@ -258,15 +321,10 @@ class _DetectionState extends State<Detection> {
                     width: 2,
                   ),
                 ),
-                child: isVideoReady2
-                    ? AspectRatio(
-                        aspectRatio: _videoPlayerController2!.value.aspectRatio,
-                        child: Center(
-                            child: Chewie(controller: _chewieController2!)),
-                      )
-                    : Center(
-                        child: CircularProgressIndicator(
-                            color: PrimaryColors().deepOrangeA700)),
+                child: SimpleVideoPlayer(
+                  videoUrl: videoUrls[1],
+                  isMuted: mutedVideoIndex == 1,
+                ),
               ),
             ),
           ],
@@ -279,8 +337,7 @@ class _DetectionState extends State<Detection> {
           children: [
             Expanded(
               child: Container(
-                width: MediaQuery.of(context).size.width *
-                    0.40, // Dynamically set width
+                width: MediaQuery.of(context).size.width * 0.40, // Dynamically set width
                 child: OptionWidget(
                   child: OptionButton(
                     type: ButtonType.Video1,
@@ -297,8 +354,7 @@ class _DetectionState extends State<Detection> {
             SizedBox(width: 20), // Add spacing between buttons if needed
             Expanded(
               child: Container(
-                width: MediaQuery.of(context).size.width *
-                    0.40, // Dynamically set width
+                width: MediaQuery.of(context).size.width * 0.40, // Dynamically set width
                 child: OptionWidget(
                   child: OptionButton(
                     type: ButtonType.Video2,
@@ -318,6 +374,7 @@ class _DetectionState extends State<Detection> {
     );
   }
 }
+
 
 ///
 /// New StatefulWidget: HalfMutedWidget
