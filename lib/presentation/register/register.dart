@@ -9,13 +9,11 @@ import 'package:svar_new/localization/app_localization.dart';
 import 'package:svar_new/presentation/register/methods.dart';
 import 'package:svar_new/presentation/register/provider/register_provider.dart';
 
-
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key})
@@ -24,8 +22,7 @@ class RegisterScreen extends StatefulWidget {
         );
 
   @override
-RegisterScreenState createState() =>
-      RegisterScreenState();
+  RegisterScreenState createState() => RegisterScreenState();
 
   static Widget builder(BuildContext context) {
     return ChangeNotifierProvider(
@@ -36,13 +33,12 @@ RegisterScreenState createState() =>
 }
 
 // ignore_for_file: must_be_immutable
-class RegisterScreenState
-    extends State<RegisterScreen> {
+class RegisterScreenState extends State<RegisterScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController phoneCtrl = TextEditingController();
   List<String> list = <String>["Guardian", "Mother", "Father"];
   String dropdownValue = "Guardian";
-  String dropdownValue1="Select Therapist";
+  String dropdownValue1 = "Select Therapist";
   bool hide = true;
   OverlayEntry? _overlayEntry;
 
@@ -58,11 +54,10 @@ class RegisterScreenState
   Widget build(BuildContext context) {
     final textCtrl = context.watch<RegisterProvider>();
     var provider = context.watch<UserDataProvider>();
-    List<String> nameList =["Select Therapist"];
+    List<String> nameList = ["Select Therapist"];
     for (var i = 0; i < provider.therapyCenters.length; i++) {
       nameList.add(provider.therapyCenters[i]['name']);
     }
-      
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (textCtrl.loading && _overlayEntry == null) {
@@ -154,7 +149,6 @@ class RegisterScreenState
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                            
                                 padding: EdgeInsets.symmetric(horizontal: 3.h),
                                 decoration:
                                     AppDecoration.outlineOrangeA200.copyWith(
@@ -162,16 +156,16 @@ class RegisterScreenState
                                       BorderRadiusStyle.roundedBorder5,
                                 ),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
                                       Icons.person_2,
                                       color: appTheme.orangeA200,
                                     ),
-                                  
                                     Padding(
                                         padding: EdgeInsets.only(
-                                        left: 13.h,
+                                          left: 13.h,
                                           top: 3.v,
                                           bottom: 2.v,
                                         ),
@@ -221,64 +215,64 @@ class RegisterScreenState
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              _buildEditText(context),
-                              Container(
-                            
-                                decoration:
-                                    AppDecoration.outlineOrangeA200.copyWith(
-                                  borderRadius:
-                                      BorderRadiusStyle.roundedBorder5,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.person_2,
-                                      color: appTheme.orangeA200,
-                                    ),
-                                    
-                                    Padding(
-                                        padding: EdgeInsets.only(
-                                          left: 13.h,
-                                          
-                                          
-                                        ),
-                                        child: SizedBox(
-                                        
-                                          child: DropdownButton<String>(
-                                            iconEnabledColor:
-                                                PrimaryColors().amber900,
-                                            value: dropdownValue1,
-                                            icon: const Icon(
-                                                Icons.arrow_drop_down),
-                                            elevation: 16,
-                                            style: theme.textTheme.labelLarge,
-                                            underline: Container(),
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                dropdownValue1 = value!;
-                                              });
-                                            },
-                                            items: nameList
-                                                .map<DropdownMenuItem<String>>(
-                                                    (String value) {
-                                              return DropdownMenuItem<String>(
-                                                value: value,
-                                                child: Text(
-                                                  value,
-
-                                                  style: TextStyle(
-                                                    
-                                                      color: PrimaryColors()
-                                                          .amber900,
-                                                          overflow: TextOverflow.ellipsis,
-                                                          ),
+                              _buildEditText(
+                                  context), // Assuming this builds the password field or similar
+                              Flexible(
+                                child: Container(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 8.h),
+                                  decoration:
+                                      AppDecoration.outlineOrangeA200.copyWith(
+                                    borderRadius:
+                                        BorderRadiusStyle.roundedBorder5,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Icon(
+                                        Icons.person_2,
+                                        color: appTheme.orangeA200,
+                                      ),
+                                      SizedBox(
+                                          width:
+                                              8), // Spacing between Icon and Dropdown
+                                      Expanded(
+                                        child: DropdownButton<String>(
+                                          isExpanded:
+                                              true, // Allow Dropdown to expand to available space
+                                          iconEnabledColor:
+                                              PrimaryColors().amber900,
+                                          value: dropdownValue1,
+                                          icon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          elevation: 16,
+                                          style: theme.textTheme.labelLarge,
+                                          underline: Container(),
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              dropdownValue1 = value!;
+                                            });
+                                          },
+                                          items: nameList
+                                              .map<DropdownMenuItem<String>>(
+                                                  (String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(
+                                                value,
+                                                style: TextStyle(
+                                                  color:
+                                                      PrimaryColors().amber900,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                              );
-                                            }).toList(),
-                                          ),
-                                        )),
-                                  ],
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -336,8 +330,7 @@ class RegisterScreenState
   }
 
   Widget _buildPhoneNo(BuildContext context) {
-    return Selector<RegisterProvider,
-            TextEditingController?>(
+    return Selector<RegisterProvider, TextEditingController?>(
         builder: (context, phoneNumberController, child) {
           return CustomTextFormField(
             width: 160.h,
@@ -383,8 +376,7 @@ class RegisterScreenState
 
   /// Section Widget
   Widget _buildNamePlaceholder(BuildContext context) {
-    return Selector<RegisterProvider,
-        TextEditingController?>(
+    return Selector<RegisterProvider, TextEditingController?>(
       selector: (context, provider) => provider.namePlaceholderController,
       builder: (context, namePlaceholderController, child) {
         return CustomTextFormField(
@@ -411,8 +403,7 @@ class RegisterScreenState
 
   /// Section Widget
   Widget _buildAddressGrp(BuildContext context) {
-    return Selector<RegisterProvider,
-        TextEditingController?>(
+    return Selector<RegisterProvider, TextEditingController?>(
       selector: (context, provider) => provider.addressGrpController,
       builder: (context, addressGrpController, child) {
         return CustomTextFormField(
@@ -437,8 +428,7 @@ class RegisterScreenState
 
   /// Section Widget
   Widget _buildEmail(BuildContext context) {
-    return Selector<RegisterProvider,
-        TextEditingController?>(
+    return Selector<RegisterProvider, TextEditingController?>(
       selector: (context, provider) => provider.emailController,
       builder: (context, emailController, child) {
         return CustomTextFormField(
@@ -466,8 +456,7 @@ class RegisterScreenState
   Widget _buildEditText(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: 12.v),
-      child: Selector<RegisterProvider,
-          TextEditingController?>(
+      child: Selector<RegisterProvider, TextEditingController?>(
         selector: (context, provider) => provider.passwordController,
         builder: (context, passwordController, child) {
           return CustomTextFormField(

@@ -99,12 +99,12 @@ class LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Field(40.h, "email", provider.emailController,
+                          Field(70.h, "email", provider.emailController,
                               context, provider),
                           SizedBox(
                             height: 15.v,
                           ),
-                          Field(40.h, 'password', provider.passController,
+                          Field(70.h, 'password', provider.passController,
                               context, provider),
                           SizedBox(
                             height: 15.v,
