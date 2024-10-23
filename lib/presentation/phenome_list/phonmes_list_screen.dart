@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
@@ -150,6 +151,13 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                 return Align(
                   child: GestureDetector(
                     onTap: () {
+                      AnalyticsService().logEvent(
+                          'button_pressed', {
+                            'name': 'Phonemes',
+                            'button_type': 'PhonmesListScreen',
+                            "character": model.character
+                          
+                          });
                       PhonmesListModel()
                           .onTapCharacter(context, model.character!);
                           

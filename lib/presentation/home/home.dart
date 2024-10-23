@@ -1,6 +1,7 @@
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart'; // Import tutorial package
 
@@ -119,6 +120,10 @@ class HomeScreenState extends State<HomeScreen> {
               0,
               keyCarouselItem0,
               () {
+                AnalyticsService().logEvent('button_pressed', {
+                  'button_type': "Play",
+                  "levelType": "PhonemeList",
+                });
                 NavigatorService.pushNamed(AppRoutes.phonmesListScreen);
               },
             ),
@@ -129,7 +134,13 @@ class HomeScreenState extends State<HomeScreen> {
               ImageConstant.thumbnailPhonemes,
               1,
               keyCarouselItem1,
-              () => handleExercise(provider, "Level", context),
+              () {
+                AnalyticsService().logEvent('button_pressed', {
+                  'button_type': "Play",
+                  "levelType": "Level",
+                });
+                handleExercise(provider, "Level", context);
+              },
             ),
             buildCarouselItem(
               context,
@@ -138,7 +149,13 @@ class HomeScreenState extends State<HomeScreen> {
               ImageConstant.imgDetection,
               2,
               keyCarouselItem2,
-              () => handleExercise(provider, "Detection", context),
+              () {
+                AnalyticsService().logEvent('button_pressed', {
+                  'button_type': "Play",
+                  "levelType": "Detection",
+                });
+                handleExercise(provider, "Detection", context);
+              },
             ),
             buildCarouselItem(
               context,
@@ -147,7 +164,13 @@ class HomeScreenState extends State<HomeScreen> {
               ImageConstant.imgDiscrimination,
               3,
               keyCarouselItem3,
-              () => handleExercise(provider, "Discrimination", context),
+              () {
+                AnalyticsService().logEvent('button_pressed', {
+                  'button_type': "Play",
+                  "levelType": "Discrimination",
+                });
+                handleExercise(provider, "Discrimination", context);
+              },
             ),
             buildCarouselItem(
               context,
@@ -156,7 +179,13 @@ class HomeScreenState extends State<HomeScreen> {
               ImageConstant.imgIdentification,
               4,
               keyCarouselItem4,
-              () => handleExercise(provider, "Identification", context),
+              () {
+                  AnalyticsService().logEvent('button_pressed', {
+                  'button_type': "Play",
+                  "levelType": "Identification",
+                });
+                handleExercise(provider, "Identification", context);
+              },
             ),
           ],
           controller: _carouselController,
@@ -242,17 +271,26 @@ class HomeScreenState extends State<HomeScreen> {
       },
       onClickTarget: (target) {
         print('onClickTarget: $target');
-        _carouselController.nextPage(duration: Duration(milliseconds: 800)); // Move to the next carousel item after clicking the tutorial target
+        _carouselController.nextPage(
+            duration: Duration(
+                milliseconds:
+                    800)); // Move to the next carousel item after clicking the tutorial target
       },
       onClickTargetWithTapPosition: (target, tapDetails) {
         print("target: $target");
         print(
             "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
-        _carouselController.nextPage(duration: Duration(milliseconds: 800)); // Move to the next carousel item after clicking the tutorial target
+        _carouselController.nextPage(
+            duration: Duration(
+                milliseconds:
+                    800)); // Move to the next carousel item after clicking the tutorial target
       },
       onClickOverlay: (target) {
         print('onClickOverlay: $target');
-        _carouselController.nextPage(duration: Duration(milliseconds: 800)); // Move to the next carousel item after clicking the tutorial overlay
+        _carouselController.nextPage(
+            duration: Duration(
+                milliseconds:
+                    800)); // Move to the next carousel item after clicking the tutorial overlay
       },
       onSkip: () {
         print("skip");

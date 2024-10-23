@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/database/userController.dart';
@@ -29,12 +30,9 @@ class AuthConroller {
     try {
       var provider;
       if (login) {
-        provider =
-            Provider.of<LoginProvider>(context!, listen: false);
+        provider = Provider.of<LoginProvider>(context!, listen: false);
       } else {
-        provider = Provider.of<LoginProvider>(
-            context!,
-            listen: false);
+        provider = Provider.of<LoginProvider>(context!, listen: false);
       }
 
       await firebaseAuth.verifyPhoneNumber(
@@ -72,9 +70,7 @@ class AuthConroller {
 
   Future<bool> registerWithPhone(String sms, UserModel model) async {
     try {
-      var provider = Provider.of<RegisterProvider>(
-          context!,
-          listen: false);
+      var provider = Provider.of<RegisterProvider>(context!, listen: false);
       var otpId = provider.otpId;
       if (otpId == "") {
         print("optId is null");
@@ -116,9 +112,7 @@ class AuthConroller {
 
   Future<bool> loginWithPhone(String sms, UserModel model) async {
     try {
-      var provider = Provider.of<LoginProvider>(
-          context!,
-          listen: false);
+      var provider = Provider.of<LoginProvider>(context!, listen: false);
       var otpId = provider.otpId;
       if (otpId == "") {
         print("optId is null");
@@ -158,7 +152,8 @@ class AuthConroller {
     }
   }
 
-  Future<bool> registeruserWithEmail(UserModel model,String therapyCenterId) async {
+  Future<bool> registeruserWithEmail(
+      UserModel model, String therapyCenterId) async {
     try {
       UserCredential userCredential =
           (await firebaseAuth.createUserWithEmailAndPassword(
@@ -172,10 +167,18 @@ class AuthConroller {
 
         return true;
       }
+        AnalyticsService().logEvent("signup_failure", {
+        "email": model.email,
+        "reason": "UserId was null"
+      });
 
       return false;
     } on FirebaseAuthException catch (e) {
       String errorMessage;
+        AnalyticsService().logEvent("login_failure", {
+        "email": model.email,
+        "reason": e.code.toString()
+      });
       switch (e.code) {
         case 'email-already-in-use':
           errorMessage =
@@ -199,6 +202,10 @@ class AuthConroller {
       ));
       return false;
     } catch (e) {
+        AnalyticsService().logEvent("login_failure", {
+        "email": model.email,
+        "reason": e.toString()
+      });
       ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
         content: Text(e.toString()),
         backgroundColor: Colors.red,
@@ -232,7 +239,7 @@ class AuthConroller {
 
   // Future updateUserData(
   //     String uid, String name, String mobile, String gender) async {
-  //   await UserData(uid: uid, buildContext: context!).updateUserInfo({
+  //   await UserData(uid: uid, buildContext: context!).updateUserInfo(
   //     "name": name,
   //     "mobile": mobile,
   //     "gender": gender,
@@ -248,9 +255,17 @@ class AuthConroller {
       if (userCredential.user != null) {
         return true;
       }
+      AnalyticsService().logEvent("login_failure", {
+        "email": email,
+      "reason": "UserId was null"
+      });
       return false;
     } on FirebaseAuthException catch (e) {
       print(e.message.toString());
+      AnalyticsService().logEvent("login_failure", {
+        "email": email,
+        "reason": e.code.toString()
+      });
       String errorMessage;
       switch (e.code) {
         case 'invalid-email':
@@ -276,6 +291,10 @@ class AuthConroller {
       return false;
     } catch (e) {
       // Handle any other exceptions
+        AnalyticsService().logEvent("login_failure", {
+        "email": email,
+        "reason": e.toString()
+      });
       print("Exception: $e");
       ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
         content: Text("An error occurred: $e"),
@@ -463,9 +482,7 @@ class AuthConroller {
   Future<bool> resendOtp(String phone) async {
     try {
       if (rtoken != null) {
-        var provider = Provider.of<RegisterProvider>(
-            context!,
-            listen: false);
+        var provider = Provider.of<RegisterProvider>(context!, listen: false);
         await firebaseAuth.verifyPhoneNumber(
             phoneNumber: phone,
             timeout: Duration(seconds: 120),

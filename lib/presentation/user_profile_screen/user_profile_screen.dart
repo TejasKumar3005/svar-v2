@@ -1,5 +1,6 @@
 // import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
@@ -97,6 +98,12 @@ class UserProfileScreenState extends State<UserProfileScreen> {
         'email': _emailController.text,
       });
 
+  AnalyticsService().logEvent('profile_update', {
+          'name': _nameController.text,
+          'mobile': _phoneController.text,
+          'address': _addressController.text,
+          'email': _emailController.text,
+        });
       print("User data updated successfully!");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Profile updated successfully!')),
@@ -405,6 +412,10 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                           SizedBox(height: 10),
                                           ElevatedButton(
                                             onPressed: () async {
+                                                AnalyticsService().logEvent('button_pressed', {
+          'button_type': "ChangePassword",
+          "time": DateTime.now().toString()
+        });
                                               await _updatePassword();
                                             },
                                             child: Text('Change Password'),
@@ -424,6 +435,10 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                         SizedBox(height: 10),
                                         ElevatedButton(
                                           onPressed: () async {
+                                            AnalyticsService().logEvent('button_pressed', {
+          'button_type': "UpdateProfile",
+          "time": DateTime.now().toString()
+        });
                                             await _updateUserData();
                                           },
                                           child: Text('Save Changes'),

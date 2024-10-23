@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/Identification_screen/provider/identification_provider.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
@@ -119,9 +120,23 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                       return Row(
                                         children: [
                                           OptionWidget(
-                                            child: ImageWidget(
-                                              imagePath: widget.dtcontainer
-                                                  .getImageUrlList()[index],
+                                            
+                                            child: GestureDetector(
+                                              onTap: (){
+                                                if(widget.dtcontainer
+                                                      .getCorrectOutput() ==
+                                                  widget.dtcontainer
+                                                      .getImageUrlList()[index]){
+                                                          AnalyticsService().logEvent("level_complete", {
+                                  "name": "Identification",
+                                  "level": "1",
+                                });
+                                                      }
+                                              },
+                                              child: ImageWidget(
+                                                imagePath: widget.dtcontainer
+                                                    .getImageUrlList()[index],
+                                              ),
                                             ),
                                             isCorrect: () {
                                               return widget.dtcontainer
