@@ -288,7 +288,7 @@ class RegisterScreenState
                                   type: ButtonType.Next,
                                   onPressed: () async {
                                     if (_formKey.currentState!.validate() && dropdownValue1!="Select Therapist") {
-                                  await     AnalyticsService().logSignup(textCtrl.emailController.text);
+                                
                                       RegisterFormMethods methods =
                                           RegisterFormMethods(context: context);
                                       Map<String, dynamic> result =

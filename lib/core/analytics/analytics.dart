@@ -1,56 +1,72 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AnalyticsService {
-   FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Store event in Firestore using a map with timestamp as the key
+  Future<void> logEvent(
+      String eventName, Map<String, dynamic> eventData) async {
+    // Get the current timestamp
+    String timestamp = DateTime.now().toIso8601String();
+    String? uid = FirebaseAuth.instance.currentUser != null
+        ? FirebaseAuth.instance.currentUser!.uid
+        : null;
 
-  Future<void> logScreenView(String screenName,String userName) async {
-    await _analytics.logScreenView(
-      screenName: screenName,
-      parameters: {
-        "user_name":userName,
-        "time": DateTime.now().toString()
-      }
-      
+    if (uid == null) {
+      return;
+    }
+
+    // Store the event data as a field in the user's document with the timestamp as key
+    await _firestore.collection('user_activity').doc(uid).set(
+      {
+        timestamp: {
+          'event': eventName,
+          'data': eventData,
+        },
+      },
+      SetOptions(merge: true), // Merge so we don't overwrite existing events
     );
+  }
+
+  Future<void> logScreenView(String screenName) async {
+    await logEvent('screen_view', {
+      'screen_name': screenName,
+      'time': DateTime.now().toString(),
+    });
   }
 
   Future<void> logSignIn(String email) async {
-    await _analytics.logLogin(
-      callOptions: AnalyticsCallOptions(global:true ),
-      parameters: {
-        email:email,
-          "time": DateTime.now().toString()
-      }
-    );
-  }
-  Future<void> logSignup(String email) async {
-    await _analytics.logSignUp(
-    signUpMethod: "email",
-      parameters: {
-        email:email,
-          "time": DateTime.now().toString()
-      }
-    );
+    await logEvent('sign_in', {
+      'email': email,
+      'time': DateTime.now().toString(),
+    });
   }
 
-  Future<void> logOpenApp() async {
-    await _analytics.logAppOpen();
+  Future<void> logSignOut() async {
+    await logEvent('sign_out', {
+      'time': DateTime.now().toString(),
+    });
   }
 
-  Future<void> logEvent(String name, dynamic parameters) async {
-  if (parameters is Map<String, dynamic>) {
-    await _analytics.logEvent(
-      name: name,
-      parameters: parameters.map((key, value) => MapEntry(key, value as Object)),
-    );
-  } else if (parameters is String) {
-    await _analytics.logEvent(
-      name: name,
-      parameters: {'parameters': parameters}, // You can adjust the key as per your requirement
-    );
+  Future<void> logAppOpen() async {
+    await logEvent('app_open', {
+      'time': DateTime.now().toString(),
+    });
   }
-}
 
+  Future<void> logSignUp(String email) async {
+    await logEvent("sign_up", {
+      'email': email,
+      'time': DateTime.now().toString(),
+    });
+  }
 
+  Future<void> logTimeSpent(String screenName, int timeSpent) async {
+    await logEvent('time_spent', {
+      'screen_name': screenName,
+      'time_spent': timeSpent,
+      'time': DateTime.now().toString(),
+    });
+  }
 }

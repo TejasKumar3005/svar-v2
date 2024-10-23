@@ -56,7 +56,7 @@ class ScreenTracking extends RouteObserver<PageRoute<dynamic>> {
       }
       _analyticsService.logScreenView(
         screenName,
-        userName
+        
       );
     }
   }

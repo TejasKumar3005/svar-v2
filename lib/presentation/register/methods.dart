@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/cupertino.dart';
+import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/database/authentication.dart';
@@ -36,6 +37,7 @@ class RegisterFormMethods {
         .then((value) => {
               if (value)
                 { 
+                  AnalyticsService().logSignUp(provider.emailController.text),
                 provider.changeState(),
                 Navigator.of(context).pushNamedAndRemoveUntil(
                                     AppRoutes.loadingScreen,

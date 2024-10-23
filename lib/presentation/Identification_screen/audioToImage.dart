@@ -3,15 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/database/userController.dart';
-import 'package:svar_new/presentation/Identification_screen/animation_play.dart';
-import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/Identification_screen/provider/identification_provider.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
-import 'package:svar_new/widgets/auditoryAppbar.dart';
-import 'package:flutter_audio_waveforms/flutter_audio_waveforms.dart';
-import 'package:svar_new/core/utils/audioSampleExtractor.dart';
-import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/Options.dart';
 
 class AudiotoimageScreen extends StatefulWidget {

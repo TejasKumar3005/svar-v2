@@ -250,6 +250,7 @@ class AuthConroller {
       }
       return false;
     } on FirebaseAuthException catch (e) {
+      print(e.message.toString());
       String errorMessage;
       switch (e.code) {
         case 'invalid-email':
