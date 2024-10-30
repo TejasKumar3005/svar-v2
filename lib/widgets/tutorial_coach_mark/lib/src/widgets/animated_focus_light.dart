@@ -55,7 +55,7 @@ class AnimatedFocusLight extends StatefulWidget {
         super(key: key);
 
   @override
-  // ignore: no_logic_in_create_state
+ 
   AnimatedFocusLightState createState() => pulseEnable
       ? AnimatedPulseFocusLightState()
       : AnimatedStaticFocusLightState();
@@ -404,7 +404,6 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
                       borderRadius: _betBorderRadiusTarget(),
                       onTap: _targetFocus.enableTargetTab
                           ? () => _tapHandler(targetTap: true)
-
                           /// Essential for collecting [TapDownDetails]. Do not make [null]
                           : () {},
                       onTapDown: _tapHandlerForPosition,

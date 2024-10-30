@@ -5,21 +5,27 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'dart:async';
+import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
 
-
-// Global audio player to ensure only one instance plays at a time
+// Global variables to manage tutorial state across instances
 AudioPlayer globalAudioPlayer = AudioPlayer();
+int currentGlobalTutorialStep = 0;
+bool isTutorialInProgress = false;
 
 class AudioWidget extends StatefulWidget {
   final List<String> audioLinks;
-  final double progress; // Pass the current progress
-  final Color spectrumColor;
+  final GlobalKey imagePlayButtonKey;
+  final int tutorialIndex;
+  final bool showTutorial;
+  final VoidCallback? onTutorialComplete;
 
   const AudioWidget({
     Key? key,
     required this.audioLinks,
-    this.progress = 0.0,
-    this.spectrumColor = Colors.green,
+    required this.imagePlayButtonKey,
+    required this.tutorialIndex,
+    this.showTutorial = false,
+    this.onTutorialComplete,
   }) : super(key: key);
 
   @override
@@ -30,6 +36,8 @@ class AudioWidgetState extends State<AudioWidget> {
   StreamSubscription<Duration>? _positionSubscription;
   late AudioPlayer _audioPlayer;
   late double progress;
+  bool hasShownTutorial = false;
+
   late int currentIndex;
   late double completed;
   late List<double> lengths;
@@ -45,18 +53,23 @@ class AudioWidgetState extends State<AudioWidget> {
     totalLength = 0.0;
     lengths = [];
 
-    // Load audio lengths
     loadAudioLengths();
-
-    
-      _positionSubscription =_audioPlayer.positionStream.listen((position) {
-      if (_audioPlayer.duration != null &&
-          _audioPlayer.duration!.inSeconds > 0) {
+    _positionSubscription = _audioPlayer.positionStream.listen((position) {
+      if (_audioPlayer.duration != null && _audioPlayer.duration!.inSeconds > 0) {
         setState(() {
           progress = (completed + position.inSeconds.toDouble()) / totalLength;
         });
       }
     });
+
+    // Check if this widget should show its tutorial
+    if (widget.showTutorial && widget.tutorialIndex == currentGlobalTutorialStep) {
+      Future.delayed(Duration(milliseconds: 500), () {
+        if (!isTutorialInProgress && !hasShownTutorial) {
+          showTutorial();
+        }
+      });
+    }
   }
 
   Future<void> loadAudioLengths() async {
@@ -70,20 +83,17 @@ class AudioWidgetState extends State<AudioWidget> {
   Future<double> getAudioLength(String link) async {
     var duration = await _audioPlayer.setUrl(link);
     if (duration != null) {
-      await _audioPlayer.load(); // Wait for the audio to load
-      return duration.inSeconds.toDouble(); // Return length in seconds
-    } else {
-      return 5.0; // Fallback value if the audio URL couldn't be loaded
+      await _audioPlayer.load();
+      return duration.inSeconds.toDouble();
     }
+    return 5.0;
   }
 
   Future<void> playNext() async {
-    // Pause or stop any audio that is currently playing
     if (globalAudioPlayer.playing) {
       await globalAudioPlayer.stop();
     }
 
-    // Assign the globalAudioPlayer to control playback across widgets
     globalAudioPlayer = _audioPlayer;
 
     if (currentIndex < widget.audioLinks.length) {
@@ -109,6 +119,67 @@ class AudioWidgetState extends State<AudioWidget> {
     }
   }
 
+  void showTutorial() {
+    if (hasShownTutorial || isTutorialInProgress) return;
+    
+    isTutorialInProgress = true;
+    
+    List<TargetFocus> targets = [
+      TargetFocus(
+        identify: "image_play_button_${widget.tutorialIndex}",
+        keyTarget: widget.imagePlayButtonKey,
+        shape: ShapeLightFocus.RRect,
+        contents: [
+          TargetContent(
+            align: ContentAlign.right,
+            child: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Play Audio",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    "Tap this button to play or pause the audio",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    ];
+
+    TutorialCoachMark(
+      targets: targets,
+      colorShadow: Colors.black,
+      alignSkip: Alignment.bottomRight,
+      onFinish: () {
+        setState(() {
+          hasShownTutorial = true;
+          isTutorialInProgress = false;
+          currentGlobalTutorialStep++;
+        });
+        widget.onTutorialComplete?.call();
+      },
+      onSkip: () {
+        setState(() {
+          hasShownTutorial = true;
+          isTutorialInProgress = false;
+          currentGlobalTutorialStep++;
+        });
+        widget.onTutorialComplete?.call();
+        return true;
+      },
+    ).show(context: context);
+  }
+
   @override
   void dispose() {
     _positionSubscription?.cancel();
@@ -122,7 +193,7 @@ class AudioWidgetState extends State<AudioWidget> {
     final screenWidth = MediaQuery.of(context).size.height;
 
     return Container(
-      width: screenWidth * 0.9, // Adjust the container width based on screen size
+      width: screenWidth * 0.9,
       padding: const EdgeInsets.symmetric(
         horizontal: 16.0,
         vertical: 8.0,
@@ -140,10 +211,10 @@ class AudioWidgetState extends State<AudioWidget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CustomButton(
+            key: widget.imagePlayButtonKey,
             type: ButtonType.ImagePlay,
             onPressed: () {
               if (_audioPlayer.playing) {
-                print("paused");
                 _audioPlayer.pause();
               } else {
                 playNext();
@@ -173,11 +244,10 @@ class AudioWidgetState extends State<AudioWidget> {
                     click();
                   }
                 },
-                progress: progress, // Pass dynamic progress
-                color: widget.spectrumColor, // Pass dynamic color
+                progress: progress,
+                color: Colors.green,
               ),
             ),
-            // Use Expanded to handle overflow
           ),
         ],
       ),

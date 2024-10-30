@@ -143,7 +143,7 @@ class LoginScreenState extends State<LoginScreen> {
                             },
                             child: CustomImageView(
                               imagePath: ImageConstant.imgLoginBTn,
-                              width: screenWidth * 0.7, // Adjusted proportionally
+                              width: screenWidth * 0.7, 
                               height: screenHeight * 0.08, // Adjusted proportionally
                               fit: BoxFit.contain,
                             ),

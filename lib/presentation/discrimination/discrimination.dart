@@ -168,9 +168,12 @@ class _DiscriminationState extends State<Discrimination> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AudioWidget(
-          audioLinks: dtcontainer.getVideoUrl(),
-          // Use dtcontainer here
-        ),
+            audioLinks: dtcontainer.getAudioList(),
+            imagePlayButtonKey: GlobalKey(),
+            tutorialIndex: 1
+
+            // Use dtcontainer here
+            ),
         SizedBox(
           height: 20.v,
         ),
@@ -183,6 +186,8 @@ class _DiscriminationState extends State<Discrimination> {
                 isCorrect: () {
                   return dtcontainer.getCorrectOutput() == "female";
                 },
+                optionKey: GlobalKey(),
+                tutorialOrder: 2,
               ),
             ),
             Expanded(
@@ -191,6 +196,8 @@ class _DiscriminationState extends State<Discrimination> {
                 isCorrect: () {
                   return dtcontainer.getCorrectOutput() == "male";
                 },
+                optionKey: GlobalKey(),
+                tutorialOrder: 2,
               ),
             ),
           ],
@@ -247,27 +254,29 @@ class _DiscriminationState extends State<Discrimination> {
       mainAxisSize: MainAxisSize.min,
       children: [
         AudioWidget(
-          key: _childKey,
-          audioLinks: dtcontainer.getVideoUrls(),
-        ),
+            audioLinks: dtcontainer.getAudioList(),
+            imagePlayButtonKey: GlobalKey(),
+            tutorialIndex: 1),
         SizedBox(
           height: 20.v,
         ),
         OptionWidget(
-            child: OptionButton(type: ButtonType.Change, onPressed: () {}),
-            isCorrect: () {
-              List<double> total_length = _childKey.currentState!.lengths;
-              double ans =
-                  total_length[0] / (total_length[1] + total_length[0]);
-              print(
-                  "ans is $ans current progress is ${_childKey.currentState!.progress}");
-              if (_childKey.currentState!.progress > ans &&
-                  _childKey.currentState!.progress < ans + 0.1) {
-                return true;
-              } else {
-                return false;
-              }
-            })
+          child: OptionButton(type: ButtonType.Change, onPressed: () {}),
+          isCorrect: () {
+            List<double> total_length = _childKey.currentState!.lengths;
+            double ans = total_length[0] / (total_length[1] + total_length[0]);
+            print(
+                "ans is $ans current progress is ${_childKey.currentState!.progress}");
+            if (_childKey.currentState!.progress > ans &&
+                _childKey.currentState!.progress < ans + 0.1) {
+              return true;
+            } else {
+              return false;
+            }
+          },
+          optionKey: GlobalKey(),
+          tutorialOrder: 1,
+        ),
       ],
     );
   }
@@ -284,10 +293,10 @@ class _DiscriminationState extends State<Discrimination> {
                 return Row(
                   children: [
                     AudioWidget(
-                      audioLinks: [
-                        dtcontainer.getVideoUrls()[index],
-                      ],
-                    ),
+                        audioLinks: dtcontainer.getVideoUrls()[index],
+                        imagePlayButtonKey: GlobalKey(),
+                        tutorialIndex: 1),
+
                     SizedBox(width: 20), // Adds gap between each OptionWidget
                   ],
                 );
@@ -304,23 +313,23 @@ class _DiscriminationState extends State<Discrimination> {
               child: OptionButton(
                   type: ButtonType.Same,
                   onPressed: () {
-                    var provider = Provider.of<UserDataProvider>(context,
-                        listen: false);
+                    var provider =
+                        Provider.of<UserDataProvider>(context, listen: false);
                     if (dtcontainer.getSame()) {
                       if (level >
                           provider.userModel.toJson()["levelMap"]
                               ["Discrimination"]!) {
                         UserData(buildContext: context)
                             .incrementLevelCount("Discrimination")
-                            .then((value) {
-
-                            });
+                            .then((value) {});
                       }
                     }
                   }),
               isCorrect: () {
                 return !dtcontainer.getSame();
               },
+              optionKey: GlobalKey(),
+              tutorialOrder: 1,
             ),
             SizedBox(
               width: 20.h,
@@ -329,28 +338,26 @@ class _DiscriminationState extends State<Discrimination> {
               child: OptionButton(
                   type: ButtonType.Diff,
                   onPressed: () {
-                  var provider = Provider.of<UserDataProvider>(context,
-                        listen: false);
+                    var provider =
+                        Provider.of<UserDataProvider>(context, listen: false);
                     if (!dtcontainer.getSame()) {
                       if (level >
                           provider.userModel.toJson()["levelMap"]
                               ["Discrimination"]!) {
-                                AnalyticsService().logEvent("level_complete", {
-                                  "name": "Discrimination",
-                                  "level": level
-                                });
-                                
+                        AnalyticsService().logEvent("level_complete",
+                            {"name": "Discrimination", "level": level});
+
                         UserData(buildContext: context)
                             .incrementLevelCount("Discrimination")
-                            .then((value) {
-
-                            });
+                            .then((value) {});
                       }
                     }
                   }),
               isCorrect: () {
                 return dtcontainer.getSame();
               },
+              optionKey: GlobalKey(),
+              tutorialOrder: 2,
             ),
           ],
         )
@@ -374,28 +381,30 @@ class _DiscriminationState extends State<Discrimination> {
               children: [
                 OptionWidget(
                   child: AudioWidget(
-                    audioLinks: [
-                      dtcontainer.getVideoUrls()[0],
-                    ],
-                  ),
+                      audioLinks: dtcontainer.getVideoUrls()[0],
+                      imagePlayButtonKey: GlobalKey(),
+                      tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
                   },
+                  optionKey: GlobalKey(),
+                  tutorialOrder: 1,
                 ),
                 SizedBox(
                   width: 20.h,
                 ),
                 OptionWidget(
                   child: AudioWidget(
-                    audioLinks: [
-                      dtcontainer.getVideoUrls()[1],
-                    ],
-                  ),
+                      audioLinks: dtcontainer.getVideoUrls()[1],
+                      imagePlayButtonKey: GlobalKey(),
+                      tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
                   },
+                  optionKey: GlobalKey(),
+                  tutorialOrder: 2,
                 ),
               ],
             ),
@@ -415,28 +424,30 @@ class _DiscriminationState extends State<Discrimination> {
               children: [
                 OptionWidget(
                   child: AudioWidget(
-                    audioLinks: [
-                      dtcontainer.getVideoUrls()[0],
-                    ],
-                  ),
+                      audioLinks: dtcontainer.getVideoUrls()[0],
+                      imagePlayButtonKey: GlobalKey(),
+                      tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
                   },
+                  optionKey: GlobalKey(),
+                  tutorialOrder: 1,
                 ),
                 SizedBox(
                   width: 20.h,
                 ),
                 OptionWidget(
                   child: AudioWidget(
-                    audioLinks: [
-                      dtcontainer.getVideoUrls()[1],
-                    ],
-                  ),
+                      audioLinks: dtcontainer.getVideoUrls()[1],
+                      imagePlayButtonKey: GlobalKey(),
+                      tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
                   },
+                  optionKey: GlobalKey(),
+                  tutorialOrder: 2,
                 ),
               ],
             ),
@@ -449,14 +460,15 @@ class _DiscriminationState extends State<Discrimination> {
               children: [
                 OptionWidget(
                   child: AudioWidget(
-                    audioLinks: [
-                      dtcontainer.getVideoUrls()[2],
-                    ],
-                  ),
+                      audioLinks: dtcontainer.getVideoUrls()[2],
+                      imagePlayButtonKey: GlobalKey(),
+                      tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput();
                   },
+                  optionKey: GlobalKey(),
+                  tutorialOrder: 3,
                 ),
               ],
             )
@@ -476,28 +488,30 @@ class _DiscriminationState extends State<Discrimination> {
               children: [
                 OptionWidget(
                   child: AudioWidget(
-                    audioLinks: [
-                      dtcontainer.getVideoUrls()[0],
-                    ],
-                  ),
+                      audioLinks: dtcontainer.getVideoUrls()[0],
+                      imagePlayButtonKey: GlobalKey(),
+                      tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
                   },
+                  optionKey: GlobalKey(),
+                  tutorialOrder: 1,
                 ),
                 SizedBox(
                   width: 20.h,
                 ),
                 OptionWidget(
                   child: AudioWidget(
-                    audioLinks: [
-                      dtcontainer.getVideoUrls()[1],
-                    ],
-                  ),
+                      audioLinks: dtcontainer.getVideoUrls()[1],
+                      imagePlayButtonKey: GlobalKey(),
+                      tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
                   },
+                  optionKey: GlobalKey(),
+                  tutorialOrder: 2,
                 ),
               ],
             ),
@@ -510,28 +524,30 @@ class _DiscriminationState extends State<Discrimination> {
               children: [
                 OptionWidget(
                   child: AudioWidget(
-                    audioLinks: [
-                      dtcontainer.getVideoUrls()[2],
-                    ],
-                  ),
+                      audioLinks: dtcontainer.getVideoUrls()[2],
+                      imagePlayButtonKey: GlobalKey(),
+                      tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput();
                   },
+                  optionKey: GlobalKey(),
+                  tutorialOrder: 3,
                 ),
                 SizedBox(
                   width: 20.h,
                 ),
                 OptionWidget(
                   child: AudioWidget(
-                    audioLinks: [
-                      dtcontainer.getVideoUrls()[3],
-                    ],
-                  ),
+                      audioLinks: dtcontainer.getVideoUrls()[3],
+                      imagePlayButtonKey: GlobalKey(),
+                      tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[3] ==
                         dtcontainer.getCorrectOutput();
                   },
+                  optionKey: GlobalKey(),
+                  tutorialOrder: 4,
                 ),
               ],
             ),

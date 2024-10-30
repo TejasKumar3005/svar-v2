@@ -92,16 +92,13 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                         children: [
                           Center(
                             child: GestureDetector(
-                              child: OptionWidget(
+                          
                                 child: AudioWidget(
                                   audioLinks: widget.dtcontainer.getAudioUrl(),
+                                  imagePlayButtonKey: GlobalKey(),
+                                  tutorialIndex: 1,
                                 ),
-                                isCorrect: () {
-                                  return widget.dtcontainer
-                                          .getCorrectOutput() ==
-                                      widget.dtcontainer.getAudioUrl();
-                                },
-                              ),
+                        
                             ),
                           ),
                           SizedBox(height: 50.v),
@@ -120,18 +117,19 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                       return Row(
                                         children: [
                                           OptionWidget(
-                                            
                                             child: GestureDetector(
-                                              onTap: (){
-                                                if(widget.dtcontainer
-                                                      .getCorrectOutput() ==
-                                                  widget.dtcontainer
-                                                      .getImageUrlList()[index]){
-                                                          AnalyticsService().logEvent("level_complete", {
-                                  "name": "Identification",
-                                  "level": "1",
-                                });
-                                                      }
+                                              onTap: () {
+                                                if (widget.dtcontainer
+                                                        .getCorrectOutput() ==
+                                                    widget.dtcontainer
+                                                            .getImageUrlList()[
+                                                        index]) {
+                                                  AnalyticsService().logEvent(
+                                                      "level_complete", {
+                                                    "name": "Identification",
+                                                    "level": "1",
+                                                  });
+                                                }
                                               },
                                               child: ImageWidget(
                                                 imagePath: widget.dtcontainer
@@ -144,6 +142,8 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                                   widget.dtcontainer
                                                       .getImageUrlList()[index];
                                             },
+                                            optionKey: GlobalKey(),
+                                            tutorialOrder: index + 2,
                                           ),
                                           SizedBox(
                                             width:

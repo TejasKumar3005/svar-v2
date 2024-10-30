@@ -199,7 +199,6 @@ class _DetectionState extends State<Detection> {
       dynamic dtcontainer = obj[1] as dynamic;
       print(dtcontainer.getVideoUrls().toString());
       if (type == "MutedUnmuted") {
-        int mutedVideoIndex = dtcontainer.getMuted();
         // Initialization is handled in the VideoPlayerWidget
         setState(() {
           quizType = type;
@@ -348,6 +347,8 @@ class _DetectionState extends State<Detection> {
                   isCorrect: () {
                     return (obj[1] as dynamic).getMuted() == 1;
                   },
+                  optionKey: GlobalKey(),
+                tutorialOrder: 1,
                 ),
               ),
             ),
@@ -359,12 +360,14 @@ class _DetectionState extends State<Detection> {
                   child: OptionButton(
                     type: ButtonType.Video2,
                     onPressed: () {
-                      // Implement your logic here
+                      
                     },
                   ),
                   isCorrect: () {
                     return (obj[1] as dynamic).getMuted() == 0;
                   },
+                  optionKey: GlobalKey(),
+                tutorialOrder: 2,
                 ),
               ),
             ),
@@ -376,9 +379,7 @@ class _DetectionState extends State<Detection> {
 }
 
 
-///
-/// New StatefulWidget: HalfMutedWidget
-///
+
 class HalfMutedWidget extends StatefulWidget {
   final List<String> audioLinks;
 
@@ -435,8 +436,10 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
           height: 40.v,
         ),
         AudioWidget(
-          key: _childKey,
+        
           audioLinks: widget.audioLinks,
+          imagePlayButtonKey: GlobalKey(),
+          tutorialIndex: 1,
         ),
         SizedBox(
           height: 20.v,
@@ -467,7 +470,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
             double currentProgress = _childKey.currentState!.progress;
             print("Current progress is $currentProgress");
 
-// Define the acceptable range, e.g., ans ± 0.1
+
             const double tolerance = 0.4;
             bool condition =
                 currentProgress > ans && currentProgress < ans + tolerance;
@@ -475,6 +478,8 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
             return condition;
           },
+          optionKey: GlobalKey(),
+                tutorialOrder: 2,
         ),
       ],
     );

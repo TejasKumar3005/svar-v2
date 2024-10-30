@@ -1,4 +1,3 @@
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
@@ -64,7 +63,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
-
     String params = obj[2] as String;
 
     return type != "AudioToImage"
@@ -77,7 +75,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                   backgroundColor: appTheme.gray300,
                   body: Stack(
                     children: [
-                      // SVG background
                       Positioned.fill(
                         child: SvgPicture.asset(
                           ImageConstant
@@ -112,9 +109,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                     bottom: 0,
                                     right: 0,
                                     child: GestureDetector(
-                                      onTap: () {
-                                        // Define what happens when the button is tapped
-                                      },
+                                      onTap: () {},
                                       child: CustomImageView(
                                         imagePath: ImageConstant.imgTipbtn,
                                         height: 60.v,
@@ -192,53 +187,43 @@ class AuditoryScreenState extends State<IdentificationScreen> {
 
   Widget buildDynamicOptions(String quizType, IdentificationProvider provider,
       dynamic dtcontainer, String params) {
-    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    dynamic dtcontainer = obj[1] as dynamic;
     switch (quizType) {
       case "ImageToAudio":
         return dtcontainer.getAudioList().length <= 4
             ? Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 16.0), // Adjust padding as needed
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Container(
-                    height: MediaQuery.of(context).size.height *
-                        0.5, // Adjust height as needed
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    // Adjust width as needed
-                    child: Column(
-                      children: [
-                        if (dtcontainer.getAudioList().length <= 4)
-                          ...List.generate(dtcontainer.getAudioList().length,
-                              (index) {
-                            return Expanded(
-                              // Each column item will take a proportional amount of available space
-                              flex:
-                                  1, // You can modify this value to divide space differently
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                     // Adjust the flex value based on your layout needs
-                                    child: OptionWidget(
-                                      child: AudioWidget(
-                                        audioLinks: [
-                                          dtcontainer.getAudioList()[index],
-                                        ],
-                                      ),
-                                      isCorrect: () {
-                                        return dtcontainer.getCorrectOutput() ==
-                                            dtcontainer.getAudioList()[index];
-                                      },
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      height:
-                                          10), // Adds gap between each OptionWidget
-                                ],
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Column(
+                    children: [
+                      ...List.generate(dtcontainer.getAudioList().length,
+                          (index) {
+                        final GlobalKey imagePlayButtonKey = GlobalKey();
+                        final GlobalKey optionKey = GlobalKey();
+
+                        return Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 5.0),
+                            child: OptionWidget(
+                              child: AudioWidget(
+                                audioLinks: [dtcontainer.getAudioList()[index]],
+                                imagePlayButtonKey: imagePlayButtonKey,
+                                tutorialIndex: index + 1,
+                                
                               ),
-                            );
-                          }),
-                      ],
-                    )),
+                              isCorrect: () =>
+                                  dtcontainer.getCorrectOutput() ==
+                                  dtcontainer.getAudioList()[index],
+                              optionKey: optionKey,
+                              tutorialOrder: index + 1,
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
               )
             : SizedBox();
 
@@ -276,6 +261,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                                   .getCorrectOutput() ==
                                               dtcontainer.getTextList()[index];
                                         },
+                                        optionKey: GlobalKey(),
+                                        tutorialOrder: index + 1,
                                       ),
                                       SizedBox(
                                           width:
@@ -301,40 +288,46 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       case "WordToFig":
         debugPrint("entering in the word to fig section");
         return Container(
-          height: MediaQuery.of(context).size.height *
-              0.4, // Adjusting height dynamically
-          width: MediaQuery.of(context).size.width *
-              0.8, // Adjusting the width to fit better
-         child: Row(
-  mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Distribute space evenly
-  children: [
-    if (dtcontainer.getImageUrlList().length <= 4)
-      ...List.generate(dtcontainer.getImageUrlList().length, (index) {
-        return Expanded( // Each item will take up available space based on the flex value
-          flex: 1, // Adjust the flex as needed to control the width ratio
-          child: Row(
-            children: [
-              Expanded(
-                flex: 2, // Adjust the flex value for the OptionWidget
-                child: OptionWidget(
-                  child: ImageWidget(
-                    imagePath: dtcontainer.getImageUrlList()[index],
-                  ),
-                  isCorrect: () {
-                    return dtcontainer.getCorrectOutput() ==
-                        dtcontainer.getImageUrlList()[index];
-                  },
-                ),
-              ),
-              SizedBox(width: 10), // Adds gap between each OptionWidget
-            ],
-          ),
-        );
-      }),
-  ],
-)
-
-        );
+            height: MediaQuery.of(context).size.height *
+                0.4, // Adjusting height dynamically
+            width: MediaQuery.of(context).size.width *
+                0.8, // Adjusting the width to fit better
+            child: Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceEvenly, // Distribute space evenly
+              children: [
+                if (dtcontainer.getImageUrlList().length <= 4)
+                  ...List.generate(dtcontainer.getImageUrlList().length,
+                      (index) {
+                    return Expanded(
+                      // Each item will take up available space based on the flex value
+                      flex:
+                          1, // Adjust the flex as needed to control the width ratio
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex:
+                                2, // Adjust the flex value for the OptionWidget
+                            child: OptionWidget(
+                              child: ImageWidget(
+                                imagePath: dtcontainer.getImageUrlList()[index],
+                              ),
+                              isCorrect: () {
+                                return dtcontainer.getCorrectOutput() ==
+                                    dtcontainer.getImageUrlList()[index];
+                              },
+                              optionKey: GlobalKey(), // Add this
+                              tutorialOrder: index + 1, // Add this
+                            ),
+                          ),
+                          SizedBox(
+                              width: 10), // Adds gap between each OptionWidget
+                        ],
+                      ),
+                    );
+                  }),
+              ],
+            ));
 
       default:
         return Row();

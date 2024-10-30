@@ -36,6 +36,7 @@ class CustomButton extends StatefulWidget {
   final VoidCallback onPressed;
   final double? progress; // Only used for Spectrum
   final Color? color; // Only used for Spectrum
+  final String? text; // Add this line
 
   const CustomButton({
     Key? key,
@@ -43,6 +44,7 @@ class CustomButton extends StatefulWidget {
     required this.onPressed,
     this.progress,
     this.color,
+    this.text, // Add this line
   }) : super(key: key);
 
   @override
@@ -274,19 +276,33 @@ class _CustomButtonState extends State<CustomButton> {
       child: Container(
         height: height,
         width: width,
-        child: isSvg
-            ? SvgPicture.asset(
-                imagePath,
-                fit: fit,
-                width: width,
-                height: height,
-              )
-            : Image.asset(
-                imagePath,
-                fit: fit,
-                width: width,
-                height: height,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            isSvg
+                ? SvgPicture.asset(
+                    imagePath,
+                    fit: fit,
+                    width: width,
+                    height: height,
+                  )
+                : Image.asset(
+                    imagePath,
+                    fit: fit,
+                    width: width,
+                    height: height,
+                  ),
+            if (widget.text != null)
+              Text(
+                widget.text!,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+          ],
+        ),
       ),
     );
   }
