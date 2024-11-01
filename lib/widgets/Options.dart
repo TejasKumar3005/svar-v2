@@ -8,28 +8,31 @@ import 'package:rive/rive.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
 
 class OptionWidget extends StatefulWidget {
-
-  static List<GlobalKey> optionKeys = [];
+  static List<GlobalKey<OptionWidgetState>> optionKeys = [];
   final Widget child;
   final bool Function() isCorrect;
-  final GlobalKey optionKey;
+  final GlobalKey<OptionWidgetState> optionKey;
   final int tutorialOrder;
+  final bool areAudioTutorialsComplete; // Add this
 
   OptionWidget({
     required this.child,
     required this.isCorrect,
     required this.optionKey,
     required this.tutorialOrder,
+    this.areAudioTutorialsComplete = false, // Add this
   }) : super(key: optionKey) {
     optionKeys.add(optionKey);
   }
 
   @override
-  _OptionWidgetState createState() => _OptionWidgetState();
+  OptionWidgetState createState() => OptionWidgetState();
 }
 
-class _OptionWidgetState extends State<OptionWidget> {
+
+class OptionWidgetState extends State<OptionWidget> {
   bool _isGlowing = false;
+  bool hasShownTutorial = false;
   OverlayEntry? _overlayEntry;
   late TutorialCoachMark tutorialCoachMark;
 
@@ -38,7 +41,7 @@ class _OptionWidgetState extends State<OptionWidget> {
     super.initState();
     // Initialize tutorial only if this is the first widget in the sequence
     if (widget.tutorialOrder == 1) {
-      Future.delayed(Duration.zero, showTutorial);
+      Future.delayed(Duration.zero);
       _initTutorial();
     }
   }
@@ -136,10 +139,8 @@ class _OptionWidgetState extends State<OptionWidget> {
           SizedBox(
             height: 50,
             width: 50,
-            child: RiveAnimation.asset(
-              isCorrect
-                  ? 'assets/rive/finger.riv'
-                  : 'assets/rive/swipe_animations.riv',
+            child: RiveAnimation.asset( 
+                   'assets/rive/hand_click.riv',
              fit: BoxFit.contain,
             ),
           ),
@@ -168,8 +169,11 @@ class _OptionWidgetState extends State<OptionWidget> {
     }
   }
 
-  void showTutorial() {
-    tutorialCoachMark.show(context: context);
+  void startTutorialIfAllowed() {
+    if (widget.areAudioTutorialsComplete && !hasShownTutorial) {
+      hasShownTutorial = true;
+      tutorialCoachMark.show(context: context);
+    }
   }
 
   void click() {

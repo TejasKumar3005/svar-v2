@@ -11,10 +11,7 @@ import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/Options.dart';
 
 class IdentificationScreen extends StatefulWidget {
-  const IdentificationScreen({Key? key})
-      : super(
-          key: key,
-        );
+  const IdentificationScreen({Key? key}) : super(key: key);
 
   @override
   AuditoryScreenState createState() => AuditoryScreenState();
@@ -34,6 +31,10 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   ChewieController? _chewieController;
   OverlayEntry? _overlayEntry;
 
+  // Flag to ensure all AudioWidget tutorials complete before starting OptionWidget tutorials
+  bool areAudioTutorialsComplete = false;
+  int completedAudioTutorials = 0;
+
   @override
   void dispose() {
     super.dispose();
@@ -51,7 +52,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     ]);
 
     _player = AudioPlayer();
-
     leveltracker = 0;
   }
 
@@ -77,12 +77,10 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                     children: [
                       Positioned.fill(
                         child: SvgPicture.asset(
-                          ImageConstant
-                              .imgAuditorybg, // Replace with your SVG path
+                          ImageConstant.imgAuditorybg,
                           fit: BoxFit.cover,
                         ),
                       ),
-                      // Main content
                       Container(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height,
@@ -134,7 +132,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
           );
   }
 
-  /// Section Widget
   Widget _buildOptionGRP(BuildContext context, IdentificationProvider provider,
       String type, dynamic dtcontainer, String params) {
     return Padding(
@@ -189,6 +186,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       dynamic dtcontainer, String params) {
     switch (quizType) {
       case "ImageToAudio":
+        int totalAudioTutorials = dtcontainer.getAudioList().length;
         return dtcontainer.getAudioList().length <= 4
             ? Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -200,8 +198,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                       ...List.generate(dtcontainer.getAudioList().length,
                           (index) {
                         final GlobalKey imagePlayButtonKey = GlobalKey();
-                        final GlobalKey optionKey = GlobalKey();
-
+                        final GlobalKey<OptionWidgetState> optionKey =
+                            GlobalKey<OptionWidgetState>();
                         return Expanded(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 5.0),
@@ -210,13 +208,29 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                 audioLinks: [dtcontainer.getAudioList()[index]],
                                 imagePlayButtonKey: imagePlayButtonKey,
                                 tutorialIndex: index + 1,
-                                
+                                onTutorialComplete: () {
+                                  completedAudioTutorials += 1;
+                                  if (completedAudioTutorials ==
+                                      totalAudioTutorials) {
+                                    areAudioTutorialsComplete = true;
+                                    // Trigger OptionWidget tutorials
+                                    for (var key in OptionWidget.optionKeys) {
+                                      final state = key.currentState
+                                          as OptionWidgetState?;
+                                      if (state != null) {
+                                        state.startTutorialIfAllowed();
+                                      }
+                                    }
+                                  }
+                                },
                               ),
                               isCorrect: () =>
                                   dtcontainer.getCorrectOutput() ==
                                   dtcontainer.getAudioList()[index],
                               optionKey: optionKey,
                               tutorialOrder: index + 1,
+                              areAudioTutorialsComplete:
+                                  areAudioTutorialsComplete, // Pass the flag
                             ),
                           ),
                         );
@@ -230,8 +244,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       case "FigToWord":
         return StatefulBuilder(
           builder: (context, setState) {
-            // State to track failure
-
             return Container(
               height: 192.v,
               width: MediaQuery.of(context).size.width * 0.4,
@@ -252,6 +264,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       OptionWidget(
+                                         
                                         child: TextContainer(
                                           text:
                                               dtcontainer.getTextList()[index],
@@ -264,10 +277,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                         optionKey: GlobalKey(),
                                         tutorialOrder: index + 1,
                                       ),
-                                      SizedBox(
-                                          width:
-                                              10), // Adds gap between each OptionWidget
-                                      // Adds gap between each OptionWidget
+                                      SizedBox(width: 10),
                                     ],
                                   );
                                 })
@@ -277,8 +287,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                       ],
                     ),
                   )
-
-                  // Custom button with image at the bottom, change color on failure
                 ],
               ),
             );
@@ -286,28 +294,21 @@ class AuditoryScreenState extends State<IdentificationScreen> {
         );
 
       case "WordToFig":
-        debugPrint("entering in the word to fig section");
         return Container(
-            height: MediaQuery.of(context).size.height *
-                0.4, // Adjusting height dynamically
-            width: MediaQuery.of(context).size.width *
-                0.8, // Adjusting the width to fit better
+            height: MediaQuery.of(context).size.height * 0.4,
+            width: MediaQuery.of(context).size.width * 0.8,
             child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceEvenly, // Distribute space evenly
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 if (dtcontainer.getImageUrlList().length <= 4)
                   ...List.generate(dtcontainer.getImageUrlList().length,
                       (index) {
                     return Expanded(
-                      // Each item will take up available space based on the flex value
-                      flex:
-                          1, // Adjust the flex as needed to control the width ratio
+                      flex: 1,
                       child: Row(
                         children: [
                           Expanded(
-                            flex:
-                                2, // Adjust the flex value for the OptionWidget
+                            flex: 2,
                             child: OptionWidget(
                               child: ImageWidget(
                                 imagePath: dtcontainer.getImageUrlList()[index],
@@ -316,12 +317,11 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                 return dtcontainer.getCorrectOutput() ==
                                     dtcontainer.getImageUrlList()[index];
                               },
-                              optionKey: GlobalKey(), // Add this
-                              tutorialOrder: index + 1, // Add this
+                              optionKey: GlobalKey(),
+                              tutorialOrder: index + 1,
                             ),
                           ),
-                          SizedBox(
-                              width: 10), // Adds gap between each OptionWidget
+                          SizedBox(width: 10),
                         ],
                       ),
                     );

@@ -62,10 +62,7 @@ void main() async {
       analyticsService: analyticsService,
           ));
   });
-// final AnalyticsService analyticsService = AnalyticsService();
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await initializeFirebase();
-//   runApp(MyApp(analyticsService));
+
 }
 
 class MyApp extends StatelessWidget {

@@ -6,10 +6,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'dart:async';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
+import 'package:rive/rive.dart' as rive;
 
 // Global variables to manage tutorial state across instances
 AudioPlayer globalAudioPlayer = AudioPlayer();
-int currentGlobalTutorialStep = 0;
 bool isTutorialInProgress = false;
 
 class AudioWidget extends StatefulWidget {
@@ -55,21 +55,15 @@ class AudioWidgetState extends State<AudioWidget> {
 
     loadAudioLengths();
     _positionSubscription = _audioPlayer.positionStream.listen((position) {
-      if (_audioPlayer.duration != null && _audioPlayer.duration!.inSeconds > 0) {
+      if (_audioPlayer.duration != null &&
+          _audioPlayer.duration!.inSeconds > 0) {
         setState(() {
           progress = (completed + position.inSeconds.toDouble()) / totalLength;
         });
       }
     });
 
-    // Check if this widget should show its tutorial
-    if (widget.showTutorial && widget.tutorialIndex == currentGlobalTutorialStep) {
-      Future.delayed(Duration(milliseconds: 500), () {
-        if (!isTutorialInProgress && !hasShownTutorial) {
-          showTutorial();
-        }
-      });
-    }
+    showTutorial();
   }
 
   Future<void> loadAudioLengths() async {
@@ -121,40 +115,36 @@ class AudioWidgetState extends State<AudioWidget> {
 
   void showTutorial() {
     if (hasShownTutorial || isTutorialInProgress) return;
-    
+
     isTutorialInProgress = true;
-    
-    List<TargetFocus> targets = [
-      TargetFocus(
-        identify: "image_play_button_${widget.tutorialIndex}",
+    List<TargetFocus> targets = [];
+
+    for (int i = 0; i < widget.audioLinks.length; i++) {
+      targets.add(TargetFocus(
+        identify: "image_play_button_$i",
         keyTarget: widget.imagePlayButtonKey,
-        shape: ShapeLightFocus.RRect,
+        shape: ShapeLightFocus.Circle,
         contents: [
           TargetContent(
-            align: ContentAlign.right,
+            align: ContentAlign.ontop,
             child: Container(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    "Play Audio",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                  SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: rive.RiveAnimation.asset(
+                      'assets/rive/hand_click.riv',
                     ),
-                  ),
-                  Text(
-                    "Tap this button to play or pause the audio",
-                    style: TextStyle(color: Colors.white),
                   ),
                 ],
               ),
             ),
           ),
         ],
-      ),
-    ];
+      ));
+    }
 
     TutorialCoachMark(
       targets: targets,
@@ -164,15 +154,13 @@ class AudioWidgetState extends State<AudioWidget> {
         setState(() {
           hasShownTutorial = true;
           isTutorialInProgress = false;
-          currentGlobalTutorialStep++;
         });
-        widget.onTutorialComplete?.call();
+        widget.onTutorialComplete?.call(); // Trigger the callback here
       },
       onSkip: () {
         setState(() {
           hasShownTutorial = true;
           isTutorialInProgress = false;
-          currentGlobalTutorialStep++;
         });
         widget.onTutorialComplete?.call();
         return true;
