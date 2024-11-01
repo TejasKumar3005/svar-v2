@@ -28,6 +28,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   late AudioPlayer _player;
   late int leveltracker;
   VideoPlayerController? _videoPlayerController;
+  List<GlobalKey<OptionWidgetState>> optionKeys = [];
+  List<GlobalKey> imagePlayButtonKeys = [];
   ChewieController? _chewieController;
   OverlayEntry? _overlayEntry;
 
@@ -187,6 +189,19 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     switch (quizType) {
       case "ImageToAudio":
         int totalAudioTutorials = dtcontainer.getAudioList().length;
+
+        // Ensure keys are initialized
+        if (optionKeys.isEmpty) {
+          optionKeys = List.generate(
+            totalAudioTutorials,
+            (index) => GlobalKey<OptionWidgetState>(),
+          );
+          imagePlayButtonKeys = List.generate(
+            totalAudioTutorials,
+            (index) => GlobalKey(),
+          );
+        }
+
         return dtcontainer.getAudioList().length <= 4
             ? Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -197,9 +212,9 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                     children: [
                       ...List.generate(dtcontainer.getAudioList().length,
                           (index) {
-                        final GlobalKey imagePlayButtonKey = GlobalKey();
-                        final GlobalKey<OptionWidgetState> optionKey =
-                            GlobalKey<OptionWidgetState>();
+                        final imagePlayButtonKey = imagePlayButtonKeys[index];
+                        final optionKey = optionKeys[index];
+
                         return Expanded(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 5.0),
@@ -209,19 +224,21 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                 imagePlayButtonKey: imagePlayButtonKey,
                                 tutorialIndex: index + 1,
                                 onTutorialComplete: () {
-                                  completedAudioTutorials += 1;
-                                  if (completedAudioTutorials ==
-                                      totalAudioTutorials) {
-                                    areAudioTutorialsComplete = true;
-                                    // Trigger OptionWidget tutorials
-                                    for (var key in OptionWidget.optionKeys) {
-                                      final state = key.currentState
-                                          as OptionWidgetState?;
-                                      if (state != null) {
-                                        state.startTutorialIfAllowed();
+                                  setState(() {
+                                    completedAudioTutorials += 1;
+                                    if (completedAudioTutorials ==
+                                        totalAudioTutorials) {
+                                      areAudioTutorialsComplete = true;
+                                      // Trigger OptionWidget tutorials
+                                      for (var key in optionKeys) {
+                                        final state = key.currentState
+                                            as OptionWidgetState?;
+                                        if (state != null) {
+                                          state.startTutorialIfAllowed();
+                                        }
                                       }
                                     }
-                                  }
+                                  });
                                 },
                               ),
                               isCorrect: () =>
@@ -230,7 +247,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                               optionKey: optionKey,
                               tutorialOrder: index + 1,
                               areAudioTutorialsComplete:
-                                  areAudioTutorialsComplete, // Pass the flag
+                                  areAudioTutorialsComplete,
                             ),
                           ),
                         );
@@ -264,7 +281,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       OptionWidget(
-                                         
                                         child: TextContainer(
                                           text:
                                               dtcontainer.getTextList()[index],

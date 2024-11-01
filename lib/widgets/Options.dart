@@ -8,27 +8,23 @@ import 'package:rive/rive.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
 
 class OptionWidget extends StatefulWidget {
-  static List<GlobalKey<OptionWidgetState>> optionKeys = [];
   final Widget child;
   final bool Function() isCorrect;
   final GlobalKey<OptionWidgetState> optionKey;
   final int tutorialOrder;
-  final bool areAudioTutorialsComplete; // Add this
+  final bool areAudioTutorialsComplete;
 
   OptionWidget({
     required this.child,
     required this.isCorrect,
     required this.optionKey,
     required this.tutorialOrder,
-    this.areAudioTutorialsComplete = false, // Add this
-  }) : super(key: optionKey) {
-    optionKeys.add(optionKey);
-  }
+    this.areAudioTutorialsComplete = true,
+  }) : super(key: optionKey);
 
   @override
   OptionWidgetState createState() => OptionWidgetState();
 }
-
 
 class OptionWidgetState extends State<OptionWidget> {
   bool _isGlowing = false;
@@ -43,6 +39,14 @@ class OptionWidgetState extends State<OptionWidget> {
     if (widget.tutorialOrder == 1) {
       Future.delayed(Duration.zero);
       _initTutorial();
+    }
+  }
+
+  void didUpdateWidget(covariant OptionWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.areAudioTutorialsComplete &&
+        !oldWidget.areAudioTutorialsComplete) {
+      startTutorialIfAllowed();
     }
   }
 
@@ -64,32 +68,29 @@ class OptionWidgetState extends State<OptionWidget> {
     );
   }
 
-  // Create tutorial targets based on the tutorial order of each widget
   List<TargetFocus> _createTargets() {
     List<TargetFocus> targets = [];
-    
-    // Create targets for all widgets in order
-    for (int i = 0; i < OptionWidget.optionKeys.length; i++) {
-      targets.add(
-        TargetFocus(
-          identify: "tutorial_step_${i + 1}",
-          keyTarget: OptionWidget.optionKeys[i],
-          contents: [
-            TargetContent(
-              align: ContentAlign.ontop,
-              builder: (context, controller) {
-                return _buildTutorialContent(
-                  _getTutorialMessage(i + 1),
-                  isCorrect: false,
-                );
-              },
-            ),
-          ],
-        ),
-      );
-    }
 
-    // Add correct answer target at the end
+    // Target for the current option
+    targets.add(
+      TargetFocus(
+        identify: "tutorial_step_${widget.tutorialOrder}",
+        keyTarget: widget.optionKey,
+        contents: [
+          TargetContent(
+            align: ContentAlign.ontop,
+            builder: (context, controller) {
+              return _buildTutorialContent(
+                _getTutorialMessage(widget.tutorialOrder),
+                isCorrect: false,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+    // If this is the correct option, add the correct answer message
     if (widget.isCorrect.call()) {
       targets.add(
         TargetFocus(
@@ -133,21 +134,21 @@ class OptionWidgetState extends State<OptionWidget> {
       width: MediaQuery.of(context).size.width * 0.8,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center, 
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
             height: 50,
             width: 50,
-            child: RiveAnimation.asset( 
-                   'assets/rive/hand_click.riv',
-             fit: BoxFit.contain,
+            child: RiveAnimation.asset(
+              'assets/rive/hand_click.riv',
+              fit: BoxFit.contain,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             text,
-            textAlign: TextAlign.center, 
+            textAlign: TextAlign.center,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -205,7 +206,7 @@ class OptionWidgetState extends State<OptionWidget> {
         boxShadow: _isGlowing
             ? [
                 BoxShadow(
-                  color: Color.fromARGB(255, 255, 0, 0).withOpacity(0.6), 
+                  color: Color.fromARGB(255, 255, 0, 0).withOpacity(0.6),
                   spreadRadius: 8,
                   blurRadius: 5,
                 ),
@@ -218,7 +219,6 @@ class OptionWidgetState extends State<OptionWidget> {
 
   @override
   void dispose() {
-    OptionWidget.optionKeys.remove(widget.optionKey);
     super.dispose();
   }
 }
@@ -238,6 +238,6 @@ class ClickProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {
-    return true;  // or false depending on your needs
+    return true; // or false depending on your needs
   }
 }

@@ -150,6 +150,8 @@ class AudioWidgetState extends State<AudioWidget> {
       targets: targets,
       colorShadow: Colors.black,
       alignSkip: Alignment.bottomRight,
+      paddingFocus: 10,
+      opacityShadow: 0,
       onFinish: () {
         setState(() {
           hasShownTutorial = true;
