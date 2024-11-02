@@ -28,8 +28,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   late AudioPlayer _player;
   late int leveltracker;
   VideoPlayerController? _videoPlayerController;
-  List<GlobalKey<OptionWidgetState>> optionKeys = [];
-  List<GlobalKey> imagePlayButtonKeys = [];
+  Map<String, GlobalKey<OptionWidgetState>> optionKeys = {};
+  Map<String, GlobalKey> imagePlayButtonKeys = {};
   ChewieController? _chewieController;
   OverlayEntry? _overlayEntry;
 
@@ -61,21 +61,17 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    // Move context-dependent initialization to didChangeDependencies
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     dynamic dtcontainer = obj[1] as dynamic;
     int totalAudioTutorials = dtcontainer.getAudioList().length;
 
+    // Initialize keys only if they haven't been created yet
     if (optionKeys.isEmpty) {
-      optionKeys = List.generate(
-        totalAudioTutorials,
-        (index) => GlobalKey<OptionWidgetState>(),
-      );
-      imagePlayButtonKeys = List.generate(
-        totalAudioTutorials,
-        (index) => GlobalKey(),
-      );
+      for (int i = 0; i < totalAudioTutorials; i++) {
+        String keyId = 'option_$i';
+        optionKeys[keyId] = GlobalKey<OptionWidgetState>();
+        imagePlayButtonKeys[keyId] = GlobalKey();
+      }
     }
   }
 
@@ -221,17 +217,14 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                     children: [
                       ...List.generate(dtcontainer.getAudioList().length,
                           (index) {
-                        final imagePlayButtonKey = imagePlayButtonKeys[index];
-                        final optionKey = optionKeys[index];
-                        print(optionKey);
-                        print(imagePlayButtonKey);
+                        String keyId = 'option_$index';
                         return Expanded(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 5.0),
                             child: OptionWidget(
                               child: AudioWidget(
                                 audioLinks: [dtcontainer.getAudioList()[index]],
-                                imagePlayButtonKey: imagePlayButtonKey,
+                                imagePlayButtonKey: imagePlayButtonKeys[keyId]!,
                                 tutorialIndex: index + 1,
                                 onTutorialComplete: () {
                                   setState(() {
@@ -239,13 +232,12 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                     if (completedAudioTutorials ==
                                         totalAudioTutorials) {
                                       areAudioTutorialsComplete = true;
-                                      // Trigger OptionWidget tutorials
-                                      for (var key in optionKeys) {
+                                      optionKeys.forEach((_, key) {
                                         final state = key.currentState;
                                         if (state != null) {
                                           state.startTutorialIfAllowed();
                                         }
-                                      }
+                                      });
                                     }
                                   });
                                 },
@@ -253,7 +245,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                               isCorrect: () =>
                                   dtcontainer.getCorrectOutput() ==
                                   dtcontainer.getAudioList()[index],
-                              optionKey: optionKey,
+                              optionKey: optionKeys[keyId]!,
                               tutorialOrder: index + 1,
                               areAudioTutorialsComplete:
                                   areAudioTutorialsComplete,
@@ -266,7 +258,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                 ),
               )
             : SizedBox();
-
       case "FigToWord":
         return StatefulBuilder(
           builder: (context, setState) {
