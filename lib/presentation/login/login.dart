@@ -112,16 +112,17 @@ class LoginScreenState extends State<LoginScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-
                               GestureDetector(
                                 onTap: () {
-                                    AnalyticsService().logEvent("button_pressed", {
-        "button_type": "forgot_password",
-          
-      });
-                                  showDialog(context: context, builder: (context) {
-                                    return ForgotPasswordDialog();
+                                  AnalyticsService()
+                                      .logEvent("button_pressed", {
+                                    "button_type": "forgot_password",
                                   });
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return ForgotPasswordDialog();
+                                      });
                                 },
                                 child: Text("Forgot Password?".tr,
                                     style: TextStyle(
@@ -132,10 +133,11 @@ class LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                           GestureDetector(
-                            onTap: () async{
+                            onTap: () async {
                               if (_formKey.currentState!.validate() &&
                                   !provider.loading) {
-                                await    AnalyticsService().logSignIn(provider.emailController.text);
+                                await AnalyticsService()
+                                    .logSignIn(provider.emailController.text);
                                 LoginFormMethods methods =
                                     LoginFormMethods(context: context);
                                 methods.login();
@@ -143,8 +145,9 @@ class LoginScreenState extends State<LoginScreen> {
                             },
                             child: CustomImageView(
                               imagePath: ImageConstant.imgLoginBTn,
-                              width: screenWidth * 0.7, 
-                              height: screenHeight * 0.08, // Adjusted proportionally
+                              width: screenWidth * 0.7,
+                              height: screenHeight *
+                                  0.08, // Adjusted proportionally
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -158,7 +161,8 @@ class LoginScreenState extends State<LoginScreen> {
                       child: Center(
                         child: Container(
                           width: screenWidth * 0.9, // Adjusted proportionally
-                          height: screenHeight * 0.9, // Increased height proportion
+                          height:
+                              screenHeight * 0.9, // Increased height proportion
                           child: RiveAnimation.asset(
                             'assets/rive/mascot-rig-final.riv', // Update with your Rive file
                             fit: BoxFit.contain,

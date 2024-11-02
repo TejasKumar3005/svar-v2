@@ -53,8 +53,30 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       DeviceOrientation.landscapeRight,
     ]);
 
+    // Initialize _player and leveltracker in initState
     _player = AudioPlayer();
     leveltracker = 0;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Move context-dependent initialization to didChangeDependencies
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    dynamic dtcontainer = obj[1] as dynamic;
+    int totalAudioTutorials = dtcontainer.getAudioList().length;
+
+    if (optionKeys.isEmpty) {
+      optionKeys = List.generate(
+        totalAudioTutorials,
+        (index) => GlobalKey<OptionWidgetState>(),
+      );
+      imagePlayButtonKeys = List.generate(
+        totalAudioTutorials,
+        (index) => GlobalKey(),
+      );
+    }
   }
 
   int sel = 0;
@@ -189,19 +211,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     switch (quizType) {
       case "ImageToAudio":
         int totalAudioTutorials = dtcontainer.getAudioList().length;
-
-        // Ensure keys are initialized
-        if (optionKeys.isEmpty) {
-          optionKeys = List.generate(
-            totalAudioTutorials,
-            (index) => GlobalKey<OptionWidgetState>(),
-          );
-          imagePlayButtonKeys = List.generate(
-            totalAudioTutorials,
-            (index) => GlobalKey(),
-          );
-        }
-
         return dtcontainer.getAudioList().length <= 4
             ? Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -214,7 +223,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                           (index) {
                         final imagePlayButtonKey = imagePlayButtonKeys[index];
                         final optionKey = optionKeys[index];
-
+                        print(optionKey);
+                        print(imagePlayButtonKey);
                         return Expanded(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 5.0),
@@ -231,8 +241,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                       areAudioTutorialsComplete = true;
                                       // Trigger OptionWidget tutorials
                                       for (var key in optionKeys) {
-                                        final state = key.currentState
-                                            as OptionWidgetState?;
+                                        final state = key.currentState;
                                         if (state != null) {
                                           state.startTutorialIfAllowed();
                                         }
