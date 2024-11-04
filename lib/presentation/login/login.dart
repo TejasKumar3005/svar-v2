@@ -147,21 +147,21 @@ class LoginScreenState extends State<LoginScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: screenHeight * 0.05, // Adjusted proportionally
-                    ),
-                    Flexible(
-                      child: Center(
-                        child: Container(
-                          width: screenWidth * 0.9, // Adjusted proportionally
-                          height: screenHeight * 0.9, // Increased height proportion
-                          child: RiveAnimation.asset(
-                            'assets/rive/mascot-rig-final.riv', // Update with your Rive file
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // SizedBox(
+                    //   height: screenHeight * 0.05, // Adjusted proportionally
+                    // ),
+                    // Flexible(
+                    //   child: Center(
+                    //     child: Container(
+                    //       width: screenWidth * 0.9, // Adjusted proportionally
+                    //       height: screenHeight * 0.9, // Increased height proportion
+                    //       child: RiveAnimation.asset(
+                    //         'assets/rive/mascot-rig-final.riv', // Update with your Rive file
+                    //         fit: BoxFit.contain,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
