@@ -12,7 +12,7 @@ import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
-import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
+import 'package:svar_new/presentation/identification_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';

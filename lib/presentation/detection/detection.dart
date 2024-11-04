@@ -6,7 +6,7 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
 import 'package:svar_new/database/userController.dart';
-import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
+import 'package:svar_new/presentation/identification_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/discrimination/customthumb.dart';
 import 'package:svar_new/presentation/phoneme_level_one/video_player_screen.dart';
