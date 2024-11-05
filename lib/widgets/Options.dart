@@ -73,7 +73,7 @@ class _OptionWidgetState extends State<OptionWidget> {
           keyTarget: OptionWidget.optionKeys[i],
           contents: [
             TargetContent(
-              align: ContentAlign.ontop,
+              align: ContentAlign.onside,
               builder: (context, controller) {
                 return _buildTutorialContent(
                   _getTutorialMessage(i + 1),
@@ -137,9 +137,7 @@ class _OptionWidgetState extends State<OptionWidget> {
             height: 50,
             width: 50,
             child: RiveAnimation.asset(
-              isCorrect
-                  ? 'assets/rive/finger.riv'
-                  : 'assets/rive/swipe_animations.riv',
+                 'assets/rive/hand_click.riv',
              fit: BoxFit.contain,
             ),
           ),

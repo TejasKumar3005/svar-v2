@@ -176,38 +176,36 @@ class TutorialCoachMarkWidgetState extends State<TutorialCoachMarkWidget>
     double? bottom;
     double? left;
     double? right;
-children = currentTarget!.contents!.map<Widget>((i) {
+    children = currentTarget!.contents!.map<Widget>((i) {
+      //   final GlobalKey _containerKey = GlobalKey();
+      //       WidgetsBinding.instance.addPostFrameCallback((_) {
+      //   showDialog(
+      //     context: context,
+      //     builder: (context) {
+      //       return Offstage(
+      //         child: Builder(
+      //           builder: (context) {
+      //             // Wrap Column with Container and assign the GlobalKey
+      //             return Container(
+      //               key: _containerKey,  // Assign the GlobalKey here
+      //               child: i.child,
+      //             );
+      //           },
+      //         ),
+      //       );
+      //     },
+      //   );
 
-    //   final GlobalKey _containerKey = GlobalKey();  
-    //       WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   showDialog(
-    //     context: context,
-    //     builder: (context) {
-    //       return Offstage(
-    //         child: Builder(
-    //           builder: (context) {
-    //             // Wrap Column with Container and assign the GlobalKey
-    //             return Container(
-    //               key: _containerKey,  // Assign the GlobalKey here
-    //               child: i.child,
-    //             );
-    //           },
-    //         ),
-    //       );
-    //     },
-    //   );
+      //   // Access the RenderBox size from the Container's GlobalKey
+      //   final RenderBox? renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox?;
+      //   if (renderBox != null) {
+      //     final size = renderBox.size;
+      //     print("Offscreen Column (in Container) width: ${size.width}, height: ${size.height}");
 
-    //   // Access the RenderBox size from the Container's GlobalKey
-    //   final RenderBox? renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox?;
-    //   if (renderBox != null) {
-    //     final size = renderBox.size;
-    //     print("Offscreen Column (in Container) width: ${size.width}, height: ${size.height}");
-
-    //     // After getting the size, dismiss the dialog
-    //     Navigator.of(context).pop();  // Dismiss the widget after size is calculated
-    //   }
-    // });
-
+      //     // After getting the size, dismiss the dialog
+      //     Navigator.of(context).pop();  // Dismiss the widget after size is calculated
+      //   }
+      // });
 
       switch (i.align) {
         case ContentAlign.bottom:
@@ -238,21 +236,30 @@ children = currentTarget!.contents!.map<Widget>((i) {
         case ContentAlign.right:
           {
             left = positioned.dx + haloWidth;
-            top = MediaQuery.of(context).size.height /2;//positioned.dy;// - target!.size.height / 2 - haloHeight;
+            top = MediaQuery.of(context).size.height /
+                2; //positioned.dy;// - target!.size.height / 2 - haloHeight;
             bottom = null;
             weight = MediaQuery.of(context).size.width - left!;
-
           }
           break;
         case ContentAlign.ontop:
           {
             weight = target!.size.width;
-            left = positioned.dx - (target.size.width)/2;
+            left = positioned.dx - (target.size.width) / 2;
             top = positioned.dy;
             bottom = null;
           }
           break;
-          
+
+        case ContentAlign.onside:
+          {
+            weight = target!.size.width; // Adjust width as needed, or remove if unnecessary.
+            left = positioned.dx- (target.size.width)*0.86; // Shift left as required
+            top = positioned.dy ;
+            bottom =
+                null; // Ensure bottom is null so it doesn’t affect top positioning.
+          }
+          break;
         case ContentAlign.custom:
           {
             left = i.customPosition!.left;

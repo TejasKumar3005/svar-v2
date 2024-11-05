@@ -1,13 +1,27 @@
-import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// identification_provider.dart
+
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../data/models/levelManagementModel/visual.dart';
 
+class IdentificationProvider extends ChangeNotifier {
+  bool _isTutorialActive = false;
 
-class IdentificationProvider
-    extends ChangeNotifier {
+  bool get isTutorialActive => _isTutorialActive;
 
+  void startTutorial() {
+    if (!_isTutorialActive) {
+      _isTutorialActive = true;
+      notifyListeners();
+    }
+  }
+
+  void stopTutorial() {
+    if (_isTutorialActive) {
+      _isTutorialActive = false;
+      notifyListeners();
+    }
+  }
 
   Future<Map<String, dynamic>?> fetchDocument(String docname) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -19,7 +33,8 @@ class IdentificationProvider
           await firestore.collection('Level Management').doc(document).get();
 
       if (doc.exists) {
-        List<Map<String, dynamic>> data = doc.get('data');
+        List<Map<String, dynamic>> data =
+            List<Map<String, dynamic>>.from(doc.get('data'));
         Map<String, dynamic> da = data[0];
         debugPrint('data fetched is  $da ');
         return data[0];
@@ -27,11 +42,10 @@ class IdentificationProvider
         return null;
       }
     } catch (e) {
+      debugPrint('Error fetching document: $e');
       return null;
     }
   }
-
-
 
   int sel = 0;
 
@@ -47,28 +61,34 @@ class IdentificationProvider
     notifyListeners();
   }
 
-  // there will be three conditions - VOICE , FIG_TO_WORD , WORD_TO_FIG
+  // There will be three conditions - VOICE, FIG_TO_WORD, WORD_TO_FIG
   Future<dynamic> getScreeValue(String type) async {
     if (type == "VOICE") {
       // getting data from database
       // for now it is custom
       Map<String, dynamic>? json;
       await fetchDocument("ImageToAudio").then((value) => {json = value});
-      debugPrint('response is $json.toString() 70');
-      ImageToAudio image_to_audio = ImageToAudio.fromJson(json!);
-      return image_to_audio;
+      debugPrint('response is ${json.toString()} 70');
+      if (json != null) {
+        ImageToAudio image_to_audio = ImageToAudio.fromJson(json!);
+        return image_to_audio;
+      }
     } else if (type == "WORD_TO_FIG") {
       Map<String, dynamic>? json;
       await fetchDocument("WordToFig").then((value) => {json = value});
-      debugPrint('response is $json.toString() 79');
-      WordToFiG word_to_fig = WordToFiG.fromJson(json!);
-      return word_to_fig;
+      debugPrint('response is ${json.toString()} 79');
+      if (json != null) {
+        WordToFiG word_to_fig = WordToFiG.fromJson(json!);
+        return word_to_fig;
+      }
     } else if (type == "FIG_TO_WORD") {
       Map<String, dynamic>? json;
       await fetchDocument("FigToWord").then((value) => {json = value});
-      debugPrint('response is $json.toString() 91');
-      FigToWord fig_to_word = FigToWord.fromJson(json!);
-      return fig_to_word;
+      debugPrint('response is ${json.toString()} 91');
+      if (json != null) {
+        FigToWord fig_to_word = FigToWord.fromJson(json!);
+        return fig_to_word;
+      }
     }
     return null;
   }

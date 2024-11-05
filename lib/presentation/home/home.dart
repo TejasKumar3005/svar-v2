@@ -308,7 +308,7 @@ class HomeScreenState extends State<HomeScreen> {
         keyTarget: keyCarouselItem0,
         contents: [
           TargetContent(
-            align: ContentAlign.ontop,
+            align: ContentAlign.right,
             child: const Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,7 +331,7 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           ),
           TargetContent(
-              align: ContentAlign.ontop,
+              align: ContentAlign.right,
               child: const Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,7 +362,7 @@ class HomeScreenState extends State<HomeScreen> {
         keyTarget: keyCarouselItem1,
         contents: [
           TargetContent(
-            align: ContentAlign.ontop,
+            align: ContentAlign.right,
             child: const Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,7 +385,7 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           ),
           TargetContent(
-              align: ContentAlign.ontop,
+              align: ContentAlign.right,
               child: const Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -547,7 +547,7 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           ),
           TargetContent(
-              align: ContentAlign.ontop,
+              align: ContentAlign.right,
               child: const Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -569,7 +569,7 @@ class HomeScreenState extends State<HomeScreen> {
                 ],
               ))
         ],
-        shape: ShapeLightFocus.RRect,
+        shape: ShapeLightFocus.Circle,
       ),
     );
     return targets;
