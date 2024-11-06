@@ -15,7 +15,7 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
-
+import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   final String videoUrl;
@@ -43,7 +43,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   }
 
   Future<void> _initializePlayer() async {
-    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+    _videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
 
     try {
       await _videoPlayerController.initialize();
@@ -90,7 +91,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   }
 }
 
-
 class SimpleVideoPlayer extends StatefulWidget {
   final String videoUrl;
   final bool isMuted;
@@ -115,38 +115,36 @@ class _SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
     _initializePlayer();
   }
 
-// Inside SimpleVideoPlayer
-Future<void> _initializePlayer() async {
-  _controller = VideoPlayerController.network(
-      widget.videoUrl,
+  // Inside SimpleVideoPlayer
+  Future<void> _initializePlayer() async {
+    _controller = VideoPlayerController.networkUrl(
+      Uri.parse(widget.videoUrl),
       videoPlayerOptions: VideoPlayerOptions(
         mixWithOthers: true, // Allows audio mixing with other audio streams
       ),
     );
 
+    try {
+      await _controller.initialize();
+      _controller.setVolume(widget.isMuted ? 0.0 : 1.0);
 
-  try {
-    await _controller.initialize();
-    _controller.setVolume(widget.isMuted ? 0.0 : 1.0);
+      _controller.play();
 
-    _controller.play();
+      _controller.addListener(() {
+        if (_controller.value.isPlaying) {
+          print("${widget.videoUrl} is playing");
+        } else {
+          print("${widget.videoUrl} is paused");
+        }
+      });
 
-    _controller.addListener(() {
-      if (_controller.value.isPlaying) {
-        print("${widget.videoUrl} is playing");
-      } else {
-        print("${widget.videoUrl} is paused");
-      }
-    });
-
-    setState(() {
-      _isInitialized = true;
-    });
-  } catch (e) {
-    print("Error initializing video: $e");
+      setState(() {
+        _isInitialized = true;
+      });
+    } catch (e) {
+      print("Error initializing video: $e");
+    }
   }
-}
-
 
   @override
   void dispose() {
@@ -165,8 +163,6 @@ Future<void> _initializePlayer() async {
   }
 }
 
-
-
 class Detection extends StatefulWidget {
   const Detection({Key? key}) : super(key: key);
 
@@ -179,7 +175,8 @@ class Detection extends StatefulWidget {
 }
 
 class _DetectionState extends State<Detection> {
-  final GlobalKey<AudioWidgetState> _audioWidgetKey = GlobalKey<AudioWidgetState>();
+  final GlobalKey<AudioWidgetState> _audioWidgetKey =
+      GlobalKey<AudioWidgetState>();
   String quizType = "video";
   int selectedOption = -1;
   PlayAudio playAudio = PlayAudio();
@@ -187,6 +184,9 @@ class _DetectionState extends State<Detection> {
   Timer? volumeTimer;
   double currentProgress = 0.0;
   double totalDuration = 0.0;
+
+  // **Step 1: Define a list to hold all GlobalKeys from OptionWidgets**
+  final List<GlobalKey> optionKeys = [];
 
   @override
   void initState() {
@@ -211,6 +211,7 @@ class _DetectionState extends State<Detection> {
   void dispose() {
     // Dispose of the timer if it exists
     volumeTimer?.cancel();
+
     super.dispose();
   }
 
@@ -249,22 +250,36 @@ class _DetectionState extends State<Detection> {
     switch (quizType) {
       case "HalfMuted":
         return HalfMutedWidget(
-          key: _audioWidgetKey,
           audioLinks:
-              (ModalRoute.of(context)?.settings.arguments as List<dynamic>)[1].getVideoUrls(),
+              (ModalRoute.of(context)?.settings.arguments as List<dynamic>)[1]
+                  .getVideoUrls(),
+          // **Step 2: Pass the optionKeys list to the child widget**
+          optionKeys: optionKeys,
         );
       case "MutedUnmuted":
-        return MutedUnmuted(context);
+        return MutedUnmuted(
+          context,
+          // **Step 2: Pass the optionKeys list to the child widget**
+          optionKeys: optionKeys,
+        );
       default:
         return Container();
     }
   }
 
-  Widget MutedUnmuted(BuildContext context) {
+  Widget MutedUnmuted(BuildContext context,
+      {required List<GlobalKey> optionKeys}) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     dynamic dtcontainer = obj[1] as dynamic;
     List<String> videoUrls = dtcontainer.getVideoUrls();
     int mutedVideoIndex = dtcontainer.getMuted();
+
+    // **Step 3: Initialize and assign keys to OptionWidgets**
+    // Ensure that the optionKeys list has enough keys
+    // Here, we need two keys for two videos
+    while (optionKeys.length < 2) {
+      optionKeys.add(GlobalKey());
+    }
 
     return Column(
       children: [
@@ -309,7 +324,9 @@ class _DetectionState extends State<Detection> {
                 ),
               ),
             ),
-            SizedBox(width: 20), // Add spacing between the two Expanded containers if needed
+            SizedBox(
+                width:
+                    20), // Add spacing between the two Expanded containers if needed
             Expanded(
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.40,
@@ -336,38 +353,44 @@ class _DetectionState extends State<Detection> {
           children: [
             Expanded(
               child: Container(
-                width: MediaQuery.of(context).size.width * 0.40, // Dynamically set width
+                width: MediaQuery.of(context).size.width *
+                    0.40, // Dynamically set width
                 child: OptionWidget(
                   child: OptionButton(
                     type: ButtonType.Video1,
                     onPressed: () {
-                      
+                      // Handle button press
                     },
                   ),
                   isCorrect: () {
                     return (obj[1] as dynamic).getMuted() == 1;
                   },
-                  optionKey: GlobalKey(),
-                tutorialOrder: 1,
+                  // **Assign the first key from the list**
+                  optionKey: optionKeys[0],
+                  tutorialOrder: 1,
+                  align: ContentAlign.ontop,
                 ),
               ),
             ),
             SizedBox(width: 20), // Add spacing between buttons if needed
             Expanded(
               child: Container(
-                width: MediaQuery.of(context).size.width * 0.40, // Dynamically set width
+                width: MediaQuery.of(context).size.width *
+                    0.40, // Dynamically set width
                 child: OptionWidget(
                   child: OptionButton(
                     type: ButtonType.Video2,
                     onPressed: () {
-                      
+                      // Handle button press
                     },
                   ),
                   isCorrect: () {
                     return (obj[1] as dynamic).getMuted() == 0;
                   },
-                  optionKey: GlobalKey(),
-                tutorialOrder: 2,
+                  // **Assign the second key from the list**
+                  optionKey: optionKeys[1],
+                  tutorialOrder: 2,
+                  align: ContentAlign.ontop,
                 ),
               ),
             ),
@@ -376,16 +399,86 @@ class _DetectionState extends State<Detection> {
       ],
     );
   }
-}
 
+  Widget HalfMutedWidget({
+    required List<GlobalKey> optionKeys,
+    required List<String> audioLinks,
+  }) {
+    // **Step 3: Initialize and assign keys to OptionWidgets**
+    // Assuming you have one OptionWidget in HalfMutedWidget
+    while (optionKeys.length < 3) {
+      optionKeys.add(GlobalKey());
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        SizedBox(
+          height: 40.v,
+        ),
+        OptionWidget(
+          child: AudioWidget(
+            audioLinks: audioLinks,
+          ),
+          isCorrect: () => false,
+          optionKey: optionKeys[0], // Apply key
+          tutorialOrder: 1,
+          align: ContentAlign.onside,
+        ),
+        SizedBox(
+          height: 20.v,
+        ),
+        OptionWidget(
+          child: OptionButton(
+            type: ButtonType.Stop,
+            onPressed: () {},
+          ),
+          isCorrect: () {
+            if (_audioWidgetKey.currentState == null) return false;
+
+            List<double> total_length = _audioWidgetKey.currentState!.lengths;
+            if (total_length.isEmpty) {
+              // Ensure there is at least 1 element in the list (the audio length)
+              print("Error: total_length is empty.");
+              return false;
+            }
+
+            double audioLength = total_length[
+                0]; // Since there's only one length, take the first element
+            double ans =
+                0.5; // Since you're muting the first half, the threshold is 0.5
+
+            double currentProgress = _audioWidgetKey.currentState!.progress;
+            print("Current progress is $currentProgress");
+
+            const double tolerance = 0.4;
+            bool condition =
+                currentProgress > ans && currentProgress < ans + tolerance;
+            print("Condition result: $condition");
+
+            return condition;
+          },
+          // **Assign the third key from the list**
+          optionKey: optionKeys[1],
+          tutorialOrder: 2,
+          align: ContentAlign.ontop,
+        ),
+      ],
+    );
+  }
+
+}
 
 
 class HalfMutedWidget extends StatefulWidget {
   final List<String> audioLinks;
+  final List<GlobalKey> optionKeys;
 
   const HalfMutedWidget({
     Key? key,
     required this.audioLinks,
+    required this.optionKeys,
   }) : super(key: key);
 
   @override
@@ -435,11 +528,14 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
         SizedBox(
           height: 40.v,
         ),
-        AudioWidget(
-        
-          audioLinks: widget.audioLinks,
-          imagePlayButtonKey: GlobalKey(),
-          tutorialIndex: 1,
+        OptionWidget(
+          child: AudioWidget(
+            audioLinks: widget.audioLinks,
+          ),
+          isCorrect: () => false,
+          optionKey: widget.optionKeys[0], // Apply key
+          tutorialOrder: 1,
+          align: ContentAlign.onside,
         ),
         SizedBox(
           height: 20.v,
@@ -470,7 +566,6 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
             double currentProgress = _childKey.currentState!.progress;
             print("Current progress is $currentProgress");
 
-
             const double tolerance = 0.4;
             bool condition =
                 currentProgress > ans && currentProgress < ans + tolerance;
@@ -478,8 +573,10 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
             return condition;
           },
-          optionKey: GlobalKey(),
-                tutorialOrder: 2,
+          // **Assign the third key from the list (index 2)**
+          optionKey: widget.optionKeys[1],
+          tutorialOrder: 2,
+          align: ContentAlign.ontop,
         ),
       ],
     );

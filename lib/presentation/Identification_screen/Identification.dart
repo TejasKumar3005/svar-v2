@@ -211,18 +211,14 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                   child: Column(
                     children: [
                       ...List.generate(dtcontainer.getAudioList().length, (index) {
-                        final GlobalKey optionKey = GlobalKey();
-                        // Add the key to the list
+                        final GlobalKey optionKey = GlobalKey();       // Add the key to the list
                         keys.add(optionKey);
-
                         return Expanded(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 5.0),
                             child: OptionWidget(
                               child: AudioWidget(
                                 audioLinks: [dtcontainer.getAudioList()[index]],
-                                imagePlayButtonKey: GlobalKey(),
-                                tutorialIndex: index + 1,
                               ),
                               isCorrect: () =>
                                   dtcontainer.getCorrectOutput() ==

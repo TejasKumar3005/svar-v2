@@ -7,6 +7,7 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/Identification_screen/provider/identification_provider.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/Options.dart';
+import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
 
 class AudiotoimageScreen extends StatefulWidget {
   final dynamic dtcontainer;
@@ -31,12 +32,11 @@ class AudiotoimageScreen extends StatefulWidget {
 
 class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   late AudioPlayer _player;
-
   late int leveltracker;
   int sel = 0;
   List<double> samples = [];
   OverlayEntry? _overlayEntry;
-  // Variable to store the correct answer
+  List<GlobalKey> keys = []; // Define the keys list
 
   @override
   void initState() {
@@ -47,11 +47,8 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     ]);
     _player = AudioPlayer();
     leveltracker = 0;
-
     // Fetch correct answer from the database
   }
-
-  // Function to fetch the correct answer from the database
 
   @override
   void dispose() {
@@ -92,25 +89,23 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                         children: [
                           Center(
                             child: GestureDetector(
-                          
+                              child: OptionWidget(
                                 child: AudioWidget(
                                   audioLinks: widget.dtcontainer.getAudioUrl(),
-                                  imagePlayButtonKey: GlobalKey(),
-                                  tutorialIndex: 1,
                                 ),
-                        
+                                isCorrect: () => false,
+                                optionKey: _createAndAddKey(), // Apply key
+                                tutorialOrder: 1,
+                                align: ContentAlign.onside,
+                              ),
                             ),
                           ),
                           SizedBox(height: 50.v),
                           Center(
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment
-                                  .center, // Align Row's children to the center
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                if (widget.dtcontainer
-                                        .getImageUrlList()
-                                        .length <=
-                                    4)
+                                if (widget.dtcontainer.getImageUrlList().length <= 4)
                                   ...List.generate(
                                     widget.dtcontainer.getImageUrlList().length,
                                     (index) {
@@ -119,11 +114,8 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                           OptionWidget(
                                             child: GestureDetector(
                                               onTap: () {
-                                                if (widget.dtcontainer
-                                                        .getCorrectOutput() ==
-                                                    widget.dtcontainer
-                                                            .getImageUrlList()[
-                                                        index]) {
+                                                if (widget.dtcontainer.getCorrectOutput() ==
+                                                    widget.dtcontainer.getImageUrlList()[index]) {
                                                   AnalyticsService().logEvent(
                                                       "level_complete", {
                                                     "name": "Identification",
@@ -142,12 +134,12 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                                   widget.dtcontainer
                                                       .getImageUrlList()[index];
                                             },
-                                            optionKey: GlobalKey(),
+                                            optionKey: _createAndAddKey(), // Apply key
                                             tutorialOrder: index + 2,
+                                            align: ContentAlign.ontop,
                                           ),
                                           SizedBox(
-                                            width:
-                                                20, // Space between the widgets
+                                            width: 20,
                                           ),
                                         ],
                                       );
@@ -168,5 +160,12 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
         ),
       ),
     );
+  }
+
+  // Helper function to create a new GlobalKey and add it to the list
+  GlobalKey _createAndAddKey() {
+    final key = GlobalKey();
+    keys.add(key);
+    return key;
   }
 }

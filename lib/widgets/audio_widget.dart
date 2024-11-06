@@ -10,22 +10,13 @@ import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dar
 // Global variables to manage tutorial state across instances
 AudioPlayer globalAudioPlayer = AudioPlayer();
 int currentGlobalTutorialStep = 0;
-bool isTutorialInProgress = false;
 
 class AudioWidget extends StatefulWidget {
   final List<String> audioLinks;
-  final GlobalKey imagePlayButtonKey;
-  final int tutorialIndex;
-  final bool showTutorial;
-  final VoidCallback? onTutorialComplete;
 
   const AudioWidget({
     Key? key,
     required this.audioLinks,
-    required this.imagePlayButtonKey,
-    required this.tutorialIndex,
-    this.showTutorial = false,
-    this.onTutorialComplete,
   }) : super(key: key);
 
   @override
@@ -55,21 +46,13 @@ class AudioWidgetState extends State<AudioWidget> {
 
     loadAudioLengths();
     _positionSubscription = _audioPlayer.positionStream.listen((position) {
-      if (_audioPlayer.duration != null && _audioPlayer.duration!.inSeconds > 0) {
+      if (_audioPlayer.duration != null &&
+          _audioPlayer.duration!.inSeconds > 0) {
         setState(() {
           progress = (completed + position.inSeconds.toDouble()) / totalLength;
         });
       }
     });
-
-    // Check if this widget should show its tutorial
-    if (widget.showTutorial && widget.tutorialIndex == currentGlobalTutorialStep) {
-      Future.delayed(Duration(milliseconds: 500), () {
-        if (!isTutorialInProgress && !hasShownTutorial) {
-          showTutorial();
-        }
-      });
-    }
   }
 
   Future<void> loadAudioLengths() async {
@@ -119,67 +102,6 @@ class AudioWidgetState extends State<AudioWidget> {
     }
   }
 
-  void showTutorial() {
-    if (hasShownTutorial || isTutorialInProgress) return;
-    
-    isTutorialInProgress = true;
-    
-    List<TargetFocus> targets = [
-      TargetFocus(
-        identify: "image_play_button_${widget.tutorialIndex}",
-        keyTarget: widget.imagePlayButtonKey,
-        shape: ShapeLightFocus.RRect,
-        contents: [
-          TargetContent(
-            align: ContentAlign.right,
-            child: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "Play Audio",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "Tap this button to play or pause the audio",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    ];
-
-    TutorialCoachMark(
-      targets: targets,
-      colorShadow: Colors.black,
-      alignSkip: Alignment.bottomRight,
-      onFinish: () {
-        setState(() {
-          hasShownTutorial = true;
-          isTutorialInProgress = false;
-          currentGlobalTutorialStep++;
-        });
-        widget.onTutorialComplete?.call();
-      },
-      onSkip: () {
-        setState(() {
-          hasShownTutorial = true;
-          isTutorialInProgress = false;
-          currentGlobalTutorialStep++;
-        });
-        widget.onTutorialComplete?.call();
-        return true;
-      },
-    ).show(context: context);
-  }
-
   @override
   void dispose() {
     _positionSubscription?.cancel();
@@ -211,7 +133,6 @@ class AudioWidgetState extends State<AudioWidget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CustomButton(
-            key: widget.imagePlayButtonKey,
             type: ButtonType.ImagePlay,
             onPressed: () {
               if (_audioPlayer.playing) {

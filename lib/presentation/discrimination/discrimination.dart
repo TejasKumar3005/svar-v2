@@ -7,7 +7,6 @@ import 'package:chewie/chewie.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/analytics/analytics.dart';
-
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +20,7 @@ import 'package:svar_new/core/utils/playAudio.dart';
 import './customthumb.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
+import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
 
 class Discrimination extends StatefulWidget {
   const Discrimination({
@@ -48,18 +48,13 @@ class _DiscriminationState extends State<Discrimination> {
   double currentProgress = 0.0;
   List<double> total_length = [];
 
-  void getAudioProgress() {
-    setState(() {
-      currentProgress = _childKey.currentState!.progress;
-    });
-  }
+  // **Step 1: Define a list to hold all GlobalKeys from OptionWidgets**
+  final List<GlobalKey> optionKeys = [];
+
+  // **Optional: TutorialCoachMark instance**
 
   @override
   void dispose() {
-    // playTimer?.cancel(); // Cancel any ongoing timers
-    // _overlayEntry?.remove(); // Remove overlay entry if present
-    // playAudio.stopMusic();
-    // playAudio.dispose();
     super.dispose();
   }
 
@@ -70,6 +65,12 @@ class _DiscriminationState extends State<Discrimination> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+
+    // **Optional: Initialize Tutorial after a slight delay to ensure keys are assigned**
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Initialize tutorial if needed
+      // _showTutorial(); // Uncomment if implementing tutorials
+    });
   }
 
   int level = 0;
@@ -117,8 +118,8 @@ class _DiscriminationState extends State<Discrimination> {
                 child: Center(
                   child: Text(
                     type == "OddOne"
-                        ? ("Pick the odd One Out").toUpperCase()
-                        : ("SAME OR DIfferent?").toUpperCase(),
+                        ? ("Pick the Odd One Out").toUpperCase()
+                        : ("SAME OR DIFFERENT?").toUpperCase(),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -130,50 +131,57 @@ class _DiscriminationState extends State<Discrimination> {
             SizedBox(
               height: 20.v,
             ),
-            discriminationOptions(type, data,
-                dtcontainer), // Pass dtcontainer as an argument here
+            // **Pass the optionKeys list to the discriminationOptions method**
+            discriminationOptions(type, data, dtcontainer, optionKeys),
           ],
         ),
       ),
     );
   }
 
-  Widget discriminationOptions(
-      String type, Map<String, dynamic> d, dynamic dtcontainer) {
+  Widget discriminationOptions(String type, Map<String, dynamic> d,
+      dynamic dtcontainer, List<GlobalKey> optionKeys) {
     switch (type) {
       case "DiffSounds":
         var data = DiffSounds.fromJson(d);
-
-        return DiffSoundsW(data, dtcontainer);
+        return DiffSoundsW(data, dtcontainer, optionKeys);
       case "OddOne":
         var data = OddOne.fromJson(d);
-        return OddOneW(data, dtcontainer);
+        return OddOneW(data, dtcontainer, optionKeys);
       case "DiffHalf":
         var data = DiffHalf.fromJson(d);
-        return DiffHalfW(data, dtcontainer);
+        return DiffHalfW(data, dtcontainer, optionKeys);
       case "MaleFemale":
         var data = MaleFemale.fromJson(d);
-        return MaleFemaleW(data, dtcontainer);
+        return MaleFemaleW(data, dtcontainer, optionKeys);
       default:
         return Container();
     }
   }
 
-  Widget MaleFemaleW(MaleFemale maleFemale, dynamic dtcontainer) {
-    // print("MaleFemaleW ${dtcontainer.getVideoUrl()}");
-    print("MaleFemaleW ${dtcontainer}");
+  Widget MaleFemaleW(
+      MaleFemale maleFemale, dynamic dtcontainer, List<GlobalKey> optionKeys) {
+    // **Step 2: Assign keys from optionKeys list**
+    // Ensure the list has enough keys
+    while (optionKeys.length <= 3) {
+      optionKeys.add(GlobalKey());
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        AudioWidget(
-            audioLinks: dtcontainer.getAudioList(),
-            imagePlayButtonKey: GlobalKey(),
-            tutorialIndex: 1
-
-            // Use dtcontainer here
-            ),
+        OptionWidget(
+          child: AudioWidget(
+            audioLinks: dtcontainer.getAudioUrl(),
+          ),
+          isCorrect: () => false,
+          optionKey: optionKeys[0], // Apply key
+          tutorialOrder: 1,
+          align: ContentAlign.onside,
+           
+        ),
         SizedBox(
           height: 20.v,
         ),
@@ -186,8 +194,10 @@ class _DiscriminationState extends State<Discrimination> {
                 isCorrect: () {
                   return dtcontainer.getCorrectOutput() == "female";
                 },
-                optionKey: GlobalKey(),
+                // **Assign the first key from the list**
+                optionKey: optionKeys[1],
                 tutorialOrder: 2,
+                align: ContentAlign.ontop,
               ),
             ),
             Expanded(
@@ -196,8 +206,10 @@ class _DiscriminationState extends State<Discrimination> {
                 isCorrect: () {
                   return dtcontainer.getCorrectOutput() == "male";
                 },
-                optionKey: GlobalKey(),
-                tutorialOrder: 2,
+                // **Assign the second key from the list**
+                optionKey: optionKeys[2],
+                tutorialOrder: 3,
+                align: ContentAlign.ontop,
               ),
             ),
           ],
@@ -249,14 +261,26 @@ class _DiscriminationState extends State<Discrimination> {
     );
   }
 
-  Widget DiffHalfW(DiffHalf diffHalf, dynamic dtcontainer) {
+  Widget DiffHalfW(
+      DiffHalf diffHalf, dynamic dtcontainer, List<GlobalKey> optionKeys) {
+    // **Step 2: Assign keys from optionKeys list**
+    // Ensure the list has enough keys
+    while (optionKeys.length <= 2) {
+      optionKeys.add(GlobalKey());
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        AudioWidget(
-            audioLinks: dtcontainer.getAudioList(),
-            imagePlayButtonKey: GlobalKey(),
-            tutorialIndex: 1),
+        OptionWidget(
+          child: AudioWidget(
+            audioLinks: dtcontainer.getAudioUrl(),
+          ),
+          isCorrect: () => false,
+          optionKey: optionKeys[0], // Apply key
+          tutorialOrder: 1,
+          align: ContentAlign.onside,
+        ),
         SizedBox(
           height: 20.v,
         ),
@@ -274,14 +298,25 @@ class _DiscriminationState extends State<Discrimination> {
               return false;
             }
           },
-          optionKey: GlobalKey(),
-          tutorialOrder: 1,
+          // **Assign the third key from the list**
+          optionKey: optionKeys[1],
+          tutorialOrder: 2,
+          align: ContentAlign.ontop,
         ),
       ],
     );
   }
 
-  Widget DiffSoundsW(DiffSounds diffSounds, dynamic dtcontainer) {
+  Widget DiffSoundsW(
+      DiffSounds diffSounds, dynamic dtcontainer, List<GlobalKey> optionKeys) {
+    // **Determine the number of OptionWidgets needed**
+    int numberOfOptions = dtcontainer.getVideoUrls().length;
+
+    // **Ensure the optionKeys list has enough keys**
+    while (optionKeys.length < numberOfOptions) {
+      optionKeys.add(GlobalKey());
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -292,11 +327,19 @@ class _DiscriminationState extends State<Discrimination> {
               ...List.generate(dtcontainer.getVideoUrls().length, (index) {
                 return Row(
                   children: [
-                    AudioWidget(
-                        audioLinks: dtcontainer.getVideoUrls()[index],
-                        imagePlayButtonKey: GlobalKey(),
-                        tutorialIndex: 1),
-
+                    // **Assign keys from the list**
+                    OptionWidget(
+                      child: AudioWidget(
+                        audioLinks: [dtcontainer.getVideoUrls()[index]],
+                      ),
+                      isCorrect: () {
+                        return dtcontainer.getVideoUrls()[index] ==
+                            dtcontainer.getCorrectOutput();
+                      },
+                      optionKey: optionKeys[index],
+                      tutorialOrder: index + 1,
+                      align: ContentAlign.onside,
+                    ),
                     SizedBox(width: 20), // Adds gap between each OptionWidget
                   ],
                 );
@@ -311,53 +354,58 @@ class _DiscriminationState extends State<Discrimination> {
           children: [
             OptionWidget(
               child: OptionButton(
-                  type: ButtonType.Same,
-                  onPressed: () {
-                    var provider =
-                        Provider.of<UserDataProvider>(context, listen: false);
-                    if (dtcontainer.getSame()) {
-                      if (level >
-                          provider.userModel.toJson()["levelMap"]
-                              ["Discrimination"]!) {
-                        UserData(buildContext: context)
-                            .incrementLevelCount("Discrimination")
-                            .then((value) {});
-                      }
+                type: ButtonType.Same,
+                onPressed: () {
+                  var provider =
+                      Provider.of<UserDataProvider>(context, listen: false);
+                  if (dtcontainer.getSame()) {
+                    if (level >
+                        provider.userModel.toJson()["levelMap"]
+                            ["Discrimination"]!) {
+                      UserData(buildContext: context)
+                          .incrementLevelCount("Discrimination")
+                          .then((value) {});
                     }
-                  }),
+                  }
+                },
+              ),
               isCorrect: () {
                 return !dtcontainer.getSame();
               },
-              optionKey: GlobalKey(),
-              tutorialOrder: 1,
+              optionKey: optionKeys[numberOfOptions],
+              tutorialOrder: numberOfOptions + 1,
+              align: ContentAlign.ontop,
             ),
             SizedBox(
               width: 20.h,
             ),
             OptionWidget(
               child: OptionButton(
-                  type: ButtonType.Diff,
-                  onPressed: () {
-                    var provider =
-                        Provider.of<UserDataProvider>(context, listen: false);
-                    if (!dtcontainer.getSame()) {
-                      if (level >
-                          provider.userModel.toJson()["levelMap"]
-                              ["Discrimination"]!) {
-                        AnalyticsService().logEvent("level_complete",
-                            {"name": "Discrimination", "level": level});
+                type: ButtonType.Diff,
+                onPressed: () {
+                  var provider =
+                      Provider.of<UserDataProvider>(context, listen: false);
+                  if (!dtcontainer.getSame()) {
+                    if (level >
+                        provider.userModel.toJson()["levelMap"]
+                            ["Discrimination"]!) {
+                      AnalyticsService().logEvent("level_complete",
+                          {"name": "Discrimination", "level": level});
 
-                        UserData(buildContext: context)
-                            .incrementLevelCount("Discrimination")
-                            .then((value) {});
-                      }
+                      UserData(buildContext: context)
+                          .incrementLevelCount("Discrimination")
+                          .then((value) {});
                     }
-                  }),
+                  }
+                },
+              ),
               isCorrect: () {
                 return dtcontainer.getSame();
               },
-              optionKey: GlobalKey(),
-              tutorialOrder: 2,
+              // **Assign the next key from the list**
+              optionKey: optionKeys[numberOfOptions + 1],
+              tutorialOrder: numberOfOptions + 2,
+              align: ContentAlign.ontop,
             ),
           ],
         )
@@ -365,8 +413,16 @@ class _DiscriminationState extends State<Discrimination> {
     );
   }
 
-  Widget OddOneW(OddOne oddOne, dynamic dtcontainer) {
-    switch (oddOne.video_url.length) {
+  Widget OddOneW(
+      OddOne oddOne, dynamic dtcontainer, List<GlobalKey> optionKeys) {
+    int numberOfOptions = oddOne.video_url.length;
+
+    // **Ensure the optionKeys list has enough keys**
+    while (optionKeys.length < numberOfOptions) {
+      optionKeys.add(GlobalKey());
+    }
+
+    switch (numberOfOptions) {
       case 2:
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -381,30 +437,30 @@ class _DiscriminationState extends State<Discrimination> {
               children: [
                 OptionWidget(
                   child: AudioWidget(
-                      audioLinks: dtcontainer.getVideoUrls()[0],
-                      imagePlayButtonKey: GlobalKey(),
-                      tutorialIndex: 1),
+                    audioLinks: [dtcontainer.getVideoUrls()[0]],
+                  ),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
                   },
-                  optionKey: GlobalKey(),
+                  optionKey: optionKeys[0],
                   tutorialOrder: 1,
+                  align: ContentAlign.onside,
                 ),
                 SizedBox(
                   width: 20.h,
                 ),
                 OptionWidget(
                   child: AudioWidget(
-                      audioLinks: dtcontainer.getVideoUrls()[1],
-                      imagePlayButtonKey: GlobalKey(),
-                      tutorialIndex: 1),
+                    audioLinks: [dtcontainer.getVideoUrls()[1]],
+                  ),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
                   },
-                  optionKey: GlobalKey(),
+                  optionKey: optionKeys[1],
                   tutorialOrder: 2,
+                  align: ContentAlign.ontop,
                 ),
               ],
             ),
@@ -424,30 +480,30 @@ class _DiscriminationState extends State<Discrimination> {
               children: [
                 OptionWidget(
                   child: AudioWidget(
-                      audioLinks: dtcontainer.getVideoUrls()[0],
-                      imagePlayButtonKey: GlobalKey(),
-                      tutorialIndex: 1),
+                    audioLinks: [dtcontainer.getVideoUrls()[0]],
+                  ),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
                   },
-                  optionKey: GlobalKey(),
+                  optionKey: optionKeys[0],
                   tutorialOrder: 1,
+                  align: ContentAlign.onside,
                 ),
                 SizedBox(
                   width: 20.h,
                 ),
                 OptionWidget(
                   child: AudioWidget(
-                      audioLinks: dtcontainer.getVideoUrls()[1],
-                      imagePlayButtonKey: GlobalKey(),
-                      tutorialIndex: 1),
+                    audioLinks: [dtcontainer.getVideoUrls()[1]],
+                  ),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
                   },
-                  optionKey: GlobalKey(),
+                  optionKey: optionKeys[1],
                   tutorialOrder: 2,
+                  align: ContentAlign.onside,
                 ),
               ],
             ),
@@ -460,15 +516,15 @@ class _DiscriminationState extends State<Discrimination> {
               children: [
                 OptionWidget(
                   child: AudioWidget(
-                      audioLinks: dtcontainer.getVideoUrls()[2],
-                      imagePlayButtonKey: GlobalKey(),
-                      tutorialIndex: 1),
+                    audioLinks: [dtcontainer.getVideoUrls()[2]],
+                  ),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput();
                   },
-                  optionKey: GlobalKey(),
+                  optionKey: optionKeys[2],
                   tutorialOrder: 3,
+                  align: ContentAlign.onside,
                 ),
               ],
             )
@@ -488,30 +544,30 @@ class _DiscriminationState extends State<Discrimination> {
               children: [
                 OptionWidget(
                   child: AudioWidget(
-                      audioLinks: dtcontainer.getVideoUrls()[0],
-                      imagePlayButtonKey: GlobalKey(),
-                      tutorialIndex: 1),
+                    audioLinks: [dtcontainer.getVideoUrls()[0]],
+                  ),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
                   },
-                  optionKey: GlobalKey(),
+                  optionKey: optionKeys[0],
                   tutorialOrder: 1,
+                  align: ContentAlign.onside,
                 ),
                 SizedBox(
                   width: 20.h,
                 ),
                 OptionWidget(
                   child: AudioWidget(
-                      audioLinks: dtcontainer.getVideoUrls()[1],
-                      imagePlayButtonKey: GlobalKey(),
-                      tutorialIndex: 1),
+                    audioLinks: [dtcontainer.getVideoUrls()[1]],
+                  ),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
                   },
-                  optionKey: GlobalKey(),
+                  optionKey: optionKeys[1],
                   tutorialOrder: 2,
+                  align: ContentAlign.onside,
                 ),
               ],
             ),
@@ -524,30 +580,30 @@ class _DiscriminationState extends State<Discrimination> {
               children: [
                 OptionWidget(
                   child: AudioWidget(
-                      audioLinks: dtcontainer.getVideoUrls()[2],
-                      imagePlayButtonKey: GlobalKey(),
-                      tutorialIndex: 1),
+                    audioLinks: [dtcontainer.getVideoUrls()[2]],
+                  ),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput();
                   },
-                  optionKey: GlobalKey(),
+                  optionKey: optionKeys[2],
                   tutorialOrder: 3,
+                  align: ContentAlign.onside,
                 ),
                 SizedBox(
                   width: 20.h,
                 ),
                 OptionWidget(
                   child: AudioWidget(
-                      audioLinks: dtcontainer.getVideoUrls()[3],
-                      imagePlayButtonKey: GlobalKey(),
-                      tutorialIndex: 1),
+                    audioLinks: [dtcontainer.getVideoUrls()[3]],
+                  ),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[3] ==
                         dtcontainer.getCorrectOutput();
                   },
-                  optionKey: GlobalKey(),
+                  optionKey: optionKeys[3],
                   tutorialOrder: 4,
+                  align: ContentAlign.onside,
                 ),
               ],
             ),
