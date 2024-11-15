@@ -16,6 +16,8 @@ import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
+import 'package:provider/provider.dart'; // Import provider
+import 'package:rive/rive.dart'; // For animations
 
 class VideoPlayerWidget extends StatefulWidget {
   final String videoUrl;
@@ -185,8 +187,11 @@ class _DetectionState extends State<Detection> {
   double currentProgress = 0.0;
   double totalDuration = 0.0;
 
-  // **Step 1: Define a list to hold all GlobalKeys from OptionWidgets**
+  // Step 1: Define a list to hold all GlobalKeys from OptionWidgets
   final List<GlobalKey> optionKeys = [];
+
+  // TutorialCoachMark instance
+  TutorialCoachMark? tutorialCoachMark;
 
   @override
   void initState() {
@@ -215,6 +220,96 @@ class _DetectionState extends State<Detection> {
     super.dispose();
   }
 
+  // Initialize the tutorial
+  void _initTutorial() {
+    tutorialCoachMark = TutorialCoachMark(
+
+      targets: _createTargets(),
+      colorShadow: Colors.black.withOpacity(0.5),
+      textSkip: "SKIP",
+      paddingFocus: 10,
+      opacityShadow: 0,
+      onFinish: () {
+        print("Tutorial finished");
+      },
+      onSkip: () {
+        print("Tutorial skipped");
+        return true;
+      },
+    );
+  }
+
+  // Create tutorial targets for each OptionWidget
+  List<TargetFocus> _createTargets() {
+    List<TargetFocus> targets = [];
+
+    for (int i = 0; i < optionKeys.length; i++) {
+      final GlobalKey optionKey = optionKeys[i];
+
+      OptionWidget? optionWidget = optionKey.currentWidget as OptionWidget?;
+      if (optionWidget == null) {
+        continue; // Or handle accordingly
+      }
+
+      ContentAlign align = optionWidget.align;
+
+      targets.add(
+        TargetFocus(
+          identify: "Option_${i + 1}",
+          keyTarget: optionKey,
+          contents: [
+            TargetContent(
+              align: ContentAlign.ontop,
+              builder: (context, controller) {
+                return _buildTutorialContent(
+                  "This is option ${i + 1}",
+                  isCorrect: true, // Adjust based on your logic
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    }
+
+    return targets;
+  }
+
+  // Build the content for each tutorial step
+  Widget _buildTutorialContent(String text, {required bool isCorrect}) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.8,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 50,
+            width: 50,
+            child: RiveAnimation.asset(
+              'assets/rive/hand_click.riv',
+              fit: BoxFit.contain,
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (isCorrect)
+            Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // Show the tutorial
+  void showTutorial() {
+    tutorialCoachMark?.show(context: context);
+  }
+
   @override
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
@@ -239,7 +334,30 @@ class _DetectionState extends State<Detection> {
             SizedBox(
               height: 26.v,
             ),
-            detectionQuiz(context, type),
+            Expanded(
+              child: Stack(
+                children: [
+                  detectionQuiz(context, type),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Initialize and show the tutorial when tip button is clicked
+                        _initTutorial();
+                        showTutorial();
+                      },
+                      child: CustomImageView(
+                        imagePath: ImageConstant.imgTipbtn,
+                        height: 60.v,
+                        width: 60.h,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -253,13 +371,13 @@ class _DetectionState extends State<Detection> {
           audioLinks:
               (ModalRoute.of(context)?.settings.arguments as List<dynamic>)[1]
                   .getVideoUrls(),
-          // **Step 2: Pass the optionKeys list to the child widget**
+          // Pass the optionKeys list to the child widget
           optionKeys: optionKeys,
         );
       case "MutedUnmuted":
         return MutedUnmuted(
           context,
-          // **Step 2: Pass the optionKeys list to the child widget**
+          // Pass the optionKeys list to the child widget
           optionKeys: optionKeys,
         );
       default:
@@ -274,7 +392,7 @@ class _DetectionState extends State<Detection> {
     List<String> videoUrls = dtcontainer.getVideoUrls();
     int mutedVideoIndex = dtcontainer.getMuted();
 
-    // **Step 3: Initialize and assign keys to OptionWidgets**
+    // Step 3: Initialize and assign keys to OptionWidgets
     // Ensure that the optionKeys list has enough keys
     // Here, we need two keys for two videos
     while (optionKeys.length < 2) {
@@ -365,7 +483,7 @@ class _DetectionState extends State<Detection> {
                   isCorrect: () {
                     return (obj[1] as dynamic).getMuted() == 1;
                   },
-                  // **Assign the first key from the list**
+                  // Assign the first key from the list
                   optionKey: optionKeys[0],
                   tutorialOrder: 1,
                   align: ContentAlign.ontop,
@@ -387,7 +505,7 @@ class _DetectionState extends State<Detection> {
                   isCorrect: () {
                     return (obj[1] as dynamic).getMuted() == 0;
                   },
-                  // **Assign the second key from the list**
+                  // Assign the second key from the list
                   optionKey: optionKeys[1],
                   tutorialOrder: 2,
                   align: ContentAlign.ontop,
@@ -404,7 +522,7 @@ class _DetectionState extends State<Detection> {
     required List<GlobalKey> optionKeys,
     required List<String> audioLinks,
   }) {
-    // **Step 3: Initialize and assign keys to OptionWidgets**
+    // Step 3: Initialize and assign keys to OptionWidgets
     // Assuming you have one OptionWidget in HalfMutedWidget
     while (optionKeys.length < 3) {
       optionKeys.add(GlobalKey());
@@ -459,122 +577,8 @@ class _DetectionState extends State<Detection> {
 
             return condition;
           },
-          // **Assign the third key from the list**
+          // Assign the third key from the list
           optionKey: optionKeys[1],
-          tutorialOrder: 2,
-          align: ContentAlign.ontop,
-        ),
-      ],
-    );
-  }
-
-}
-
-
-class HalfMutedWidget extends StatefulWidget {
-  final List<String> audioLinks;
-  final List<GlobalKey> optionKeys;
-
-  const HalfMutedWidget({
-    Key? key,
-    required this.audioLinks,
-    required this.optionKeys,
-  }) : super(key: key);
-
-  @override
-  _HalfMutedWidgetState createState() => _HalfMutedWidgetState();
-}
-
-class _HalfMutedWidgetState extends State<HalfMutedWidget> {
-  final GlobalKey<AudioWidgetState> _childKey = GlobalKey<AudioWidgetState>();
-  Timer? _volumeTimer;
-
-  @override
-  void initState() {
-    super.initState();
-    // Start the volume control after the first frame is rendered
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startVolumeControl();
-    });
-  }
-
-  void _startVolumeControl() {
-    _volumeTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
-      if (_childKey.currentState != null) {
-        double progress = _childKey.currentState!.progress;
-        if (progress < 0.5) {
-          // Mute for the first half
-          globalAudioPlayer.setVolume(0.0);
-        } else {
-          // Unmute for the second half
-          globalAudioPlayer.setVolume(1.0);
-        }
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _volumeTimer?.cancel(); // Cancel the timer to prevent memory leaks
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        SizedBox(
-          height: 40.v,
-        ),
-        OptionWidget(
-          child: AudioWidget(
-            audioLinks: widget.audioLinks,
-          ),
-          isCorrect: () => false,
-          optionKey: widget.optionKeys[0], // Apply key
-          tutorialOrder: 1,
-          align: ContentAlign.onside,
-        ),
-        SizedBox(
-          height: 20.v,
-        ),
-        OptionWidget(
-          child: OptionButton(
-            type: ButtonType.Stop,
-            onPressed: () {
-              // Stop the audio playback
-              globalAudioPlayer.stop();
-            },
-          ),
-          isCorrect: () {
-            if (_childKey.currentState == null) return false;
-
-            List<double> total_length = _childKey.currentState!.lengths;
-            if (total_length.isEmpty) {
-              // Ensure there is at least 1 element in the list (the audio length)
-              print("Error: total_length is empty.");
-              return false;
-            }
-
-            double audioLength = total_length[
-                0]; // Since there's only one length, take the first element
-            double ans =
-                0.5; // Since you're muting the first half, the threshold is 0.5
-
-            double currentProgress = _childKey.currentState!.progress;
-            print("Current progress is $currentProgress");
-
-            const double tolerance = 0.4;
-            bool condition =
-                currentProgress > ans && currentProgress < ans + tolerance;
-            print("Condition result: $condition");
-
-            return condition;
-          },
-          // **Assign the third key from the list (index 2)**
-          optionKey: widget.optionKeys[1],
           tutorialOrder: 2,
           align: ContentAlign.ontop,
         ),

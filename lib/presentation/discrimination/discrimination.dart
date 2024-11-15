@@ -21,6 +21,8 @@ import './customthumb.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
+import 'package:provider/provider.dart'; // Make sure to import provider
+import 'package:rive/rive.dart' as rive; // For animations
 
 class Discrimination extends StatefulWidget {
   const Discrimination({
@@ -48,10 +50,11 @@ class _DiscriminationState extends State<Discrimination> {
   double currentProgress = 0.0;
   List<double> total_length = [];
 
-  // **Step 1: Define a list to hold all GlobalKeys from OptionWidgets**
+  // Step 1: Define a list to hold all GlobalKeys from OptionWidgets
   final List<GlobalKey> optionKeys = [];
 
-  // **Optional: TutorialCoachMark instance**
+  // TutorialCoachMark instance
+  TutorialCoachMark? tutorialCoachMark;
 
   @override
   void dispose() {
@@ -66,14 +69,104 @@ class _DiscriminationState extends State<Discrimination> {
       DeviceOrientation.landscapeRight,
     ]);
 
-    // **Optional: Initialize Tutorial after a slight delay to ensure keys are assigned**
+    // Optional: Initialize Tutorial after a slight delay to ensure keys are assigned
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Initialize tutorial if needed
-      // _showTutorial(); // Uncomment if implementing tutorials
+      // _initTutorial(); // Uncomment if implementing tutorials
     });
   }
 
   int level = 0;
+
+  // Initialize the tutorial
+  void _initTutorial() {
+    tutorialCoachMark = TutorialCoachMark(
+
+      targets: _createTargets(),
+      colorShadow: Colors.black.withOpacity(0.5),
+      textSkip: "SKIP",
+      paddingFocus: 10,
+      opacityShadow: 0,
+      onFinish: () {
+        print("Tutorial finished");
+      },
+      onSkip: () {
+        print("Tutorial skipped");
+        return true;
+      },
+    );
+  }
+
+  // Create tutorial targets for each OptionWidget
+  List<TargetFocus> _createTargets() {
+    List<TargetFocus> targets = [];
+
+    for (int i = 0; i < optionKeys.length; i++) {
+      final GlobalKey optionKey = optionKeys[i];
+
+      OptionWidget? optionWidget = optionKey.currentWidget as OptionWidget?;
+      if (optionWidget == null) {
+        continue; // Or handle accordingly
+      }
+
+      ContentAlign align = optionWidget.align;
+
+      targets.add(
+        TargetFocus(
+          identify: "Option_${i + 1}",
+          keyTarget: optionKey,
+          contents: [
+            TargetContent(
+              align: ContentAlign.ontop,
+              builder: (context, controller) {
+                return _buildTutorialContent(
+                  "This is option ${i + 1}",
+                  isCorrect: true, // Adjust based on your logic
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    }
+
+    return targets;
+  }
+
+  // Build the content for each tutorial step
+  Widget _buildTutorialContent(String text, {required bool isCorrect}) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.8,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 50,
+            width: 50,
+            child: rive.RiveAnimation.asset(
+              'assets/rive/hand_click.riv',
+              fit: BoxFit.contain,
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (isCorrect)
+            Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // Show the tutorial
+  void showTutorial() {
+    tutorialCoachMark?.show(context: context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +225,30 @@ class _DiscriminationState extends State<Discrimination> {
               height: 20.v,
             ),
             // **Pass the optionKeys list to the discriminationOptions method**
-            discriminationOptions(type, data, dtcontainer, optionKeys),
+            Expanded(
+              child: Stack(
+                children: [
+                  discriminationOptions(type, data, dtcontainer, optionKeys),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Initialize and show the tutorial when tip button is clicked
+                        _initTutorial();
+                        showTutorial();
+                      },
+                      child: CustomImageView(
+                        imagePath: ImageConstant.imgTipbtn,
+                        height: 60.v,
+                        width: 60.h,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -161,7 +277,7 @@ class _DiscriminationState extends State<Discrimination> {
 
   Widget MaleFemaleW(
       MaleFemale maleFemale, dynamic dtcontainer, List<GlobalKey> optionKeys) {
-    // **Step 2: Assign keys from optionKeys list**
+    // Step 2: Assign keys from optionKeys list
     // Ensure the list has enough keys
     while (optionKeys.length <= 3) {
       optionKeys.add(GlobalKey());
@@ -180,7 +296,6 @@ class _DiscriminationState extends State<Discrimination> {
           optionKey: optionKeys[0], // Apply key
           tutorialOrder: 1,
           align: ContentAlign.onside,
-           
         ),
         SizedBox(
           height: 20.v,
@@ -194,7 +309,7 @@ class _DiscriminationState extends State<Discrimination> {
                 isCorrect: () {
                   return dtcontainer.getCorrectOutput() == "female";
                 },
-                // **Assign the first key from the list**
+                // Assign the first key from the list
                 optionKey: optionKeys[1],
                 tutorialOrder: 2,
                 align: ContentAlign.ontop,
@@ -206,7 +321,7 @@ class _DiscriminationState extends State<Discrimination> {
                 isCorrect: () {
                   return dtcontainer.getCorrectOutput() == "male";
                 },
-                // **Assign the second key from the list**
+                // Assign the second key from the list
                 optionKey: optionKeys[2],
                 tutorialOrder: 3,
                 align: ContentAlign.ontop,
@@ -263,7 +378,7 @@ class _DiscriminationState extends State<Discrimination> {
 
   Widget DiffHalfW(
       DiffHalf diffHalf, dynamic dtcontainer, List<GlobalKey> optionKeys) {
-    // **Step 2: Assign keys from optionKeys list**
+    // Step 2: Assign keys from optionKeys list
     // Ensure the list has enough keys
     while (optionKeys.length <= 2) {
       optionKeys.add(GlobalKey());
@@ -298,7 +413,7 @@ class _DiscriminationState extends State<Discrimination> {
               return false;
             }
           },
-          // **Assign the third key from the list**
+          // Assign the third key from the list
           optionKey: optionKeys[1],
           tutorialOrder: 2,
           align: ContentAlign.ontop,
@@ -309,11 +424,11 @@ class _DiscriminationState extends State<Discrimination> {
 
   Widget DiffSoundsW(
       DiffSounds diffSounds, dynamic dtcontainer, List<GlobalKey> optionKeys) {
-    // **Determine the number of OptionWidgets needed**
+    // Determine the number of OptionWidgets needed
     int numberOfOptions = dtcontainer.getVideoUrls().length;
 
-    // **Ensure the optionKeys list has enough keys**
-    while (optionKeys.length < numberOfOptions) {
+    // Ensure the optionKeys list has enough keys
+    while (optionKeys.length < numberOfOptions + 2) {
       optionKeys.add(GlobalKey());
     }
 
@@ -327,7 +442,7 @@ class _DiscriminationState extends State<Discrimination> {
               ...List.generate(dtcontainer.getVideoUrls().length, (index) {
                 return Row(
                   children: [
-                    // **Assign keys from the list**
+                    // Assign keys from the list
                     OptionWidget(
                       child: AudioWidget(
                         audioLinks: [dtcontainer.getVideoUrls()[index]],
@@ -402,7 +517,7 @@ class _DiscriminationState extends State<Discrimination> {
               isCorrect: () {
                 return dtcontainer.getSame();
               },
-              // **Assign the next key from the list**
+              // Assign the next key from the list
               optionKey: optionKeys[numberOfOptions + 1],
               tutorialOrder: numberOfOptions + 2,
               align: ContentAlign.ontop,
@@ -417,7 +532,7 @@ class _DiscriminationState extends State<Discrimination> {
       OddOne oddOne, dynamic dtcontainer, List<GlobalKey> optionKeys) {
     int numberOfOptions = oddOne.video_url.length;
 
-    // **Ensure the optionKeys list has enough keys**
+    // Ensure the optionKeys list has enough keys
     while (optionKeys.length < numberOfOptions) {
       optionKeys.add(GlobalKey());
     }
