@@ -64,7 +64,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       colorShadow: Colors.black.withOpacity(0.5),
       textSkip: "SKIP",
       paddingFocus: 10,
-      opacityShadow: 0.8,
+      opacityShadow: 0,
       onFinish: () {
         print("Tutorial finished");
       },
@@ -108,6 +108,35 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       );
     }
 
+      for (int i = 0; i < optionKeys.length; i++) {
+      final GlobalKey optionKey = optionKeys[i];
+
+      OptionWidget? optionWidget = optionKey.currentWidget as OptionWidget?;
+      if (optionWidget == null) {
+        continue; 
+      }
+
+      ContentAlign align = optionWidget.align;
+
+      targets.add(
+        TargetFocus(
+          identify: "Option_${i + 1}",
+          keyTarget: optionKey,
+          contents: [
+            TargetContent(
+              align: ContentAlign.ontop,
+              builder: (context, controller) {
+                return _buildTutorialContent(
+                  "This is the correct option ",
+                  isCorrect: true,
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    }
+
     return targets;
   }
 
@@ -127,14 +156,15 @@ class AuditoryScreenState extends State<IdentificationScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
+         if (isCorrect)
+            Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
             ),
-          ),
         ],
       ),
     );
