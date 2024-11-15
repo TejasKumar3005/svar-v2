@@ -14,8 +14,7 @@ class AnimatedFocusLight extends StatefulWidget {
   final List<TargetFocus> targets;
   final Function(TargetFocus)? focus;
   final FutureOr Function(TargetFocus)? clickTarget;
-  final FutureOr Function(TargetFocus, TapDownDetails)?
-      clickTargetWithTapPosition;
+  final FutureOr Function(TargetFocus, TapDownDetails)? clickTargetWithTapPosition;
   final FutureOr Function(TargetFocus)? clickOverlay;
   final Function? removeFocus;
   final Function()? finish;
@@ -55,7 +54,6 @@ class AnimatedFocusLight extends StatefulWidget {
         super(key: key);
 
   @override
- 
   AnimatedFocusLightState createState() => pulseEnable
       ? AnimatedPulseFocusLightState()
       : AnimatedStaticFocusLightState();
@@ -288,9 +286,13 @@ class AnimatedStaticFocusLightState extends AnimatedFocusLightState {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       onTap: _targetFocus.enableOverlayTab
-          ? () => _tapHandler(overlayTap: true)
+          ? () => {
+          _tapHandler(overlayTap: true),
+          
+          }
           : null,
       child: AnimatedBuilder(
         animation: _controller,
@@ -302,21 +304,15 @@ class AnimatedStaticFocusLightState extends AnimatedFocusLightState {
               Positioned(
                 left: left,
                 top: top,
-                child: InkWell(
-                  borderRadius: _betBorderRadiusTarget(),
-                  onTapDown: _tapHandlerForPosition,
-                  onTap: _targetFocus.enableTargetTab
-                      ? () => _tapHandler(targetTap: true)
-
-                      /// Essential for collecting [TapDownDetails]. Do not make [null]
-                      : () {},
+                child: IgnorePointer(
+                  ignoring: true,
                   child: Container(
                     color: Colors.transparent,
                     width: width,
                     height: height,
                   ),
                 ),
-              )
+              ),
             ],
           );
         },
@@ -353,13 +349,17 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
   bool _finishFocus = false;
   bool _initReverse = false;
 
-  get left => (_targetPosition?.offset.dx ?? 0) - _getPaddingFocus() * 2;
+  double get left => (_targetPosition?.offset.dx ?? 0) - _getPaddingFocus() * 2;
 
-  get top => (_targetPosition?.offset.dy ?? 0) - _getPaddingFocus() * 2;
+  double get top => (_targetPosition?.offset.dy ?? 0) - _getPaddingFocus() * 2;
 
-  get width => (_targetPosition?.size.width ?? 0) + _getPaddingFocus() * 4;
+  double get width {
+    return (_targetPosition?.size.width ?? 0) + _getPaddingFocus() * 4;
+  }
 
-  get height => (_targetPosition?.size.height ?? 0) + _getPaddingFocus() * 4;
+  double get height {
+    return (_targetPosition?.size.height ?? 0) + _getPaddingFocus() * 4;
+  }
 
   @override
   void initState() {
@@ -370,9 +370,7 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
     );
 
     _tweenPulse = _createTweenAnimation(
-      _targetFocus.pulseVariation ??
-          widget.pulseVariation ??
-          defaultPulseVariation,
+      _targetFocus.pulseVariation ?? widget.pulseVariation ?? defaultPulseVariation,
     );
 
     _controllerPulse.addStatusListener(_listenerPulse);
@@ -380,7 +378,8 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
       onTap: _targetFocus.enableOverlayTab
           ? () => _tapHandler(overlayTap: true)
           : null,
@@ -400,20 +399,15 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
                   Positioned(
                     left: left,
                     top: top,
-                    child: InkWell(
-                      borderRadius: _betBorderRadiusTarget(),
-                      onTap: _targetFocus.enableTargetTab
-                          ? () => _tapHandler(targetTap: true)
-                          /// Essential for collecting [TapDownDetails]. Do not make [null]
-                          : () {},
-                      onTapDown: _tapHandlerForPosition,
+                    child: IgnorePointer(
+                      ignoring: true,
                       child: Container(
                         color: Colors.transparent,
                         width: width,
                         height: height,
                       ),
                     ),
-                  )
+                  ),
                 ],
               );
             },
@@ -426,9 +420,7 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
   @override
   void _runFocus() {
     _tweenPulse = _createTweenAnimation(
-      _targetFocus.pulseVariation ??
-          widget.pulseVariation ??
-          defaultPulseVariation,
+      _targetFocus.pulseVariation ?? widget.pulseVariation ?? defaultPulseVariation,
     );
     _finishFocus = false;
     super._runFocus();
