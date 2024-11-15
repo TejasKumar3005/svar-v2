@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
+import 'package:svar_new/presentation/identification_screen/celebration_overlay.dart';
 import 'package:svar_new/widgets/text_option.dart';
 import 'package:svar_new/widgets/image_option.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
