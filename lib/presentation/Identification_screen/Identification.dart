@@ -70,6 +70,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       },
       onSkip: () {
         print("Tutorial skipped");
+        return true;
       },
     );
   }
@@ -81,13 +82,20 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     for (int i = 0; i < optionKeys.length; i++) {
       final GlobalKey optionKey = optionKeys[i];
 
+      OptionWidget? optionWidget = optionKey.currentWidget as OptionWidget?;
+      if (optionWidget == null) {
+        continue; // Or handle accordingly
+      }
+
+      ContentAlign align = optionWidget.align;
+
       targets.add(
         TargetFocus(
           identify: "Option_${i + 1}",
           keyTarget: optionKey,
           contents: [
             TargetContent(
-              align: ContentAlign.bottom,
+              align: align,
               builder: (context, controller) {
                 return _buildTutorialContent(
                   "This is option ${i + 1}",
@@ -291,12 +299,15 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                         child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 5.0),
                           child: OptionWidget(
-                            key: optionKey,
+                            optionKey: optionKey,
+                            
                             child: AudioWidget(
                               audioLinks: [dtcontainer.getAudioList()[index]],
                             ),
                             isCorrect: () => dtcontainer.getCorrectOutput() ==
                                 dtcontainer.getAudioList()[index],
+                            align: ContentAlign.bottom,
+                            tutorialOrder: index,
                           ),
                         ),
                       );
@@ -332,7 +343,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       OptionWidget(
-                                        key: optionKey,
+                                        optionKey: optionKey,
+                                        align: ContentAlign.ontop,
                                         child: TextContainer(
                                           text: dtcontainer.getTextList()[index],
                                         ),
@@ -340,6 +352,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                           return dtcontainer.getCorrectOutput() ==
                                               dtcontainer.getTextList()[index];
                                         },
+                                        tutorialOrder: index,
                                       ),
                                       SizedBox(width: 10),
                                     ],
@@ -376,7 +389,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                           Expanded(
                             flex: 2,
                             child: OptionWidget(
-                              key: optionKey,
+                              optionKey: optionKey,
                               child: ImageWidget(
                                 imagePath: dtcontainer.getImageUrlList()[index],
                               ),
@@ -384,6 +397,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                 return dtcontainer.getCorrectOutput() ==
                                     dtcontainer.getImageUrlList()[index];
                               },
+                              align: ContentAlign.bottom,
+                              tutorialOrder: index,
                             ),
                           ),
                           SizedBox(width: 10),
