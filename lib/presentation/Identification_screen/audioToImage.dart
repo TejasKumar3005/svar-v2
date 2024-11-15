@@ -92,11 +92,8 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                         children: [
                           Center(
                             child: GestureDetector(
-                          
                                 child: AudioWidget(
                                   audioLinks: widget.dtcontainer.getAudioUrl(),
-                                  imagePlayButtonKey: GlobalKey(),
-                                  tutorialIndex: 1,
                                 ),
                         
                             ),
@@ -144,6 +141,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                             },
                                             optionKey: GlobalKey(),
                                             tutorialOrder: index + 2,
+                                            align: ContentAlign.ontop,
                                           ),
                                           SizedBox(
                                             width:
