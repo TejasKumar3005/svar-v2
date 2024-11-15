@@ -252,6 +252,15 @@ children = currentTarget!.contents!.map<Widget>((i) {
             bottom = null;
           }
           break;
+        case ContentAlign.onside:
+          {
+            weight = target!.size.width; // Adjust width as needed, or remove if unnecessary.
+            left = positioned.dx- (target.size.width)*0.86; // Shift left as required
+            top = positioned.dy ;
+            bottom =
+                null; // Ensure bottom is null so it doesn’t affect top positioning.
+          }
+          break;
 
 
         
