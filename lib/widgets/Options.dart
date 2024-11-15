@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:svar_new/presentation/identification_screen/celebration_overlay.dart';
+import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
 import 'package:svar_new/widgets/text_option.dart';
 import 'package:svar_new/widgets/image_option.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:svar_new/widgets/custom_button.dart';
+import 'package:rive/rive.dart';
+import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
+import 'dart:core';
 
 class OptionWidget extends StatefulWidget {
+  static List<GlobalKey> optionKeys = [];
   final Widget child;
   final bool Function() isCorrect;
+  final GlobalKey optionKey;
   final int tutorialOrder;
+  final ContentAlign align; // New parameter for alignment
 
-  OptionWidget({required this.child, 
-  required this.isCorrect,
-  required this.tutorialOrder,
-  
-  
-  });
+  OptionWidget({
+    required this.child,
+    required this.isCorrect,
+    required this.optionKey,
+    required this.tutorialOrder,
+    required this.align, 
+  }) : super(key: optionKey) {
+    optionKeys.add(optionKey);
+  }
 
   @override
   _OptionWidgetState createState() => _OptionWidgetState();
@@ -24,6 +33,13 @@ class OptionWidget extends StatefulWidget {
 class _OptionWidgetState extends State<OptionWidget> {
   bool _isGlowing = false;
   OverlayEntry? _overlayEntry;
+  late TutorialCoachMark tutorialCoachMark;
+
+  @override
+  void initState() {
+    super.initState();
+
+  }
 
   void click() {
     print("click is called ");
@@ -36,7 +52,6 @@ class _OptionWidgetState extends State<OptionWidget> {
       setState(() {
         _isGlowing = !_isGlowing;
       });
-      // wait for 1 second before removing the glow
       Future.delayed(Duration(seconds: 2), () {
         setState(() {
           _isGlowing = false;
@@ -48,6 +63,7 @@ class _OptionWidgetState extends State<OptionWidget> {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
+      key: widget.optionKey,
       duration: Duration(seconds: 1),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -63,6 +79,12 @@ class _OptionWidgetState extends State<OptionWidget> {
       ),
       child: ClickProvider(child: widget.child, click: click),
     );
+  }
+
+  @override
+  void dispose() {
+    OptionWidget.optionKeys.remove(widget.optionKey);
+    super.dispose();
   }
 }
 
@@ -81,6 +103,6 @@ class ClickProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {
-    return false;
+    return true; // or false depending on your needs
   }
 }
