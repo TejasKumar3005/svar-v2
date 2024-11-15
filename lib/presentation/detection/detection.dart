@@ -182,8 +182,8 @@ class _DetectionState extends State<Detection> {
   double currentProgress = 0.0;
   double totalDuration = 0.0;
 
-  // **Define a list to hold all GlobalKeys from OptionWidgets**
-  final List<GlobalKey> optionKeys = [];
+  // Define a list to hold all GlobalKeys from OptionWidgets
+  final List<GlobalKey<OptionWidgetState>> optionKeys = [];
 
   @override
   void initState() {
@@ -242,7 +242,7 @@ class _DetectionState extends State<Detection> {
               ],
             ),
           ),
-          // **Tip Button**
+          // Tip Button
           Positioned(
             bottom: 20,
             right: 20,
@@ -283,15 +283,15 @@ class _DetectionState extends State<Detection> {
   }
 
   Widget MutedUnmuted(BuildContext context,
-      {required List<GlobalKey> optionKeys}) {
+      {required List<GlobalKey<OptionWidgetState>> optionKeys}) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     dynamic dtcontainer = obj[1] as dynamic;
     List<String> videoUrls = dtcontainer.getVideoUrls();
     int mutedVideoIndex = dtcontainer.getMuted();
 
-    // **Ensure the optionKeys list has enough keys**
+    // Ensure the optionKeys list has enough keys
     while (optionKeys.length < 2) {
-      optionKeys.add(GlobalKey());
+      optionKeys.add(GlobalKey<OptionWidgetState>());
     }
 
     return Column(
@@ -411,11 +411,10 @@ class _DetectionState extends State<Detection> {
     );
   }
 
-  // **Implement the tutorial methods in Detection class**
+  // Implement the tutorial methods in Detection class
 
   void _initTutorial() {
     tutorialCoachMark = TutorialCoachMark(
-
       targets: _createTargets(),
       colorShadow: Colors.black.withOpacity(0.5),
       textSkip: "SKIP",
@@ -540,7 +539,7 @@ class _DetectionState extends State<Detection> {
 
 class HalfMutedWidget extends StatefulWidget {
   final List<String> audioLinks;
-  final List<GlobalKey> optionKeys;
+  final List<GlobalKey<OptionWidgetState>> optionKeys;
 
   const HalfMutedWidget({
     Key? key,
@@ -588,9 +587,9 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // **Ensure the optionKeys list has enough keys**
+    // Ensure the optionKeys list has enough keys
     while (widget.optionKeys.length < 2) {
-      widget.optionKeys.add(GlobalKey());
+      widget.optionKeys.add(GlobalKey<OptionWidgetState>());
     }
 
     return Column(
@@ -605,7 +604,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
             audioLinks: widget.audioLinks,
           ),
           isCorrect: () => false,
-          optionKey: optionKeys[0], // Assign the key
+          optionKey: widget.optionKeys[0], // Assign the key
           tutorialOrder: 1,
           align: ContentAlign.onside,
         ),

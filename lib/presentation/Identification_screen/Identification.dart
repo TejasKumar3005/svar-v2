@@ -219,7 +219,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                     children: [
                       ...List.generate(dtcontainer.getAudioList().length,
                           (index) {
-                        final GlobalKey optionKey = GlobalKey();
+                        final GlobalKey<OptionWidgetState> optionKey =
+                            GlobalKey<OptionWidgetState>();
                         optionKeys.add(optionKey);
                         return Expanded(
                           child: Padding(
@@ -263,7 +264,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                               if (dtcontainer.getTextList().length <= 4)
                                 ...List.generate(
                                     dtcontainer.getTextList().length, (index) {
-                                  final GlobalKey optionKey = GlobalKey();
+                                  final GlobalKey<OptionWidgetState> optionKey =
+                                      GlobalKey<OptionWidgetState>();
                                   optionKeys.add(optionKey);
                                   return Row(
                                     mainAxisAlignment:
@@ -307,7 +309,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                 if (dtcontainer.getImageUrlList().length <= 4)
                   ...List.generate(dtcontainer.getImageUrlList().length,
                       (index) {
-                    final GlobalKey optionKey = GlobalKey();
+                    final GlobalKey<OptionWidgetState> optionKey =
+                        GlobalKey<OptionWidgetState>();
                     optionKeys.add(optionKey);
                     return Expanded(
                       flex: 1,
@@ -344,7 +347,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
 
   void _initTutorial() {
     tutorialCoachMark = TutorialCoachMark(
-
       targets: _createTargets(),
       colorShadow: Colors.black.withOpacity(0.5),
       textSkip: "SKIP",

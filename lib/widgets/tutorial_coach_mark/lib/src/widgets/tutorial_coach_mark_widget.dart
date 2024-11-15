@@ -252,6 +252,9 @@ children = currentTarget!.contents!.map<Widget>((i) {
             bottom = null;
           }
           break;
+
+
+        
           
         case ContentAlign.custom:
           {

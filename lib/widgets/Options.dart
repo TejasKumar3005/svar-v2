@@ -5,12 +5,17 @@ import 'package:svar_new/widgets/image_option.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
-
 class OptionWidget extends StatefulWidget {
   final Widget child;
   final bool Function() isCorrect;
+  final int tutorialOrder;
 
-  OptionWidget({required this.child, required this.isCorrect});
+  OptionWidget({required this.child, 
+  required this.isCorrect,
+  required this.tutorialOrder,
+  
+  
+  });
 
   @override
   _OptionWidgetState createState() => _OptionWidgetState();
@@ -43,26 +48,23 @@ class _OptionWidgetState extends State<OptionWidget> {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-        duration: Duration(seconds: 1),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: _isGlowing
-              ? [
-                  BoxShadow(
-                    color: Color.fromARGB(255, 255, 0, 0).withOpacity(0.6), 
-                    spreadRadius: 8,
-                    blurRadius: 5,
-                  ),
-                ]
-              : [],
-        ),
-        child: 
-        ClickProvider(child: widget.child, click: click)
-        ,
+      duration: Duration(seconds: 1),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: _isGlowing
+            ? [
+                BoxShadow(
+                  color: Color.fromARGB(255, 255, 0, 0).withOpacity(0.6),
+                  spreadRadius: 8,
+                  blurRadius: 5,
+                ),
+              ]
+            : [],
+      ),
+      child: ClickProvider(child: widget.child, click: click),
     );
   }
 }
-
 
 class ClickProvider extends InheritedWidget {
   final VoidCallback click;

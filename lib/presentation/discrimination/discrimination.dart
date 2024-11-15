@@ -51,10 +51,10 @@ class _DiscriminationState extends State<Discrimination> {
   double currentProgress = 0.0;
   List<double> total_length = [];
 
-  // **Define a list to hold all GlobalKeys from OptionWidgets**
-  final List<GlobalKey> optionKeys = [];
+  // Define a list to hold all GlobalKeys from OptionWidgets
+  final List<GlobalKey<OptionWidgetState>> optionKeys = [];
 
-  // **TutorialCoachMark instance**
+  // TutorialCoachMark instance
   TutorialCoachMark? tutorialCoachMark;
 
   @override
@@ -132,12 +132,12 @@ class _DiscriminationState extends State<Discrimination> {
                 SizedBox(
                   height: 20.v,
                 ),
-                // **Pass the optionKeys list to the discriminationOptions method**
+                // Pass the optionKeys list to the discriminationOptions method
                 discriminationOptions(type, data, dtcontainer),
               ],
             ),
           ),
-          // **Tip Button**
+          // Tip Button
           Positioned(
             bottom: 20,
             right: 20,
@@ -180,10 +180,10 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget MaleFemaleW(MaleFemale maleFemale, dynamic dtcontainer) {
-    // **Assign keys from optionKeys list**
+    // Assign keys from optionKeys list
     // Ensure the list has enough keys
     while (optionKeys.length < 3) {
-      optionKeys.add(GlobalKey());
+      optionKeys.add(GlobalKey<OptionWidgetState>());
     }
 
     return Column(
@@ -235,10 +235,10 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget DiffHalfW(DiffHalf diffHalf, dynamic dtcontainer) {
-    // **Assign keys from optionKeys list**
+    // Assign keys from optionKeys list
     // Ensure the list has enough keys
     while (optionKeys.length < 2) {
-      optionKeys.add(GlobalKey());
+      optionKeys.add(GlobalKey<OptionWidgetState>());
     }
 
     return Column(
@@ -279,12 +279,12 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget DiffSoundsW(DiffSounds diffSounds, dynamic dtcontainer) {
-    // **Determine the number of OptionWidgets needed**
+    // Determine the number of OptionWidgets needed
     int numberOfOptions = dtcontainer.getVideoUrls().length;
 
-    // **Ensure the optionKeys list has enough keys**
+    // Ensure the optionKeys list has enough keys
     while (optionKeys.length < numberOfOptions + 2) {
-      optionKeys.add(GlobalKey());
+      optionKeys.add(GlobalKey<OptionWidgetState>());
     }
 
     return Column(
@@ -382,9 +382,9 @@ class _DiscriminationState extends State<Discrimination> {
   Widget OddOneW(OddOne oddOne, dynamic dtcontainer) {
     int numberOfOptions = oddOne.video_url.length;
 
-    // **Ensure the optionKeys list has enough keys**
+    // Ensure the optionKeys list has enough keys
     while (optionKeys.length < numberOfOptions) {
-      optionKeys.add(GlobalKey());
+      optionKeys.add(GlobalKey<OptionWidgetState>());
     }
 
     switch (numberOfOptions) {
@@ -425,7 +425,7 @@ class _DiscriminationState extends State<Discrimination> {
                   },
                   optionKey: optionKeys[1], // Assign the key
                   tutorialOrder: 2,
-                  align: ContentAlign.ontop,
+                  align: ContentAlign.onside,
                 ),
               ],
             ),
@@ -577,11 +577,10 @@ class _DiscriminationState extends State<Discrimination> {
     }
   }
 
-  // **Implement the tutorial methods in Discrimination class**
+  // Implement the tutorial methods in Discrimination class
 
   void _initTutorial() {
     tutorialCoachMark = TutorialCoachMark(
-
       targets: _createTargets(),
       colorShadow: Colors.black.withOpacity(0.5),
       textSkip: "SKIP",
