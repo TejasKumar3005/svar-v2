@@ -306,8 +306,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                             ),
                             isCorrect: () => dtcontainer.getCorrectOutput() ==
                                 dtcontainer.getAudioList()[index],
-                            align: ContentAlign.bottom,
-                            tutorialOrder: index,
+                            align: ContentAlign.onside,
+                            tutorialOrder: index+1,
                           ),
                         ),
                       );
@@ -397,7 +397,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                 return dtcontainer.getCorrectOutput() ==
                                     dtcontainer.getImageUrlList()[index];
                               },
-                              align: ContentAlign.bottom,
+                              align: ContentAlign.ontop,
                               tutorialOrder: index,
                             ),
                           ),
