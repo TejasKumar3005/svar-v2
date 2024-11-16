@@ -284,15 +284,11 @@ class AnimatedStaticFocusLightState extends AnimatedFocusLightState {
     return (_targetPosition?.size.height ?? 0) + _getPaddingFocus() * 4;
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
+    return InkWell(
       onTap: _targetFocus.enableOverlayTab
-          ? () => {
-          _tapHandler(overlayTap: true),
-          
-          }
+          ? () => _tapHandler(overlayTap: true)
           : null,
       child: AnimatedBuilder(
         animation: _controller,
@@ -304,15 +300,21 @@ class AnimatedStaticFocusLightState extends AnimatedFocusLightState {
               Positioned(
                 left: left,
                 top: top,
-                child: IgnorePointer(
-                  ignoring: true,
+                child: InkWell(
+                  borderRadius: _betBorderRadiusTarget(),
+                  onTapDown: _tapHandlerForPosition,
+                  onTap: _targetFocus.enableTargetTab
+                      ? () => _tapHandler(targetTap: true)
+
+                      /// Essential for collecting [TapDownDetails]. Do not make [null]
+                      : () {},
                   child: Container(
                     color: Colors.transparent,
                     width: width,
                     height: height,
                   ),
                 ),
-              ),
+              )
             ],
           );
         },
@@ -376,10 +378,9 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
     _controllerPulse.addStatusListener(_listenerPulse);
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
+    return InkWell(
       onTap: _targetFocus.enableOverlayTab
           ? () => _tapHandler(overlayTap: true)
           : null,
@@ -387,30 +388,28 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
         animation: _controller,
         builder: (_, child) {
           _progressAnimated = _curvedAnimation.value;
-          return AnimatedBuilder(
-            animation: _controllerPulse,
-            builder: (_, child) {
-              if (_finishFocus) {
-                _progressAnimated = _tweenPulse.value;
-              }
-              return Stack(
-                children: <Widget>[
-                  _getLightPaint(_targetFocus),
-                  Positioned(
-                    left: left,
-                    top: top,
-                    child: IgnorePointer(
-                      ignoring: true,
-                      child: Container(
-                        color: Colors.transparent,
-                        width: width,
-                        height: height,
-                      ),
-                    ),
+          return Stack(
+            children: <Widget>[
+              _getLightPaint(_targetFocus),
+              Positioned(
+                left: left,
+                top: top,
+                child: InkWell(
+                  borderRadius: _betBorderRadiusTarget(),
+                  onTapDown: _tapHandlerForPosition,
+                  onTap: _targetFocus.enableTargetTab
+                      ? () => _tapHandler(targetTap: true)
+
+                      /// Essential for collecting [TapDownDetails]. Do not make [null]
+                      : () {},
+                  child: Container(
+                    color: Colors.transparent,
+                    width: width,
+                    height: height,
                   ),
-                ],
-              );
-            },
+                ),
+              )
+            ],
           );
         },
       ),
