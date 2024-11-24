@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:flutter/services.dart';
+import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/presentation/phoneme_level_one/video_player_screen.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
@@ -405,7 +406,11 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
                 ],
               ),
             ),
-            child: LevelMap(
+            child:
+            Stack(
+              children: [
+                DisciAppBar(context),
+             LevelMap(
               levelMapParams: LevelMapParams(
                 levelCount: obj["numberOfLevels"],
                 currentLevel: 1,
@@ -450,6 +455,8 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
                 ],
               ),
             ),
+              ]
+            )
           ),
         ),
       );

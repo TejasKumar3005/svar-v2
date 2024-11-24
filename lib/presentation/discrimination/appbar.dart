@@ -6,7 +6,7 @@ Widget DisciAppBar(BuildContext context) {
   return Row(
     children: [
       Padding(
-        padding: EdgeInsets.only(top: 1.v),
+        padding: EdgeInsets.only(top: 5.v),
         child: CustomButton(
             type: ButtonType.Back,
             onPressed: () {
@@ -14,7 +14,7 @@ Widget DisciAppBar(BuildContext context) {
             }),
       ),
       Spacer(),
-      CustomButton(type: ButtonType.Replay, onPressed: () {}),
+      // CustomButton(type: ButtonType.Replay, onPressed: () {}),
       SizedBox(
         width: 10.h,
       ),

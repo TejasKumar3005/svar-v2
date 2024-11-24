@@ -50,7 +50,7 @@ class AppRoutes {
   
 
   static const String identification =
-      '/Identification_screen';
+      '/identification_screen';
 
 
   static const String setting="/setting_screen";

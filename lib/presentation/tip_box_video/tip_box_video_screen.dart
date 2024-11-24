@@ -131,7 +131,7 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
                       width: MediaQuery.of(context).size.width * 0.40,
                       child: Center(
                         child: Text(
-                          levelprovider.selectedTip,
+                          '''To teach the "P" sound, tell your child to gently press their lips together and release them with a small burst of air, like they're "popping a bubble." Make sure no voice or humming is used—it's just the lips and air. Encourage them to exaggerate the "pop" to practice!''',
                           maxLines: 10,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,

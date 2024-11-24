@@ -204,19 +204,29 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
 
   Widget _buildVideo() {
     return Positioned(
-      right: 80,
-      bottom: 0,
-      child: Container(
-        height: 360,
-        width: 270,
-        child: _controller.value.isInitialized
-            ? AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
+  right: 75.v,
+  bottom: 120.h,
+  child: ClipRRect(
+    borderRadius: BorderRadius.circular(20), // Rounded corners
+    child: Container(
+      height: 180,
+      width: 320,
+      color: Colors.black, // Optional background to distinguish
+      child: _controller.value.isInitialized
+          ? FittedBox(
+              fit: BoxFit.cover, // Ensures the video covers the container
+              child: SizedBox(
+                width: _controller.value.size.height,
+                height: _controller.value.size.width,
                 child: VideoPlayer(_controller),
-              )
-            : Center(child: CircularProgressIndicator()),
-      ),
-    );
+              ),
+            )
+          : Center(child: CircularProgressIndicator()),
+    ),
+  ),
+)
+;
+
   }
 
   Widget _buildTipButton() {
@@ -242,7 +252,8 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
     return Positioned(
       left: MediaQuery.of(context).size.width * 0.1,
       bottom: 10,
-      child: circularScore(result!),
+      child: 
+      circularScore(result!),
     );
   }
 
@@ -261,14 +272,39 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
   }
 
   Future<double> sendWavFile(String wavFile, String phoneme) async {
-    var uri = Uri.parse("https://gameapi.svar.in/process_wav");
+    var uri;
+    if (widget.testSpeech){
+      uri = Uri.parse("https://gameapi.svar.in/process_aduio_sent");
+      var request = http.MultipartRequest('POST', uri)
+      ..fields['phoneme'] = phoneme
+      ..files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
 
+      var response = await request.send();
+      if (response.statusCode == 200) {
+      String body = await response.stream.bytesToString();
+      print(body);
+      Map<String, dynamic> data = json.decode(body);
+      setState(() {
+        result = ((data["result"] * 100.0).toInt()).toString();
+        loading = false;
+      });
+      return data['result'];
+    }
+    else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Something went wrong")));
+      throw Exception(
+          "Failed to send .wav file. Status code: ${response.statusCode}");
+    }
+
+    }
+    else{
+      uri = Uri.parse("https://gameapi.svar.in/process_wav");
     var request = http.MultipartRequest('POST', uri)
       ..fields['phoneme'] = phoneme
       ..files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
 
     var response = await request.send();
-
     if (response.statusCode == 200) {
       String body = await response.stream.bytesToString();
       print(body);
@@ -278,12 +314,15 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
         loading = false;
       });
       return data['result'];
-    } else {
+    }
+    else {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Something went wrong")));
       throw Exception(
           "Failed to send .wav file. Status code: ${response.statusCode}");
     }
+
+    } 
   }
 
   onTapMicrophonebutton(

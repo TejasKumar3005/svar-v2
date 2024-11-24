@@ -2,7 +2,7 @@ import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-
+import 'package:rive/rive.dart' as rive;
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
@@ -50,33 +50,34 @@ class HomeScreenState extends State<HomeScreen> {
         child: Scaffold(
           extendBody: true,
           extendBodyBehindAppBar: true,
-          body: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(
-                  ImageConstant.imgMainInteraction,
+          body: Stack(
+            children: [
+              // Background Rive animation
+              Positioned.fill(
+                child: rive.RiveAnimation.asset(
+                  'assets/rive/bg2.riv',
+                  fit: BoxFit.cover,
                 ),
-                fit: BoxFit.cover,
               ),
-            ),
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10.v),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.h),
-                    child: AppStatsHeader(per: 40),
-                  ),
-                  Spacer(),
-                  carouselSlider(provider, context),
-                ],
+              // Foreground content
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 10.v),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.h),
+                      child: AppStatsHeader(per: 40),
+                    ),
+                    Spacer(),
+                    carouselSlider(provider, context),
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
-      ),
+      )
+
     );
   }
 
@@ -165,15 +166,21 @@ class HomeScreenState extends State<HomeScreen> {
           child: Container(
             width: MediaQuery.of(context).size.width * 0.6,
             height: MediaQuery.of(context).size.width * 0.3,
+            
             child: Stack(
               children: [
-                Image.asset(
-                  imagePath,
-                  fit: BoxFit.contain,
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  height: MediaQuery.of(context).size.width * 0.3,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20), // Set the desired corner radius
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.contain,
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    // Remove height so it adjusts to the image's aspect ratio
+                  ),
                 ),
-                if (_currentIndex == index)
+
+
+                if (false)
                   Center(
                     child: Container(
                       height: 101.adaptSize,
