@@ -160,6 +160,10 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget MaleFemaleW(MaleFemale maleFemale, dynamic dtcontainer) {
+      Map<String,GlobalKey<OptionWidgetState>> keymap = {
+      
+    };
+      keymap["option_1"] = new GlobalKey();
     // print("MaleFemaleW ${dtcontainer.getVideoUrl()}");
     print("MaleFemaleW ${dtcontainer}");
     return Column(
@@ -169,7 +173,7 @@ class _DiscriminationState extends State<Discrimination> {
       children: [
         AudioWidget(
             audioLinks: dtcontainer.getAudioList(),
-            imagePlayButtonKey: GlobalKey(),
+            imagePlayButtonKeys: keymap,
             tutorialIndex: 1
 
             // Use dtcontainer here
@@ -250,12 +254,16 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget DiffHalfW(DiffHalf diffHalf, dynamic dtcontainer) {
+    Map<String,GlobalKey<OptionWidgetState>> keymap = {
+      
+    };
+      keymap["option_0"] = new GlobalKey();
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         AudioWidget(
             audioLinks: dtcontainer.getAudioList(),
-            imagePlayButtonKey: GlobalKey(),
+            imagePlayButtonKeys:keymap,
             tutorialIndex: 1),
         SizedBox(
           height: 20.v,
@@ -290,11 +298,15 @@ class _DiscriminationState extends State<Discrimination> {
           children: [
             if (dtcontainer.getVideoUrls().length <= 4)
               ...List.generate(dtcontainer.getVideoUrls().length, (index) {
+                  Map<String,GlobalKey<OptionWidgetState>> keymap = {
+      
+    };
+      keymap["option_0"] = new GlobalKey();
                 return Row(
                   children: [
                     AudioWidget(
                         audioLinks: dtcontainer.getVideoUrls()[index],
-                        imagePlayButtonKey: GlobalKey(),
+                        imagePlayButtonKeys: keymap,
                         tutorialIndex: 1),
 
                     SizedBox(width: 20), // Adds gap between each OptionWidget
@@ -366,6 +378,8 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget OddOneW(OddOne oddOne, dynamic dtcontainer) {
+    
+
     switch (oddOne.video_url.length) {
       case 2:
         return Column(
@@ -382,7 +396,9 @@ class _DiscriminationState extends State<Discrimination> {
                 OptionWidget(
                   child: AudioWidget(
                       audioLinks: dtcontainer.getVideoUrls()[0],
-                      imagePlayButtonKey: GlobalKey(),
+                      imagePlayButtonKeys: {
+                        'option_0': GlobalKey(),
+                      },
                       tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[0] ==
@@ -397,7 +413,10 @@ class _DiscriminationState extends State<Discrimination> {
                 OptionWidget(
                   child: AudioWidget(
                       audioLinks: dtcontainer.getVideoUrls()[1],
-                      imagePlayButtonKey: GlobalKey(),
+                      imagePlayButtonKeys: 
+                      {
+                        'option_0': GlobalKey(),
+                      },
                       tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[1] ==
@@ -425,7 +444,9 @@ class _DiscriminationState extends State<Discrimination> {
                 OptionWidget(
                   child: AudioWidget(
                       audioLinks: dtcontainer.getVideoUrls()[0],
-                      imagePlayButtonKey: GlobalKey(),
+                      imagePlayButtonKeys: {
+                        'option_0': GlobalKey(),
+                      },
                       tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[0] ==
@@ -440,7 +461,10 @@ class _DiscriminationState extends State<Discrimination> {
                 OptionWidget(
                   child: AudioWidget(
                       audioLinks: dtcontainer.getVideoUrls()[1],
-                      imagePlayButtonKey: GlobalKey(),
+                      imagePlayButtonKeys: 
+                      {
+                        'option_0': GlobalKey(),
+                      },
                       tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[1] ==
@@ -461,7 +485,10 @@ class _DiscriminationState extends State<Discrimination> {
                 OptionWidget(
                   child: AudioWidget(
                       audioLinks: dtcontainer.getVideoUrls()[2],
-                      imagePlayButtonKey: GlobalKey(),
+                      imagePlayButtonKeys: 
+                      {
+                        'option_0': GlobalKey(),
+                      },
                       tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[2] ==
@@ -489,7 +516,10 @@ class _DiscriminationState extends State<Discrimination> {
                 OptionWidget(
                   child: AudioWidget(
                       audioLinks: dtcontainer.getVideoUrls()[0],
-                      imagePlayButtonKey: GlobalKey(),
+                      imagePlayButtonKeys:
+                      {
+                        'option_0': GlobalKey(),
+                      },
                       tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[0] ==
@@ -504,7 +534,10 @@ class _DiscriminationState extends State<Discrimination> {
                 OptionWidget(
                   child: AudioWidget(
                       audioLinks: dtcontainer.getVideoUrls()[1],
-                      imagePlayButtonKey: GlobalKey(),
+                      imagePlayButtonKeys: 
+                      {
+                        'option_0': GlobalKey(),
+                      },
                       tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[1] ==
@@ -525,7 +558,11 @@ class _DiscriminationState extends State<Discrimination> {
                 OptionWidget(
                   child: AudioWidget(
                       audioLinks: dtcontainer.getVideoUrls()[2],
-                      imagePlayButtonKey: GlobalKey(),
+                      imagePlayButtonKeys: 
+                      {
+
+                          "option_0":GlobalKey()
+                      },
                       tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[2] ==
@@ -540,7 +577,9 @@ class _DiscriminationState extends State<Discrimination> {
                 OptionWidget(
                   child: AudioWidget(
                       audioLinks: dtcontainer.getVideoUrls()[3],
-                      imagePlayButtonKey: GlobalKey(),
+                      imagePlayButtonKeys: {
+                        'option_0': GlobalKey(),
+                      },
                       tutorialIndex: 1),
                   isCorrect: () {
                     return dtcontainer.getVideoUrls()[3] ==

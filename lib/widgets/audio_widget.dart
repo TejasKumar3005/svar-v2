@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:svar_new/widgets/custom_button.dart';
-import 'package:svar_new/core/app_export.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'dart:async';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
@@ -14,7 +12,7 @@ bool isTutorialInProgress = false;
 
 class AudioWidget extends StatefulWidget {
   final List<String> audioLinks;
-  final GlobalKey imagePlayButtonKey;
+  final Map<String, GlobalKey> imagePlayButtonKeys;
   final int tutorialIndex;
   final bool showTutorial;
   final VoidCallback? onTutorialComplete;
@@ -22,7 +20,7 @@ class AudioWidget extends StatefulWidget {
   const AudioWidget({
     Key? key,
     required this.audioLinks,
-    required this.imagePlayButtonKey,
+    required this.imagePlayButtonKeys,
     required this.tutorialIndex,
     this.showTutorial = false,
     this.onTutorialComplete,
@@ -120,9 +118,10 @@ class AudioWidgetState extends State<AudioWidget> {
     List<TargetFocus> targets = [];
 
     for (int i = 0; i < widget.audioLinks.length; i++) {
+      String keyIndex = "option_$i";
       targets.add(TargetFocus(
         identify: "image_play_button_$i",
-        keyTarget: widget.imagePlayButtonKey,
+        keyTarget: widget.imagePlayButtonKeys[keyIndex],
         shape: ShapeLightFocus.Circle,
         contents: [
           TargetContent(
@@ -201,7 +200,7 @@ class AudioWidgetState extends State<AudioWidget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CustomButton(
-            key: widget.imagePlayButtonKey,
+            key: widget.imagePlayButtonKeys["option_${widget.tutorialIndex - 1}"],
             type: ButtonType.ImagePlay,
             onPressed: () {
               if (_audioPlayer.playing) {

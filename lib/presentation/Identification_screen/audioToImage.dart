@@ -37,7 +37,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   List<double> samples = [];
   OverlayEntry? _overlayEntry;
   // Variable to store the correct answer
-
+Map<String,GlobalKey<OptionWidgetState>> keymap = {};
   @override
   void initState() {
     super.initState();
@@ -45,8 +45,10 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    keymap["option_0"] = new GlobalKey();
     _player = AudioPlayer();
     leveltracker = 0;
+
 
     // Fetch correct answer from the database
   }
@@ -95,7 +97,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                           
                                 child: AudioWidget(
                                   audioLinks: widget.dtcontainer.getAudioUrl(),
-                                  imagePlayButtonKey: GlobalKey(),
+                                  imagePlayButtonKeys:keymap ,
                                   tutorialIndex: 1,
                                 ),
                         

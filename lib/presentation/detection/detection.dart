@@ -1,16 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
-import 'package:svar_new/database/userController.dart';
-import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
-import 'package:svar_new/presentation/discrimination/customthumb.dart';
-import 'package:svar_new/presentation/phoneme_level_one/video_player_screen.dart';
-import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
@@ -438,7 +431,9 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
         AudioWidget(
         
           audioLinks: widget.audioLinks,
-          imagePlayButtonKey: GlobalKey(),
+          imagePlayButtonKeys: {
+            "option_0": GlobalKey(),
+          },
           tutorialIndex: 1,
         ),
         SizedBox(

@@ -69,8 +69,9 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     if (optionKeys.isEmpty) {
       for (int i = 0; i < totalAudioTutorials; i++) {
         String keyId = 'option_$i';
-        optionKeys[keyId] = GlobalKey<OptionWidgetState>();
-        imagePlayButtonKeys[keyId] = GlobalKey();
+        optionKeys[keyId] =  GlobalKey();
+      
+        imagePlayButtonKeys[keyId] = new GlobalKey();
       }
     }
   }
@@ -218,13 +219,17 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                       ...List.generate(dtcontainer.getAudioList().length,
                           (index) {
                         String keyId = 'option_$index';
+
+                        //    GlobalKey<OptionWidgetState> optionKey = GlobalKey<OptionWidgetState>();
+
+                        // GlobalKey imagePlayButtonKey = GlobalKey();
                         return Expanded(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 5.0),
                             child: OptionWidget(
                               child: AudioWidget(
                                 audioLinks: [dtcontainer.getAudioList()[index]],
-                                imagePlayButtonKey: imagePlayButtonKeys[keyId]!,
+                                imagePlayButtonKeys: imagePlayButtonKeys!,
                                 tutorialIndex: index + 1,
                                 onTutorialComplete: () {
                                   setState(() {
@@ -277,6 +282,9 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                               if (dtcontainer.getTextList().length <= 4)
                                 ...List.generate(
                                     dtcontainer.getTextList().length, (index) {
+                                  GlobalKey<OptionWidgetState> optionKey =
+                                      GlobalKey<OptionWidgetState>();
+
                                   return Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -290,7 +298,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                                   .getCorrectOutput() ==
                                               dtcontainer.getTextList()[index];
                                         },
-                                        optionKey: GlobalKey(),
+                                        optionKey: optionKey,
                                         tutorialOrder: index + 1,
                                       ),
                                       SizedBox(width: 10),
@@ -319,6 +327,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                 if (dtcontainer.getImageUrlList().length <= 4)
                   ...List.generate(dtcontainer.getImageUrlList().length,
                       (index) {
+                    GlobalKey<OptionWidgetState> optionKey =
+                        GlobalKey<OptionWidgetState>();
                     return Expanded(
                       flex: 1,
                       child: Row(
@@ -333,7 +343,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                 return dtcontainer.getCorrectOutput() ==
                                     dtcontainer.getImageUrlList()[index];
                               },
-                              optionKey: GlobalKey(),
+                              optionKey: optionKey,
                               tutorialOrder: index + 1,
                             ),
                           ),
