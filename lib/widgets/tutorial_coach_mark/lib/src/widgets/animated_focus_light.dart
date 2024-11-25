@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/src/clipper/circle_clipper.dart';
+import 'package:flutter/gestures.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/src/clipper/rect_clipper.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/src/paint/light_paint.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/src/paint/light_paint_rect.dart';
@@ -14,7 +15,8 @@ class AnimatedFocusLight extends StatefulWidget {
   final List<TargetFocus> targets;
   final Function(TargetFocus)? focus;
   final FutureOr Function(TargetFocus)? clickTarget;
-  final FutureOr Function(TargetFocus, TapDownDetails)? clickTargetWithTapPosition;
+  final FutureOr Function(TargetFocus, TapDownDetails)?
+      clickTargetWithTapPosition;
   final FutureOr Function(TargetFocus)? clickOverlay;
   final Function? removeFocus;
   final Function()? finish;
@@ -120,7 +122,9 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
     bool targetTap = false,
     bool overlayTap = false,
   }) async {
+    print("tapped");
     nextIndex++;
+
     if (targetTap) {
       await widget.clickTarget?.call(_targetFocus);
     }
@@ -284,40 +288,40 @@ class AnimatedStaticFocusLightState extends AnimatedFocusLightState {
     return (_targetPosition?.size.height ?? 0) + _getPaddingFocus() * 4;
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: _targetFocus.enableOverlayTab
-          ? () => _tapHandler(overlayTap: true)
-          : null,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (_, child) {
-          _progressAnimated = _curvedAnimation.value;
-          return Stack(
-            children: <Widget>[
-              _getLightPaint(_targetFocus),
-              Positioned(
-                left: left,
-                top: top,
-                child: InkWell(
-                  borderRadius: _betBorderRadiusTarget(),
-                  onTapDown: _tapHandlerForPosition,
-                  onTap: _targetFocus.enableTargetTab
-                      ? () => _tapHandler(targetTap: true)
-
-                      /// Essential for collecting [TapDownDetails]. Do not make [null]
-                      : () {},
-                  child: Container(
-                    color: Colors.transparent,
-                    width: width,
-                    height: height,
-                  ),
-                ),
-              )
-            ],
-          );
-        },
+    return IgnorePointer(
+      ignoring: true, // Ignore all touch interactions for this widget
+      child: Stack(
+        children: <Widget>[
+          _getLightPaint(_targetFocus),
+          Positioned(
+            left: left,
+            top: top,
+            child: GestureDetector(
+              behavior: HitTestBehavior
+                  .translucent, // Allow taps to pass through translucent areas
+              onTapDown: (TapDownDetails details) async {
+                if (widget.clickTargetWithTapPosition != null) {
+                  await widget.clickTargetWithTapPosition
+                      ?.call(_targetFocus, details);
+                }
+              },
+              onTap: _targetFocus.enableTargetTab
+                  ? () async {
+                      // If the target allows, continue to the next focus
+                      print("here");
+                      await _tapHandler(targetTap: true);
+                    }
+                  : null,
+              child: Container(
+                color: Colors.transparent, // Transparent overlay
+                width: width,
+                height: height,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -372,46 +376,57 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
     );
 
     _tweenPulse = _createTweenAnimation(
-      _targetFocus.pulseVariation ?? widget.pulseVariation ?? defaultPulseVariation,
+      _targetFocus.pulseVariation ??
+          widget.pulseVariation ??
+          defaultPulseVariation,
     );
 
     _controllerPulse.addStatusListener(_listenerPulse);
   }
 
-@override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: _targetFocus.enableOverlayTab
-          ? () => _tapHandler(overlayTap: true)
-          : null,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (_, child) {
-          _progressAnimated = _curvedAnimation.value;
-          return Stack(
-            children: <Widget>[
-              _getLightPaint(_targetFocus),
-              Positioned(
-                left: left,
-                top: top,
-                child: InkWell(
-                  borderRadius: _betBorderRadiusTarget(),
-                  onTapDown: _tapHandlerForPosition,
-                  onTap: _targetFocus.enableTargetTab
-                      ? () => _tapHandler(targetTap: true)
+  void _propagateTapToWidgetsBehind(TapDownDetails details) {
+    GestureBinding.instance.handlePointerEvent(PointerDownEvent(
+      position: details.globalPosition,
+    ));
+    GestureBinding.instance.handlePointerEvent(PointerUpEvent(
+      position: details.globalPosition,
+    ));
+  }
 
-                      /// Essential for collecting [TapDownDetails]. Do not make [null]
-                      : () {},
-                  child: Container(
-                    color: Colors.transparent,
-                    width: width,
-                    height: height,
-                  ),
-                ),
-              )
-            ],
-          );
-        },
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      ignoring: true, // Ignore all touch interactions for this widget
+      child: Stack(
+        children: <Widget>[
+          _getLightPaint(_targetFocus),
+          Positioned(
+            left: left,
+            top: top,
+            child: GestureDetector(
+              behavior: HitTestBehavior
+                  .translucent, // Allow taps to pass through translucent areas
+              onTapDown: (TapDownDetails details) async {
+                // Pass tap details to a callback
+                if (widget.clickTargetWithTapPosition != null) {
+                  await widget.clickTargetWithTapPosition
+                      ?.call(_targetFocus, details);
+                }
+              },
+              onTap: _targetFocus.enableTargetTab
+                  ? () async {
+                      print("here");
+                      await _tapHandler(targetTap: true);
+                    }
+                  : null,
+              child: Container(
+                color: Colors.transparent, // Transparent overlay
+                width: width,
+                height: height,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -419,7 +434,9 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
   @override
   void _runFocus() {
     _tweenPulse = _createTweenAnimation(
-      _targetFocus.pulseVariation ?? widget.pulseVariation ?? defaultPulseVariation,
+      _targetFocus.pulseVariation ??
+          widget.pulseVariation ??
+          defaultPulseVariation,
     );
     _finishFocus = false;
     super._runFocus();

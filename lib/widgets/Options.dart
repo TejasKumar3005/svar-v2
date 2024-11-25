@@ -9,6 +9,7 @@ import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dar
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/Identification_screen/celebration_overlay.dart';
+import 'package:svar_new/widgets/tutorial_coach_mark/lib/src/widgets/animated_focus_light.dart';
 
 
 class OptionWidget extends StatefulWidget {
@@ -17,6 +18,7 @@ class OptionWidget extends StatefulWidget {
   final GlobalKey optionKey;
   final int tutorialOrder;
   final ContentAlign align;
+  final Future<void> Function({bool targetTap, bool overlayTap})? tapHandler; 
 
   OptionWidget({
     required this.child,
@@ -24,6 +26,7 @@ class OptionWidget extends StatefulWidget {
     required this.optionKey,
     required this.tutorialOrder,
     required this.align,
+    this.tapHandler,
   }) : super(key: optionKey);
 
   @override
@@ -34,8 +37,13 @@ class _OptionWidgetState extends State<OptionWidget> {
   bool _isGlowing = false;
   OverlayEntry? _overlayEntry;
 
-  void click() {
+void click() async {
     if (widget.isCorrect.call()) {
+      // Call tapHandler for a correct tap
+      if (widget.tapHandler != null) {
+        await widget.tapHandler!(targetTap: true);
+      }
+
       _overlayEntry = celebrationOverlay(context, () {
         _overlayEntry?.remove();
       });
@@ -44,6 +52,11 @@ class _OptionWidgetState extends State<OptionWidget> {
       setState(() {
         _isGlowing = !_isGlowing;
       });
+
+      if (widget.tapHandler != null) {
+        await widget.tapHandler!(overlayTap: true);
+      }
+
       Future.delayed(Duration(seconds: 2), () {
         setState(() {
           _isGlowing = false;

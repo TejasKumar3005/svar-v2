@@ -70,7 +70,8 @@ class TutorialCoachMark {
   OverlayEntry _buildOverlay({bool rootOverlay = false}) {
     return OverlayEntry(
       builder: (context) {
-        return TutorialCoachMarkWidget(
+        return 
+        TutorialCoachMarkWidget(
           key: _widgetKey,
           targets: targets,
           clickTarget: onClickTarget,

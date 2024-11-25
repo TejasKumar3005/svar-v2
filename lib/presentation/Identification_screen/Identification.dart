@@ -12,9 +12,12 @@ import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/options.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
 import 'package:rive/rive.dart';
+import 'package:svar_new/widgets/tutorial_coach_mark/lib/src/widgets/animated_focus_light.dart';
 
 class IdentificationScreen extends StatefulWidget {
-  const IdentificationScreen({Key? key}) : super(key: key);
+  const IdentificationScreen({Key? key, this.clickTarget}) : super(key: key);
+
+  final Future<void> Function(TargetFocus?)? clickTarget;
 
   @override
   AuditoryScreenState createState() => AuditoryScreenState();
@@ -30,9 +33,12 @@ class IdentificationScreen extends StatefulWidget {
 class AuditoryScreenState extends State<IdentificationScreen> {
   late AudioPlayer _player;
   late int leveltracker;
+  TargetFocus? _targetFocus;
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
   OverlayEntry? _overlayEntry;
+  int nextIndex = 0;
+ 
 
   // List to collect GlobalKeys of OptionWidgets
   final List<GlobalKey> optionKeys = [];
@@ -55,6 +61,18 @@ class AuditoryScreenState extends State<IdentificationScreen> {
 
     _player = AudioPlayer();
     leveltracker = 0;
+  }
+
+   Future _tapHandler({
+    bool targetTap = false,
+    bool overlayTap = false,
+  }) async {
+    print("tapped");
+    nextIndex++;
+    if (targetTap) {
+      await widget.clickTarget?.call(_targetFocus);
+    }
+    // return _revertAnimation();
   }
 
   // Initialize the tutorial
@@ -108,7 +126,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       );
     }
 
-      for (int i = 0; i < optionKeys.length; i++) {
+    for (int i = 0; i < optionKeys.length; i++) {
       final GlobalKey optionKey = optionKeys[i];
 
       OptionWidget? optionWidget = optionKey.currentWidget as OptionWidget?;
@@ -142,7 +160,10 @@ class AuditoryScreenState extends State<IdentificationScreen> {
 
   // Build the content for each tutorial step
   Widget _buildTutorialContent(String text, {required bool isCorrect}) {
-    return Container(
+    return 
+    IgnorePointer(
+      child:
+    Container(
       width: MediaQuery.of(context).size.width * 0.8,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -156,7 +177,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
             ),
           ),
           const SizedBox(height: 8),
-         if (isCorrect)
+         if (isCorrect) 
             Text(
               text,
               textAlign: TextAlign.center,
@@ -167,6 +188,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
             ),
         ],
       ),
+      )
     );
   }
 
@@ -330,13 +352,13 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                           padding: EdgeInsets.symmetric(vertical: 5.0),
                           child: OptionWidget(
                             optionKey: optionKey,
-                            
                             child: AudioWidget(
                               audioLinks: [dtcontainer.getAudioList()[index]],
                             ),
                             isCorrect: () => dtcontainer.getCorrectOutput() ==
                                 dtcontainer.getAudioList()[index],
                             align: ContentAlign.onside,
+                            tapHandler: _tapHandler,
                             tutorialOrder: index+1,
                           ),
                         ),
@@ -368,13 +390,13 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                     (index) {
                                   final GlobalKey optionKey = GlobalKey();
                                   keys.add(optionKey);
-
                                   return Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       OptionWidget(
                                         optionKey: optionKey,
                                         align: ContentAlign.ontop,
+                                        tapHandler: _tapHandler,
                                         child: TextContainer(
                                           text: dtcontainer.getTextList()[index],
                                         ),
@@ -429,6 +451,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                               },
                               align: ContentAlign.ontop,
                               tutorialOrder: index,
+                              tapHandler: _tapHandler,
                             ),
                           ),
                           SizedBox(width: 10),

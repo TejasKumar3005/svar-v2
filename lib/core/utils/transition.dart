@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
+import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/home/home.dart';
 import 'package:svar_new/routes/app_routes.dart';
 
@@ -7,6 +8,11 @@ class RivePageRoute extends PageRouteBuilder {
   final String routeName;
   final dynamic arguments;
   final String riveFileName;
+
+  @override
+  dispose() {
+    super.dispose();
+  }
 
   RivePageRoute(
       {required this.routeName, this.arguments, required this.riveFileName})
@@ -41,12 +47,15 @@ class RivePageRoute extends PageRouteBuilder {
                     animation: animation,
                     builder: (context, child) {
                       // Only show the Rive animation when the animation is not yet completed.
-                      return animation.isCompleted
-                          ? SizedBox()
-                          : RiveAnimationTransition(
+                      if (animation.isCompleted){
+                          //  dispose();
+                            return Container();
+                          }
+                          else {
+                            return RiveAnimationTransition(
                               animation: animation,
                               riveFileName: riveFileName,
-                            );
+                            );}
                     },
                   ),
                 ),

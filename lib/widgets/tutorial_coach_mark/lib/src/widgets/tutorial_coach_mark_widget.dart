@@ -78,8 +78,15 @@ class TutorialCoachMarkWidgetState extends State<TutorialCoachMarkWidget>
   Widget build(BuildContext context) {
     return Material(
       type: MaterialType.transparency,
-      child: Stack(
+      child: 
+      // IgnorePointer(
+      //   ignoring: true,
+      //   child:
+      Stack(
         children: <Widget>[
+          // IgnorePointer(
+          //   ignoring: false,
+          //   child:
           AnimatedFocusLight(
             key: _focusLightKey,
             initialFocus: widget.initialFocus,
@@ -117,14 +124,18 @@ class TutorialCoachMarkWidgetState extends State<TutorialCoachMarkWidget>
               });
             },
           ),
+          // ),
+          
           AnimatedOpacity(
-            opacity: showContent ? 1 : 0,
+            opacity: 1,
             duration: const Duration(milliseconds: 300),
             child: _buildContents(),
           ),
+        
           _buildSkip()
         ],
       ),
+    // )
     );
   }
 
