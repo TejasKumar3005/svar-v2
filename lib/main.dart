@@ -15,7 +15,7 @@ import 'package:svar_new/presentation/phoneme_level_one/provider/level_one_provi
 import 'package:svar_new/providers/appUpdateProvider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
-import 'package:svar_new/widgets/tutorial_provider.dart';
+import 'package:svar_new/providers/tutorial_provider.dart';
 
 
 Future<void> initializeFirebase() async {

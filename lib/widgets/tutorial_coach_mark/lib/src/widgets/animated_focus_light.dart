@@ -10,6 +10,8 @@ import 'package:svar_new/widgets/tutorial_coach_mark/lib/src/paint/light_paint_r
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/src/target/target_focus.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/src/target/target_position.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/src/util.dart';
+import 'package:svar_new/providers/tutorial_provider.dart';
+import 'package:provider/provider.dart';
 
 class AnimatedFocusLight extends StatefulWidget {
   final List<TargetFocus> targets;
@@ -76,6 +78,7 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
   int _currentFocus = 0;
   double _progressAnimated = 0;
   int nextIndex = 0;
+  late TapHandlerProvider tapHandlerProvider;
 
   Future _revertAnimation();
   void _listener(AnimationStatus status);
@@ -83,6 +86,7 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
   @override
   void initState() {
     super.initState();
+    tapHandlerProvider = Provider.of<TapHandlerProvider>(context, listen: false);
     _currentFocus = widget.initialFocus;
     _targetFocus = widget.targets[_currentFocus];
     _controller = AnimationController(
@@ -109,12 +113,13 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
   void next() => _tapHandler();
 
   void previous() {
-    nextIndex--;
+    tapHandlerProvider.nextIndex--;
     _revertAnimation();
   }
 
   void goTo(int index) {
-    nextIndex = index;
+    final tapHandlerProvider = Provider.of<TapHandlerProvider>(context, listen: false);
+    tapHandlerProvider.nextIndex = index;
     _revertAnimation();
   }
 
@@ -123,14 +128,14 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
     bool overlayTap = false,
   }) async {
     print("tapped");
-    nextIndex++;
+    tapHandlerProvider.nextIndex++; 
 
-    if (targetTap) {
-      await widget.clickTarget?.call(_targetFocus);
-    }
-    if (overlayTap) {
-      await widget.clickOverlay?.call(_targetFocus);
-    }
+    // if (targetTap) {
+    //   await widget.clickTarget?.call(_targetFocus);
+    // }
+    // if (overlayTap) {
+    //   await widget.clickOverlay?.call(_targetFocus);
+    // }
     return _revertAnimation();
   }
 
@@ -288,43 +293,41 @@ class AnimatedStaticFocusLightState extends AnimatedFocusLightState {
     return (_targetPosition?.size.height ?? 0) + _getPaddingFocus() * 4;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      ignoring: true, // Ignore all touch interactions for this widget
-      child: Stack(
-        children: <Widget>[
-          _getLightPaint(_targetFocus),
-          Positioned(
-            left: left,
-            top: top,
-            child: GestureDetector(
-              behavior: HitTestBehavior
-                  .translucent, // Allow taps to pass through translucent areas
-              onTapDown: (TapDownDetails details) async {
-                if (widget.clickTargetWithTapPosition != null) {
-                  await widget.clickTargetWithTapPosition
-                      ?.call(_targetFocus, details);
+@override
+Widget build(BuildContext context) {
+  return Stack(
+    children: <Widget>[
+      _getLightPaint(_targetFocus),
+      Positioned(
+        left: left,
+        top: top,
+        child: GestureDetector(
+          behavior: HitTestBehavior
+              .translucent, // Allow taps to pass through translucent areas
+          onTapDown: (TapDownDetails details) async {
+            // Pass tap details to a callback
+            if (widget.clickTargetWithTapPosition != null) {
+              await widget.clickTargetWithTapPosition
+                  ?.call(_targetFocus, details);
+            }
+          },
+          onTap: _targetFocus.enableTargetTab
+              ? () async {
+                  print("here");
+                  await _tapHandler(targetTap: true);
                 }
-              },
-              onTap: _targetFocus.enableTargetTab
-                  ? () async {
-                      // If the target allows, continue to the next focus
-                      print("here");
-                      await _tapHandler(targetTap: true);
-                    }
-                  : null,
-              child: Container(
-                color: Colors.transparent, // Transparent overlay
-                width: width,
-                height: height,
-              ),
-            ),
-          )
-        ],
+              : null,
+          child: Container(
+            color: Colors.transparent, // Transparent overlay
+            width: width,
+            height: height,
+          ),
+        ),
       ),
-    );
-  }
+    ],
+  );
+}
+
 
   @override
   Future _revertAnimation() {
@@ -353,7 +356,7 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
   late Animation _tweenPulse;
 
   bool _finishFocus = false;
-  bool _initReverse = false;
+  bool initReverse = false;
 
   double get left => (_targetPosition?.offset.dx ?? 0) - _getPaddingFocus() * 2;
 
@@ -393,43 +396,41 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
     ));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      ignoring: true, // Ignore all touch interactions for this widget
-      child: Stack(
-        children: <Widget>[
-          _getLightPaint(_targetFocus),
-          Positioned(
-            left: left,
-            top: top,
-            child: GestureDetector(
-              behavior: HitTestBehavior
-                  .translucent, // Allow taps to pass through translucent areas
-              onTapDown: (TapDownDetails details) async {
-                // Pass tap details to a callback
-                if (widget.clickTargetWithTapPosition != null) {
-                  await widget.clickTargetWithTapPosition
-                      ?.call(_targetFocus, details);
+ @override
+Widget build(BuildContext context) {
+  return Stack(
+    children: <Widget>[
+      _getLightPaint(_targetFocus),
+      Positioned(
+        left: left,
+        top: top,
+        child: GestureDetector(
+          behavior: HitTestBehavior
+              .translucent, // Allow taps to pass through translucent areas
+          onTapDown: (TapDownDetails details) async {
+            // Pass tap details to a callback
+            if (widget.clickTargetWithTapPosition != null) {
+              await widget.clickTargetWithTapPosition
+                  ?.call(_targetFocus, details);
+            }
+          },
+          onTap: _targetFocus.enableTargetTab
+              ? () async {
+                  print("here");
+                  await _tapHandler(targetTap: true);
                 }
-              },
-              onTap: _targetFocus.enableTargetTab
-                  ? () async {
-                      print("here");
-                      await _tapHandler(targetTap: true);
-                    }
-                  : null,
-              child: Container(
-                color: Colors.transparent, // Transparent overlay
-                width: width,
-                height: height,
-              ),
-            ),
-          )
-        ],
+              : null,
+          child: Container(
+            color: Colors.transparent, // Transparent overlay
+            width: width,
+            height: height,
+          ),
+        ),
       ),
-    );
-  }
+    ],
+  );
+}
+
 
   @override
   void _runFocus() {
@@ -445,7 +446,7 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
   @override
   Future _revertAnimation() {
     safeSetState(() {
-      _initReverse = true;
+      _tapHandlerProvider.initReverse = true;
     });
 
     return _controllerPulse.reverse(from: _controllerPulse.value);
@@ -469,7 +470,7 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
     if (status == AnimationStatus.dismissed) {
       safeSetState(() {
         _finishFocus = false;
-        _initReverse = false;
+        _tapHandlerProvider.initReverse = false;
       });
       _goToFocus(nextIndex);
     }
@@ -485,7 +486,7 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
     }
 
     if (status == AnimationStatus.dismissed) {
-      if (_initReverse) {
+      if (_tapHandlerProvider.initReverse) {
         safeSetState(() => _finishFocus = false);
         _controller.reverse();
       } else if (_finishFocus) {

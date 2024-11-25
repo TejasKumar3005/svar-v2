@@ -18,7 +18,7 @@ class OptionWidget extends StatefulWidget {
   final GlobalKey optionKey;
   final int tutorialOrder;
   final ContentAlign align;
-  final Future<void> Function({bool targetTap, bool overlayTap})? tapHandler; 
+
 
   OptionWidget({
     required this.child,
@@ -26,7 +26,7 @@ class OptionWidget extends StatefulWidget {
     required this.optionKey,
     required this.tutorialOrder,
     required this.align,
-    this.tapHandler,
+
   }) : super(key: optionKey);
 
   @override
@@ -40,10 +40,7 @@ class _OptionWidgetState extends State<OptionWidget> {
 void click() async {
     if (widget.isCorrect.call()) {
       // Call tapHandler for a correct tap
-      if (widget.tapHandler != null) {
-        await widget.tapHandler!(targetTap: true);
-      }
-
+   
       _overlayEntry = celebrationOverlay(context, () {
         _overlayEntry?.remove();
       });
@@ -52,10 +49,6 @@ void click() async {
       setState(() {
         _isGlowing = !_isGlowing;
       });
-
-      if (widget.tapHandler != null) {
-        await widget.tapHandler!(overlayTap: true);
-      }
 
       Future.delayed(Duration(seconds: 2), () {
         setState(() {

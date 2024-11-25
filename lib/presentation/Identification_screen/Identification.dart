@@ -358,7 +358,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                             isCorrect: () => dtcontainer.getCorrectOutput() ==
                                 dtcontainer.getAudioList()[index],
                             align: ContentAlign.onside,
-                            tapHandler: _tapHandler,
+                            
                             tutorialOrder: index+1,
                           ),
                         ),
@@ -396,7 +396,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                       OptionWidget(
                                         optionKey: optionKey,
                                         align: ContentAlign.ontop,
-                                        tapHandler: _tapHandler,
+                                       
                                         child: TextContainer(
                                           text: dtcontainer.getTextList()[index],
                                         ),
@@ -451,7 +451,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                               },
                               align: ContentAlign.ontop,
                               tutorialOrder: index,
-                              tapHandler: _tapHandler,
+                            
                             ),
                           ),
                           SizedBox(width: 10),
