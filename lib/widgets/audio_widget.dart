@@ -6,24 +6,20 @@ import 'dart:async';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
 import 'package:rive/rive.dart' as rive;
 
+
 // Global variables to manage tutorial state across instances
 AudioPlayer globalAudioPlayer = AudioPlayer();
 bool isTutorialInProgress = false;
 
 class AudioWidget extends StatefulWidget {
   final List<String> audioLinks;
-  final Map<String, GlobalKey> imagePlayButtonKeys;
-  final int tutorialIndex;
-  final bool showTutorial;
-  final VoidCallback? onTutorialComplete;
+ 
+
 
   const AudioWidget({
     Key? key,
     required this.audioLinks,
-    required this.imagePlayButtonKeys,
-    required this.tutorialIndex,
-    this.showTutorial = false,
-    this.onTutorialComplete,
+
   }) : super(key: key);
 
   @override
@@ -61,7 +57,7 @@ class AudioWidgetState extends State<AudioWidget> {
       }
     });
 
-    showTutorial();
+
   }
 
   Future<void> loadAudioLengths() async {
@@ -111,64 +107,6 @@ class AudioWidgetState extends State<AudioWidget> {
     }
   }
 
-  void showTutorial() {
-    if (hasShownTutorial || isTutorialInProgress) return;
-
-    isTutorialInProgress = true;
-    List<TargetFocus> targets = [];
-
-    for (int i = 0; i < widget.audioLinks.length; i++) {
-      String keyIndex = "option_$i";
-      targets.add(TargetFocus(
-        identify: "image_play_button_$i",
-        keyTarget: widget.imagePlayButtonKeys[keyIndex],
-        shape: ShapeLightFocus.Circle,
-        contents: [
-          TargetContent(
-            align: ContentAlign.ontop,
-            child: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: 100,
-                    width: 100,
-                    child: rive.RiveAnimation.asset(
-                      'assets/rive/hand_click.riv',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ));
-    }
-
-    TutorialCoachMark(
-      targets: targets,
-      colorShadow: Colors.black,
-      alignSkip: Alignment.bottomRight,
-      paddingFocus: 10,
-      opacityShadow: 0,
-      onFinish: () {
-        setState(() {
-          hasShownTutorial = true;
-          isTutorialInProgress = false;
-        });
-        widget.onTutorialComplete?.call(); // Trigger the callback here
-      },
-      onSkip: () {
-        setState(() {
-          hasShownTutorial = true;
-          isTutorialInProgress = false;
-        });
-        widget.onTutorialComplete?.call();
-        return true;
-      },
-    ).show(context: context);
-  }
-
   @override
   void dispose() {
     _positionSubscription?.cancel();
@@ -200,7 +138,6 @@ class AudioWidgetState extends State<AudioWidget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CustomButton(
-            key: widget.imagePlayButtonKeys["option_${widget.tutorialIndex - 1}"],
             type: ButtonType.ImagePlay,
             onPressed: () {
               if (_audioPlayer.playing) {

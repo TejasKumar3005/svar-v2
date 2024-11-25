@@ -94,11 +94,8 @@ Map<String,GlobalKey<OptionWidgetState>> keymap = {};
                         children: [
                           Center(
                             child: GestureDetector(
-                          
                                 child: AudioWidget(
                                   audioLinks: widget.dtcontainer.getAudioUrl(),
-                                  imagePlayButtonKeys:keymap ,
-                                  tutorialIndex: 1,
                                 ),
                         
                             ),
@@ -146,6 +143,7 @@ Map<String,GlobalKey<OptionWidgetState>> keymap = {};
                                             },
                                             optionKey: GlobalKey(),
                                             tutorialOrder: index + 2,
+                                            align: ContentAlign.ontop,
                                           ),
                                           SizedBox(
                                             width:

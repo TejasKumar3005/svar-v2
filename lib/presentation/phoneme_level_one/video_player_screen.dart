@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class VideoPlayerScreen extends StatefulWidget {
   final String videoUrl;
@@ -32,7 +33,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   void _initializePlayer() async {
     CachingManager cachingManager=CachingManager();
 
-    _videoPlayerController = VideoPlayerController.file((await cachingManager.getCachedFile(widget.videoUrl))!);
+    // _videoPlayerController = VideoPlayerController.file((await cachingManager.getCachedFile(widget.videoUrl))!);
+
+    if (kIsWeb) {
+      // For web, use the network URL directly
+      _videoPlayerController = VideoPlayerController.network(widget.videoUrl);
+    } else {
+      // For non-web platforms, use the cached file
+      final cachedFile = await cachingManager.getCachedFile(widget.videoUrl);
+      if (cachedFile != null) {
+        _videoPlayerController = VideoPlayerController.file(cachedFile);
+      } else {
+        // Handle the case where the file is not cached
+        print('Error: Cached file not found');
+      }
+    }
     await _videoPlayerController.initialize();
     _videoPlayerController.addListener(() {
       if (_videoPlayerController.value.position == _videoPlayerController.value.duration) {

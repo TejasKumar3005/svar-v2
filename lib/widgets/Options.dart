@@ -3,175 +3,39 @@ import 'package:svar_new/presentation/Identification_screen/celebration_overlay.
 
 import 'package:rive/rive.dart';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
+import 'dart:core';
 
 class OptionWidget extends StatefulWidget {
+  static List<GlobalKey> optionKeys = [];
   final Widget child;
   final bool Function() isCorrect;
-  final GlobalKey<OptionWidgetState> optionKey;
+  final GlobalKey optionKey;
   final int tutorialOrder;
-  final bool areAudioTutorialsComplete;
+  final ContentAlign align; // New parameter for alignment
 
   OptionWidget({
     required this.child,
     required this.isCorrect,
     required this.optionKey,
     required this.tutorialOrder,
-    this.areAudioTutorialsComplete = true,
-  }) : super(key: optionKey);
+    required this.align, 
+  }) : super(key: optionKey) {
+    optionKeys.add(optionKey);
+  }
 
   @override
-  OptionWidgetState createState() => OptionWidgetState();
+  _OptionWidgetState createState() => _OptionWidgetState();
 }
 
-class OptionWidgetState extends State<OptionWidget> {
+class _OptionWidgetState extends State<OptionWidget> {
   bool _isGlowing = false;
-  bool hasShownTutorial = false;
   OverlayEntry? _overlayEntry;
   late TutorialCoachMark tutorialCoachMark;
 
   @override
   void initState() {
     super.initState();
-    // Initialize tutorial only if this is the first widget in the sequence
-    if (widget.tutorialOrder == 1) {
-      Future.delayed(Duration.zero);
-      _initTutorial();
-    }
-  }
 
-  void didUpdateWidget(covariant OptionWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.areAudioTutorialsComplete &&
-        !oldWidget.areAudioTutorialsComplete) {
-      startTutorialIfAllowed();
-    }
-  }
-
-  // Setup the tutorial sequence based on the tutorial order of each widget
-  void _initTutorial() {
-    tutorialCoachMark = TutorialCoachMark(
-      targets: _createTargets(),
-      colorShadow: const Color.fromARGB(255, 255, 255, 255),
-      textSkip: "SKIP",
-      paddingFocus: 10,
-      opacityShadow: 0,
-      onFinish: () {
-        print("Tutorial finished");
-      },
-      onSkip: () {
-        print("Tutorial skipped");
-        return true;
-      },
-    );
-  }
-
-  List<TargetFocus> _createTargets() {
-    List<TargetFocus> targets = [];
-
-    // Target for the current option
-    targets.add(
-      TargetFocus(
-        identify: "tutorial_step_${widget.tutorialOrder}",
-        keyTarget: widget.optionKey,
-        contents: [
-          TargetContent(
-            align: ContentAlign.ontop,
-            builder: (context, controller) {
-              return _buildTutorialContent(
-                _getTutorialMessage(widget.tutorialOrder),
-                isCorrect: false,
-              );
-            },
-          ),
-        ],
-      ),
-    );
-
-    // If this is the correct option, add the correct answer message
-    if (widget.isCorrect.call()) {
-      targets.add(
-        TargetFocus(
-          identify: "correct_option",
-          keyTarget: widget.optionKey,
-          contents: [
-            TargetContent(
-              align: ContentAlign.ontop,
-              builder: (context, controller) {
-                return _buildTutorialContent(
-                  _getCorrectAnswerMessage(1),
-                  isCorrect: true,
-                );
-              },
-            ),
-          ],
-        ),
-      );
-    }
-
-    return targets;
-  }
-
-  String _getTutorialMessage(int step) {
-    switch (step) {
-      case 1:
-        return "Here are your answer options!";
-      case 2:
-        return "Click on the option you think is correct";
-      case 3:
-        return "If wrong, the option will glow red";
-      case 4:
-        return "If correct, you'll see a celebration!";
-      default:
-        return "Try to answer the question";
-    }
-  }
-
-  Widget _buildTutorialContent(String text, {required bool isCorrect}) {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.8,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 50,
-            width: 50,
-            child: RiveAnimation.asset(
-              'assets/rive/hand_click.riv',
-              fit: BoxFit.contain,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _getCorrectAnswerMessage(int step) {
-    switch (step) {
-      case 1:
-        return "This is the correct answer!";
-      case 2:
-        return "Well done!";
-      default:
-        return "Great job!";
-    }
-  }
-
-  void startTutorialIfAllowed() {
-    if (widget.areAudioTutorialsComplete && !hasShownTutorial) {
-      hasShownTutorial = true;
-      tutorialCoachMark.show(context: context);
-    }
   }
 
   void click() {
@@ -196,7 +60,7 @@ class OptionWidgetState extends State<OptionWidget> {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      key: widget.optionKey, // Assign the unique key here
+      key: widget.optionKey,
       duration: Duration(seconds: 1),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -216,6 +80,7 @@ class OptionWidgetState extends State<OptionWidget> {
 
   @override
   void dispose() {
+    OptionWidget.optionKeys.remove(widget.optionKey);
     super.dispose();
   }
 }

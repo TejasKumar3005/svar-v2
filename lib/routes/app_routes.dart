@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:svar_new/presentation/Identification_screen/Identification.dart';
+import 'package:svar_new/presentation/identification_screen/identification.dart';
 import 'package:svar_new/presentation/camera_video_excercise/videoCam.dart';
 import 'package:svar_new/presentation/discrimination/discrimination.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_screen.dart';

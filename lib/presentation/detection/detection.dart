@@ -1,3 +1,5 @@
+// detection_screen.dart
+
 import 'dart:async';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +9,8 @@ import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
-import 'package:svar_new/widgets/audio_widget.dart';
-
+import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
+import 'package:rive/rive.dart';
 
 class VideoPlayerWidget extends StatefulWidget {
   final String videoUrl;
@@ -36,7 +38,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   }
 
   Future<void> _initializePlayer() async {
-    _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+    _videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
 
     try {
       await _videoPlayerController.initialize();
@@ -83,7 +86,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   }
 }
 
-
 class SimpleVideoPlayer extends StatefulWidget {
   final String videoUrl;
   final bool isMuted;
@@ -108,38 +110,38 @@ class _SimpleVideoPlayerState extends State<SimpleVideoPlayer> {
     _initializePlayer();
   }
 
-// Inside SimpleVideoPlayer
-Future<void> _initializePlayer() async {
-  _controller = VideoPlayerController.network(
-      widget.videoUrl,
+  TutorialCoachMark? tutorialCoachMark;
+
+  // Inside SimpleVideoPlayer
+  Future<void> _initializePlayer() async {
+    _controller = VideoPlayerController.networkUrl(
+      Uri.parse(widget.videoUrl),
       videoPlayerOptions: VideoPlayerOptions(
         mixWithOthers: true, // Allows audio mixing with other audio streams
       ),
     );
 
+    try {
+      await _controller.initialize();
+      _controller.setVolume(widget.isMuted ? 0.0 : 1.0);
 
-  try {
-    await _controller.initialize();
-    _controller.setVolume(widget.isMuted ? 0.0 : 1.0);
+      _controller.play();
 
-    _controller.play();
+      _controller.addListener(() {
+        if (_controller.value.isPlaying) {
+          print("${widget.videoUrl} is playing");
+        } else {
+          print("${widget.videoUrl} is paused");
+        }
+      });
 
-    _controller.addListener(() {
-      if (_controller.value.isPlaying) {
-        print("${widget.videoUrl} is playing");
-      } else {
-        print("${widget.videoUrl} is paused");
-      }
-    });
-
-    setState(() {
-      _isInitialized = true;
-    });
-  } catch (e) {
-    print("Error initializing video: $e");
+      setState(() {
+        _isInitialized = true;
+      });
+    } catch (e) {
+      print("Error initializing video: $e");
+    }
   }
-}
-
 
   @override
   void dispose() {
@@ -158,8 +160,6 @@ Future<void> _initializePlayer() async {
   }
 }
 
-
-
 class Detection extends StatefulWidget {
   const Detection({Key? key}) : super(key: key);
 
@@ -172,14 +172,18 @@ class Detection extends StatefulWidget {
 }
 
 class _DetectionState extends State<Detection> {
-  final GlobalKey<AudioWidgetState> _audioWidgetKey = GlobalKey<AudioWidgetState>();
+  final GlobalKey<AudioWidgetState> _audioWidgetKey =
+      GlobalKey<AudioWidgetState>();
   String quizType = "video";
   int selectedOption = -1;
   PlayAudio playAudio = PlayAudio();
-
+  TutorialCoachMark? tutorialCoachMark;
   Timer? volumeTimer;
   double currentProgress = 0.0;
   double totalDuration = 0.0;
+
+  // Define a list to hold all GlobalKeys from OptionWidgets
+  final List<GlobalKey<OptionWidgetState>> optionKeys = [];
 
   @override
   void initState() {
@@ -204,6 +208,7 @@ class _DetectionState extends State<Detection> {
   void dispose() {
     // Dispose of the timer if it exists
     volumeTimer?.cancel();
+
     super.dispose();
   }
 
@@ -212,28 +217,50 @@ class _DetectionState extends State<Detection> {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/discri_bg.png"),
-            fit: BoxFit.cover,
-          ),
-        ),
-        padding: EdgeInsets.symmetric(
-          horizontal: 15.h,
-          vertical: 10.v,
-        ),
-        child: Column(
-          children: [
-            DisciAppBar(context),
-            SizedBox(
-              height: 26.v,
+      body: Stack( // Wrap the body in a Stack to position the tip button
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/discri_bg.png"),
+                fit: BoxFit.cover,
+              ),
             ),
-            detectionQuiz(context, type),
-          ],
-        ),
+            padding: EdgeInsets.symmetric(
+              horizontal: 15.h,
+              vertical: 10.v,
+            ),
+            child: Column(
+              children: [
+                DisciAppBar(context),
+                SizedBox(
+                  height: 26.v,
+                ),
+                detectionQuiz(context, type),
+              ],
+            ),
+          ),
+          // Tip Button
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: GestureDetector(
+              onTap: () {
+                // Initialize and show the tutorial
+                _initTutorial();
+                showTutorial();
+              },
+              child: CustomImageView(
+                imagePath: ImageConstant.imgTipbtn,
+                height: 60.v,
+                width: 60.h,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -242,22 +269,30 @@ class _DetectionState extends State<Detection> {
     switch (quizType) {
       case "HalfMuted":
         return HalfMutedWidget(
-          key: _audioWidgetKey,
           audioLinks:
-              (ModalRoute.of(context)?.settings.arguments as List<dynamic>)[1].getVideoUrls(),
+              (ModalRoute.of(context)?.settings.arguments as List<dynamic>)[1]
+                  .getVideoUrls(),
+          optionKeys: optionKeys, // Pass the optionKeys list
         );
       case "MutedUnmuted":
-        return MutedUnmuted(context);
+        return MutedUnmuted(context,
+            optionKeys: optionKeys); // Pass the optionKeys list
       default:
         return Container();
     }
   }
 
-  Widget MutedUnmuted(BuildContext context) {
+  Widget MutedUnmuted(BuildContext context,
+      {required List<GlobalKey<OptionWidgetState>> optionKeys}) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     dynamic dtcontainer = obj[1] as dynamic;
     List<String> videoUrls = dtcontainer.getVideoUrls();
     int mutedVideoIndex = dtcontainer.getMuted();
+
+    // Ensure the optionKeys list has enough keys
+    while (optionKeys.length < 2) {
+      optionKeys.add(GlobalKey<OptionWidgetState>());
+    }
 
     return Column(
       children: [
@@ -302,7 +337,9 @@ class _DetectionState extends State<Detection> {
                 ),
               ),
             ),
-            SizedBox(width: 20), // Add spacing between the two Expanded containers if needed
+            SizedBox(
+                width:
+                    20), // Add spacing between the two Expanded containers if needed
             Expanded(
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.40,
@@ -329,38 +366,42 @@ class _DetectionState extends State<Detection> {
           children: [
             Expanded(
               child: Container(
-                width: MediaQuery.of(context).size.width * 0.40, // Dynamically set width
+                width: MediaQuery.of(context).size.width *
+                    0.40, // Dynamically set width
                 child: OptionWidget(
                   child: OptionButton(
                     type: ButtonType.Video1,
                     onPressed: () {
-                      
+                      // Handle button press
                     },
                   ),
                   isCorrect: () {
-                    return (obj[1] as dynamic).getMuted() == 1;
+                    return dtcontainer.getMuted() == 1;
                   },
-                  optionKey: GlobalKey(),
-                tutorialOrder: 1,
+                  optionKey: optionKeys[0], // Assign the key
+                  tutorialOrder: 1,
+                  align: ContentAlign.ontop,
                 ),
               ),
             ),
             SizedBox(width: 20), // Add spacing between buttons if needed
             Expanded(
               child: Container(
-                width: MediaQuery.of(context).size.width * 0.40, // Dynamically set width
+                width: MediaQuery.of(context).size.width *
+                    0.40, // Dynamically set width
                 child: OptionWidget(
                   child: OptionButton(
                     type: ButtonType.Video2,
                     onPressed: () {
-                      
+                      // Handle button press
                     },
                   ),
                   isCorrect: () {
-                    return (obj[1] as dynamic).getMuted() == 0;
+                    return dtcontainer.getMuted() == 0;
                   },
-                  optionKey: GlobalKey(),
-                tutorialOrder: 2,
+                  optionKey: optionKeys[1], // Assign the key
+                  tutorialOrder: 2,
+                  align: ContentAlign.ontop,
                 ),
               ),
             ),
@@ -369,16 +410,141 @@ class _DetectionState extends State<Detection> {
       ],
     );
   }
+
+  // Implement the tutorial methods in Detection class
+
+  void _initTutorial() {
+    tutorialCoachMark = TutorialCoachMark(
+      targets: _createTargets(),
+      colorShadow: Colors.black.withOpacity(0.5),
+      textSkip: "SKIP",
+      paddingFocus: 10,
+      opacityShadow: 0.8,
+      onFinish: () {
+        print("Tutorial finished");
+      },
+      onSkip: () {
+        print("Tutorial skipped");
+        return true;
+      },
+    );
+  }
+
+  List<TargetFocus> _createTargets() {
+    List<TargetFocus> targets = [];
+
+    for (int i = 0; i < optionKeys.length; i++) {
+      final key = optionKeys[i];
+      final twidget = key.currentWidget as OptionWidget?;
+      if (twidget != null) {
+        targets.add(
+          TargetFocus(
+            identify: "tutorial_step_${i + 1}",
+            keyTarget: key,
+            contents: [
+              TargetContent(
+                align: twidget.align,
+                builder: (context, controller) {
+                  return _buildTutorialContent(
+                    "",
+                    isCorrect: false,
+                    child: twidget.child,
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      }
+    }
+
+    // Add a target for the correct option
+    for (int i = 0; i < optionKeys.length; i++) {
+      final key = optionKeys[i];
+      final twidget = key.currentWidget as OptionWidget?;
+      if (twidget != null && twidget.isCorrect()) {
+        targets.add(
+          TargetFocus(
+            identify: "correct_option",
+            keyTarget: key,
+            contents: [
+              TargetContent(
+                align: ContentAlign.ontop,
+                builder: (context, controller) {
+                  return _buildTutorialContent(
+                    _getCorrectAnswerMessage(1),
+                    isCorrect: true,
+                    child: twidget.child,
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+        break; // Assuming only one correct option
+      }
+    }
+
+    return targets;
+  }
+
+  Widget _buildTutorialContent(String text,
+      {required bool isCorrect, required Widget child}) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.8,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 50,
+            width: 50,
+            child: RiveAnimation.asset(
+              'assets/rive/hand_click.riv',
+              fit: BoxFit.contain,
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (isCorrect)
+            Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  String _getCorrectAnswerMessage(int step) {
+    switch (step) {
+      case 1:
+        return "This is the correct answer!";
+      case 2:
+        return "Well done!";
+      default:
+        return "Great job!";
+    }
+  }
+
+  void showTutorial() {
+    if (tutorialCoachMark != null) {
+      tutorialCoachMark!.show(context: context);
+    }
+  }
 }
-
-
 
 class HalfMutedWidget extends StatefulWidget {
   final List<String> audioLinks;
+  final List<GlobalKey<OptionWidgetState>> optionKeys;
 
   const HalfMutedWidget({
     Key? key,
     required this.audioLinks,
+    required this.optionKeys,
   }) : super(key: key);
 
   @override
@@ -421,6 +587,11 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // Ensure the optionKeys list has enough keys
+    while (widget.optionKeys.length < 2) {
+      widget.optionKeys.add(GlobalKey<OptionWidgetState>());
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -428,13 +599,14 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
         SizedBox(
           height: 40.v,
         ),
-        AudioWidget(
-        
-          audioLinks: widget.audioLinks,
-          imagePlayButtonKeys: {
-            "option_0": GlobalKey(),
-          },
-          tutorialIndex: 1,
+        OptionWidget(
+          child: AudioWidget(
+            audioLinks: widget.audioLinks,
+          ),
+          isCorrect: () => false,
+          optionKey: widget.optionKeys[0], // Assign the key
+          tutorialOrder: 1,
+          align: ContentAlign.onside,
         ),
         SizedBox(
           height: 20.v,
@@ -452,19 +624,15 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
             List<double> total_length = _childKey.currentState!.lengths;
             if (total_length.isEmpty) {
-              // Ensure there is at least 1 element in the list (the audio length)
               print("Error: total_length is empty.");
               return false;
             }
 
-            double audioLength = total_length[
-                0]; // Since there's only one length, take the first element
-            double ans =
-                0.5; // Since you're muting the first half, the threshold is 0.5
+            double audioLength = total_length[0];
+            double ans = 0.5;
 
             double currentProgress = _childKey.currentState!.progress;
             print("Current progress is $currentProgress");
-
 
             const double tolerance = 0.4;
             bool condition =
@@ -473,8 +641,9 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
             return condition;
           },
-          optionKey: GlobalKey(),
-                tutorialOrder: 2,
+          optionKey: widget.optionKeys[1], // Assign the key
+          tutorialOrder: 2,
+          align: ContentAlign.ontop,
         ),
       ],
     );
