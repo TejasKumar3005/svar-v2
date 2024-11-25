@@ -2,33 +2,33 @@ import 'package:flutter/material.dart';
 
 class TapHandlerProvider extends ChangeNotifier {
   int nextIndex = 0;
-  late AnimationController _controllerPulse;
+  AnimationController? _controllerPulse = AnimationController(
+      vsync: this,
+      duration: widget.pulseAnimationDuration ?? defaultPulseAnimationDuration,
+    );;
   bool initReverse = false;
-  /// Increment nextIndex and handle tap logic
-  Future<void> tapHandler({
-    required BuildContext context,
- 
-    Future<void> Function()? revertAnimation,
+  
+   int increase_index() {
+    nextIndex++;
+    notifyListeners();
+    return nextIndex; 
+  }
+
+  Future _revertAnimation() async {
+    initReverse = true;
+    print( 'controller pulse value ${_controllerPulse}');
+    await _controllerPulse!.reverse(from: _controllerPulse!.value);
+     notifyListeners();
+  }
+
+ Future tapHandler({
+    bool targetTap = false,
   }) async {
     print("tapped");
-    nextIndex++;
-
-   
-    if (revertAnimation != null) {
-      await revertAnimation();
-    }
-
-    notifyListeners(); 
+    nextIndex++; 
+    print("index value $nextIndex");  
+    notifyListeners();
+    return _revertAnimation();
   }
 
-  Future<void> revertAnimation() async {
-    initReverse = true;
-    notifyListeners(); // Notify UI of changes
-    await _controllerPulse.reverse(from: _controllerPulse.value);
-  }
-
-  /// Initialize the AnimationController (must be called from the widget)
-  void initializeController(AnimationController controller) {
-    _controllerPulse = controller;
-  }
 }

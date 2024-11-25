@@ -78,6 +78,7 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
   int _currentFocus = 0;
   double _progressAnimated = 0;
   int nextIndex = 0;
+  bool _initReverse = false;
   late TapHandlerProvider tapHandlerProvider;
 
   Future _revertAnimation();
@@ -87,6 +88,7 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
   void initState() {
     super.initState();
     tapHandlerProvider = Provider.of<TapHandlerProvider>(context, listen: false);
+    _initReverse = tapHandlerProvider.initReverse;
     _currentFocus = widget.initialFocus;
     _targetFocus = widget.targets[_currentFocus];
     _controller = AnimationController(
@@ -113,22 +115,21 @@ abstract class AnimatedFocusLightState extends State<AnimatedFocusLight>
   void next() => _tapHandler();
 
   void previous() {
-    tapHandlerProvider.nextIndex--;
+    nextIndex--;
     _revertAnimation();
   }
 
   void goTo(int index) {
-    final tapHandlerProvider = Provider.of<TapHandlerProvider>(context, listen: false);
-    tapHandlerProvider.nextIndex = index;
+    nextIndex = index;
     _revertAnimation();
   }
 
   Future _tapHandler({
     bool targetTap = false,
-    bool overlayTap = false,
+   
   }) async {
     print("tapped");
-    tapHandlerProvider.nextIndex++; 
+    nextIndex++; 
 
     // if (targetTap) {
     //   await widget.clickTarget?.call(_targetFocus);
@@ -396,38 +397,41 @@ class AnimatedPulseFocusLightState extends AnimatedFocusLightState {
     ));
   }
 
- @override
+@override
 Widget build(BuildContext context) {
-  return Stack(
-    children: <Widget>[
-      _getLightPaint(_targetFocus),
-      Positioned(
-        left: left,
-        top: top,
-        child: GestureDetector(
-          behavior: HitTestBehavior
-              .translucent, // Allow taps to pass through translucent areas
-          onTapDown: (TapDownDetails details) async {
-            // Pass tap details to a callback
-            if (widget.clickTargetWithTapPosition != null) {
-              await widget.clickTargetWithTapPosition
-                  ?.call(_targetFocus, details);
-            }
-          },
-          onTap: _targetFocus.enableTargetTab
-              ? () async {
-                  print("here");
-                  await _tapHandler(targetTap: true);
-                }
-              : null,
-          child: Container(
-            color: Colors.transparent, // Transparent overlay
-            width: width,
-            height: height,
+  return IgnorePointer(
+    ignoring: true, // Set to true to ignore all touch interactions for the widget
+    child: Stack(
+      children: <Widget>[
+        _getLightPaint(_targetFocus),
+        Positioned(
+          left: left,
+          top: top,
+          child: GestureDetector(
+            behavior: HitTestBehavior
+                .translucent, // Allow taps to pass through translucent areas
+            onTapDown: (TapDownDetails details) async {
+              // Pass tap details to a callback
+              if (widget.clickTargetWithTapPosition != null) {
+                await widget.clickTargetWithTapPosition
+                    ?.call(_targetFocus, details);
+              }
+            },
+            onTap: _targetFocus.enableTargetTab
+                ? () async {
+                    print("here");
+                    await _tapHandler(targetTap: true);
+                  }
+                : null,
+            child: Container(
+              color: Colors.transparent, // Transparent overlay
+              width: width,
+              height: height,
+            ),
           ),
         ),
-      ),
-    ],
+      ],
+    ),
   );
 }
 
@@ -446,7 +450,7 @@ Widget build(BuildContext context) {
   @override
   Future _revertAnimation() {
     safeSetState(() {
-      _tapHandlerProvider.initReverse = true;
+      _initReverse = true;
     });
 
     return _controllerPulse.reverse(from: _controllerPulse.value);
@@ -470,7 +474,7 @@ Widget build(BuildContext context) {
     if (status == AnimationStatus.dismissed) {
       safeSetState(() {
         _finishFocus = false;
-        _tapHandlerProvider.initReverse = false;
+        _initReverse = false;
       });
       _goToFocus(nextIndex);
     }
@@ -486,7 +490,7 @@ Widget build(BuildContext context) {
     }
 
     if (status == AnimationStatus.dismissed) {
-      if (_tapHandlerProvider.initReverse) {
+      if (_initReverse) {
         safeSetState(() => _finishFocus = false);
         _controller.reverse();
       } else if (_finishFocus) {

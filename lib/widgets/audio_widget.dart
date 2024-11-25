@@ -6,6 +6,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'dart:async';
 import 'package:svar_new/widgets/tutorial_coach_mark/lib/tutorial_coach_mark.dart';
+import 'package:svar_new/providers/tutorial_provider.dart'; 
+import 'package:provider/provider.dart';
+
 
 // Global variables to manage tutorial state across instances
 AudioPlayer globalAudioPlayer = AudioPlayer();
@@ -33,6 +36,12 @@ class AudioWidgetState extends State<AudioWidget> {
   late double completed;
   late List<double> lengths;
   late double totalLength;
+
+   void callProviderFunction() {
+    print("clickprovider is called"); 
+    final tapHandlerProvider = Provider.of<TapHandlerProvider>(context, listen: false);
+    tapHandlerProvider.tapHandler(); // Call the function here
+  }
 
   @override
   void initState() {
@@ -135,6 +144,7 @@ class AudioWidgetState extends State<AudioWidget> {
           CustomButton(
             type: ButtonType.ImagePlay,
             onPressed: () {
+              callProviderFunction();
               if (_audioPlayer.playing) {
                 _audioPlayer.pause();
               } else {
