@@ -12,6 +12,8 @@ import 'package:svar_new/presentation/speaking_phoneme/speaking_phoneme.dart';
 import 'package:svar_new/presentation/Identification_screen/identification.dart';
 import 'package:svar_new/presentation/detection/detection.dart';
 import 'package:svar_new/presentation/discrimination/discrimination.dart';
+import 'package:rive/rive.dart' as rive;
+import 'package:rive/rive.dart' hide LinearGradient;
 
 class PhonemeLevelOneScreen extends StatefulWidget {
   PhonemeLevelOneScreen({Key? key}) : super(key: key);
@@ -378,86 +380,86 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    try {
-      var obj =
-          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+ @override
+Widget build(BuildContext context) {
+  try {
+    var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
-      if (obj == null) {
-        debugPrint("No arguments found on this route.");
-        return Container();
-      }
-      return SafeArea(
-        child: Scaffold(
-          extendBody: true,
-          extendBodyBehindAppBar: true,
-          body: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment(0.47, 0.06),
-                end: Alignment(0.59, 1.61),
-                colors: [
-                  appTheme.lightGreen400,
-                  appTheme.teal800,
-                ],
-              ),
-            ),
-            child: LevelMap(
-              levelMapParams: LevelMapParams(
-                levelCount: obj["numberOfLevels"],
-                currentLevel: 1,
-                //  provider.userModel.toJson()["LevelMap"][obj["exerciseType"]],
-                enableVariationBetweenCurves: false,
-                pathColor: appTheme.amber90001,
-                shadowColor: appTheme.brown100,
-                currentLevelImage: ImageParams(
-                  path: "assets/images/Current_LVL.png",
-                  size: Size(104.v, 104.h),
-                  onTap: (int level) {
-                    _handleLevelType(level, "notcompleted");
-                  },
-                ),
-                lockedLevelImage: ImageParams(
-                  path: "assets/images/Locked_LVL.png",
-                  size: Size(104.v, 104.h),
-                  onTap: (int level) {
-                    _handleLevelType(level, "notcompleted");
-                  },
-                ),
-                completedLevelImage: ImageParams(
-                  path: "assets/images/Complete_LVL.png",
-                  size: Size(104.v, 104.h),
-                  onTap: (int level) {
-                    _handleLevelType(level, "completed");
-                  },
-                ),
-                dashLengthFactor: 0.01,
-                pathStrokeWidth: 10.h,
-                bgImagesToBePaintedRandomly: [
-                  ImageParams(
-                    path: "assets/images/img_bush.png",
-                    size: Size(80, 80),
-                    repeatCountPerLevel: 0.5,
-                  ),
-                  ImageParams(
-                    path: "assets/images/img_tree.png",
-                    size: Size(80, 80),
-                    repeatCountPerLevel: 0.5,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    } catch (e) {
-      debugPrint("Error in building the widget: $e");
+    if (obj == null) {
+      debugPrint("No arguments found on this route.");
       return Container();
     }
+
+    return SafeArea(
+      child: Scaffold(
+        extendBody: true,
+        extendBodyBehindAppBar: true,
+        body: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment(0.47, 0.06),
+              end: Alignment(0.59, 1.61),
+              colors: [
+                appTheme.lightGreen400,
+                appTheme.teal800,
+              ],
+            ),
+          ),
+          child: RiveAnimation.asset(
+            'assets/rive/LEVEL_ANIMATION.riv', // Replace with your Rive asset path
+            fit: BoxFit.cover,
+            onInit: _onRiveInit,
+          ),
+        ),
+      ),
+    );
+  } catch (e) {
+    debugPrint("Error in building the widget: $e");
+    return Container();
   }
+}
+
+Artboard? _riveArtboard;
+StateMachineController? _controller;
+SMINumber? _currentLevelInput; 
+
+void _onRiveInit(Artboard artboard) {
+ 
+  _controller = StateMachineController.fromArtboard(artboard, 'State Machine 1');
+  if (_controller != null) {
+    artboard.addController(_controller!);
+
+    // Find and store the current level input
+    _currentLevelInput = _controller?.findInput('current level') as SMINumber?;
+
+   
+    _addLevelListeners();
+  }
+}
+
+void _addLevelListeners() {
+  // Define level triggers and corresponding levels
+  final levelTriggers = {
+    'level1': 1,
+    'level2': 2,
+    'level3': 3,
+    'level4': 4,
+    'level5': 5,
+  };
+
+  // Iterate through each trigger and set up logic
+  levelTriggers.forEach((triggerName, level) {
+    final input = _controller?.findInput(triggerName);
+    if (input is SMITrigger) {
+      // Call _handleLevelType(level) when this trigger is fired
+      input.fire();
+      _handleLevelType(level, "notcompleted");
+      
+    }
+  });
+}
 }
 
 Object retrieveObject(String type, Map<String, dynamic> data) {
