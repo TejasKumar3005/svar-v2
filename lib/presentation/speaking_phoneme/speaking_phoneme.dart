@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,6 +44,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
   late AudioPlayer _audioPlayer;
   var model;
 
+  String word_tmp = "पानी";
   late VideoPlayerController _controller;
   @override
   void initState() {
@@ -75,6 +77,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
   String? result;
   bool loading = false;
   OverlayEntry? _overlayEntry;
+  Map<String , String>? wrd_map;
 
   @override
   Widget build(BuildContext context) {
@@ -109,10 +112,11 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
               ),
               _buildText(),
               if (widget.testSpeech)
-                _buildMicrophoneButton(lingLearningProvider),
+               _buildMicrophoneButton(lingLearningProvider),
               _buildVideo(),
               _buildTipButton(),
               if (result != null) _buildResult(),
+              if (wrd_map != null) pronunciationResultWidget(wrd_map! , context , word_tmp),
             ],
           ),
         ),
@@ -160,6 +164,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
     );
   }
 
+
   Widget _buildMicrophoneButton(LingLearningProvider lingLearningProvider) {
     return Positioned(
       left: 150,
@@ -193,7 +198,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
                 if (!permission) {
                   return;
                 }
-                onTapMicrophonebutton(context, lingLearningProvider);
+                onTapMicrophonebutton(context, lingLearningProvider , word_tmp);
               },
             ),
           ),
@@ -271,24 +276,33 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
     }
   }
 
-  Future<double> sendWavFile(String wavFile, String phoneme) async {
+  Future<double> sendWavFile(String wavFile, String phoneme ) async {
+    print("entering in the send wav file section ! ");
     var uri;
     if (widget.testSpeech){
+      debugPrint("in the word section , request is sent ....");
       uri = Uri.parse("https://gameapi.svar.in/process_aduio_sent");
       var request = http.MultipartRequest('POST', uri)
-      ..fields['phoneme'] = phoneme
+      ..fields['text'] = phoneme
       ..files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
 
       var response = await request.send();
       if (response.statusCode == 200) {
       String body = await response.stream.bytesToString();
-      print(body);
-      Map<String, dynamic> data = json.decode(body);
+      // print(body);
+      Map<dynamic, dynamic> data = json.decode(body);
+      debugPrint("data received is ");
+
+      Map<dynamic , dynamic> val=  data['result'];
+      print(val);
+      Map<String, String> vl = val.map(
+        (key, value) => MapEntry(key.toString(), value.toString()),
+      );
       setState(() {
-        result = ((data["result"] * 100.0).toInt()).toString();
+        wrd_map = vl;
         loading = false;
       });
-      return data['result'];
+      return Future.value(0.0);
     }
     else {
       ScaffoldMessenger.of(context)
@@ -307,7 +321,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
     var response = await request.send();
     if (response.statusCode == 200) {
       String body = await response.stream.bytesToString();
-      print(body);
+      // print(body);
       Map<String, dynamic> data = json.decode(body);
       setState(() {
         result = ((data["result"] * 100.0).toInt()).toString();
@@ -326,7 +340,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
   }
 
   onTapMicrophonebutton(
-      BuildContext context, LingLearningProvider provider) async {
+      BuildContext context, LingLearningProvider provider , String? txt) async {
     try {
       provider.toggleRecording(context).then((value) async {
         if (!value) {
@@ -335,15 +349,181 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
           });
           Directory tempDir = await getTemporaryDirectory();
           String tempPath = tempDir.path;
+          debugPrint('audio path is ');
+          if (provider.selectedCharacter == ''){
+            debugPrint("something is going wrong here ");
+          }
           String path = '$tempPath/audio.wav';
+          if (widget.testSpeech)
+          {
           await sendWavFile(
+                        path,
+                        txt!);
+          }
+
+          else{
+            await sendWavFile(
               path,
               PhonmesListModel()
                   .hindiToEnglishPhonemeMap[provider.selectedCharacter]!);
-        }
+          }
+          }
+          
       });
     } catch (e) {
+      print("error is caught!");
       print(e.toString());
     }
   }
+}
+
+Widget pronunciationResultWidget(Map<String, String> result , BuildContext context , String txt) {
+  double width_screen = MediaQuery.of(context).size.width;
+  return Container(
+    margin: EdgeInsets.fromLTRB(width_screen*0.4 ,16.0 , 16.0, 16.0 ),
+    decoration: BoxDecoration(
+      color: const Color.fromARGB(255, 36, 52, 36),
+      borderRadius: BorderRadius.circular(16.0),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black26,
+          blurRadius: 8.0,
+          offset: Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          decoration: BoxDecoration(
+            // color: Colors.blue,
+            borderRadius: BorderRadius.all( Radius.circular(16.0)),
+
+            ),
+          child: Column(
+            children: [
+              // Word Heading
+              Container(
+                padding: EdgeInsets.all(10.0), // Adjust padding as needed
+                decoration: BoxDecoration(
+                  // color: Colors.blue, // Background color of the circle
+                  shape: BoxShape.circle, // Makes the container circular
+                ),
+                child: Text(
+                  txt, // Replace dynamically as needed
+                  style: TextStyle(
+                    fontSize: 25.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white, // Text color
+                  ),
+            ),
+          )
+
+            ],
+          ),
+        ),
+        // Body with phoneme results
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24.0 , 4.0 , 16.0 , 4.0),
+            child: ListView.builder(
+              itemCount: result.entries.length,
+              itemBuilder: (context, index) {
+                String key = result.entries.elementAt(index).key;
+                String value = result.entries.elementAt(index).value;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        key.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(221, 234, 235, 233),
+                        ),
+                      ),
+                      const SizedBox(width: 8.0),
+                      Expanded(
+                        child: Text(
+                          value,
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            color: const Color.fromARGB(255, 244, 239, 239),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+          child: Column(
+            children: [
+              // // Difficulty Levels
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     _buildDifficultyLevel("BEGINNER", false),
+              //     _buildDifficultyLevel("INTERMEDIATE", true), // Highlighted
+              //     _buildDifficultyLevel("ADVANCED", false),
+              //     _buildDifficultyLevel("EXPERT", false),
+              //   ],
+              // ),
+              // const SizedBox(height: 10.0),
+              // // Next Button
+              ElevatedButton(
+                onPressed: () {
+                  // Handle the next button click
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 32.0, vertical: 5.0),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "NEXT",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 8.0),
+                    Icon(Icons.arrow_forward),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildDifficultyLevel(String label, bool isSelected) {
+  return Text(
+    label,
+    style: TextStyle(
+      fontSize: 14.0,
+      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      color: isSelected ? Colors.orange : Colors.red,
+    ),
+  );
+}
+String selectRandomWord(dynamic hindiWords) {
+  Random random = Random();
+  return hindiWords[random.nextInt(hindiWords.length)];
 }
