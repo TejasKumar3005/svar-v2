@@ -42,51 +42,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       DeviceOrientation.landscapeRight,
     ]);
 
-    // Ensure the context is initialized before using it
-    // Future.delayed(Duration.zero, () => _redirectToRespectivePage());
   }
-
-  // Function to decide which page to redirect to
-  // void _redirectToRespectivePage() {
-  //   try {
-  //     var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-
-  //     if (obj == null) {
-  //       debugPrint("No arguments were passed to this route.");
-  //       return;
-  //     }
-
-  //     debugPrint("Received arguments: $obj");
-  //     String? exerciseType = obj["exerciseType"] as String?;
-
-  //     if (exerciseType == null) {
-  //       debugPrint("Exercise type is null in the arguments.");
-  //       return;
-  //     }
-
-  //     debugPrint("Exercise type: $exerciseType");
-
-  //     switch (exerciseType) {
-  //       case "Detection":
-  //         _handleDetection(context, currentLevelCount.toInt(), "notcompleted");
-  //         break;
-  //       case "Discrimination":
-  //         _handleDiscrimination(context, currentLevelCount.toInt(), "notcompleted");
-  //         break;
-  //       case "Identification":
-  //         _handleIdentification(context, currentLevelCount.toInt(), "notcompleted");
-  //         break;
-  //       case "Level":
-  //         _handleLevel(context, currentLevelCount.toInt(), "notcompleted");
-  //         break;
-  //       default:
-  //         debugPrint("Unexpected exercise type: $exerciseType");
-  //         break;
-  //     }
-  //   } catch (e) {
-  //     debugPrint("Error in _redirectToRespectivePage: $e");
-  //   }
-  // }
 
   void _handleLevelType(int level, String params) {
     try {
@@ -128,7 +84,6 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     }
   }
 
-  // Functions to handle redirection
   void _handleDetection(BuildContext context, int level, String params) async {
     try {
       debugPrint("Handling Detection for level: $level");
@@ -380,86 +335,88 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     }
   }
 
- @override
-Widget build(BuildContext context) {
-  try {
-    var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-
-    if (obj == null) {
-      debugPrint("No arguments found on this route.");
-      return Container();
-    }
-
-    return SafeArea(
-      child: Scaffold(
-        extendBody: true,
-        extendBodyBehindAppBar: true,
-        body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment(0.47, 0.06),
-              end: Alignment(0.59, 1.61),
-              colors: [
-                appTheme.lightGreen400,
-                appTheme.teal800,
-              ],
+  @override
+  Widget build(BuildContext context) {
+    try {
+      var obj =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      if (obj == null) {
+        debugPrint("No arguments found on this route.");
+        return Container();
+      }
+      
+      return SafeArea(
+        child: Scaffold(
+          extendBody: true,
+          extendBodyBehindAppBar: true,
+          body: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment(0.47, 0.06),
+                end: Alignment(0.59, 1.61),
+                colors: [appTheme.lightGreen400, appTheme.teal800],
+              ),
+            ),
+            child: RiveAnimation.asset(
+              'assets/rive/LEVEL_ANIMATION.riv',
+              fit: BoxFit.cover,
+              onInit: _onRiveInit,
             ),
           ),
-          child: RiveAnimation.asset(
-            'assets/rive/LEVEL_ANIMATION.riv', // Replace with your Rive asset path
-            fit: BoxFit.cover,
-            onInit: _onRiveInit,
-          ),
         ),
-      ),
-    );
-  } catch (e) {
-    debugPrint("Error in building the widget: $e");
-    return Container();
-  }
-}
-
-Artboard? _riveArtboard;
-StateMachineController? _controller;
-SMINumber? _currentLevelInput; 
-
-void _onRiveInit(Artboard artboard) {
- 
-  _controller = StateMachineController.fromArtboard(artboard, 'State Machine 1');
-  if (_controller != null) {
-    artboard.addController(_controller!);
-
-    // Find and store the current level input
-    _currentLevelInput = _controller?.findInput('current level') as SMINumber?;
-
-   
-    _addLevelListeners();
-  }
-}
-
-void _addLevelListeners() {
-  // Define level triggers and corresponding levels
-  final levelTriggers = {
-    'level1': 1,
-    'level2': 2,
-    'level3': 3,
-    'level4': 4,
-    'level5': 5,
-  };
-
-  // Iterate through each trigger and set up logic
-  levelTriggers.forEach((triggerName, level) {
-    final input = _controller?.findInput(triggerName);
-    if (input is SMITrigger) {
-      // Call _handleLevelType(level) when this trigger is fired
-      input.fire();
-      _handleLevelType(level, "notcompleted");
-      
+      );
+    } catch (e) {
+      debugPrint("Error in building the widget: $e");
+      return Container();
     }
-  });
-}
+  }
+
+  Artboard? _riveArtboard;
+  StateMachineController? _controller;
+  SMINumber? _currentLevelInput;
+
+  void _onRiveInit(Artboard artboard) {
+    _controller =
+        StateMachineController.fromArtboard(artboard, 'State Machine 1');
+    if (_controller != null) {
+      artboard.addController(_controller!);
+      debugPrint("State Machine Controller added.");
+
+      _currentLevelInput =
+          _controller?.findInput('current level') as SMINumber?;
+      if (_currentLevelInput == null) {
+        debugPrint("Error: 'current level' input not found!");
+      }
+
+      _addLevelListeners();
+    } else {
+      debugPrint("Error: State Machine 'State Machine 1' not found.");
+    }
+  }
+
+  void _addLevelListeners() {
+    final levelTriggers = {
+      'level1': 1,
+      'level2': 2,
+      'level3': 3,
+      'level4': 4,
+      'level5': 5,
+    };
+
+    levelTriggers.forEach((triggerName, level) {
+      final input = _controller?.findInput(triggerName);
+      if (input is SMITrigger) {
+        input.fire();
+        _handleLevelType(level, "notcompleted");
+        debugPrint("Triggered $triggerName for level $level");
+      } else {
+        debugPrint(
+            "Error: Trigger $triggerName not found or not an SMITrigger.");
+      }
+    });
+  }
 }
 
 Object retrieveObject(String type, Map<String, dynamic> data) {
