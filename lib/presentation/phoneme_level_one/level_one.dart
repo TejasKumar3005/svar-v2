@@ -398,11 +398,11 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
   void _addLevelListeners() {
     final levelTriggers = {
-      'level1': 1,
-      'level2': 2,
-      'level3': 3,
-      'level4': 4,
-      'level5': 5,
+      'level 1': 1,
+      'level 2': 2,
+      'level 3': 3,
+      'level 4': 4,
+      'level 5': 5,
     };
 
     levelTriggers.forEach((triggerName, level) {
