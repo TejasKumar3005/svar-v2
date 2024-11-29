@@ -223,7 +223,6 @@ class _DetectionState extends State<Detection> {
   // Initialize the tutorial
   void _initTutorial() {
     tutorialCoachMark = TutorialCoachMark(
-
       targets: _createTargets(),
       colorShadow: Colors.black.withOpacity(0.5),
       textSkip: "SKIP",

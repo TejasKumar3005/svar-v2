@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,10 +30,19 @@ class PhonemeLevelOneScreen extends StatefulWidget {
   }
 }
 
+extension _TextExtension on rive.Artboard {
+  TextValueRun? textRun(String name) => component<TextValueRun>(name);
+}
+
 class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
-  late double currentLevelCount = 4;
+  late double currentLevelCount = 1;
   bool _initialized = false;
   int val = 1;
+  final GlobalKey _key = GlobalKey();
+  double _containerWidth = 0.0;
+  double _animationHeight = 0.0;
+  Timer? _timer;
+
 
   @override
   void initState() {
@@ -41,8 +51,15 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-
+     _startPeriodicFetch();
   }
+ 
+  void _startPeriodicFetch() {
+    _timer = Timer.periodic(Duration(milliseconds: 1), (timer) {
+      _fetchCurrentLevel("Identification");
+    });
+  }
+ 
 
   void _handleLevelType(int level, String params) {
     try {
@@ -317,14 +334,19 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
         if (data.exists) {
           Map<String, dynamic> levelMap =
-              data['LevelMap'] as Map<String, dynamic>? ?? {};
+              data['levelMap'] as Map<String, dynamic>? ?? {};
           var levelData = levelMap[type] ?? 1;
 
           double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
 
-          setState(() {
-            currentLevelCount = currentLevel;
-          });
+          if (currentLevelCount != currentLevel) {
+            setState(() {
+              currentLevelCount = currentLevel;
+            });
+            _currentLevelInput!.change(currentLevelCount);
+
+            print("level changed to $currentLevel");
+          }
         } else {
           debugPrint("No data found for user $uid.");
         }
@@ -344,25 +366,23 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         debugPrint("No arguments found on this route.");
         return Container();
       }
-      
+
       return SafeArea(
         child: Scaffold(
           extendBody: true,
           extendBodyBehindAppBar: true,
-          body: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment(0.47, 0.06),
-                end: Alignment(0.59, 1.61),
-                colors: [appTheme.lightGreen400, appTheme.teal800],
+          body: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              key: _key,
+              alignment: Alignment.centerLeft,
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width * 8,
+              child: RiveAnimation.asset(
+                'assets/rive/LEVEL_ANIMATION.riv',
+                fit: BoxFit.contain,
+                onInit: _onRiveInit,
               ),
-            ),
-            child: RiveAnimation.asset(
-              'assets/rive/LEVEL_ANIMATION.riv',
-              fit: BoxFit.cover,
-              onInit: _onRiveInit,
             ),
           ),
         ),
@@ -377,6 +397,23 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   StateMachineController? _controller;
   SMINumber? _currentLevelInput;
 
+  void tapHandle(rive.RiveEvent event) {
+    debugPrint("Tapped on the Rive animation.");
+    debugPrint("Event: ${event.name}");
+    if (event.name == "level 2") {
+      _currentLevelInput!.change(2);
+    }
+    if (event.name == "level 3") {
+       _currentLevelInput!.change(3);
+    }
+    if (event.name == "level 4") {
+      _handleLevelType(4, "notcompleted");
+    }
+    if (event.name == "level 5") {
+      _handleLevelType(5, "notcompleted");
+    }
+  }
+
   void _onRiveInit(Artboard artboard) {
     _controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
@@ -384,38 +421,22 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       artboard.addController(_controller!);
       debugPrint("State Machine Controller added.");
 
+      TextValueRun? _levelText = artboard.textRun('LEVEL 1');
+      if (_levelText == null) {
+        debugPrint("Error: 'Text 2' not found!");
+      }
+      _levelText?.text = "level_text_changed";
       _currentLevelInput =
-          _controller?.findInput('current level') as SMINumber?;
+          _controller?.getNumberInput('current level') as SMINumber?;
       if (_currentLevelInput == null) {
         debugPrint("Error: 'current level' input not found!");
       }
+      _currentLevelInput!.change(currentLevelCount);
 
-      _addLevelListeners();
+      _controller!.addEventListener(tapHandle);
     } else {
       debugPrint("Error: State Machine 'State Machine 1' not found.");
     }
-  }
-
-  void _addLevelListeners() {
-    final levelTriggers = {
-      'level 1': 1,
-      'level 2': 2,
-      'level 3': 3,
-      'level 4': 4,
-      'level 5': 5,
-    };
-
-    levelTriggers.forEach((triggerName, level) {
-      final input = _controller?.findInput(triggerName);
-      if (input is SMITrigger) {
-        input.fire();
-        _handleLevelType(level, "notcompleted");
-        debugPrint("Triggered $triggerName for level $level");
-      } else {
-        debugPrint(
-            "Error: Trigger $triggerName not found or not an SMITrigger.");
-      }
-    });
   }
 }
 
