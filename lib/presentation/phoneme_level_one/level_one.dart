@@ -1,18 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:svar_new/core/app_export.dart';
 import 'package:flutter/services.dart';
-import 'package:svar_new/presentation/discrimination/appbar.dart';
+import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/presentation/phoneme_level_one/video_player_screen.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'provider/level_one_provider.dart';
 import 'package:svar_new/widgets/custom_level_map/level_map.dart';
 import 'package:svar_new/presentation/speaking_phoneme/speaking_phoneme.dart';
-import 'package:svar_new/presentation/identification_screen/identification.dart';
+import 'package:svar_new/presentation/Identification_screen/identification.dart';
 import 'package:svar_new/presentation/detection/detection.dart';
 import 'package:svar_new/presentation/discrimination/discrimination.dart';
+import 'package:rive/rive.dart' as rive;
+import 'package:rive/rive.dart' hide LinearGradient;
 
 class PhonemeLevelOneScreen extends StatefulWidget {
   PhonemeLevelOneScreen({Key? key}) : super(key: key);
@@ -28,10 +30,19 @@ class PhonemeLevelOneScreen extends StatefulWidget {
   }
 }
 
+extension _TextExtension on rive.Artboard {
+  TextValueRun? textRun(String name) => component<TextValueRun>(name);
+}
+
 class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
-  late double currentLevelCount = 4;
+  late double currentLevelCount = 8;
   bool _initialized = false;
   int val = 1;
+  final GlobalKey _key = GlobalKey();
+  double _containerWidth = 0.0;
+  double _animationHeight = 0.0;
+ 
+
 
   @override
   void initState() {
@@ -40,52 +51,11 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-
-    // Ensure the context is initialized before using it
-    // Future.delayed(Duration.zero, () => _redirectToRespectivePage());
+        _fetchCurrentLevel();
   }
-
-  // Function to decide which page to redirect to
-  // void _redirectToRespectivePage() {
-  //   try {
-  //     var obj = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-
-  //     if (obj == null) {
-  //       debugPrint("No arguments were passed to this route.");
-  //       return;
-  //     }
-
-  //     debugPrint("Received arguments: $obj");
-  //     String? exerciseType = obj["exerciseType"] as String?;
-
-  //     if (exerciseType == null) {
-  //       debugPrint("Exercise type is null in the arguments.");
-  //       return;
-  //     }
-
-  //     debugPrint("Exercise type: $exerciseType");
-
-  //     switch (exerciseType) {
-  //       case "Detection":
-  //         _handleDetection(context, currentLevelCount.toInt(), "notcompleted");
-  //         break;
-  //       case "Discrimination":
-  //         _handleDiscrimination(context, currentLevelCount.toInt(), "notcompleted");
-  //         break;
-  //       case "Identification":
-  //         _handleIdentification(context, currentLevelCount.toInt(), "notcompleted");
-  //         break;
-  //       case "Level":
-  //         _handleLevel(context, currentLevelCount.toInt(), "notcompleted");
-  //         break;
-  //       default:
-  //         debugPrint("Unexpected exercise type: $exerciseType");
-  //         break;
-  //     }
-  //   } catch (e) {
-  //     debugPrint("Error in _redirectToRespectivePage: $e");
-  //   }
-  // }
+ 
+ 
+ 
 
   void _handleLevelType(int level, String params) {
     try {
@@ -127,7 +97,6 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     }
   }
 
-  // Functions to handle redirection
   void _handleDetection(BuildContext context, int level, String params) async {
     try {
       debugPrint("Handling Detection for level: $level");
@@ -347,13 +316,15 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     }
   }
 
-  Future<void> _fetchCurrentLevel(String type) async {
+  Future<void> _fetchCurrentLevel() async {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
-
+       
       if (user != null) {
         final String uid = user.uid;
-
+        var obj =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+         
         var data = await FirebaseFirestore.instance
             .collection('patients')
             .doc(uid)
@@ -361,14 +332,20 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
         if (data.exists) {
           Map<String, dynamic> levelMap =
-              data['LevelMap'] as Map<String, dynamic>? ?? {};
-          var levelData = levelMap[type] ?? 1;
+              data['levelMap'] as Map<String, dynamic>? ?? {};
+             
+          var levelData = levelMap[obj?["exerciseType"]] ;
 
           double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
+           
+          if (currentLevelCount != currentLevel) {
+            setState(() {
+              currentLevelCount = currentLevel;
+            });
+            _currentLevelInput!.change(4);
 
-          setState(() {
-            currentLevelCount = currentLevel;
-          });
+            print("level changed to $currentLevel");
+          }
         } else {
           debugPrint("No data found for user $uid.");
         }
@@ -384,85 +361,85 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     try {
       var obj =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-
+          print("object is $obj");
       if (obj == null) {
         debugPrint("No arguments found on this route.");
         return Container();
       }
+
       return SafeArea(
         child: Scaffold(
           extendBody: true,
           extendBodyBehindAppBar: true,
-          body: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment(0.47, 0.06),
-                end: Alignment(0.59, 1.61),
-                colors: [
-                  appTheme.lightGreen400,
-                  appTheme.teal800,
-                ],
+          body: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Container(
+              key: _key,
+              alignment: Alignment.centerLeft,
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width * 6.2,
+              child: RiveAnimation.asset(
+                'assets/rive/LEVEL_ANIMATION.riv',
+                fit: BoxFit.contain,
+                onInit: _onRiveInit,
               ),
             ),
-            child:
-            Stack(
-              children: [
-                DisciAppBar(context),
-             LevelMap(
-              levelMapParams: LevelMapParams(
-                levelCount: obj["numberOfLevels"],
-                currentLevel: 1,
-                //  provider.userModel.toJson()["LevelMap"][obj["exerciseType"]],
-                enableVariationBetweenCurves: false,
-                pathColor: appTheme.amber90001,
-                shadowColor: appTheme.brown100,
-                currentLevelImage: ImageParams(
-                  path: "assets/images/Current_LVL.png",
-                  size: Size(104.v, 104.h),
-                  onTap: (int level) {
-                    _handleLevelType(level, "notcompleted");
-                  },
-                ),
-                lockedLevelImage: ImageParams(
-                  path: "assets/images/Locked_LVL.png",
-                  size: Size(104.v, 104.h),
-                  onTap: (int level) {
-                    _handleLevelType(level, "notcompleted");
-                  },
-                ),
-                completedLevelImage: ImageParams(
-                  path: "assets/images/Complete_LVL.png",
-                  size: Size(104.v, 104.h),
-                  onTap: (int level) {
-                    _handleLevelType(level, "completed");
-                  },
-                ),
-                dashLengthFactor: 0.01,
-                pathStrokeWidth: 10.h,
-                bgImagesToBePaintedRandomly: [
-                  ImageParams(
-                    path: "assets/images/img_bush.png",
-                    size: Size(80, 80),
-                    repeatCountPerLevel: 0.5,
-                  ),
-                  ImageParams(
-                    path: "assets/images/img_tree.png",
-                    size: Size(80, 80),
-                    repeatCountPerLevel: 0.5,
-                  ),
-                ],
-              ),
-            ),
-              ]
-            )
           ),
         ),
       );
     } catch (e) {
       debugPrint("Error in building the widget: $e");
       return Container();
+    }
+  }
+
+  Artboard? _riveArtboard;
+  StateMachineController? _controller;
+  SMINumber? _currentLevelInput;
+
+ void tapHandle(rive.RiveEvent event) {
+  debugPrint("Event: ${event.name}");
+  // Calculate the starting level for the current range of 5 levels
+  int startLevel = (currentLevelCount ~/ 5) * 5 + 1;  // This will give the start of the current range (e.g., 16 for currentLevel = 17)
+  int endLevel = startLevel + 4;  // End of the current range (e.g., 20 for currentLevel = 17)
+  print("Start level: $startLevel, End level: $endLevel");  
+  // Map the current level range to the 5 animation levels (level 1 to level 5)
+  if (event.name == "level 1" ) {
+    _handleLevelType(startLevel, "notcompleted");
+  } else if (event.name == "level 2" ) {
+    _handleLevelType(startLevel + 1, "notcompleted");
+  } else if (event.name == "level 3") {
+    _handleLevelType(startLevel + 2, "notcompleted");
+  } else if (event.name == "level 4" ) {
+    _handleLevelType(startLevel + 3, "notcompleted");
+  } else if (event.name == "level 5") {
+    _handleLevelType(startLevel + 4, "notcompleted");
+  }
+}
+
+
+  void _onRiveInit(Artboard artboard) {
+    _controller =
+        StateMachineController.fromArtboard(artboard, 'State Machine 1');
+    if (_controller != null) {
+      artboard.addController(_controller!);
+      debugPrint("State Machine Controller added.");
+
+      TextValueRun? _levelText = artboard.textRun('level 1');
+      if (_levelText == null) {
+        debugPrint("Error: 'Text 2' not found!");
+      }
+      _levelText?.text = "level_text_changed";
+      _currentLevelInput =
+          _controller?.getNumberInput('current level') as SMINumber?;
+      if (_currentLevelInput == null) {
+        debugPrint("Error: 'current level' input not found!");
+      }
+     
+        _currentLevelInput!.change(4);
+      _controller!.addEventListener(tapHandle);
+    } else {
+      debugPrint("Error: State Machine 'State Machine 1' not found.");
     }
   }
 }
