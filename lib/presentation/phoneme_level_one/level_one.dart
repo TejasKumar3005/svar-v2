@@ -35,13 +35,13 @@ extension _TextExtension on rive.Artboard {
 }
 
 class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
-  late double currentLevelCount = 1;
+  late double currentLevelCount = 8;
   bool _initialized = false;
   int val = 1;
   final GlobalKey _key = GlobalKey();
   double _containerWidth = 0.0;
   double _animationHeight = 0.0;
-  Timer? _timer;
+ 
 
 
   @override
@@ -51,14 +51,10 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-     _startPeriodicFetch();
+        _fetchCurrentLevel();
   }
  
-  void _startPeriodicFetch() {
-    _timer = Timer.periodic(Duration(milliseconds: 1), (timer) {
-      _fetchCurrentLevel("Identification");
-    });
-  }
+ 
  
 
   void _handleLevelType(int level, String params) {
@@ -320,13 +316,15 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     }
   }
 
-  Future<void> _fetchCurrentLevel(String type) async {
+  Future<void> _fetchCurrentLevel() async {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
-
+       
       if (user != null) {
         final String uid = user.uid;
-
+        var obj =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+         
         var data = await FirebaseFirestore.instance
             .collection('patients')
             .doc(uid)
@@ -335,15 +333,16 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         if (data.exists) {
           Map<String, dynamic> levelMap =
               data['levelMap'] as Map<String, dynamic>? ?? {};
-          var levelData = levelMap[type] ?? 1;
+             
+          var levelData = levelMap[obj?["exerciseType"]] ;
 
           double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
-
+           
           if (currentLevelCount != currentLevel) {
             setState(() {
               currentLevelCount = currentLevel;
             });
-            _currentLevelInput!.change(currentLevelCount);
+            _currentLevelInput!.change(4);
 
             print("level changed to $currentLevel");
           }
@@ -362,6 +361,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     try {
       var obj =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          print("object is $obj");
       if (obj == null) {
         debugPrint("No arguments found on this route.");
         return Container();
@@ -377,7 +377,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
               key: _key,
               alignment: Alignment.centerLeft,
               height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width * 8,
+              width: MediaQuery.of(context).size.width * 6.2,
               child: RiveAnimation.asset(
                 'assets/rive/LEVEL_ANIMATION.riv',
                 fit: BoxFit.contain,
@@ -397,22 +397,26 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   StateMachineController? _controller;
   SMINumber? _currentLevelInput;
 
-  void tapHandle(rive.RiveEvent event) {
-    debugPrint("Tapped on the Rive animation.");
-    debugPrint("Event: ${event.name}");
-    if (event.name == "level 2") {
-      _currentLevelInput!.change(2);
-    }
-    if (event.name == "level 3") {
-       _currentLevelInput!.change(3);
-    }
-    if (event.name == "level 4") {
-      _handleLevelType(4, "notcompleted");
-    }
-    if (event.name == "level 5") {
-      _handleLevelType(5, "notcompleted");
-    }
+ void tapHandle(rive.RiveEvent event) {
+  debugPrint("Event: ${event.name}");
+  // Calculate the starting level for the current range of 5 levels
+  int startLevel = (currentLevelCount ~/ 5) * 5 + 1;  // This will give the start of the current range (e.g., 16 for currentLevel = 17)
+  int endLevel = startLevel + 4;  // End of the current range (e.g., 20 for currentLevel = 17)
+  print("Start level: $startLevel, End level: $endLevel");  
+  // Map the current level range to the 5 animation levels (level 1 to level 5)
+  if (event.name == "level 1" ) {
+    _handleLevelType(startLevel, "notcompleted");
+  } else if (event.name == "level 2" ) {
+    _handleLevelType(startLevel + 1, "notcompleted");
+  } else if (event.name == "level 3") {
+    _handleLevelType(startLevel + 2, "notcompleted");
+  } else if (event.name == "level 4" ) {
+    _handleLevelType(startLevel + 3, "notcompleted");
+  } else if (event.name == "level 5") {
+    _handleLevelType(startLevel + 4, "notcompleted");
   }
+}
+
 
   void _onRiveInit(Artboard artboard) {
     _controller =
@@ -421,7 +425,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       artboard.addController(_controller!);
       debugPrint("State Machine Controller added.");
 
-      TextValueRun? _levelText = artboard.textRun('LEVEL 1');
+      TextValueRun? _levelText = artboard.textRun('level 1');
       if (_levelText == null) {
         debugPrint("Error: 'Text 2' not found!");
       }
@@ -431,8 +435,8 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       if (_currentLevelInput == null) {
         debugPrint("Error: 'current level' input not found!");
       }
-      _currentLevelInput!.change(currentLevelCount);
-
+     
+        _currentLevelInput!.change(4);
       _controller!.addEventListener(tapHandle);
     } else {
       debugPrint("Error: State Machine 'State Machine 1' not found.");
