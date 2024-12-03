@@ -35,14 +35,18 @@ extension _TextExtension on rive.Artboard {
 }
 
 class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
-  late double currentLevelCount = 8;
+  late double currentLevelCount = 3;
   bool _initialized = false;
   int val = 1;
   final GlobalKey _key = GlobalKey();
   double _containerWidth = 0.0;
   double _animationHeight = 0.0;
- 
-
+  ScrollController _scrollController = ScrollController();
+  var train;
+  double? _previousTrainX;
+  Artboard? _riveArtboard;
+  StateMachineController? _controller;
+  SMINumber? _currentLevelInput;
 
   @override
   void initState() {
@@ -51,11 +55,15 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-        _fetchCurrentLevel();
+    _fetchCurrentLevel();
+    trackTrainPosition();
   }
- 
- 
- 
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   void _handleLevelType(int level, String params) {
     try {
@@ -319,12 +327,12 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   Future<void> _fetchCurrentLevel() async {
     try {
       final User? user = FirebaseAuth.instance.currentUser;
-       
+
       if (user != null) {
         final String uid = user.uid;
         var obj =
-          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-         
+            ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
         var data = await FirebaseFirestore.instance
             .collection('patients')
             .doc(uid)
@@ -333,16 +341,16 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         if (data.exists) {
           Map<String, dynamic> levelMap =
               data['levelMap'] as Map<String, dynamic>? ?? {};
-             
-          var levelData = levelMap[obj?["exerciseType"]] ;
+
+          var levelData = levelMap[obj?["exerciseType"]];
 
           double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
-           
+
           if (currentLevelCount != currentLevel) {
             setState(() {
               currentLevelCount = currentLevel;
             });
-            _currentLevelInput!.change(4);
+            _currentLevelInput!.change(currentLevelCount);
 
             print("level changed to $currentLevel");
           }
@@ -361,7 +369,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     try {
       var obj =
           ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-          print("object is $obj");
+      print("object is $obj");
       if (obj == null) {
         debugPrint("No arguments found on this route.");
         return Container();
@@ -372,14 +380,15 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
           extendBody: true,
           extendBodyBehindAppBar: true,
           body: SingleChildScrollView(
+            controller: _scrollController,
             scrollDirection: Axis.horizontal,
             child: Container(
               key: _key,
               alignment: Alignment.centerLeft,
               height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width * 6.2,
+              width: MediaQuery.of(context).size.height * 13.7176,
               child: RiveAnimation.asset(
-                'assets/rive/LEVEL_ANIMATION.riv',
+                'assets/rive/levels.riv',
                 fit: BoxFit.contain,
                 onInit: _onRiveInit,
               ),
@@ -393,84 +402,148 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     }
   }
 
-  Artboard? _riveArtboard;
-  StateMachineController? _controller;
-  SMINumber? _currentLevelInput;
-
- void tapHandle(rive.RiveEvent event) {
-  debugPrint("Event: ${event.name}");
-  // Calculate the starting level for the current range of 5 levels
-  int startLevel = (currentLevelCount ~/ 5) * 5 + 1;  // This will give the start of the current range (e.g., 16 for currentLevel = 17)
-  int endLevel = startLevel + 4;  // End of the current range (e.g., 20 for currentLevel = 17)
-  print("Start level: $startLevel, End level: $endLevel");  
-  // Map the current level range to the 5 animation levels (level 1 to level 5)
-  if (event.name == "level 1" ) {
-    _handleLevelType(startLevel, "notcompleted");
-  } else if (event.name == "level 2" ) {
-    _handleLevelType(startLevel + 1, "notcompleted");
-  } else if (event.name == "level 3") {
-    _handleLevelType(startLevel + 2, "notcompleted");
-  } else if (event.name == "level 4" ) {
-    _handleLevelType(startLevel + 3, "notcompleted");
-  } else if (event.name == "level 5") {
-    _handleLevelType(startLevel + 4, "notcompleted");
+  void tapHandle(rive.RiveEvent event) {
+    debugPrint("Event: ${event.name}");
+    // Calculate the starting level for the current range of 5 levels
+    int startLevel = (currentLevelCount ~/ 5) * 5 +
+        1; // This will give the start of the current range (e.g., 16 for currentLevel = 17)
+    int endLevel = startLevel +
+        4; // End of the current range (e.g., 20 for currentLevel = 17)
+    print("Start level: $startLevel, End level: $endLevel");
+    // Map the current level range to the 5 animation levels (level 1 to level 5)
+    if (event.name == "level 1") {
+      _handleLevelType(startLevel, "notcompleted");
+    } else if (event.name == "level 2") {
+      _handleLevelType(startLevel + 1, "notcompleted");
+    } else if (event.name == "level 3") {
+      // _handleLevelType(startLevel + 2, "notcompleted");
+      _currentLevelInput!.change(3);
+    } else if (event.name == "level 4") {
+      // _handleLevelType(startLevel + 3, "notcompleted");
+      _currentLevelInput!.change(4);
+    } else if (event.name == "level 5") {
+      // _handleLevelType(startLevel + 4, "notcompleted");
+      _currentLevelInput!.change(5);
+    }
   }
-}
-
 
   void _onRiveInit(Artboard artboard) {
+    int startLevel = (currentLevelCount ~/ 5) * 5 +
+        1; // This will give the start of the current range (e.g., 16 for currentLevel = 17)
+
     _controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
     if (_controller != null) {
       artboard.addController(_controller!);
       debugPrint("State Machine Controller added.");
 
-      TextValueRun? _levelText = artboard.textRun('level 1');
-      if (_levelText == null) {
-        debugPrint("Error: 'Text 2' not found!");
+      for (int i = 0; i < 5; i++) {
+        String level = "level${i + 1}";
+        TextValueRun? _levelText = artboard.textRun(level);
+        if (_levelText == null) {
+          debugPrint("Error: 'Text 2' not found!");
+        }
+        _levelText?.text = "Level ${startLevel + i}";
       }
-      _levelText?.text = "level_text_changed";
+
+      for (int i = 0; i < 5; i++) {
+        String level = "desc${i + 1}";
+        TextValueRun? _levelText = artboard.textRun(level);
+        if (_levelText == null) {
+          debugPrint("Error: 'Text 2' not found!");
+        }
+        _levelText?.text = "desc ${startLevel + i}";
+      }
+
+      for (int i = 0; i < 5; i++) {
+        String level = "type${i + 1}";
+        TextValueRun? _levelText = artboard.textRun(level);
+        if (_levelText == null) {
+          debugPrint("Error: 'Text 2' not found!");
+        }
+        _levelText?.text = "type ${startLevel + i}";
+      }
+
+      train = artboard.component('train');
+      if (train != null) {
+        print("train position: ${train.x}");
+        // Store the initial value of train.x
+        _previousTrainX = train.x;
+      } else {
+        debugPrint("Error: 'train' not found!");
+      }
+
       _currentLevelInput =
           _controller?.getNumberInput('current level') as SMINumber?;
       if (_currentLevelInput == null) {
         debugPrint("Error: 'current level' input not found!");
       }
-     
-        _currentLevelInput!.change(4);
+
+      _currentLevelInput!.change(2);
       _controller!.addEventListener(tapHandle);
+
+      // Track changes in train.x
+      trackTrainPosition();
     } else {
       debugPrint("Error: State Machine 'State Machine 1' not found.");
     }
   }
+
+  void trackTrainPosition() {
+    // You can use a simple loop or a frame callback to track changes continuously
+    Future.delayed(Duration(milliseconds: 16), () {
+      if (train != null &&
+          _previousTrainX != null &&
+          train.x != _previousTrainX) {
+        // Train position has changed, update the scroll position
+        print("New train position: ${train.x}");
+
+        // Ensure that train.x is within the valid scroll range
+       double screenWidth = MediaQuery.of(context).size.height*13.7176; // Get the screen width
+double maxTrainX = 1000; // Example max value for train.x; replace with your actual maximum value
+double scaledOffset = (train.x / maxTrainX) * screenWidth; // Scale train.x proportionally
+
+if (_scrollController.hasClients) {
+  // Update scroll position (clamp to valid range if necessary)
+  _scrollController.jumpTo(scaledOffset.clamp(0.0, _scrollController.position.maxScrollExtent));
 }
 
-Object retrieveObject(String type, Map<String, dynamic> data) {
-  if (type == "ImageToAudio") {
-    print("In Image to audio section");
-    print(ImageToAudio.fromJson(data));
-    return ImageToAudio.fromJson(data);
-  } else if (type == "WordToFig") {
-    return WordToFiG.fromJson(data);
-  } else if (type == "FigToWord") {
-    return FigToWord.fromJson(data);
-  } else if (type == "AudioToImage") {
-    debugPrint("In audio to image section");
-    return AudioToImage.fromJson(data);
-  } else if (type == "AudioToAudio") {
-    return AudioToAudio.fromJson(data);
-  } else if (type == "MutedUnmuted") {
-    return MutedUnmuted.fromJson(data);
-  } else if (type == "HalfMuted") {
-    return HalfMuted.fromJson(data);
-  } else if (type == "DiffSounds") {
-    return DiffSounds.fromJson(data);
-  } else if (type == "OddOne") {
-    return OddOne.fromJson(data);
-  } else if (type == "DiffHalf") {
-    return DiffHalf.fromJson(data);
-  } else if (type == "MaleFemale") {
-    return MaleFemale.fromJson(data);
-  } else {
-    return "unexpected value";
+_previousTrainX = train.x; // Update the previous value
+
+      // Recursively call trackTrainPosition to keep checking for changes
+      trackTrainPosition();
+    }
+    });
+  }
+
+  Object retrieveObject(String type, Map<String, dynamic> data) {
+    if (type == "ImageToAudio") {
+      print("In Image to audio section");
+      print(ImageToAudio.fromJson(data));
+      return ImageToAudio.fromJson(data);
+    } else if (type == "WordToFig") {
+      return WordToFiG.fromJson(data);
+    } else if (type == "FigToWord") {
+      return FigToWord.fromJson(data);
+    } else if (type == "AudioToImage") {
+      debugPrint("In audio to image section");
+      return AudioToImage.fromJson(data);
+    } else if (type == "AudioToAudio") {
+      return AudioToAudio.fromJson(data);
+    } else if (type == "MutedUnmuted") {
+      return MutedUnmuted.fromJson(data);
+    } else if (type == "HalfMuted") {
+      return HalfMuted.fromJson(data);
+    } else if (type == "DiffSounds") {
+      return DiffSounds.fromJson(data);
+    } else if (type == "OddOne") {
+      return OddOne.fromJson(data);
+    } else if (type == "DiffHalf") {
+      return DiffHalf.fromJson(data);
+    } else if (type == "MaleFemale") {
+      return MaleFemale.fromJson(data);
+    } else {
+      return "unexpected value";
+    }
   }
 }
