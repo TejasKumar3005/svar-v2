@@ -77,7 +77,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
   String? result;
   bool loading = false;
   OverlayEntry? _overlayEntry;
-  Map<String , String>? wrd_map;
+  List<Map<String, String>>? wrd_map;
 
   @override
   Widget build(BuildContext context) {
@@ -112,11 +112,12 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
               ),
               _buildText(),
               if (widget.testSpeech)
-               _buildMicrophoneButton(lingLearningProvider),
+                _buildMicrophoneButton(lingLearningProvider),
               _buildVideo(),
               _buildTipButton(),
               if (result != null) _buildResult(),
-              if (wrd_map != null) pronunciationResultWidget(wrd_map! , context , word_tmp),
+              if (wrd_map != null)
+                pronunciationResultWidget(wrd_map!, context, word_tmp),
             ],
           ),
         ),
@@ -164,7 +165,6 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
     );
   }
 
-
   Widget _buildMicrophoneButton(LingLearningProvider lingLearningProvider) {
     return Positioned(
       left: 150,
@@ -198,7 +198,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
                 if (!permission) {
                   return;
                 }
-                onTapMicrophonebutton(context, lingLearningProvider , word_tmp);
+                onTapMicrophonebutton(context, lingLearningProvider, word_tmp);
               },
             ),
           ),
@@ -209,29 +209,27 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
 
   Widget _buildVideo() {
     return Positioned(
-  right: 75.v,
-  bottom: 120.h,
-  child: ClipRRect(
-    borderRadius: BorderRadius.circular(20), // Rounded corners
-    child: Container(
-      height: 180,
-      width: 320,
-      color: Colors.black, // Optional background to distinguish
-      child: _controller.value.isInitialized
-          ? FittedBox(
-              fit: BoxFit.cover, // Ensures the video covers the container
-              child: SizedBox(
-                width: _controller.value.size.height,
-                height: _controller.value.size.width,
-                child: VideoPlayer(_controller),
-              ),
-            )
-          : Center(child: CircularProgressIndicator()),
-    ),
-  ),
-)
-;
-
+      right: 75.v,
+      bottom: 120.h,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20), // Rounded corners
+        child: Container(
+          height: 180,
+          width: 320,
+          color: Colors.black, // Optional background to distinguish
+          child: _controller.value.isInitialized
+              ? FittedBox(
+                  fit: BoxFit.cover, // Ensures the video covers the container
+                  child: SizedBox(
+                    width: _controller.value.size.height,
+                    height: _controller.value.size.width,
+                    child: VideoPlayer(_controller),
+                  ),
+                )
+              : Center(child: CircularProgressIndicator()),
+        ),
+      ),
+    );
   }
 
   Widget _buildTipButton() {
@@ -257,8 +255,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
     return Positioned(
       left: MediaQuery.of(context).size.width * 0.1,
       bottom: 10,
-      child: 
-      circularScore(result!),
+      child: circularScore(result!),
     );
   }
 
@@ -276,71 +273,64 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
     }
   }
 
-  Future<double> sendWavFile(String wavFile, String phoneme ) async {
+  Future<double> sendWavFile(String wavFile, String phoneme) async {
     print("entering in the send wav file section ! ");
     var uri;
-    if (widget.testSpeech){
+    if (widget.testSpeech) {
       debugPrint("in the word section , request is sent ....");
       uri = Uri.parse("https://gameapi.svar.in/process_aduio_sent");
       var request = http.MultipartRequest('POST', uri)
-      ..fields['text'] = phoneme
-      ..files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
+        ..fields['text'] = phoneme
+        ..files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
 
       var response = await request.send();
       if (response.statusCode == 200) {
-      String body = await response.stream.bytesToString();
-      // print(body);
-      Map<dynamic, dynamic> data = json.decode(body);
-      debugPrint("data received is ");
+        String body = await response.stream.bytesToString();
+        // print(body);
+        Map<dynamic, dynamic> data = json.decode(body);
+        debugPrint("data received is ");
 
-      Map<dynamic , dynamic> val=  data['result'];
-      print(val);
-      Map<String, String> vl = val.map(
-        (key, value) => MapEntry(key.toString(), value.toString()),
-      );
-      setState(() {
-        wrd_map = vl;
-        loading = false;
-      });
-      return Future.value(0.0);
-    }
-    else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Something went wrong")));
-      throw Exception(
-          "Failed to send .wav file. Status code: ${response.statusCode}");
-    }
-
-    }
-    else{
+        List<Map<String, String>> val =
+            List<Map<String, String>>.from(data['result']);
+        print(val);
+        setState(() {
+          wrd_map = val;
+          loading = false;
+        });
+        return Future.value(0.0);
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Something went wrong")));
+        throw Exception(
+            "Failed to send .wav file. Status code: ${response.statusCode}");
+      }
+    } else {
       uri = Uri.parse("https://gameapi.svar.in/process_wav");
-    var request = http.MultipartRequest('POST', uri)
-      ..fields['phoneme'] = phoneme
-      ..files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
+      var request = http.MultipartRequest('POST', uri)
+        ..fields['phoneme'] = phoneme
+        ..files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
 
-    var response = await request.send();
-    if (response.statusCode == 200) {
-      String body = await response.stream.bytesToString();
-      // print(body);
-      Map<String, dynamic> data = json.decode(body);
-      setState(() {
-        result = ((data["result"] * 100.0).toInt()).toString();
-        loading = false;
-      });
-      return data['result'];
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        String body = await response.stream.bytesToString();
+        // print(body);
+        Map<String, dynamic> data = json.decode(body);
+        setState(() {
+          result = ((data["result"] * 100.0).toInt()).toString();
+          loading = false;
+        });
+        return data['result'];
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("Something went wrong")));
+        throw Exception(
+            "Failed to send .wav file. Status code: ${response.statusCode}");
+      }
     }
-    else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Something went wrong")));
-      throw Exception(
-          "Failed to send .wav file. Status code: ${response.statusCode}");
-    }
-
-    } 
   }
 
   onTapMicrophonebutton(
-      BuildContext context, LingLearningProvider provider , String? txt) async {
+      BuildContext context, LingLearningProvider provider, String? txt) async {
     try {
       provider.toggleRecording(context).then((value) async {
         if (!value) {
@@ -350,25 +340,19 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
           Directory tempDir = await getTemporaryDirectory();
           String tempPath = tempDir.path;
           debugPrint('audio path is ');
-          if (provider.selectedCharacter == ''){
+          if (provider.selectedCharacter == '') {
             debugPrint("something is going wrong here ");
           }
           String path = '$tempPath/audio.wav';
-          if (widget.testSpeech)
-          {
-          await sendWavFile(
-                        path,
-                        txt!);
-          }
-
-          else{
+          if (widget.testSpeech) {
+            await sendWavFile(path, txt!);
+          } else {
             await sendWavFile(
-              path,
-              PhonmesListModel()
-                  .hindiToEnglishPhonemeMap[provider.selectedCharacter]!);
+                path,
+                PhonmesListModel()
+                    .hindiToEnglishPhonemeMap[provider.selectedCharacter]!);
           }
-          }
-          
+        }
       });
     } catch (e) {
       print("error is caught!");
@@ -377,10 +361,11 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
   }
 }
 
-Widget pronunciationResultWidget(Map<String, String> result , BuildContext context , String txt) {
+Widget pronunciationResultWidget(
+    List<Map<String, String>> result, BuildContext context, String txt) {
   double width_screen = MediaQuery.of(context).size.width;
   return Container(
-    margin: EdgeInsets.fromLTRB(width_screen*0.4 ,16.0 , 16.0, 16.0 ),
+    margin: EdgeInsets.fromLTRB(width_screen * 0.4, 16.0, 16.0, 16.0),
     decoration: BoxDecoration(
       color: const Color.fromARGB(255, 36, 52, 36),
       borderRadius: BorderRadius.circular(16.0),
@@ -398,9 +383,8 @@ Widget pronunciationResultWidget(Map<String, String> result , BuildContext conte
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           decoration: BoxDecoration(
             // color: Colors.blue,
-            borderRadius: BorderRadius.all( Radius.circular(16.0)),
-
-            ),
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          ),
           child: Column(
             children: [
               // Word Heading
@@ -417,21 +401,21 @@ Widget pronunciationResultWidget(Map<String, String> result , BuildContext conte
                     fontWeight: FontWeight.bold,
                     color: Colors.white, // Text color
                   ),
-            ),
-          )
-
+                ),
+              )
             ],
           ),
         ),
         // Body with phoneme results
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(24.0 , 4.0 , 16.0 , 4.0),
+            padding: const EdgeInsets.fromLTRB(24.0, 4.0, 16.0, 4.0),
             child: ListView.builder(
-              itemCount: result.entries.length,
+              itemCount: result.length,
               itemBuilder: (context, index) {
-                String key = result.entries.elementAt(index).key;
-                String value = result.entries.elementAt(index).value;
+                // Accessing the first entry of each map in the list
+                String key = result[index].entries.first.key;
+                String value = result[index].entries.first.value;
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -466,18 +450,6 @@ Widget pronunciationResultWidget(Map<String, String> result , BuildContext conte
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
           child: Column(
             children: [
-              // // Difficulty Levels
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     _buildDifficultyLevel("BEGINNER", false),
-              //     _buildDifficultyLevel("INTERMEDIATE", true), // Highlighted
-              //     _buildDifficultyLevel("ADVANCED", false),
-              //     _buildDifficultyLevel("EXPERT", false),
-              //   ],
-              // ),
-              // const SizedBox(height: 10.0),
-              // // Next Button
               ElevatedButton(
                 onPressed: () {
                   // Handle the next button click
@@ -523,6 +495,7 @@ Widget _buildDifficultyLevel(String label, bool isSelected) {
     ),
   );
 }
+
 String selectRandomWord(dynamic hindiWords) {
   Random random = Random();
   return hindiWords[random.nextInt(hindiWords.length)];
