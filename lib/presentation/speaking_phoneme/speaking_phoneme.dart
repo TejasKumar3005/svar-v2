@@ -64,7 +64,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
   @override
   void dispose() {
     _audioPlayer.dispose();
-    _controller.dispose();
+    // _controller.dispose();
     super.dispose();
   }
 
@@ -290,8 +290,11 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
         Map<dynamic, dynamic> data = json.decode(body);
         debugPrint("data received is ");
 
-        List<Map<String, String>> val =
-            List<Map<String, String>>.from(data['result']);
+        List<Map<String, String>> val = [];
+        for (var item in data['result']) {
+          val.add(Map<String, String>.from(item));
+        }
+
         print(val);
         setState(() {
           wrd_map = val;
