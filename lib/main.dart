@@ -81,7 +81,7 @@ class MyApp extends StatelessWidget {
       final isConnected = results.first != ConnectivityResult.none;
       showConnectivitySnackBar(isConnected);
     }
-
+    
     });
   }
   

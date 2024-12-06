@@ -1,4 +1,3 @@
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +9,9 @@ import 'provider/identification_provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/Options.dart';
+import 'package:svar_new/database/userController.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 
 class IdentificationScreen extends StatefulWidget {
   const IdentificationScreen({Key? key})
@@ -34,6 +36,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
   OverlayEntry? _overlayEntry;
+  late UserData userData;
 
   @override
   void dispose() {
@@ -54,6 +57,10 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     _player = AudioPlayer();
 
     leveltracker = 0;
+
+    // Initialize userData with uid and context
+    String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    userData = UserData(uid: uid, buildContext: context);
   }
 
   int sel = 0;
@@ -194,6 +201,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       dynamic dtcontainer, String params) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     dynamic dtcontainer = obj[1] as dynamic;
+    int level = obj[3] as int;
     switch (quizType) {
       case "ImageToAudio":
         return dtcontainer.getAudioList().length <= 4
@@ -217,7 +225,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                               child: Column(
                                 children: [
                                   Expanded(
-                                     // Adjust the flex value based on your layout needs
+                                    // Adjust the flex value based on your layout needs
                                     child: OptionWidget(
                                       child: AudioWidget(
                                         audioLinks: [
@@ -225,8 +233,23 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                         ],
                                       ),
                                       isCorrect: () {
-                                        return dtcontainer.getCorrectOutput() ==
+                                        bool isCorrect = dtcontainer
+                                                .getCorrectOutput() ==
                                             dtcontainer.getAudioList()[index];
+                                        if (isCorrect) {
+                                          print("Level Incremented");
+                                          userData.incrementLevelCount(
+                                              "Identification", level);
+                                          if (true) {
+                                            print("fetch function called");
+                                            Future.delayed(Duration(seconds: 3),
+                                                () {
+                                              PhonemeLevelOneScreenState()
+                                                  .fetchCurrentLevel();
+                                            });
+                                          }
+                                        }
+                                        return isCorrect;
                                       },
                                     ),
                                   ),
@@ -245,8 +268,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       case "FigToWord":
         return StatefulBuilder(
           builder: (context, setState) {
-            // State to track failure
-
             return Container(
               height: 192.v,
               width: MediaQuery.of(context).size.width * 0.4,
@@ -272,9 +293,16 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                               dtcontainer.getTextList()[index],
                                         ),
                                         isCorrect: () {
-                                          return dtcontainer
+                                          bool isCorrect = dtcontainer
                                                   .getCorrectOutput() ==
                                               dtcontainer.getTextList()[index];
+                                          if (isCorrect) {
+                                            userData.incrementLevelCount(
+                                                "Identification", level);
+                                            PhonemeLevelOneScreenState()
+                                                .fetchCurrentLevel();
+                                          }
+                                          return isCorrect;
                                         },
                                       ),
                                       SizedBox(
@@ -301,40 +329,52 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       case "WordToFig":
         debugPrint("entering in the word to fig section");
         return Container(
-          height: MediaQuery.of(context).size.height *
-              0.4, // Adjusting height dynamically
-          width: MediaQuery.of(context).size.width *
-              0.8, // Adjusting the width to fit better
-         child: Row(
-  mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Distribute space evenly
-  children: [
-    if (dtcontainer.getImageUrlList().length <= 4)
-      ...List.generate(dtcontainer.getImageUrlList().length, (index) {
-        return Expanded( // Each item will take up available space based on the flex value
-          flex: 1, // Adjust the flex as needed to control the width ratio
-          child: Row(
-            children: [
-              Expanded(
-                flex: 2, // Adjust the flex value for the OptionWidget
-                child: OptionWidget(
-                  child: ImageWidget(
-                    imagePath: dtcontainer.getImageUrlList()[index],
-                  ),
-                  isCorrect: () {
-                    return dtcontainer.getCorrectOutput() ==
-                        dtcontainer.getImageUrlList()[index];
-                  },
-                ),
-              ),
-              SizedBox(width: 10), // Adds gap between each OptionWidget
-            ],
-          ),
-        );
-      }),
-  ],
-)
-
-        );
+            height: MediaQuery.of(context).size.height *
+                0.4, // Adjusting height dynamically
+            width: MediaQuery.of(context).size.width *
+                0.8, // Adjusting the width to fit better
+            child: Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceEvenly, // Distribute space evenly
+              children: [
+                if (dtcontainer.getImageUrlList().length <= 4)
+                  ...List.generate(dtcontainer.getImageUrlList().length,
+                      (index) {
+                    return Expanded(
+                      // Each item will take up available space based on the flex value
+                      flex:
+                          1, // Adjust the flex as needed to control the width ratio
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex:
+                                2, // Adjust the flex value for the OptionWidget
+                            child: OptionWidget(
+                              child: ImageWidget(
+                                imagePath: dtcontainer.getImageUrlList()[index],
+                              ),
+                              isCorrect: () {
+                                bool isCorrect =
+                                    dtcontainer.getCorrectOutput() ==
+                                        dtcontainer.getImageUrlList()[index];
+                                if (isCorrect) {
+                                  userData.incrementLevelCount(
+                                      "Identification", level);
+                                  PhonemeLevelOneScreenState()
+                                      .fetchCurrentLevel();
+                                }
+                                return isCorrect;
+                              },
+                            ),
+                          ),
+                          SizedBox(
+                              width: 10), // Adds gap between each OptionWidget
+                        ],
+                      ),
+                    );
+                  }),
+              ],
+            ));
 
       default:
         return Row();

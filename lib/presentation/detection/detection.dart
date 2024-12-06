@@ -15,6 +15,9 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 
 class Detection extends StatefulWidget {
   const Detection({
@@ -34,8 +37,9 @@ class _DetectionState extends State<Detection> {
       GlobalKey<AudioWidgetState>();
   String quizType = "video";
   int selectedOption = -1;
+  int level = 0;  
   PlayAudio playAudio = PlayAudio();
-
+  late UserData userData;
   VideoPlayerController? _videoPlayerController1;
   VideoPlayerController? _videoPlayerController2;
   ChewieController? _chewieController1;
@@ -49,6 +53,8 @@ class _DetectionState extends State<Detection> {
   @override
   void initState() {
     super.initState();
+      String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    userData = UserData(uid: uid, buildContext: context);
     
     // Defer the video initialization to after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -196,6 +202,7 @@ class _DetectionState extends State<Detection> {
 
   Widget MutedUnmuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    level = obj[4] as int;  
     dynamic dtcontainer = obj[1] as dynamic;
     return Column(
       children: [
@@ -289,6 +296,10 @@ class _DetectionState extends State<Detection> {
                     },
                   ),
                   isCorrect: () {
+                       if((obj[1] as dynamic).getMuted() == 1){
+                         userData.incrementLevelCount("Detection", level);
+                          PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                       }
                     return (obj[1] as dynamic).getMuted() == 1;
                   },
                 ),
@@ -307,6 +318,11 @@ class _DetectionState extends State<Detection> {
                     },
                   ),
                   isCorrect: () {
+
+                    if((obj[1] as dynamic).getMuted() == 0){
+                      userData.incrementLevelCount("Detection", level);
+                       PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                    }
                     return (obj[1] as dynamic).getMuted() == 0;
                   },
                 ),
@@ -410,7 +426,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
             double currentProgress = _childKey.currentState!.progress;
             print("Current progress is $currentProgress");
 
-// Define the acceptable range, e.g., ans ± 0.1
+
             const double tolerance = 0.4;
             bool condition =
                 currentProgress > ans && currentProgress < ans + tolerance;
