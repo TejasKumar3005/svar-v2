@@ -298,7 +298,7 @@ class _DetectionState extends State<Detection> {
                   isCorrect: () {
                        if((obj[1] as dynamic).getMuted() == 1){
                          userData.incrementLevelCount("Detection", level);
-                          PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                        
                        }
                     return (obj[1] as dynamic).getMuted() == 1;
                   },
@@ -321,7 +321,7 @@ class _DetectionState extends State<Detection> {
 
                     if((obj[1] as dynamic).getMuted() == 0){
                       userData.incrementLevelCount("Detection", level);
-                       PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                    
                     }
                     return (obj[1] as dynamic).getMuted() == 0;
                   },

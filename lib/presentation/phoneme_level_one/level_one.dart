@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
+import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
 import 'package:svar_new/presentation/phoneme_level_one/video_player_screen.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'provider/level_one_provider.dart';
@@ -15,6 +16,7 @@ import 'package:svar_new/presentation/detection/detection.dart';
 import 'package:svar_new/presentation/discrimination/discrimination.dart';
 import 'package:rive/rive.dart' as rive;
 import 'package:rive/rive.dart' hide LinearGradient;
+import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
 
 class PhonemeLevelOneScreen extends StatefulWidget {
   PhonemeLevelOneScreen({Key? key}) : super(key: key);
@@ -46,7 +48,6 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   double? _previousTrainX;
   Artboard? _riveArtboard;
   StateMachineController? _controller;
-  SMINumber? _currentLevelInput;
 
   @override
   void initState() {
@@ -55,7 +56,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    // fetchCurrentLevel();
+    _fetchCurrentLevel();
     trackTrainPosition();
   }
 
@@ -63,42 +64,6 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
-  }
-
-  Future <void> fetchCurrentLevel() async {
-    try {
-      final User? user = FirebaseAuth.instance.currentUser;
-
-      if (user != null) {
-        final String uid = user.uid;
-        var obj =
-            ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-
-        var data = await FirebaseFirestore.instance
-            .collection('patients')
-            .doc(uid)
-            .get();
-
-        if (data.exists) {
-          Map<String, dynamic> levelMap =
-              data['levelMap'] as Map<String, dynamic>? ?? {};
-          var levelData = levelMap[obj?["exerciseType"]];
-          double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
-          if (currentLevelCount != currentLevel) {
-            setState(() {
-              currentLevelCount = currentLevel;
-            });
-            _currentLevelInput!.change(currentLevelCount);
-            print("level changed to $currentLevel");
-          }
-        } else {
-          debugPrint("No data found for user $uid.");
-        }
-      }
-    } catch (e) {
-      debugPrint("Error in fetching current level data: ${e.toString()}");
-     
-    }
   }
 
   void _handleLevelType(int level, String params) {
@@ -185,7 +150,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         // Handle other types
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params, level];
+        List<dynamic> argumentsList = [type, dtcontainer, params];
         debugPrint("Arguments list is: $argumentsList");
 
         NavigatorService.pushNamed(AppRoutes.detection,
@@ -293,7 +258,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         // Handle other types
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params, level];
+        List<dynamic> argumentsList = [type, dtcontainer, params];
         debugPrint("Arguments list is: $argumentsList");
 
         NavigatorService.pushNamed(AppRoutes.identification,
@@ -349,7 +314,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       } else {
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params, level];
+        List<dynamic> argumentsList = [type, dtcontainer, params];
         debugPrint("Arguments list is: $argumentsList");
 
         NavigatorService.pushNamed(AppRoutes.identification,
@@ -360,7 +325,47 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     }
   }
 
+  Future<void> _fetchCurrentLevel() async {
+    try {
+      var provider = Provider.of<RiveProvider>(context, listen: false);
+      final User? user = FirebaseAuth.instance.currentUser;
 
+      if (user != null) {
+        final String uid = user.uid;
+        var obj =
+            ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+        var data = await FirebaseFirestore.instance
+            .collection('patients')
+            .doc(uid)
+            .get();
+
+        if (data.exists) {
+          Map<String, dynamic> levelMap =
+              data['levelMap'] as Map<String, dynamic>? ?? {};
+
+          var levelData = levelMap[obj?["exerciseType"]];
+
+          double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
+
+          if (currentLevelCount != currentLevel) {
+            setState(() {
+              currentLevelCount = currentLevel;
+            });
+
+            provider.changeCurrentLevel(currentLevelCount);
+
+            print("level changed to $currentLevel");
+          }
+        } else {
+          debugPrint("No data found for user $uid.");
+        }
+      }
+    } catch (e) {
+      debugPrint("Error in fetching current level");
+      debugPrint(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -401,9 +406,11 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   }
 
   void tapHandle(rive.RiveEvent event) {
+    var provider = Provider.of<RiveProvider>(context, listen: false);
     debugPrint("Event: ${event.name}");
-  
-    int startLevel = (currentLevelCount ~/ 5) * 5 + 1;
+    // Calculate the starting level for the current range of 5 levels
+    int startLevel = (currentLevelCount ~/ 5) * 5 +
+        1; // This will give the start of the current range (e.g., 16 for currentLevel = 17)
     int endLevel = startLevel +
         4; // End of the current range (e.g., 20 for currentLevel = 17)
     print("Start level: $startLevel, End level: $endLevel");
@@ -413,20 +420,21 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     } else if (event.name == "level 2") {
       _handleLevelType(startLevel + 1, "notcompleted");
     } else if (event.name == "level 3") {
-      _handleLevelType(startLevel + 2, "notcompleted");
-      // _currentLevelInput!.change(3);
+      // _handleLevelType(startLevel + 2, "notcompleted");
+      provider.changeCurrentLevel(3);
     } else if (event.name == "level 4") {
-      _handleLevelType(startLevel + 3, "notcompleted");
-      // _currentLevelInput!.change(4);
+      // _handleLevelType(startLevel + 3, "notcompleted");
+      provider.changeCurrentLevel(4);
     } else if (event.name == "level 5") {
-      _handleLevelType(startLevel + 4, "notcompleted");
-      // _currentLevelInput!.change(5);
+      // _handleLevelType(startLevel + 4, "notcompleted");
+      provider.changeCurrentLevel(5);
     }
   }
 
   void _onRiveInit(Artboard artboard) {
+    var provider = Provider.of<RiveProvider>(context, listen: false);
     int startLevel = (currentLevelCount ~/ 5) * 5 +
-        1; 
+        1; // This will give the start of the current range (e.g., 16 for currentLevel = 17)
 
     _controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
@@ -470,13 +478,13 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         debugPrint("Error: 'train' not found!");
       }
 
-      _currentLevelInput =
-          _controller?.getNumberInput('current level') as SMINumber?;
-      if (_currentLevelInput == null) {
+      provider.initiliaseSMINumber(
+          _controller?.getNumberInput('current level') as SMINumber);
+      if (provider.currentLevelInput == null) {
         debugPrint("Error: 'current level' input not found!");
       }
 
-      _currentLevelInput!.change(2);
+      provider.changeCurrentLevel(2);
       _controller!.addEventListener(tapHandle);
 
       // Track changes in train.x

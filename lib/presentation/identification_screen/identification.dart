@@ -242,11 +242,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                               "Identification", level);
                                           if (true) {
                                             print("fetch function called");
-                                            Future.delayed(Duration(seconds: 3),
-                                                () {
-                                              PhonemeLevelOneScreenState()
-                                                  .fetchCurrentLevel();
-                                            });
+                                            
                                           }
                                         }
                                         return isCorrect;
@@ -299,8 +295,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                           if (isCorrect) {
                                             userData.incrementLevelCount(
                                                 "Identification", level);
-                                            PhonemeLevelOneScreenState()
-                                                .fetchCurrentLevel();
+                                           
                                           }
                                           return isCorrect;
                                         },
@@ -360,8 +355,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                 if (isCorrect) {
                                   userData.incrementLevelCount(
                                       "Identification", level);
-                                  PhonemeLevelOneScreenState()
-                                      .fetchCurrentLevel();
+                                 
                                 }
                                 return isCorrect;
                               },

@@ -186,7 +186,7 @@ class _DiscriminationState extends State<Discrimination> {
                 isCorrect: () {
                   if (dtcontainer.getCorrectOutput() == "female") {
                     userData.incrementLevelCount("Discrimination", level);
-                     PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                
                   }
                   return dtcontainer.getCorrectOutput() == "female";
                 },
@@ -198,7 +198,7 @@ class _DiscriminationState extends State<Discrimination> {
                 isCorrect: () {
                   if (dtcontainer.getCorrectOutput() == "male") {
                     userData.incrementLevelCount("Discrimination", level);
-                     PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                  
                   }
                   return dtcontainer.getCorrectOutput() == "male";
                 },
@@ -275,7 +275,7 @@ class _DiscriminationState extends State<Discrimination> {
               if (_childKey.currentState!.progress > ans &&
                   _childKey.currentState!.progress < ans + 0.1) {
                 userData.incrementLevelCount("Discrimination", level);
-                 PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                
                 return true;
               } else {
                 return false;
@@ -328,7 +328,7 @@ class _DiscriminationState extends State<Discrimination> {
                             .then((value) {});
                              
                       }
-                       PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                   
                     }
                   }),
               isCorrect: () {
@@ -352,7 +352,7 @@ class _DiscriminationState extends State<Discrimination> {
                             .incrementLevelCount("Discrimination", level)
                             .then((value) {});
                       }
-                      PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                      
                     }
                   }),
               isCorrect: () {
@@ -389,7 +389,7 @@ class _DiscriminationState extends State<Discrimination> {
                     if (dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput()) {
                       userData.incrementLevelCount("Discrimination", level);
-                      PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                     
                     }
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
@@ -408,7 +408,7 @@ class _DiscriminationState extends State<Discrimination> {
                     if (dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput()) {
                       userData.incrementLevelCount("Discrimination", level);
-                      PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                     
                     }
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
@@ -440,7 +440,7 @@ class _DiscriminationState extends State<Discrimination> {
                     if (dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput()) {
                       userData.incrementLevelCount("Discrimination", level);
-                     PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                   
                     }
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
@@ -459,7 +459,7 @@ class _DiscriminationState extends State<Discrimination> {
                     if (dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput()) {
                       userData.incrementLevelCount("Discrimination", level);
-                      PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                     
                     }
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
@@ -484,7 +484,7 @@ class _DiscriminationState extends State<Discrimination> {
                     if (dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput()) {
                       userData.incrementLevelCount("Discrimination", level);
-                      PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                    
                     }
                     return dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput();
@@ -516,7 +516,7 @@ class _DiscriminationState extends State<Discrimination> {
                     if (dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput()) {
                       userData.incrementLevelCount("Discrimination", level);
-                      PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                     
                     }
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
@@ -535,7 +535,7 @@ class _DiscriminationState extends State<Discrimination> {
                     if (dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput()) {
                       userData.incrementLevelCount("Discrimination", level);
-                       PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                       
                     }
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
@@ -560,7 +560,7 @@ class _DiscriminationState extends State<Discrimination> {
                     if (dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput()) {
                       userData.incrementLevelCount("Discrimination", level);
-                       PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                       
                     }
                     return dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput();
@@ -579,7 +579,7 @@ class _DiscriminationState extends State<Discrimination> {
                     if (dtcontainer.getVideoUrls()[3] ==
                         dtcontainer.getCorrectOutput()) {
                       userData.incrementLevelCount("Discrimination", level);
-                       PhonemeLevelOneScreenState().fetchCurrentLevel(); 
+                       
                     }
                     return dtcontainer.getVideoUrls()[3] ==
                         dtcontainer.getCorrectOutput();

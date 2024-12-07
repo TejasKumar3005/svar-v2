@@ -15,6 +15,7 @@ import 'package:svar_new/presentation/phoneme_level_one/provider/level_one_provi
 import 'package:svar_new/providers/appUpdateProvider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
+import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
 
 Future<void> initializeFirebase() async {
   await Firebase.initializeApp(
@@ -108,6 +109,8 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
                 create: (context) =>
                     IdentificationProvider()),
+            ChangeNotifierProvider(
+                create: (context) => RiveProvider()),
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
