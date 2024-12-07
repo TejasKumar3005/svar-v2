@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
+import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
 
 class UserData {
   final String? uid;
@@ -127,7 +128,7 @@ class UserData {
 
   Future<Map<String, dynamic>?> fetchData(String docName, int level) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-
+     
     // Reference the document inside the 'Auditory' collection
     DocumentSnapshot doc =
         await firestore.collection("Auditory").doc(docName).get();
@@ -178,6 +179,7 @@ class UserData {
 
   Future<void> incrementLevelCount(String auditoryType, int level) async {
     try {
+      var provider2 = Provider.of<RiveProvider>(buildContext!, listen: false);
       String? uid = FirebaseAuth.instance.currentUser?.uid;
       DocumentReference userRef =
           FirebaseFirestore.instance.collection('patients').doc(uid);
@@ -210,6 +212,7 @@ class UserData {
             print("5");
             provider.setUser(data);
             print("6");
+            provider2.changeCurrentLevel(newLevelCount.toDouble());
           } else {
             print(
                 'Current level is already higher than or equal to the provided level.');
@@ -218,8 +221,12 @@ class UserData {
           throw Exception('User not found!');
         }
       });
-
+      
+          
       print('levelCount incremented successfully!');
+     
+    
+      
     } catch (e) {
       print('Error incrementing levelCount: $e');
     }

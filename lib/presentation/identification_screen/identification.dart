@@ -84,7 +84,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                   backgroundColor: appTheme.gray300,
                   body: Stack(
                     children: [
-                      // SVG background
+                      
                       Positioned.fill(
                         child: SvgPicture.asset(
                           ImageConstant

@@ -150,7 +150,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         // Handle other types
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params];
+        List<dynamic> argumentsList = [type, dtcontainer, params,level];
         debugPrint("Arguments list is: $argumentsList");
 
         NavigatorService.pushNamed(AppRoutes.detection,
@@ -201,7 +201,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, data, dtcontainer, params, level];
+        List<dynamic> argumentsList = [type, dtcontainer,params,level];
         debugPrint("Arguments list is: $argumentsList");
 
         // Pass the 'type' and 'data' to the Discrimination widget
@@ -258,7 +258,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         // Handle other types
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params];
+        List<dynamic> argumentsList = [type, dtcontainer, params,level];
         debugPrint("Arguments list is: $argumentsList");
 
         NavigatorService.pushNamed(AppRoutes.identification,
@@ -314,7 +314,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       } else {
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params];
+        List<dynamic> argumentsList = [type, dtcontainer, params,level];
         debugPrint("Arguments list is: $argumentsList");
 
         NavigatorService.pushNamed(AppRoutes.identification,
@@ -420,14 +420,14 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     } else if (event.name == "level 2") {
       _handleLevelType(startLevel + 1, "notcompleted");
     } else if (event.name == "level 3") {
-      // _handleLevelType(startLevel + 2, "notcompleted");
-      provider.changeCurrentLevel(3);
+      _handleLevelType(startLevel + 2, "notcompleted");
+      // provider.changeCurrentLevel(3);
     } else if (event.name == "level 4") {
-      // _handleLevelType(startLevel + 3, "notcompleted");
-      provider.changeCurrentLevel(4);
+      _handleLevelType(startLevel + 3, "notcompleted");
+      // provider.changeCurrentLevel(4);
     } else if (event.name == "level 5") {
-      // _handleLevelType(startLevel + 4, "notcompleted");
-      provider.changeCurrentLevel(5);
+      _handleLevelType(startLevel + 4, "notcompleted");
+      // provider.changeCurrentLevel(5);
     }
   }
 
@@ -484,7 +484,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         debugPrint("Error: 'current level' input not found!");
       }
 
-      provider.changeCurrentLevel(2);
+      provider.changeCurrentLevel(4);
       _controller!.addEventListener(tapHandle);
 
       // Track changes in train.x
