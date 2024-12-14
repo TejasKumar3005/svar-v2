@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:rive/rive.dart' as rive;
+import 'package:svar_new/presentation/assigned.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
@@ -42,43 +43,41 @@ class HomeScreenState extends State<HomeScreen> {
     var provider = Provider.of<MainInteractionProvider>(context, listen: false);
 
     return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {
-        showQuitDialog(context);
-      },
-      child: SafeArea(
-        child: Scaffold(
-          extendBody: true,
-          extendBodyBehindAppBar: true,
-          body: Stack(
-            children: [
-              // Background Rive animation
-              Positioned.fill(
-                child: rive.RiveAnimation.asset(
-                  'assets/rive/bg2.riv',
-                  fit: BoxFit.cover,
+        canPop: false,
+        onPopInvoked: (didPop) {
+          showQuitDialog(context);
+        },
+        child: SafeArea(
+          child: Scaffold(
+            extendBody: true,
+            extendBodyBehindAppBar: true,
+            body: Stack(
+              children: [
+                // Background Rive animation
+                Positioned.fill(
+                  child: rive.RiveAnimation.asset(
+                    'assets/rive/bg2.riv',
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              // Foreground content
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 10.v),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.h),
-                      child: AppStatsHeader(per: 40),
-                    ),
-                    Spacer(),
-                    carouselSlider(provider, context),
-                  ],
+                // Foreground content
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 10.v),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.h),
+                        child: AppStatsHeader(per: 40),
+                      ),
+                      Spacer(),
+                      carouselSlider(provider, context),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      )
-
-    );
+        ));
   }
 
   Widget carouselSlider(
@@ -132,6 +131,19 @@ class HomeScreenState extends State<HomeScreen> {
               4,
               () => handleExercise(provider, "Identification", context),
             ),
+            buildCarouselItem(
+              context,
+              provider,
+              "Exercises",
+              ImageConstant.imgIdentification,
+              5,
+              () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AssignedExercises()));
+              },
+            ),
           ],
           options: CarouselOptions(
             autoPlay: true,
@@ -166,11 +178,11 @@ class HomeScreenState extends State<HomeScreen> {
           child: Container(
             width: MediaQuery.of(context).size.width * 0.6,
             height: MediaQuery.of(context).size.width * 0.3,
-            
             child: Stack(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(20), // Set the desired corner radius
+                  borderRadius: BorderRadius.circular(
+                      20), // Set the desired corner radius
                   child: Image.asset(
                     imagePath,
                     fit: BoxFit.contain,
@@ -178,8 +190,6 @@ class HomeScreenState extends State<HomeScreen> {
                     // Remove height so it adjusts to the image's aspect ratio
                   ),
                 ),
-
-
                 if (false)
                   Center(
                     child: Container(
@@ -250,7 +260,8 @@ class HomeScreenState extends State<HomeScreen> {
         await firestore.collection("Auditory").doc(docName).get();
 
     if (!doc.exists) {
-      debugPrint("Document $docName does not exist in the Auditory collection.");
+      debugPrint(
+          "Document $docName does not exist in the Auditory collection.");
       return null;
     }
 
@@ -260,7 +271,8 @@ class HomeScreenState extends State<HomeScreen> {
 
         if (documentData.containsKey('data') &&
             documentData['data'] is Map<String, dynamic>) {
-          Map<String, dynamic> data = documentData['data'] as Map<String, dynamic>;
+          Map<String, dynamic> data =
+              documentData['data'] as Map<String, dynamic>;
 
           int numberOfLevels = 0;
 
@@ -274,7 +286,8 @@ class HomeScreenState extends State<HomeScreen> {
           debugPrint("Number of levels in $docName: $numberOfLevels");
           return numberOfLevels;
         } else {
-          debugPrint("The 'data' field is missing or not in the correct format in document $docName.");
+          debugPrint(
+              "The 'data' field is missing or not in the correct format in document $docName.");
         }
       } else {
         debugPrint("The document does not contain valid data.");

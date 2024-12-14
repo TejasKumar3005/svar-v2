@@ -1,11 +1,16 @@
 import 'package:svar_new/data/models/gift.dart';
 import 'package:svar_new/widgets/custom_level_map/level_map.dart';
-class LevelMap{
+
+class LevelMap {
   int detection;
   int discrimination;
   int identification;
   int level;
-  LevelMap({required this.detection, required this.discrimination, required this.identification, required this.level});
+  LevelMap(
+      {required this.detection,
+      required this.discrimination,
+      required this.identification,
+      required this.level});
   factory LevelMap.fromJson(Map<String, dynamic> json) {
     return LevelMap(
       detection: json['Detection'] as int,
@@ -23,7 +28,8 @@ class LevelMap{
     };
   }
 }
-class Activity{
+
+class Activity {
   String? activity;
   String? date;
   String? time;
@@ -65,10 +71,11 @@ class UserModel {
   // Gift? currently_scheduled_gift;
   int? score;
   int? coins;
-  String? therapist;
+  List? therapist;
   String? batch;
   LevelMap levelMap;
   List<Activity> activities = [];
+  Map<String,dynamic> exercises = {};
   // GameStatsModel gameStats = GameStatsModel(
   //     gifts: [],
   //     progressScore: 0.0,
@@ -96,37 +103,47 @@ class UserModel {
       this.score,
       this.coins,
       this.address,
-      this.therapist ,  this.batch,
-    required  this.levelMap,
-    this.activities = const []
+      this.therapist,
+      this.batch,
+      required this.levelMap,
+      this.activities = const [],
+      this.exercises= const {}
       // this.gift_purchase_history = const [],
       // this.currently_scheduled_gift,
       // this.gameStats
-  });
+      });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-        parentNames: json["parentNames"] ?? [],
-        name: json['name'] ?? "",
-        password: json['password'] ?? "",
-        email: json['email'] ?? "",
-        uid: json['uid'] ?? "",
-        profile: json['profile'] ?? "",
-        dob: json['dob'] ?? "",
-
-        gender: json['gender'] ?? 0,
-        location: json['location'] ?? [0, 0],
-        access_token: json['access_token'] ?? "",
-        subscription_status: json['subscription_status'] ?? "NO",
-        mobile: json['mobile'] ?? "",
-        phoneme_current_level: json['phoneme_current_level'] ?? 0,
-        auditory_current_level: json['auditory_current_level'] ?? 0,
-        score: json['score'] ?? 0,
-        coins: json['coins'] ?? 0,
-        address: json['address'] ?? "",  therapist: json['therapist'] ?? "",
+      parentNames: json["parentNames"] ?? [],
+      name: json['name'] ?? "",
+      password: json['password'] ?? "",
+      email: json['email'] ?? "",
+      uid: json['uid'] ?? "",
+      profile: json['profile'] ?? "",
+      dob: json['dob'] ?? "",
+      gender: json['gender'] ?? 0,
+      location: json['location'] ?? [0, 0],
+      access_token: json['access_token'] ?? "",
+      subscription_status: json['subscription_status'] ?? "NO",
+      mobile: json['mobile'] ?? "",
+      phoneme_current_level: json['phoneme_current_level'] ?? 0,
+      auditory_current_level: json['auditory_current_level'] ?? 0,
+      score: json['score'] ?? 0,
+      coins: json['coins'] ?? 0,
+      address: json['address'] ?? "",
+      therapist: json['therapist'] ?? [],
       batch: json['batch'] ?? "",
-      activities: json['activities']!=null? (json['activities'] as List).map<Activity>((e) => Activity.fromJson(e)).toList():[],
-      levelMap:json['LevelMap']!=null? LevelMap.fromJson(json['LevelMap']): LevelMap(detection: 0,discrimination: 0,identification: 0,level: 0),
+      activities: json['activities'] != null
+          ? (json['activities'] as List)
+              .map<Activity>((e) => Activity.fromJson(e))
+              .toList()
+          : [],
+          exercises: json['exercises'] ?? {},
+      levelMap: json['LevelMap'] != null
+          ? LevelMap.fromJson(json['LevelMap'])
+          : LevelMap(
+              detection: 0, discrimination: 0, identification: 0, level: 0),
     );
   }
 
@@ -161,6 +178,8 @@ class UserModel {
       "therapist": this.therapist,
       "batch": this.batch,
       "levelMap": this.levelMap!.toJson(),
+      "activities": this.activities.map((e) => e.toJson()).toList(),
+      "exercises": this.exercises,
       // "gift_purchase_history": list_gifts,
       // "currently_scheduled_gift": this.currently_scheduled_gift == null
       //     ? null
