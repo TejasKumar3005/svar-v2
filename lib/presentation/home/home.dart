@@ -3,7 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:rive/rive.dart' as rive;
-import 'package:svar_new/presentation/assigned.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
@@ -131,19 +130,7 @@ class HomeScreenState extends State<HomeScreen> {
               4,
               () => handleExercise(provider, "Identification", context),
             ),
-            buildCarouselItem(
-              context,
-              provider,
-              "Exercises",
-              ImageConstant.imgIdentification,
-              5,
-              () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => AssignedExercises()));
-              },
-            ),
+            
           ],
           options: CarouselOptions(
             autoPlay: true,
