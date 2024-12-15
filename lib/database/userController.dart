@@ -87,7 +87,7 @@ Future<List<dynamic>> getTodaysExercise(
                 docSnapshot.data() as Map<String, dynamic>;
 
             print("exerciseData: $exerciseData");
-            updatedData.add({...exercise, ...exerciseData});
+            updatedData.add({...exercise, ...exerciseData,"exerciseType":exercise["type"]});
           } else {
             debugPrint("Document with id ${exercise['eid']} does not exist.");
           }

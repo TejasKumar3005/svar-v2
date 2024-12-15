@@ -1,9 +1,14 @@
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:rive/rive.dart' as rive;
+import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/exercises/exercises_screen.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
+import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
 import 'package:flutter/services.dart';
@@ -129,6 +134,25 @@ class HomeScreenState extends State<HomeScreen> {
               ImageConstant.imgIdentification,
               4,
               () => handleExercise(provider, "Identification", context),
+            ), 
+             buildCarouselItem(
+              context,
+              provider,
+              "Exercises",
+              ImageConstant.imgIdentification,
+              5,
+              () {
+                var data_pro=Provider.of<UserDataProvider>(context,listen: false);
+                UserData(uid: FirebaseAuth.instance.currentUser!.uid).getTodaysExercise(data_pro.userModel.exercises).then((value) {
+                  data_pro.setTodaysExercises(value);
+                  if(value.isNotEmpty){
+                    Navigator.push(context, 
+                    MaterialPageRoute(builder: (context) => ExercisesScreen()));
+                  }
+                });
+                
+
+              },
             ),
             
           ],

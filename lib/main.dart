@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/analytics/screen-tracking.dart';
 import 'package:svar_new/core/utils/firebaseoptions.dart';
+import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/identification_screen/provider/identification_provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/home/provider/main_interaction_provider.dart';
@@ -107,7 +108,9 @@ class MyApp extends StatelessWidget {
                 create: (context) => PhonemsLevelOneProvider()),
             ChangeNotifierProvider(
                 create: (context) =>
-                    IdentificationProvider()),
+                    IdentificationProvider()),ChangeNotifierProvider(
+                create: (context) =>
+                    ExerciseProvider()),
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
