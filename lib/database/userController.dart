@@ -212,6 +212,7 @@ class UserData {
             print("5");
             provider.setUser(data);
             print("6");
+            print("newLevelCount: $newLevelCount"); 
             provider2.changeCurrentLevel(newLevelCount.toDouble());
           } else {
             print(

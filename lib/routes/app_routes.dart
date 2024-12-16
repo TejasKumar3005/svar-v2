@@ -20,7 +20,7 @@ import '../presentation/loading_screen/loading_screen.dart';
 import  '../presentation/speaking_phoneme/speaking_phoneme.dart';
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
 import 'package:svar_new/presentation/detection/detection.dart';
-
+import 'package:svar_new/presentation/intro_screen/intro_screen.dart';
 class AppRoutes {
   static const String welcomeScreenPotraitScreen =
       '/welcome_screen_potrait_screen';
@@ -33,6 +33,8 @@ class AppRoutes {
   static const String register = '/register';
 
   static const String home = '/home';
+
+  static const String introScreen = '/intro_screen';  
 
   static const String exitScreen = '/exit_screen';
 
@@ -47,28 +49,15 @@ class AppRoutes {
   static const String phonemsLevelScreenOneScreen =
       '/phonems_level_screen_one_screen';
 
-  
-
   static const String identification =
       '/identification_screen';
 
-
   static const String setting="/setting_screen";
-
-
-
-
-
-
 
   static const String phonmesListScreen = '/phonmes_list_screen';
 
   static const String lingLearningScreen = '/ling_learning_screen';
 
-
-
-
-  
   static const String speakingphonemeScreen = '/speaking_phoneme_screen';
   static const String videoCamScreen = '/video_cam_screen';
 
@@ -107,7 +96,8 @@ class AppRoutes {
         tipBoxVideoScreen: TipBoxVideoScreen.builder,
         appNavigationScreen: AppNavigationScreen.builder,
         initialRoute: LoadingScreen.builder,
-        userProfileScreen: UserProfileScreen.builder
+        userProfileScreen: UserProfileScreen.builder,
+        introScreen: SupportScreen.builder,
 
       };
 }

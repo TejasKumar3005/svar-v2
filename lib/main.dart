@@ -63,10 +63,7 @@ void main() async {
       analyticsService: analyticsService,
           ));
   });
-// final AnalyticsService analyticsService = AnalyticsService();
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await initializeFirebase();
-//   runApp(MyApp(analyticsService));
+
 }
 
 class MyApp extends StatelessWidget {
@@ -148,36 +145,3 @@ class MyApp extends StatelessWidget {
 
 
 
-
-// void main() {
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Audio Widget Test',
-//       theme: ThemeData(
-//         primarySwatch: Colors.red,
-//       ),
-//       home: Scaffold(
-//         appBar: AppBar(
-//           title: Text('Test Audio Widget'),
-//         ),
-//         body: Center(
-
-//           child: TestContainer(
-//             child: AudioWidget(
-//               audioLinks: [
-//                 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-//                 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-//                 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-//               ], // replace with your audio links
-//             ),
-//           )
-//         ),
-//       ),
-//     );
-//   }
-// }

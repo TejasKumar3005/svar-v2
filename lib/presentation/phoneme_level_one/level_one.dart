@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
@@ -36,7 +37,7 @@ extension _TextExtension on rive.Artboard {
   TextValueRun? textRun(String name) => component<TextValueRun>(name);
 }
 
-class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
+class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen>  {
   late double currentLevelCount = 3;
   bool _initialized = false;
   int val = 1;
@@ -48,6 +49,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   double? _previousTrainX;
   Artboard? _riveArtboard;
   StateMachineController? _controller;
+ 
 
   @override
   void initState() {
@@ -56,13 +58,15 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    _fetchCurrentLevel();
-    trackTrainPosition();
+   
+    // _fetchCurrentLevel();
+  
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+   
     super.dispose();
   }
 
@@ -420,8 +424,8 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     } else if (event.name == "level 2") {
       _handleLevelType(startLevel + 1, "notcompleted");
     } else if (event.name == "level 3") {
-      _handleLevelType(startLevel + 2, "notcompleted");
-      // provider.changeCurrentLevel(3);
+      // _handleLevelType(startLevel + 2, "notcompleted");
+      provider.changeCurrentLevel(3);
     } else if (event.name == "level 4") {
       _handleLevelType(startLevel + 3, "notcompleted");
       // provider.changeCurrentLevel(4);
@@ -473,6 +477,9 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       if (train != null) {
         print("train position: ${train.x}");
         // Store the initial value of train.x
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+        _trackTrainPosition(); // Start tracking on the first frame
+      });
         _previousTrainX = train.x;
       } else {
         debugPrint("Error: 'train' not found!");
@@ -487,42 +494,33 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       provider.changeCurrentLevel(4);
       _controller!.addEventListener(tapHandle);
 
-      // Track changes in train.x
-      trackTrainPosition();
+     
+      
     } else {
       debugPrint("Error: State Machine 'State Machine 1' not found.");
     }
   }
 
-  void trackTrainPosition() {
-    // You can use a simple loop or a frame callback to track changes continuously
-    Future.delayed(Duration(milliseconds: 16), () {
-      if (train != null &&
-          _previousTrainX != null &&
-          train.x != _previousTrainX) {
-        // Train position has changed, update the scroll position
-        print("New train position: ${train.x}");
 
-        // Ensure that train.x is within the valid scroll range
-        double screenWidth = MediaQuery.of(context).size.height *
-            13.7176; // Get the screen width
-        double maxTrainX =
-            1000; // Example max value for train.x; replace with your actual maximum value
-        double scaledOffset =
-            (train.x / maxTrainX) * screenWidth; // Scale train.x proportionally
 
-        if (_scrollController.hasClients) {
-          // Update scroll position (clamp to valid range if necessary)
-          _scrollController.jumpTo(scaledOffset.clamp(
-              0.0, _scrollController.position.maxScrollExtent));
-        }
+  void _trackTrainPosition() {
+    if (train != null && _previousTrainX != null && train.x != _previousTrainX) {
+      // Train position has changed, update the scroll position
+      print("New train position: ${train.x}");
 
-        _previousTrainX = train.x; // Update the previous value
+      double screenWidth = MediaQuery.of(context).size.height * 13.7176;
+      double maxTrainX = 10000; // Or your actual max X value
+      double scaledOffset = (train.x / maxTrainX) * screenWidth;
 
-        // Recursively call trackTrainPosition to keep checking for changes
-        trackTrainPosition();
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          scaledOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 200), // Smoother animation
+          curve: Curves.easeInOut,
+        );
       }
-    });
+      _previousTrainX = train.x;
+    }
   }
 
   Object retrieveObject(String type, Map<String, dynamic> data) {

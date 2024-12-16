@@ -84,7 +84,6 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                   backgroundColor: appTheme.gray300,
                   body: Stack(
                     children: [
-                      
                       Positioned.fill(
                         child: SvgPicture.asset(
                           ImageConstant
@@ -143,7 +142,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
         : AudiotoimageScreen(
             dtcontainer: dtcontainer,
             params: params,
-          );
+   );
   }
 
   /// Section Widget

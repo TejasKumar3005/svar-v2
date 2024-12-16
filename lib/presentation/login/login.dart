@@ -8,6 +8,8 @@ import 'package:svar_new/presentation/login/login-methods.dart';
 import 'package:svar_new/presentation/login/login_provider.dart';
 import 'package:svar_new/widgets/loading.dart';
 import 'package:rive/rive.dart';
+import 'package:svar_new/widgets/custom_button.dart';
+import 'package:video_player/video_player.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -27,12 +29,27 @@ class LoginScreenState extends State<LoginScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool hide = true;
   OverlayEntry? _overlayEntry;
+  late VideoPlayerController _videoController;
 
   @override
   void initState() {
     super.initState();
+    _videoController =
+        VideoPlayerController.asset('assets/video/bgg_animation.mp4')
+          ..initialize().then((_) {
+            setState(() {
+              _videoController.play();
+              _videoController.setLooping(true);
+            });
+          });
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  }
+
+  @override
+  void dispose() {
+    _videoController.dispose();
+    super.dispose();
   }
 
   @override
@@ -57,112 +74,119 @@ class LoginScreenState extends State<LoginScreen> {
         extendBodyBehindAppBar: true,
         resizeToAvoidBottomInset: false,
         body: Stack(
+          fit: StackFit.expand,
           children: [
-            Container(
-              width: screenWidth,
-              height: screenHeight,
-              padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage("assets/images/Login_Screen_Potrait.png"),
-                    fit: BoxFit.fill),
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            PlayBgm().playMusic('Back_Btn.mp3', "mp3", false);
-                            Navigator.pop(context);
-                          },
-                          child: CustomImageView(
-                            imagePath: ImageConstant.imgBackBtn,
-                          ),
-                        ),
-                        Spacer(),
-                      ],
-                    ),
-                    CustomImageView(
-                      width: screenWidth * 0.8,
-                      height: screenHeight * 0.15, // Adjusted proportionally
-                      fit: BoxFit.contain,
-                      imagePath: ImageConstant.imgSvaLogo,
-                    ),
-                    SizedBox(
-                      height: screenHeight * 0.05, // Adjusted proportionally
-                    ),
-                    Flexible(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Field(70.h, "email", provider.emailController,
-                              context, provider),
-                          SizedBox(
-                            height: 15.v,
-                          ),
-                          Field(70.h, 'password', provider.passController,
-                              context, provider),
-                          SizedBox(
-                            height: 15.v,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-
-                              GestureDetector(
-                                onTap: () {
-                                  showDialog(context: context, builder: (context) {
-                                    return ForgotPasswordDialog();
-                                  });
-                                },
-                                child: Text("Forgot Password?".tr,
-                                    style: TextStyle(
-                                        color: appTheme.orangeA200,
-                                        fontSize: 20.h,
-                                        fontWeight: FontWeight.bold)),
-                              ),
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () async{
-                              if (_formKey.currentState!.validate() &&
-                                  !provider.loading) {
-                                await    AnalyticsService().logSignIn(provider.emailController.text);
-                                LoginFormMethods methods =
-                                    LoginFormMethods(context: context);
-                                methods.login();
-                              }
-                            },
-                            child: CustomImageView(
-                              imagePath: ImageConstant.imgLoginBTn,
-                              width: screenWidth * 0.7, // Adjusted proportionally
-                              height: screenHeight * 0.08, // Adjusted proportionally
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ],
+            // Full-screen video background
+            _videoController.value.isInitialized
+                ? SizedBox.expand(
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: _videoController.value.size.width,
+                        height: _videoController.value.size.height,
+                        child: VideoPlayer(_videoController),
                       ),
                     ),
-                    // SizedBox(
-                    //   height: screenHeight * 0.05, // Adjusted proportionally
-                    // ),
-                    // Flexible(
-                    //   child: Center(
-                    //     child: Container(
-                    //       width: screenWidth * 0.9, // Adjusted proportionally
-                    //       height: screenHeight * 0.9, // Increased height proportion
-                    //       child: RiveAnimation.asset(
-                    //         'assets/rive/mascot-rig-final.riv', // Update with your Rive file
-                    //         fit: BoxFit.contain,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                  ],
+                  )
+                : Container(color: Colors.black),
+
+            // Content
+            SingleChildScrollView(
+              child: Container(
+                width: screenWidth,
+                padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Back Button
+                      Row(
+                        children: [
+                          CustomButton(
+                            type: ButtonType.Back,
+                            onPressed: () {
+                              PlayBgm().playMusic('Back_Btn.mp3', "mp3", false);
+                              Navigator.pop(context);
+                            },
+                          ),
+                          Spacer(),
+                        ],
+                      ),
+
+                      // SVA Logo
+                      CustomImageView(
+                        width: screenWidth * 0.8,
+                        height: screenHeight * 0.15,
+                        fit: BoxFit.contain,
+                        imagePath: ImageConstant.imgSvaLogo,
+                      ),
+
+                      SizedBox(
+                        height: screenHeight * 0.05,
+                      ),
+
+                      // Login Form
+                      Flexible(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Email Field
+                            Field(70.h, "email", provider.emailController,
+                                context, provider),
+
+                            SizedBox(
+                              height: 15.v,
+                            ),
+
+                            // Password Field
+                            Field(70.h, 'password', provider.passController,
+                                context, provider),
+
+                            SizedBox(
+                              height: 15.v,
+                            ),
+
+                            // Forgot Password
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return ForgotPasswordDialog();
+                                        });
+                                  },
+                                  child: Text("Forgot Password?".tr,
+                                      style: TextStyle(
+                                          color: appTheme.orangeA200,
+                                          fontSize: 20.h,
+                                          fontWeight: FontWeight.bold)),
+                                ),
+                              ],
+                            ),
+
+                            // Login Button
+                            CustomButton(
+                              type: ButtonType.Login,
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate() &&
+                                    !provider.loading) {
+                                  await AnalyticsService()
+                                      .logSignIn(provider.emailController.text);
+                                  LoginFormMethods methods =
+                                      LoginFormMethods(context: context);
+                                  methods.login();
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
