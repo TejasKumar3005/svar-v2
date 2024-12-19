@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:async';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,6 +28,7 @@ class LingLearningScreen extends StatefulWidget {
 }
 
 class LingLearningScreenState extends State<LingLearningScreen> {
+  String? _errorMessage;
   late AudioPlayer _audioPlayer;
   var model;
 
@@ -222,7 +224,8 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                                 // }
                                 print("hiiiii");
                                 onTapMicrophonebutton(
-                                    context, lingLearningProvider);
+                                    context, lingLearningProvider
+                                    );
                               },
                             ),
                           ),
@@ -328,47 +331,62 @@ class LingLearningScreenState extends State<LingLearningScreen> {
     }
   }
 
-  onTapMicrophonebutton(
-      BuildContext context, LingLearningProvider provider) async {
-    print("Microphone button tapped");
+ onTapMicrophonebutton(
+  BuildContext context,
+  LingLearningProvider provider,
+) async {
+  print("Microphone button tapped");
 
-    try {
-      bool recordingStarted = await provider.toggleRecording(context);
-      print("Recording started: $recordingStarted");
+  try {
+    bool recordingStarted = await provider.toggleRecording(context);
+    print("Recording started: $recordingStarted");
 
-      if (recordingStarted) {
-        print("Recording in progress...");
-        // The glow effect will start automatically due to isRecording being true
-      } else {
-        print("Recording stopped");
-        setState(() {
-          loading = true;
-        });
+    if (recordingStarted) {
+      print("Recording in progress...");
+      // The glow effect will start automatically due to isRecording being true
+    } else {
+      print("Recording stopped");
+      setState(() {
+        loading = true;
+      });
 
-        Directory tempDir = await getTemporaryDirectory();
-        String tempPath = tempDir.path;
-        String path = '$tempPath/audio.wav';
-        print("Audio file path: $path");
+      Directory tempDir = await getTemporaryDirectory();
+      String tempPath = tempDir.path;
+      String path = '$tempPath/audio.wav';
+      print("Audio file path: $path");
 
-        try {
-          double result = await sendWavFile(path, PhonmesListModel().hindiToEnglishPhonemeMap[provider.selectedCharacter]!);
-          print("Processing result: $result");
-        } catch (e) {
-          print("Error processing audio: ${e.toString()}");
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error processing audio: ${e.toString()}")),
-          );
-        } finally {
+      
+      const timeoutDuration = Duration(seconds: 5);
+      var timer = Timer(timeoutDuration, () {
+        if (mounted) {
           setState(() {
             loading = false;
+            provider.isRecording = false; // Stop recording animation
+            _errorMessage = "API call timed out. Please try again later.";
           });
         }
+      });
+
+      try {
+        double result = await sendWavFile(path, PhonmesListModel().hindiToEnglishPhonemeMap[provider.selectedCharacter]!);
+        print("Processing result: $result");
+        timer.cancel(); // Cancel timer if successful
+      } catch (e) {
+        print("Error processing audio: ${e.toString()}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error processing audio: ${e.toString()}")),
+        );
+      } finally {
+        setState(() {
+          loading = false;
+        });
       }
-    } catch (e) {
-      print("Error toggling recording: ${e.toString()}");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error toggling recording: ${e.toString()}")),
-      );
     }
+  } catch (e) {
+    print("Error toggling recording: ${e.toString()}");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error toggling recording: ${e.toString()}")),
+    );
   }
+}
 }
