@@ -11,7 +11,6 @@ import 'package:svar_new/presentation/login/login_provider.dart';
 
 import 'package:svar_new/presentation/register/provider/register_provider.dart';
 
-import '../core/app_export.dart';
 
 class AuthConroller {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;

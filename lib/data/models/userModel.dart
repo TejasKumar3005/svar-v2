@@ -160,7 +160,7 @@ class UserModel {
       "address": this.address,
       "therapist": this.therapist,
       "batch": this.batch,
-      "levelMap": this.levelMap!.toJson(),
+      "levelMap": this.levelMap.toJson(),
       // "gift_purchase_history": list_gifts,
       // "currently_scheduled_gift": this.currently_scheduled_gift == null
       //     ? null

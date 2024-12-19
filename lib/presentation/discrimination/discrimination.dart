@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:chewie/chewie.dart';
@@ -17,7 +14,6 @@ import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
-import './customthumb.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
 
