@@ -1,9 +1,9 @@
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/core/utils/playBgm.dart';
-import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
-import 'package:svar_new/widgets/custom_button.dart';
+import 'package:flutter/services.dart';
+import 'package:svar_new/core/app_export.dart'; // Make sure this import is correct
+import 'package:svar_new/core/utils/playBgm.dart'; // Make sure this import is correct
+import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart'; // Make sure this import is correct
+import 'package:svar_new/widgets/custom_button.dart'; // Make sure this import is correct
 import 'package:rive/rive.dart';
 import 'package:video_player/video_player.dart';
 
@@ -19,28 +19,40 @@ class LoginSignUpScreen extends StatefulWidget {
 }
 
 class LoginSignUpScreenState extends State<LoginSignUpScreen> {
-  final PlayBgm _playBgm = PlayBgm();
+  final PlayBgm _playBgm = PlayBgm(); // Make sure PlayBgm is implemented
   late VideoPlayerController _videoController;
+  bool _isVideoInitialized = false; // Track video initialization
 
   @override
   void initState() {
     super.initState();
-    _videoController = VideoPlayerController.asset(
-        '/Users/anurag1104/Desktop/svar-v2/assets/video/bgg_animation.mp4')
-      ..initialize().then((_) {
-        setState(() {
-          _videoController.play();
-          _videoController.setLooping(true);
-        });
-      });
-    print("video value intialised ${_videoController.value.isInitialized}");
+    _initializeVideo();
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   }
 
+  Future<void> _initializeVideo() async {
+    try {
+      _videoController =
+          VideoPlayerController.asset('assets/video/bgg_animation.mp4');
+      await _videoController.initialize();
+      setState(() {
+        _isVideoInitialized = true;
+        _videoController.play();
+        _videoController.setLooping(true);
+      });
+    } catch (e) {
+      print('Error initializing video: $e');
+      // Handle error, e.g., show an error message to the user
+      setState(() {
+        _isVideoInitialized = false; // Video init failed
+      });
+    }
+  }
+
   @override
   void dispose() {
-    _videoController.dispose(); // Properly dispose of the video controller
+    _videoController.dispose();
     super.dispose();
   }
 
@@ -52,31 +64,35 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
-        showQuitDialog(context);
+        showQuitDialog(context); // Make sure showQuitDialog is defined
       },
       child: SafeArea(
         child: Scaffold(
           extendBody: true,
           extendBodyBehindAppBar: true,
           body: Stack(
-            // Use Stack instead of Container with Column
             fit: StackFit.expand,
             children: [
-              // Background Video
-              _videoController.value.isInitialized
-                ? SizedBox.expand(
-                    child: FittedBox(
-                      fit: BoxFit.cover,
-                      child: SizedBox(
-                        width: _videoController.value.size.width,
-                        height: _videoController.value.size.height,
-                        child: VideoPlayer(_videoController),
+              // Background Video or Placeholder
+              _isVideoInitialized
+                  ? SizedBox.expand(
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        child: SizedBox(
+                          width: _videoController.value.size.width,
+                          height: _videoController.value.size.height,
+                          child: VideoPlayer(_videoController),
+                        ),
                       ),
+                    )
+                  : Container(
+                      color: Colors.black,
+                      child: const Center(
+                          child:
+                              CircularProgressIndicator()), // Loading indicator
                     ),
-                  )
-                : Container(color: Colors.black),
+              // Content on top of the video
               Container(
-                // Your existing content
                 width: screenWidth,
                 height: screenHeight,
                 padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
@@ -87,11 +103,9 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
                       width: screenWidth * 0.8,
                       height: screenHeight * 0.15,
                       fit: BoxFit.contain,
-                      imagePath: ImageConstant.imgSvaLogo,
+                      imagePath: ImageConstant.imgSvaLogo, // Make sure this is correct
                     ),
-                    SizedBox(
-                      height: screenHeight * 0.05,
-                    ),
+                    SizedBox(height: screenHeight * 0.05),
                     Flexible(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -102,9 +116,7 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
                               NavigatorService.pushNamed(AppRoutes.login);
                             },
                           ),
-                          SizedBox(
-                            height: screenHeight * 0.02,
-                          ),
+                          SizedBox(height: screenHeight * 0.02),
                           CustomButton(
                             type: ButtonType.SignUp,
                             onPressed: () {
@@ -114,12 +126,10 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: screenHeight * 0.05,
-                    ),
+                    SizedBox(height: screenHeight * 0.05),
                     Flexible(
                       child: Center(
-                        child: Container(
+                        child: SizedBox(
                           width: screenWidth * 0.8,
                           height: screenHeight * 0.8,
                           child: RiveAnimation.asset(

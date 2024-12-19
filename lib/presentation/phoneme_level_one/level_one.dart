@@ -18,6 +18,7 @@ import 'package:svar_new/presentation/discrimination/discrimination.dart';
 import 'package:rive/rive.dart' as rive;
 import 'package:rive/rive.dart' hide LinearGradient;
 import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
+import 'package:svar_new/widgets/rive_preloader.dart';
 
 class PhonemeLevelOneScreen extends StatefulWidget {
   PhonemeLevelOneScreen({Key? key}) : super(key: key);
@@ -37,7 +38,8 @@ extension _TextExtension on rive.Artboard {
   TextValueRun? textRun(String name) => component<TextValueRun>(name);
 }
 
-class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen>  {
+class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
+   late Future<RiveFile?> _riveFileFuture;
   late double currentLevelCount = 3;
   bool _initialized = false;
   int val = 1;
@@ -49,7 +51,6 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen>  {
   double? _previousTrainX;
   Artboard? _riveArtboard;
   StateMachineController? _controller;
- 
 
   @override
   void initState() {
@@ -58,15 +59,14 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen>  {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-   
-    // _fetchCurrentLevel();
-  
+
+   _riveFileFuture = RivePreloader().initialize().then((_) => RivePreloader().getRiveFile('assets/rive/levels.riv'));
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-   
+
     super.dispose();
   }
 
@@ -154,7 +154,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen>  {
         // Handle other types
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params,level];
+        List<dynamic> argumentsList = [type, dtcontainer, params, level];
         debugPrint("Arguments list is: $argumentsList");
 
         NavigatorService.pushNamed(AppRoutes.detection,
@@ -205,7 +205,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen>  {
 
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer,params,level];
+        List<dynamic> argumentsList = [type, dtcontainer, params, level];
         debugPrint("Arguments list is: $argumentsList");
 
         // Pass the 'type' and 'data' to the Discrimination widget
@@ -262,7 +262,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen>  {
         // Handle other types
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params,level];
+        List<dynamic> argumentsList = [type, dtcontainer, params, level];
         debugPrint("Arguments list is: $argumentsList");
 
         NavigatorService.pushNamed(AppRoutes.identification,
@@ -318,7 +318,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen>  {
       } else {
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params,level];
+        List<dynamic> argumentsList = [type, dtcontainer, params, level];
         debugPrint("Arguments list is: $argumentsList");
 
         NavigatorService.pushNamed(AppRoutes.identification,
@@ -373,40 +373,37 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen>  {
 
   @override
   Widget build(BuildContext context) {
-    try {
-      var obj =
-          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-      print("object is $obj");
-      if (obj == null) {
-        debugPrint("No arguments found on this route.");
-        return Container();
-      }
-
-      return SafeArea(
-        child: Scaffold(
-          extendBody: true,
-          extendBodyBehindAppBar: true,
-          body: SingleChildScrollView(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            child: Container(
-              key: _key,
-              alignment: Alignment.centerLeft,
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.height * 13.7176,
-              child: RiveAnimation.asset(
-                'assets/rive/levels.riv',
-                fit: BoxFit.contain,
-                onInit: _onRiveInit,
-              ),
-            ),
-          ),
+    return SafeArea(
+      child: Scaffold(
+        extendBody: true,
+        extendBodyBehindAppBar: true,
+        body: FutureBuilder<RiveFile?>(
+          future: _riveFileFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator()); // Show loading indicator
+            } else if (snapshot.hasError || snapshot.data == null) {
+              return const Center(child: Text('Error loading Rive file')); // Handle errors
+            } else {
+              final riveFile = snapshot.data!;
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.height * 13.7176,
+                  child: RiveAnimation.direct(
+                    riveFile,
+                    fit: BoxFit.contain,
+                    onInit: _onRiveInit,
+                  ),
+                ),
+              );
+            }
+          },
         ),
-      );
-    } catch (e) {
-      debugPrint("Error in building the widget: $e");
-      return Container();
-    }
+      ),
+    );
   }
 
   void tapHandle(rive.RiveEvent event) {
@@ -478,8 +475,8 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen>  {
         print("train position: ${train.x}");
         // Store the initial value of train.x
         SchedulerBinding.instance.addPostFrameCallback((_) {
-        _trackTrainPosition(); // Start tracking on the first frame
-      });
+          _trackTrainPosition(); // Start tracking on the first frame
+        });
         _previousTrainX = train.x;
       } else {
         debugPrint("Error: 'train' not found!");
@@ -493,16 +490,15 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen>  {
 
       provider.changeCurrentLevel(4);
       _controller!.addEventListener(tapHandle);
-
     } else {
       debugPrint("Error: State Machine 'State Machine 1' not found.");
     }
   }
 
-
-
   void _trackTrainPosition() {
-    if (train != null && _previousTrainX != null && train.x != _previousTrainX) {
+    if (train != null &&
+        _previousTrainX != null &&
+        train.x != _previousTrainX) {
       // Train position has changed, update the scroll position
       print("New train position: ${train.x}");
 

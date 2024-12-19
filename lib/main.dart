@@ -16,6 +16,7 @@ import 'package:svar_new/providers/appUpdateProvider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
 import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
+import 'package:svar_new/widgets/rive_preloader.dart';
 
 Future<void> initializeFirebase() async {
   await Firebase.initializeApp(
@@ -48,22 +49,23 @@ void main() async {
   }
 
   final AnalyticsService analyticsService = AnalyticsService();
+  print("1");
   await analyticsService.logOpenApp();
+  if (true) {
+    print("rive preloader in the main file ");
+    await RivePreloader().initialize();
+  }
 
   Future.wait([
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft
-    ]),
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]),
     PrefUtils().init()
   ]).then((value) {
     initializeFirebaseAuth();
-    runApp(
-      MyApp(
+    runApp(MyApp(
       analyticsService: analyticsService,
-          ));
+    ));
   });
-
 }
 
 class MyApp extends StatelessWidget {
@@ -73,19 +75,18 @@ class MyApp extends StatelessWidget {
   final NetworkInfo _networkInfo = NetworkInfo();
 
   MyApp({required this.analyticsService})
-      : _screenTracking = ScreenTracking(analyticsService,null) {
-    _networkInfo.onConnectivityChanged.listen((List<ConnectivityResult> results) {
+      : _screenTracking = ScreenTracking(analyticsService, null) {
+    _networkInfo.onConnectivityChanged
+        .listen((List<ConnectivityResult> results) {
       if (results.isNotEmpty) {
-      final isConnected = results.first != ConnectivityResult.none;
-      showConnectivitySnackBar(isConnected);
-    }
-    
+        final isConnected = results.first != ConnectivityResult.none;
+        showConnectivitySnackBar(isConnected);
+      }
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
-   
     return Sizer(
       builder: (context, orientation, deviceType) {
         return MultiProvider(
@@ -104,10 +105,8 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
                 create: (context) => PhonemsLevelOneProvider()),
             ChangeNotifierProvider(
-                create: (context) =>
-                    IdentificationProvider()),
-            ChangeNotifierProvider(
-                create: (context) => RiveProvider()),
+                create: (context) => IdentificationProvider()),
+            ChangeNotifierProvider(create: (context) => RiveProvider()),
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {
@@ -118,7 +117,7 @@ class MyApp extends StatelessWidget {
                 scaffoldMessengerKey: globalMessengerKey,
                 debugShowCheckedModeBanner: false,
                 navigatorObservers: [_screenTracking],
-                
+
                 localizationsDelegates: [
                   AppLocalizationDelegate(),
                   // CountryLocalizations.delegate,
@@ -142,6 +141,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-
