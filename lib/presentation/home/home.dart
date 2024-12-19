@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:rive/rive.dart' as rive;
 import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/exercises_screen.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
@@ -142,8 +143,11 @@ class HomeScreenState extends State<HomeScreen> {
               ImageConstant.imgIdentification,
               5,
               () {
-                var data_pro=Provider.of<UserDataProvider>(context,listen: false);
-                UserData(uid: FirebaseAuth.instance.currentUser!.uid).getTodaysExercise(data_pro.userModel.exercises).then((value) {
+                var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
+                var user_pro=Provider.of<UserDataProvider>(context,listen: false);
+                UserData(uid: FirebaseAuth.instance.currentUser!.uid).getTodaysExercise(user_pro.userModel.exercises).then((value) {
+                  print("value");
+                  print(value);
                   data_pro.setTodaysExercises(value);
                   if(value.isNotEmpty){
                     Navigator.push(context, 

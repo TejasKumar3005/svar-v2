@@ -108,7 +108,8 @@ class MyApp extends StatelessWidget {
                 create: (context) => PhonemsLevelOneProvider()),
             ChangeNotifierProvider(
                 create: (context) =>
-                    IdentificationProvider()),ChangeNotifierProvider(
+                    IdentificationProvider()),
+                    ChangeNotifierProvider(
                 create: (context) =>
                     ExerciseProvider()),
           ],

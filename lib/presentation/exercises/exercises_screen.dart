@@ -4,7 +4,7 @@ import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
-import 'package:svar_new/presentation/phoneme_level_one/provider/level_one_provider.dart';
+
 import 'package:svar_new/presentation/phoneme_level_one/video_player_screen.dart';
 import 'package:svar_new/presentation/speaking_phoneme/speaking_phoneme.dart';
 
@@ -13,7 +13,7 @@ class ExercisesScreen extends StatefulWidget {
 
   @override
   State<ExercisesScreen> createState() => _ExercisesScreenState();
-    static Widget builder(BuildContext context) {
+  static Widget builder(BuildContext context) {
     return ExercisesScreen();
   }
 }
@@ -32,15 +32,21 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
   @override
   void initState() {
-  SystemChrome.setPreferredOrientations([
+    SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
     super.initState();
+    trackTrainPosition();
+
   }
 
   @override
   Widget build(BuildContext context) {
+    var provider=context.watch<ExerciseProvider>(); 
+    print("provider.todaysExercises");
+    print(provider.todaysExercises);
+    
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -48,7 +54,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         body: SingleChildScrollView(
           controller: _scrollController,
           scrollDirection: Axis.horizontal,
-          child: Container(
+          child:provider.todaysExercises.isNotEmpty? Container(
             key: _key,
             alignment: Alignment.centerLeft,
             height: MediaQuery.of(context).size.height,
@@ -58,6 +64,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
               fit: BoxFit.contain,
               onInit: _onRiveInit,
             ),
+          ):Container(
+            child: Text("No exercises found for today."),
           ),
         ),
       ),
@@ -105,11 +113,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   void _handleDetection(BuildContext context, String params) async {
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    Map<String,dynamic>  data = data_pro.todaysExercises[data_pro.currentExerciseIndex];
+      Map<String, dynamic> data =
+          data_pro.todaysExercises[data_pro.currentExerciseIndex];
       ;
 
       if (data == null || data.isEmpty) {
-        
         return;
       }
 
@@ -143,7 +151,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         // Handle other types
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params, data_pro.currentExerciseIndex];
+        List<dynamic> argumentsList = [
+          type,
+          dtcontainer,
+          params,
+          data_pro.currentExerciseIndex
+        ];
         debugPrint("Arguments list is: $argumentsList");
 
         NavigatorService.pushNamed(AppRoutes.detection,
@@ -157,11 +170,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   void _handleDiscrimination(BuildContext context, String params) async {
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    Map<String,dynamic>  data = data_pro.todaysExercises[data_pro.currentExerciseIndex];
+      Map<String, dynamic> data =
+          data_pro.todaysExercises[data_pro.currentExerciseIndex];
       ;
 
       if (data == null || data.isEmpty) {
-        
         return;
       }
 
@@ -192,7 +205,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params, data_pro.currentExerciseIndex];
+        List<dynamic> argumentsList = [
+          type,
+          dtcontainer,
+          params,
+          data_pro.currentExerciseIndex
+        ];
         debugPrint("Arguments list is: $argumentsList");
 
         // Pass the 'type' and 'data' to the Discrimination widget
@@ -206,12 +224,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
   void _handleIdentification(BuildContext context, String params) async {
     try {
-       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    Map<String,dynamic>  data = data_pro.todaysExercises[data_pro.currentExerciseIndex];
+      var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+      Map<String, dynamic> data =
+          data_pro.todaysExercises[data_pro.currentExerciseIndex];
       ;
 
       if (data == null || data.isEmpty) {
-      
         return;
       }
 
@@ -247,7 +265,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         // Handle other types
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params, data_pro.currentExerciseIndex];
+        List<dynamic> argumentsList = [
+          type,
+          dtcontainer,
+          params,
+          data_pro.currentExerciseIndex
+        ];
         debugPrint("Arguments list is: $argumentsList");
 
         NavigatorService.pushNamed(AppRoutes.identification,
@@ -261,8 +284,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   void _handleLevel(BuildContext context, String params) async {
     try {
       debugPrint("Entering in level section");
-        var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    Map<String,dynamic>  data = data_pro.todaysExercises[data_pro.currentExerciseIndex];
+      var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+      Map<String, dynamic> data =
+          data_pro.todaysExercises[data_pro.currentExerciseIndex];
       ;
 
       String? type = data["type"];
@@ -296,7 +320,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       } else {
         final Object dtcontainer = retrieveObject(type, data);
 
-        List<dynamic> argumentsList = [type, dtcontainer, params, data_pro.currentExerciseIndex];
+        List<dynamic> argumentsList = [
+          type,
+          dtcontainer,
+          params,
+          data_pro.currentExerciseIndex
+        ];
         debugPrint("Arguments list is: $argumentsList");
 
         NavigatorService.pushNamed(AppRoutes.identification,
@@ -308,10 +337,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   }
 
   void tapHandle(RiveEvent event) {
-  
     if (event.name == "level 1") {
-      _handleLevelType( "notcompleted");
-    } 
+      _handleLevelType("notcompleted");
+    }
   }
 
   void _onRiveInit(Artboard artboard) {
@@ -319,12 +347,15 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     _controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
 
-    if (_controller != null) {
+    if (_controller != null ) {
       artboard.addController(_controller!);
+      print("data_pro.todaysExercises");
+      print(data_pro.todaysExercises);
 
       TextValueRun? textRun_subtype = artboard.textRun('level1');
       textRun_subtype!.text =
-          data_pro.todaysExercises[data_pro.currentExerciseIndex]['subType'];
+          data_pro.todaysExercises[data_pro.currentExerciseIndex]['type'] ??
+              "Subtype";
 
       TextValueRun? textRun_desc = artboard.textRun('desc1');
       textRun_desc!.text = data_pro
@@ -335,8 +366,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
               ['description'];
 
       TextValueRun? textRun_type = artboard.textRun('type1');
-      textRun_type!.text =
-          data_pro.todaysExercises[data_pro.currentExerciseIndex]['subType'];
+      textRun_type!.text = data_pro
+          .todaysExercises[data_pro.currentExerciseIndex]['exerciseType'];
       train = artboard.component('train');
       if (train != null) {
         print("train position: ${train.x}");
@@ -352,8 +383,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         debugPrint("Error: 'current level' input not found!");
       }
 
-      data_pro.changeCurrentLevel(0);
+      data_pro.changeCurrentLevel(data_pro.currentExerciseIndex.toDouble());
       _controller!.addEventListener(tapHandle);
+      // trackTrainPosition();
     }
   }
 
@@ -376,14 +408,14 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
         if (_scrollController.hasClients) {
           // Update scroll position (clamp to valid range if necessary)
-          _scrollController.jumpTo(scaledOffset.clamp(
-              0.0, _scrollController.position.maxScrollExtent));
+          // _scrollController.jumpTo(scaledOffset.clamp(
+          //     0.0, _scrollController.position.maxScrollExtent));
         }
 
         _previousTrainX = train.x; // Update the previous value
 
         // Recursively call trackTrainPosition to keep checking for changes
-        trackTrainPosition();
+        
       }
     });
   }
