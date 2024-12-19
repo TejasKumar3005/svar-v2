@@ -7,7 +7,6 @@ import 'package:svar_new/widgets/Options.dart';
 import 'package:chiclet/chiclet.dart';
 import 'package:chiclet/src/enums/button_types.dart';
 
- 
 enum ButtonType {
   Play,
   Settings,
@@ -39,14 +38,14 @@ class CustomButton extends StatefulWidget {
   final VoidCallback onPressed;
   final double? progress; // Only used for Spectrum
   final Color? color; // Only used for Spectrum
-  final dynamic child; 
+  final dynamic child;
   const CustomButton({
     Key? key,
     required this.type,
     required this.onPressed,
     this.progress,
     this.color,
-     this.child,
+    this.child,
   }) : super(key: key);
 
   @override
@@ -65,7 +64,6 @@ class _CustomButtonState extends State<CustomButton> {
 
   @override
   void initState() {
-    
     super.initState();
     onPressed_state = widget.onPressed;
     switch (widget.type) {
@@ -78,7 +76,7 @@ class _CustomButtonState extends State<CustomButton> {
       case ButtonType.Settings:
         imagePath = ImageConstant.settingsBtn;
         height = 60;
-        buttontype= ChicletButtonTypes.oval;
+        buttontype = ChicletButtonTypes.oval;
         defaultChild = const Icon(Icons.settings);
         break;
       case ButtonType.ImagePlay:
@@ -92,20 +90,20 @@ class _CustomButtonState extends State<CustomButton> {
         imagePath = ImageConstant.imgArrowLeftYellow;
         width = 40;
         height = 40;
-        buttontype= ChicletButtonTypes.oval;
-         defaultChild = const Icon(Icons.keyboard_return_rounded);
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.keyboard_return_rounded);
         break;
       case ButtonType.ArrowRightGreen:
         imagePath = ImageConstant.imgArrowRightGreen;
         width = 40;
         height = 40;
         buttontype = ChicletButtonTypes.oval;
-         defaultChild = const Icon(Icons.keyboard_return_rounded);
+        defaultChild = const Icon(Icons.keyboard_return_rounded);
         break;
       case ButtonType.Login:
         imagePath = ImageConstant.imgLoginBTn;
         height = 60;
-    
+
         defaultChild = const Text("Login");
         break;
       case ButtonType.Back:
@@ -146,7 +144,7 @@ class _CustomButtonState extends State<CustomButton> {
         width = 35;
         height = 35;
         buttontype = ChicletButtonTypes.oval;
-       defaultChild = const Icon(Icons.volume_up_sharp);
+        defaultChild = const Icon(Icons.volume_up_sharp);
         break;
       case ButtonType.Menu:
         imagePath = ImageConstant.imgMenuBtn;
@@ -174,21 +172,21 @@ class _CustomButtonState extends State<CustomButton> {
         width = 170;
         height = 80;
 
-       defaultChild = const Icon(Icons.change_circle);
+        defaultChild = const Icon(Icons.change_circle);
         break;
       case ButtonType.Diff:
         imagePath = ImageConstant.imgDiffbtn;
         width = 170;
         height = 80;
 
-        defaultChild= const Icon(Icons.difference);
+        defaultChild = const Icon(Icons.difference);
         break;
       case ButtonType.Tip2:
         imagePath = ImageConstant.imgTipbtn;
         width = 35;
         height = 35;
         buttontype = ChicletButtonTypes.oval;
-        defaultChild= const Icon(Icons.tips_and_updates);
+        defaultChild = const Icon(Icons.tips_and_updates);
         break;
       case ButtonType.Same:
         imagePath = ImageConstant.imgSamebtn;
@@ -202,7 +200,7 @@ class _CustomButtonState extends State<CustomButton> {
         width = 100;
         height = 60;
 
-       defaultChild = const Text("Video 1");
+        defaultChild = const Text("Video 1");
         break;
       case ButtonType.Video2:
         imagePath = ImageConstant.imgVideo2btn;
@@ -216,7 +214,7 @@ class _CustomButtonState extends State<CustomButton> {
         width = 170;
         height = 80;
 
-      defaultChild = const Icon(Icons.keyboard_return_rounded);
+        defaultChild = const Icon(Icons.keyboard_return_rounded);
         break;
       case ButtonType.Spectrum:
         imagePath = ImageConstant.imgSpectrum;
@@ -303,13 +301,12 @@ class _CustomButtonState extends State<CustomButton> {
           onPressed_state();
         },
         buttonType: buttontype,
+        backgroundColor: Color.fromARGB(255, 217, 94, 16),
         height: height,
         width: width,
-        child: widget.child is Widget 
-          ? widget.child 
-          : (widget.child is String 
-              ? Text(widget.child) 
-              : defaultChild),
+        child: widget.child is Widget
+            ? widget.child
+            : (widget.child is String ? Text(widget.child) : defaultChild),
       ),
     );
   }

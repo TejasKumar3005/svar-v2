@@ -49,7 +49,7 @@ void main() async {
   }
 
   final AnalyticsService analyticsService = AnalyticsService();
-  print("1");
+
   await analyticsService.logOpenApp();
   if (true) {
     print("rive preloader in the main file ");
