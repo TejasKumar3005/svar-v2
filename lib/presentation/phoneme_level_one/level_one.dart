@@ -494,8 +494,6 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen>  {
       provider.changeCurrentLevel(4);
       _controller!.addEventListener(tapHandle);
 
-     
-      
     } else {
       debugPrint("Error: State Machine 'State Machine 1' not found.");
     }

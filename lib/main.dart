@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    // _screenTracking.context = context;
+   
     return Sizer(
       builder: (context, orientation, deviceType) {
         return MultiProvider(
