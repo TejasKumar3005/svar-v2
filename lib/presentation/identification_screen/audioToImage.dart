@@ -13,6 +13,9 @@ import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:svar_new/core/utils/audioSampleExtractor.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/Options.dart';
+import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AudiotoimageScreen extends StatefulWidget {
   final dynamic dtcontainer;
@@ -37,7 +40,7 @@ class AudiotoimageScreen extends StatefulWidget {
 
 class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   late AudioPlayer _player;
-
+  late UserData userData;
   late int leveltracker;
   int sel = 0;
   List<double> samples = [];
@@ -53,8 +56,10 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     ]);
     _player = AudioPlayer();
     leveltracker = 0;
-
-    // Fetch correct answer from the database
+    
+    String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    userData = UserData(uid: uid, buildContext: context);
+   
   }
 
   // Function to fetch the correct answer from the database
@@ -64,9 +69,11 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     _player.dispose();
     super.dispose();
   }
-
+      int level = 0;
   @override
   Widget build(BuildContext context) {
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    level = obj[4] as int;
     var provider = context.watch<IdentificationProvider>();
     return SafeArea(
       child: Scaffold(
@@ -103,6 +110,9 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                   audioLinks: widget.dtcontainer.getAudioUrl(),
                                 ),
                                 isCorrect: () {
+                                 if(widget.dtcontainer.getCorrectOutput() == widget.dtcontainer.getAudioUrl()){
+                                    userData.incrementLevelCount("Identification", level);
+                                 }
                                   return widget.dtcontainer
                                           .getCorrectOutput() ==
                                       widget.dtcontainer.getAudioUrl();
@@ -131,6 +141,9 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                                   .getImageUrlList()[index],
                                             ),
                                             isCorrect: () {
+                                              if(widget.dtcontainer.getCorrectOutput() == widget.dtcontainer.getImageUrlList()[index]){
+                                                userData.incrementLevelCount("Identification", level);
+                                              }
                                               return widget.dtcontainer
                                                       .getCorrectOutput() ==
                                                   widget.dtcontainer

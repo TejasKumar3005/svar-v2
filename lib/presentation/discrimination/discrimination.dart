@@ -20,6 +20,9 @@ import 'package:svar_new/core/utils/playAudio.dart';
 import './customthumb.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
+import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:svar_new/database/userController.dart';
 
 class Discrimination extends StatefulWidget {
   const Discrimination({
@@ -36,7 +39,7 @@ class Discrimination extends StatefulWidget {
 
 class _DiscriminationState extends State<Discrimination> {
   final GlobalKey<AudioWidgetState> _childKey = GlobalKey<AudioWidgetState>();
-
+  late UserData userData;
   int selectedOption = -1;
   List<double> samples = [];
   OverlayEntry? _overlayEntry;
@@ -69,6 +72,9 @@ class _DiscriminationState extends State<Discrimination> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+
+    String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    userData = UserData(uid: uid, buildContext: context);
   }
 
   int level = 0;
@@ -77,7 +83,7 @@ class _DiscriminationState extends State<Discrimination> {
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
-    level = obj[4] as int;
+    level = obj[3] as int;
 
     Map<String, dynamic> data = obj[1] as Map<String, dynamic>;
     dynamic dtcontainer = obj[2] as dynamic;
@@ -130,7 +136,7 @@ class _DiscriminationState extends State<Discrimination> {
               height: 20.v,
             ),
             discriminationOptions(type, data,
-                dtcontainer), // Pass dtcontainer as an argument here
+                dtcontainer), 
           ],
         ),
       ),
@@ -142,7 +148,6 @@ class _DiscriminationState extends State<Discrimination> {
     switch (type) {
       case "DiffSounds":
         var data = DiffSounds.fromJson(d);
-
         return DiffSoundsW(data, dtcontainer);
       case "OddOne":
         var data = OddOne.fromJson(d);
@@ -168,7 +173,6 @@ class _DiscriminationState extends State<Discrimination> {
       children: [
         AudioWidget(
           audioLinks: dtcontainer.getVideoUrl(),
-          // Use dtcontainer here
         ),
         SizedBox(
           height: 20.v,
@@ -180,6 +184,10 @@ class _DiscriminationState extends State<Discrimination> {
               child: OptionWidget(
                 child: ImageWidget(imagePath: "assets/images/female.png"),
                 isCorrect: () {
+                  if (dtcontainer.getCorrectOutput() == "female") {
+                    userData.incrementLevelCount("Discrimination", level);
+                
+                  }
                   return dtcontainer.getCorrectOutput() == "female";
                 },
               ),
@@ -188,6 +196,10 @@ class _DiscriminationState extends State<Discrimination> {
               child: OptionWidget(
                 child: ImageWidget(imagePath: "assets/images/male.png"),
                 isCorrect: () {
+                  if (dtcontainer.getCorrectOutput() == "male") {
+                    userData.incrementLevelCount("Discrimination", level);
+                  
+                  }
                   return dtcontainer.getCorrectOutput() == "male";
                 },
               ),
@@ -262,6 +274,8 @@ class _DiscriminationState extends State<Discrimination> {
                   "ans is $ans current progress is ${_childKey.currentState!.progress}");
               if (_childKey.currentState!.progress > ans &&
                   _childKey.currentState!.progress < ans + 0.1) {
+                userData.incrementLevelCount("Discrimination", level);
+                
                 return true;
               } else {
                 return false;
@@ -303,18 +317,18 @@ class _DiscriminationState extends State<Discrimination> {
               child: OptionButton(
                   type: ButtonType.Same,
                   onPressed: () {
-                    var provider = Provider.of<UserDataProvider>(context,
-                        listen: false);
+                    var provider =
+                        Provider.of<UserDataProvider>(context, listen: false);
                     if (dtcontainer.getSame()) {
                       if (level >
                           provider.userModel.toJson()["levelMap"]
                               ["Discrimination"]!) {
                         UserData(buildContext: context)
-                            .incrementLevelCount("Discrimination")
-                            .then((value) {
-
-                            });
+                            .incrementLevelCount("Discrimination", level)
+                            .then((value) {});
+                             
                       }
+                   
                     }
                   }),
               isCorrect: () {
@@ -328,18 +342,17 @@ class _DiscriminationState extends State<Discrimination> {
               child: OptionButton(
                   type: ButtonType.Diff,
                   onPressed: () {
-                  var provider = Provider.of<UserDataProvider>(context,
-                        listen: false);
+                    var provider =
+                        Provider.of<UserDataProvider>(context, listen: false);
                     if (!dtcontainer.getSame()) {
                       if (level >
                           provider.userModel.toJson()["levelMap"]
                               ["Discrimination"]!) {
                         UserData(buildContext: context)
-                            .incrementLevelCount("Discrimination")
-                            .then((value) {
-
-                            });
+                            .incrementLevelCount("Discrimination", level)
+                            .then((value) {});
                       }
+                      
                     }
                   }),
               isCorrect: () {
@@ -373,6 +386,11 @@ class _DiscriminationState extends State<Discrimination> {
                     ],
                   ),
                   isCorrect: () {
+                    if (dtcontainer.getVideoUrls()[0] ==
+                        dtcontainer.getCorrectOutput()) {
+                      userData.incrementLevelCount("Discrimination", level);
+                     
+                    }
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
                   },
@@ -387,6 +405,11 @@ class _DiscriminationState extends State<Discrimination> {
                     ],
                   ),
                   isCorrect: () {
+                    if (dtcontainer.getVideoUrls()[1] ==
+                        dtcontainer.getCorrectOutput()) {
+                      userData.incrementLevelCount("Discrimination", level);
+                     
+                    }
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
                   },
@@ -414,6 +437,11 @@ class _DiscriminationState extends State<Discrimination> {
                     ],
                   ),
                   isCorrect: () {
+                    if (dtcontainer.getVideoUrls()[0] ==
+                        dtcontainer.getCorrectOutput()) {
+                      userData.incrementLevelCount("Discrimination", level);
+                   
+                    }
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
                   },
@@ -428,6 +456,11 @@ class _DiscriminationState extends State<Discrimination> {
                     ],
                   ),
                   isCorrect: () {
+                    if (dtcontainer.getVideoUrls()[1] ==
+                        dtcontainer.getCorrectOutput()) {
+                      userData.incrementLevelCount("Discrimination", level);
+                     
+                    }
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
                   },
@@ -448,6 +481,11 @@ class _DiscriminationState extends State<Discrimination> {
                     ],
                   ),
                   isCorrect: () {
+                    if (dtcontainer.getVideoUrls()[2] ==
+                        dtcontainer.getCorrectOutput()) {
+                      userData.incrementLevelCount("Discrimination", level);
+                    
+                    }
                     return dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput();
                   },
@@ -475,6 +513,11 @@ class _DiscriminationState extends State<Discrimination> {
                     ],
                   ),
                   isCorrect: () {
+                    if (dtcontainer.getVideoUrls()[0] ==
+                        dtcontainer.getCorrectOutput()) {
+                      userData.incrementLevelCount("Discrimination", level);
+                     
+                    }
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
                   },
@@ -489,6 +532,11 @@ class _DiscriminationState extends State<Discrimination> {
                     ],
                   ),
                   isCorrect: () {
+                    if (dtcontainer.getVideoUrls()[1] ==
+                        dtcontainer.getCorrectOutput()) {
+                      userData.incrementLevelCount("Discrimination", level);
+                       
+                    }
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
                   },
@@ -509,6 +557,11 @@ class _DiscriminationState extends State<Discrimination> {
                     ],
                   ),
                   isCorrect: () {
+                    if (dtcontainer.getVideoUrls()[2] ==
+                        dtcontainer.getCorrectOutput()) {
+                      userData.incrementLevelCount("Discrimination", level);
+                       
+                    }
                     return dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput();
                   },
@@ -523,6 +576,11 @@ class _DiscriminationState extends State<Discrimination> {
                     ],
                   ),
                   isCorrect: () {
+                    if (dtcontainer.getVideoUrls()[3] ==
+                        dtcontainer.getCorrectOutput()) {
+                      userData.incrementLevelCount("Discrimination", level);
+                       
+                    }
                     return dtcontainer.getVideoUrls()[3] ==
                         dtcontainer.getCorrectOutput();
                   },

@@ -4,6 +4,8 @@ import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/utils/image_constant.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/widgets/Options.dart';
+import 'package:chiclet/chiclet.dart';
+import 'package:chiclet/src/enums/button_types.dart';
 
 enum ButtonType {
   Play,
@@ -36,13 +38,14 @@ class CustomButton extends StatefulWidget {
   final VoidCallback onPressed;
   final double? progress; // Only used for Spectrum
   final Color? color; // Only used for Spectrum
-
+  final dynamic child;
   const CustomButton({
     Key? key,
     required this.type,
     required this.onPressed,
     this.progress,
     this.color,
+    this.child,
   }) : super(key: key);
 
   @override
@@ -55,6 +58,8 @@ class _CustomButtonState extends State<CustomButton> {
   double width = 0;
   BoxFit fit = BoxFit.contain;
   bool isSvg = false;
+  dynamic defaultChild;
+  ButtonTypes buttontype = ChicletButtonTypes.roundedRectangle;
   late VoidCallback onPressed_state;
 
   @override
@@ -65,129 +70,151 @@ class _CustomButtonState extends State<CustomButton> {
       case ButtonType.Play:
         imagePath = ImageConstant.playBtn;
         height = 60;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.play_arrow_rounded);
         break;
       case ButtonType.Settings:
         imagePath = ImageConstant.settingsBtn;
         height = 60;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.settings);
         break;
       case ButtonType.ImagePlay:
         imagePath = ImageConstant.imgPlayBtn;
         width = 50;
         height = 50;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.play_arrow);
         break;
       case ButtonType.ArrowLeftYellow:
         imagePath = ImageConstant.imgArrowLeftYellow;
         width = 40;
         height = 40;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.keyboard_return_rounded);
         break;
       case ButtonType.ArrowRightGreen:
         imagePath = ImageConstant.imgArrowRightGreen;
         width = 40;
         height = 40;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.keyboard_return_rounded);
         break;
       case ButtonType.Login:
         imagePath = ImageConstant.imgLoginBTn;
         height = 60;
-        isSvg = true;
+
+        defaultChild = const Text("Login");
         break;
       case ButtonType.Back:
         imagePath = ImageConstant.imgBackBtn;
         width = 35;
         height = 35;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.arrow_back);
         break;
       case ButtonType.SignUp:
         imagePath = ImageConstant.imgSignUpBTn;
         height = 60;
-        isSvg = true;
+        defaultChild = const Text("Sign Up");
         break;
       case ButtonType.Home:
         imagePath = ImageConstant.imgHomeBtn;
         width = 35;
         height = 35;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Text("Submit");
         break;
       case ButtonType.Next:
         imagePath = ImageConstant.imgNextBtn;
         height = 60;
-        isSvg = true;
+
+        defaultChild = const Icon(Icons.navigate_next);
         break;
+
       case ButtonType.Replay:
         imagePath = ImageConstant.imgReplayBtn;
         width = 35;
         height = 35;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.replay);
         break;
       case ButtonType.FullVolume:
         imagePath = ImageConstant.imgFullvolBtn;
         width = 35;
         height = 35;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.volume_up_sharp);
         break;
       case ButtonType.Menu:
         imagePath = ImageConstant.imgMenuBtn;
         width = 35;
         height = 35;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.menu);
         break;
       case ButtonType.Tip:
         imagePath = ImageConstant.imgTipBtn;
         width = 35;
         height = 35;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.tips_and_updates);
         break;
       case ButtonType.Mic:
         imagePath = ImageConstant.micBtn;
         width = 35;
         height = 35;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.mic);
         break;
       case ButtonType.Change:
         imagePath = ImageConstant.imgChangebtn;
         width = 170;
         height = 80;
-        isSvg = true;
+
+        defaultChild = const Icon(Icons.change_circle);
         break;
       case ButtonType.Diff:
         imagePath = ImageConstant.imgDiffbtn;
         width = 170;
         height = 80;
-        isSvg = true;
+
+        defaultChild = const Icon(Icons.difference);
         break;
       case ButtonType.Tip2:
         imagePath = ImageConstant.imgTipbtn;
         width = 35;
         height = 35;
-        isSvg = true;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.tips_and_updates);
         break;
       case ButtonType.Same:
         imagePath = ImageConstant.imgSamebtn;
         width = 170;
         height = 80;
-        isSvg = true;
+
+        defaultChild = const Icon(Icons.keyboard_return_rounded);
         break;
       case ButtonType.Video1:
         imagePath = ImageConstant.imgVideo1btn;
         width = 100;
         height = 60;
-        isSvg = true;
+
+        defaultChild = const Text("Video 1");
         break;
       case ButtonType.Video2:
         imagePath = ImageConstant.imgVideo2btn;
         width = 100;
         height = 60;
-        isSvg = true;
+
+        defaultChild = const Text("Video 2");
         break;
       case ButtonType.Stop:
         imagePath = ImageConstant.imgStopBtn;
         width = 170;
         height = 80;
-        isSvg = true;
+
+        defaultChild = const Icon(Icons.keyboard_return_rounded);
         break;
       case ButtonType.Spectrum:
         imagePath = ImageConstant.imgSpectrum;
@@ -195,8 +222,6 @@ class _CustomButtonState extends State<CustomButton> {
         height = 60;
         isSvg = true;
         break;
-
-      // Add cases for more button types here
     }
   }
 
@@ -271,22 +296,17 @@ class _CustomButtonState extends State<CustomButton> {
           "time": DateTime.now().toString()
         });
       },
-      child: Container(
+      child: ChicletAnimatedButton(
+        onPressed: () {
+          onPressed_state();
+        },
+        buttonType: buttontype,
+        backgroundColor: Color.fromARGB(255, 29, 161, 242),
         height: height,
         width: width,
-        child: isSvg
-            ? SvgPicture.asset(
-                imagePath,
-                fit: fit,
-                width: width,
-                height: height,
-              )
-            : Image.asset(
-                imagePath,
-                fit: fit,
-                width: width,
-                height: height,
-              ),
+        child: widget.child is Widget
+            ? widget.child
+            : (widget.child is String ? Text(widget.child) : defaultChild),
       ),
     );
   }
@@ -310,10 +330,7 @@ class _ProgressClipper extends CustomClipper<Rect> {
 }
 
 class OptionButton extends CustomButton {
-
-
-
-const OptionButton({
+  const OptionButton({
     Key? key,
     required ButtonType type,
     required VoidCallback onPressed,
@@ -325,12 +342,12 @@ const OptionButton({
 
 class _OptionButtonState extends _CustomButtonState {
   @override
-  void initState () {
+  void initState() {
     super.initState();
   }
 
   @override
-  Widget build (BuildContext context){
+  Widget build(BuildContext context) {
     final click = ClickProvider.of(context)?.click;
     setState(() {
       onPressed_state = () {

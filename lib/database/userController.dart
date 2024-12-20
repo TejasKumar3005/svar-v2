@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
+import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
 
 class UserData {
   final String? uid;
@@ -14,7 +13,7 @@ class UserData {
   UserData({this.uid, this.buildContext});
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection("patients");
-final CollectionReference tipsCollection =
+  final CollectionReference tipsCollection =
       FirebaseFirestore.instance.collection("Parental Tips");
    final CollectionReference therapyCenterCollection =
       FirebaseFirestore.instance.collection("therapy_centers");
@@ -145,9 +144,7 @@ Future<List<dynamic>> getTodaysExercise(
     Provider.of<UserDataProvider>(buildContext!, listen: false)
         .setUser(userModel);
     try {
-      await userCollection
-          .doc(uid)
-          .set(user.toJson(), SetOptions(merge: true));
+      await userCollection.doc(uid).set(user.toJson(), SetOptions(merge: true));
     } on FirebaseException catch (e) {
       ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
         content: Text(e.toString()),
@@ -156,9 +153,9 @@ Future<List<dynamic>> getTodaysExercise(
     }
   }
 
-  Future getParentalTip()async {
+  Future getParentalTip() async {
     try {
-    QuerySnapshot querySnapshot = await tipsCollection.get();
+      QuerySnapshot querySnapshot = await tipsCollection.get();
 
       // Create a map of document IDs and their corresponding data
       Map<String, dynamic> tempKeys = {};
@@ -167,7 +164,7 @@ Future<List<dynamic>> getTodaysExercise(
       });
       Provider.of<UserDataProvider>(buildContext!, listen: false)
           .setParentalTips(tempKeys);
-    }  on FirebaseException catch (e) {
+    } on FirebaseException catch (e) {
       ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
         content: Text(e.toString()),
         backgroundColor: Colors.red,
@@ -198,9 +195,10 @@ Future<List<dynamic>> getTodaysExercise(
         ));
       }
     }
-  } 
+  }
 
-  Future<bool> addPatientToTherapyCenter(String therapyCenterId, String patientId) async {
+  Future<bool> addPatientToTherapyCenter(
+      String therapyCenterId, String patientId) async {
     try {
       await therapyCenterCollection.doc(therapyCenterId).update({
         "patients": FieldValue.arrayUnion([patientId])
@@ -215,7 +213,6 @@ Future<List<dynamic>> getTodaysExercise(
     }
   }
 
-  
   Future<bool> updateScore(int score) async {
     try {
       await userCollection.doc(uid).update({"score": score});
@@ -254,6 +251,7 @@ Future<List<dynamic>> getTodaysExercise(
       return false;
     }
   }
+
   Future<Map<String, dynamic>?> fetchData(String docName, int level) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -274,9 +272,9 @@ Future<List<dynamic>> getTodaysExercise(
       return null;
     }
 
-  try {
-    // Proceed only if the document exists
-    Map<String, dynamic>? data = doc.get("data") as Map<String, dynamic>?;
+    try {
+      // Proceed only if the document exists
+      Map<String, dynamic>? data = doc.get("data") as Map<String, dynamic>?;
 
       if (data == null) {
         debugPrint("The 'data' field is null or not in the correct format.");
@@ -287,7 +285,7 @@ Future<List<dynamic>> getTodaysExercise(
         return null;
       }
 
-    String finder = "Level$level";
+      String finder = "Level$level";
 
       // Check if the key exists and is a list
       if (data.containsKey(finder) && data[finder] is List) {

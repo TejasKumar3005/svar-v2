@@ -16,6 +16,8 @@ import 'package:svar_new/presentation/phoneme_level_one/provider/level_one_provi
 import 'package:svar_new/providers/appUpdateProvider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
+import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
+import 'package:svar_new/widgets/rive_preloader.dart';
 
 Future<void> initializeFirebase() async {
   await Firebase.initializeApp(
@@ -48,25 +50,23 @@ void main() async {
   }
 
   final AnalyticsService analyticsService = AnalyticsService();
+
   await analyticsService.logOpenApp();
+  if (true) {
+    print("rive preloader in the main file ");
+    await RivePreloader().initialize();
+  }
 
   Future.wait([
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft
-    ]),
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]),
     PrefUtils().init()
   ]).then((value) {
     initializeFirebaseAuth();
-    runApp(
-      MyApp(
+    runApp(MyApp(
       analyticsService: analyticsService,
-          ));
+    ));
   });
-// final AnalyticsService analyticsService = AnalyticsService();
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await initializeFirebase();
-//   runApp(MyApp(analyticsService));
 }
 
 class MyApp extends StatelessWidget {
@@ -76,19 +76,18 @@ class MyApp extends StatelessWidget {
   final NetworkInfo _networkInfo = NetworkInfo();
 
   MyApp({required this.analyticsService})
-      : _screenTracking = ScreenTracking(analyticsService,null) {
-    _networkInfo.onConnectivityChanged.listen((List<ConnectivityResult> results) {
+      : _screenTracking = ScreenTracking(analyticsService, null) {
+    _networkInfo.onConnectivityChanged
+        .listen((List<ConnectivityResult> results) {
       if (results.isNotEmpty) {
-      final isConnected = results.first != ConnectivityResult.none;
-      showConnectivitySnackBar(isConnected);
-    }
-
+        final isConnected = results.first != ConnectivityResult.none;
+        showConnectivitySnackBar(isConnected);
+      }
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    // _screenTracking.context = context;
     return Sizer(
       builder: (context, orientation, deviceType) {
         return MultiProvider(
@@ -107,8 +106,8 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
                 create: (context) => PhonemsLevelOneProvider()),
             ChangeNotifierProvider(
-                create: (context) =>
-                    IdentificationProvider()),
+                create: (context) => IdentificationProvider()),
+            ChangeNotifierProvider(create: (context) => RiveProvider()),
                     ChangeNotifierProvider(
                 create: (context) =>
                     ExerciseProvider()),
@@ -122,7 +121,7 @@ class MyApp extends StatelessWidget {
                 scaffoldMessengerKey: globalMessengerKey,
                 debugShowCheckedModeBanner: false,
                 navigatorObservers: [_screenTracking],
-                
+
                 localizationsDelegates: [
                   AppLocalizationDelegate(),
                   // CountryLocalizations.delegate,
@@ -146,39 +145,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-
-
-// void main() {
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Audio Widget Test',
-//       theme: ThemeData(
-//         primarySwatch: Colors.red,
-//       ),
-//       home: Scaffold(
-//         appBar: AppBar(
-//           title: Text('Test Audio Widget'),
-//         ),
-//         body: Center(
-
-//           child: TestContainer(
-//             child: AudioWidget(
-//               audioLinks: [
-//                 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-//                 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-//                 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-//               ], // replace with your audio links
-//             ),
-//           )
-//         ),
-//       ),
-//     );
-//   }
-// }
