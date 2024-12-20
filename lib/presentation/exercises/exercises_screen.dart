@@ -3,9 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
+import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
-
-import 'package:svar_new/presentation/phoneme_level_one/video_player_screen.dart';
 import 'package:svar_new/presentation/speaking_phoneme/speaking_phoneme.dart';
 
 class ExercisesScreen extends StatefulWidget {
@@ -141,7 +140,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
+            builder: (context) => ExerciseVideo(videoUrl: videoUrl),
           ),
         );
       } else {
@@ -155,7 +154,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           type,
           dtcontainer,
           params,
-          data_pro.currentExerciseIndex
+        
+          data_pro.currentExerciseIndex,
+            data["eid"],
         ];
         debugPrint("Arguments list is: $argumentsList");
 
@@ -197,7 +198,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
+            builder: (context) => ExerciseVideo(videoUrl: videoUrl),
           ),
         );
       } else {
@@ -209,7 +210,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           type,
           dtcontainer,
           params,
-          data_pro.currentExerciseIndex
+          data_pro.currentExerciseIndex,
+            data["eid"],
         ];
         debugPrint("Arguments list is: $argumentsList");
 
@@ -255,7 +257,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VideoPlayerScreen(videoUrl: videoUrl),
+            builder: (context) => ExerciseVideo(videoUrl: videoUrl),
           ),
         );
       } else {
@@ -269,7 +271,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           type,
           dtcontainer,
           params,
-          data_pro.currentExerciseIndex
+          data_pro.currentExerciseIndex,
+            data["eid"],
         ];
         debugPrint("Arguments list is: $argumentsList");
 
@@ -301,7 +304,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => VideoPlayerScreen(videoUrl: data["video"]),
+            builder: (context) => ExerciseVideo(videoUrl: data["video"]),
           ),
         );
       } else if (type == "speech") {
@@ -324,7 +327,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           type,
           dtcontainer,
           params,
-          data_pro.currentExerciseIndex
+          data_pro.currentExerciseIndex,
+            data["eid"],
         ];
         debugPrint("Arguments list is: $argumentsList");
 
