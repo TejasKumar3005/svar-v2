@@ -129,7 +129,7 @@ class _CustomButtonState extends State<CustomButton> {
         imagePath = ImageConstant.imgNextBtn;
         height = 60;
 
-        defaultChild = const Icon(Icons.navigate_next);
+        defaultChild = const Text("Next");
         break;
 
       case ButtonType.Replay:

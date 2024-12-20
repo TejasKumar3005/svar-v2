@@ -108,18 +108,13 @@ class RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Padding(
                             padding: EdgeInsets.only(left: 1.h),
-                            child: GestureDetector(
-                              onTap: () {
+                            child: CustomButton(
+                              type: ButtonType.Back,
+                              onPressed: () {
                                 PlayBgm()
                                     .playMusic('Back_Btn.mp3', "mp3", false);
                                 Navigator.pop(context);
                               },
-                              child: CustomImageView(
-                                height: 38.adaptSize,
-                                width: 38.adaptSize,
-                                fit: BoxFit.contain,
-                                imagePath: ImageConstant.imgBackBtn,
-                              ),
                             ),
                           ),
                         ],
@@ -210,14 +205,20 @@ class RegisterScreenState extends State<RegisterScreen> {
                           _buildAddressGrp(context),
                           SizedBox(height: 17.v),
                           _buildEmail(context),
-                          SizedBox(height: 6.v),
+                          SizedBox(height: 15.v),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              _buildEditText(
-                                  context), // Assuming this builds the password field or similar
-                              Flexible(
+                              Padding(padding: EdgeInsets.only(top: 15.v)),
+                              Expanded(
+                                // Wrap the password field in Expanded
+                                child: _buildEditText(context),
+                              ),
+                              SizedBox(width: 16.v),
+                              // Add spacing between fields (adjust as needed)
+                              Expanded(
+                                // Wrap the dropdown in Expanded
                                 child: Container(
                                   padding:
                                       EdgeInsets.symmetric(horizontal: 8.h),
@@ -227,19 +228,15 @@ class RegisterScreenState extends State<RegisterScreen> {
                                         BorderRadiusStyle.roundedBorder5,
                                   ),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       Icon(
                                         Icons.person_2,
                                         color: appTheme.orangeA200,
                                       ),
-                                      SizedBox(
-                                          width:
-                                              8), // Spacing between Icon and Dropdown
+                                      SizedBox(width: 8.v),
                                       Expanded(
                                         child: DropdownButton<String>(
-                                          isExpanded:
-                                              true, // Allow Dropdown to expand to available space
+                                          isExpanded: true,
                                           iconEnabledColor:
                                               PrimaryColors().amber900,
                                           value: dropdownValue1,
@@ -278,26 +275,32 @@ class RegisterScreenState extends State<RegisterScreen> {
                             ],
                           ),
                           SizedBox(height: 22.v),
-                          CustomButton(
-                            type: ButtonType.Next,
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate() &&
-                                  dropdownValue1 != "Select Therapist") {
-                                await AnalyticsService()
-                                    .logSignup(textCtrl.emailController.text);
-                                RegisterFormMethods methods =
-                                    RegisterFormMethods(context: context);
-                                Map<String, dynamic> result =
-                                    provider.therapyCenters.firstWhere(
-                                        (json) =>
-                                            json['name'] == dropdownValue1,
-                                        orElse: () =>
-                                            {"error": "Name not found"});
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment
+                                .center, // Center the button horizontally
+                            children: [
+                              CustomButton(
+                                type: ButtonType.Next,
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate() &&
+                                      dropdownValue1 != "Select Therapist") {
+                                    await AnalyticsService().logSignup(
+                                        textCtrl.emailController.text);
+                                    RegisterFormMethods methods =
+                                        RegisterFormMethods(context: context);
+                                    Map<String, dynamic> result =
+                                        provider.therapyCenters.firstWhere(
+                                            (json) =>
+                                                json['name'] == dropdownValue1,
+                                            orElse: () =>
+                                                {"error": "Name not found"});
 
-                                methods.RegisterUser(result["uid"]);
-                              }
-                            },
-                          )
+                                    methods.RegisterUser(result["uid"]);
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -457,7 +460,7 @@ class RegisterScreenState extends State<RegisterScreen> {
   /// Section Widget
   Widget _buildEditText(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 12.v),
+      padding: EdgeInsets.zero,
       child: Selector<RegisterProvider, TextEditingController?>(
         selector: (context, provider) => provider.passwordController,
         builder: (context, passwordController, child) {
