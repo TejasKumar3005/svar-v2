@@ -39,17 +39,16 @@ extension _TextExtension on rive.Artboard {
 }
 
 class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
-   late Future<RiveFile?> _riveFileFuture;
+  late Future<RiveFile?> _riveFileFuture;
   late double currentLevelCount = 3;
-  bool _initialized = false;
+
   int val = 1;
   final GlobalKey _key = GlobalKey();
-  double _containerWidth = 0.0;
-  double _animationHeight = 0.0;
+
   ScrollController _scrollController = ScrollController();
   var train;
-  double? _previousTrainX;
-  Artboard? _riveArtboard;
+  double _previousTrainX = 0;
+
   StateMachineController? _controller;
 
   @override
@@ -60,7 +59,9 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       DeviceOrientation.landscapeRight,
     ]);
 
-   _riveFileFuture = RivePreloader().initialize().then((_) => RivePreloader().getRiveFile('assets/rive/levels.riv'));
+    _riveFileFuture = RivePreloader()
+        .initialize()
+        .then((_) => RivePreloader().getRiveFile('assets/rive/levels.riv'));
   }
 
   @override
@@ -381,13 +382,16 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
           future: _riveFileFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator()); // Show loading indicator
+              return const Center(
+                  child: CircularProgressIndicator()); // Show loading indicator
             } else if (snapshot.hasError || snapshot.data == null) {
-              return const Center(child: Text('Error loading Rive file')); // Handle errors
+              return const Center(
+                  child: Text('Error loading Rive file')); // Handle errors
             } else {
               final riveFile = snapshot.data!;
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
+                controller: _scrollController,
                 child: Container(
                   alignment: Alignment.centerLeft,
                   height: MediaQuery.of(context).size.height,
@@ -475,8 +479,11 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         print("train position: ${train.x}");
         // Store the initial value of train.x
         SchedulerBinding.instance.addPostFrameCallback((_) {
-          _trackTrainPosition(); // Start tracking on the first frame
+          Timer.periodic(const Duration(milliseconds: 16), (timer) {
+            _trackTrainPosition();
+          });
         });
+
         _previousTrainX = train.x;
       } else {
         debugPrint("Error: 'train' not found!");
@@ -495,27 +502,32 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     }
   }
 
-  void _trackTrainPosition() {
-    if (train != null &&
-        _previousTrainX != null &&
-        train.x != _previousTrainX) {
-      // Train position has changed, update the scroll position
-      print("New train position: ${train.x}");
+ void _trackTrainPosition() {
+  if (train != null) {
+    double trainX = train.x;
 
+    if (_previousTrainX != trainX) {
       double screenWidth = MediaQuery.of(context).size.height * 13.7176;
-      double maxTrainX = 10000; // Or your actual max X value
-      double scaledOffset = (train.x / maxTrainX) * screenWidth;
+      double maxTrainX = train.artboard!.width; // Use actual artboard width
+      double scaledOffset = (trainX / maxTrainX) * screenWidth;
 
       if (_scrollController.hasClients) {
+        // Calculate the distance the train moved since the last frame
+        double deltaX = (trainX - _previousTrainX).abs();
+
+        // Calculate the animation duration based on distance
+        int animationDuration = (deltaX * 10).toInt().clamp(50, 300); // Adjust min/max durations
+
         _scrollController.animateTo(
           scaledOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-          duration: const Duration(milliseconds: 200), // Smoother animation
-          curve: Curves.easeInOut,
+          duration: Duration(milliseconds: animationDuration),
+          curve: Curves.linear, // Or any other curve you prefer
         );
       }
-      _previousTrainX = train.x;
+      _previousTrainX = trainX;
     }
   }
+}
 
   Object retrieveObject(String type, Map<String, dynamic> data) {
     if (type == "ImageToAudio") {
