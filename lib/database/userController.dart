@@ -15,7 +15,7 @@ class UserData {
       FirebaseFirestore.instance.collection("patients");
   final CollectionReference tipsCollection =
       FirebaseFirestore.instance.collection("Parental Tips");
-   final CollectionReference therapyCenterCollection =
+  final CollectionReference therapyCenterCollection =
       FirebaseFirestore.instance.collection("therapy_centers");
 
   final CollectionReference exercisesCollection =
@@ -62,7 +62,66 @@ class UserData {
     }
   }
 
-Future<List<dynamic>> getTodaysExercise(
+  Future<void> updateExerciseData({
+    required String date,
+    required String eid,
+    Map<String, dynamic>? performance,
+  }) async {
+    try {
+      final userDoc = userCollection.doc(uid);
+
+      // Get the current user document data
+      final docSnapshot = await userDoc.get();
+
+      if (docSnapshot.exists) {
+        final userData = docSnapshot.data() as Map<String, dynamic>;
+        final exercises = userData['exercises'] as Map<String, dynamic>? ?? {};
+
+        // Check if the date exists
+        if (exercises.containsKey(date)) {
+          final exercisesForDate = exercises[date] as List<dynamic>;
+
+          // Find the exercise with the matching eid
+          final exerciseIndex = exercisesForDate.indexWhere(
+              (exercise) => exercise is Map && exercise['eid'] == eid);
+
+          if (exerciseIndex != -1) {
+            int views = 0;
+            Map<String, dynamic> exerciseData = exercisesForDate[exerciseIndex];
+            if (exercisesForDate[exerciseIndex]['views'] != null) {
+              views = exercisesForDate[exerciseIndex]['views'];
+            }
+            if (exercisesForDate[exerciseIndex]['subtype'] == "video") {
+              exerciseData['views'] = views + 1;
+            }
+            if(performance != null){
+              exerciseData['performance'] = performance;
+            }
+
+            // Update the exercise data
+            exercisesForDate[exerciseIndex] = {
+              ...exerciseData,
+              'completedAt': date
+            };
+
+            // Update the Firestore document
+            await userDoc.update({'exercises.$date': exercisesForDate});
+            print('Exercise data updated successfully!');
+          } else {
+            print('Exercise with eid $eid not found for date $date.');
+          }
+        } else {
+          print('No exercises found for date $date.');
+        }
+      } else {
+        print('User document with ID $uid not found.');
+      }
+    } catch (e) {
+      print('Error updating exercise data: $e');
+    }
+  }
+
+  Future<List<dynamic>> getTodaysExercise(
       Map<String, dynamic> exercises) async {
     try {
       var finaldata = [];
@@ -85,14 +144,17 @@ Future<List<dynamic>> getTodaysExercise(
             Map<String, dynamic> exerciseData =
                 docSnapshot.data() as Map<String, dynamic>;
 
-            
-            updatedData.add({...exercise, ...exerciseData,"exerciseType":exercise["type"]});
+            updatedData.add({
+              ...exercise,
+              ...exerciseData,
+              "exerciseType": exercise["type"],
+              "date": "2024-12-06"
+            });
           } else {
             debugPrint("Document with id ${exercise['eid']} does not exist.");
           }
         }).toList());
 
-      
         return updatedData;
       } else {
         return finaldata;
@@ -107,7 +169,7 @@ Future<List<dynamic>> getTodaysExercise(
       return [];
     }
   }
-  
+
   Future<Map<String, dynamic>> getExerciseById(
       Map<String, dynamic> exercise) async {
     try {
@@ -309,7 +371,8 @@ Future<List<dynamic>> getTodaysExercise(
       return null;
     }
   }
-Future<void> incrementLevelCount(String auditoryType, int level) async {
+
+  Future<void> incrementLevelCount(String auditoryType, int level) async {
     try {
       var provider2 = Provider.of<RiveProvider>(buildContext!, listen: false);
       String? uid = FirebaseAuth.instance.currentUser?.uid;
@@ -324,12 +387,12 @@ Future<void> incrementLevelCount(String auditoryType, int level) async {
           Map<String, dynamic> levels =
               (snapshot.data() as Map<String, dynamic>?)?['levelMap'];
           int currentLevelCount = levels[auditoryType];
-            print("1");
+          print("1");
           if (currentLevelCount <= level) {
             // Add the condition to only increment if currentLevelCount <= level
             int newLevelCount = currentLevelCount + 1;
             levels[auditoryType] = newLevelCount;
-           print("2");
+            print("2");
             transaction.update(userRef, {'levelMap': levels});
             await addActivity(
               "Level  $newLevelCount completed",
@@ -344,7 +407,7 @@ Future<void> incrementLevelCount(String auditoryType, int level) async {
             print("5");
             provider.setUser(data);
             print("6");
-            print("newLevelCount: $newLevelCount"); 
+            print("newLevelCount: $newLevelCount");
             provider2.changeCurrentLevel(newLevelCount.toDouble());
           } else {
             print(
@@ -354,12 +417,8 @@ Future<void> incrementLevelCount(String auditoryType, int level) async {
           throw Exception('User not found!');
         }
       });
-      
-          
+
       print('levelCount incremented successfully!');
-     
-    
-      
     } catch (e) {
       print('Error incrementing levelCount: $e');
     }
@@ -408,33 +467,34 @@ Future<void> incrementLevelCount(String auditoryType, int level) async {
         }
       }
 
-    // Check if the 'activities' field exists
-    if (docSnapshot.exists && docSnapshot.data() != null && (docSnapshot.data() as Map<String, dynamic>).containsKey('activities')) {
-      // If activities field exists, add the new activity to the array
-      await userCollection.doc(uid).update({
-        "activities": FieldValue.arrayUnion([{
-          "activity": activity,
-          "date": date,
-          "time": time
-        }])
-      });
-    } else {
-      // If activities field doesn't exist, create the field and add the activity
-      await userCollection.doc(uid).set({
-        "activities": [{
-          "activity": activity,
-          "date": date,
-          "time": time
-        }]
-      }, SetOptions(merge: true)); // Use merge to ensure only the activities field is added
+      // Check if the 'activities' field exists
+      if (docSnapshot.exists &&
+          docSnapshot.data() != null &&
+          (docSnapshot.data() as Map<String, dynamic>)
+              .containsKey('activities')) {
+        // If activities field exists, add the new activity to the array
+        await userCollection.doc(uid).update({
+          "activities": FieldValue.arrayUnion([
+            {"activity": activity, "date": date, "time": time}
+          ])
+        });
+      } else {
+        // If activities field doesn't exist, create the field and add the activity
+        await userCollection.doc(uid).set(
+            {
+              "activities": [
+                {"activity": activity, "date": date, "time": time}
+              ]
+            },
+            SetOptions(
+                merge:
+                    true)); // Use merge to ensure only the activities field is added
+      }
+    } on FirebaseException catch (e) {
+      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: Colors.red,
+      ));
     }
-  } on FirebaseException catch (e) {
-    ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-      content: Text(e.toString()),
-      backgroundColor: Colors.red,
-    ));
   }
-}
-
-
 }

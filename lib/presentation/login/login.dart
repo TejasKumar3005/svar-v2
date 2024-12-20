@@ -42,9 +42,13 @@ class LoginScreenState extends State<LoginScreen> {
               _videoController.setLooping(true);
             });
           });
+
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+        
   }
+
+
 
   @override
   void dispose() {
@@ -52,8 +56,10 @@ class LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
+
     var provider = context.watch<LoginProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (provider.loading && _overlayEntry == null) {
@@ -248,6 +254,7 @@ class LoginScreenState extends State<LoginScreen> {
                   keyboardType: name == "email"
                       ? TextInputType.emailAddress
                       : TextInputType.visiblePassword,
+
                   controller: controller,
                   style: TextStyle(color: Colors.black, fontSize: 22.h),
                   decoration: InputDecoration(

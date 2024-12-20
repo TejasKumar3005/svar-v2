@@ -6,33 +6,30 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
 import 'package:svar_new/database/userController.dart';
-import 'package:svar_new/presentation/identification_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
-import 'package:svar_new/presentation/discrimination/customthumb.dart';
-import 'package:svar_new/presentation/phoneme_level_one/video_player_screen.dart';
-import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:svar_new/database/userController.dart';
-import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 
-class Detection extends StatefulWidget {
-  const Detection({
+class ExerciseDetection extends StatefulWidget {
+  const ExerciseDetection({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<Detection> createState() => _DetectionState();
+  State<ExerciseDetection> createState() => _DetectionState();
 
   static Widget builder(BuildContext context) {
-    return const Detection();
+
+    return const ExerciseDetection();
+
   }
+
 }
 
-class _DetectionState extends State<Detection> {
+class _DetectionState extends State<ExerciseDetection> {
   final GlobalKey<AudioWidgetState> _audioWidgetKey =
       GlobalKey<AudioWidgetState>();
   String quizType = "video";
@@ -302,7 +299,11 @@ class _DetectionState extends State<Detection> {
                   ),
                   isCorrect: () {
                     if ((obj[1] as dynamic).getMuted() == 1) {
-                      userData.incrementLevelCount("Detection", level);
+                        UserData(
+                                            uid: FirebaseAuth
+                                                    .instance.currentUser?.uid ??
+                                                '',
+                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
                     }
                     return (obj[1] as dynamic).getMuted() == 1;
                   },
@@ -323,7 +324,11 @@ class _DetectionState extends State<Detection> {
                   ),
                   isCorrect: () {
                     if ((obj[1] as dynamic).getMuted() == 0) {
-                      userData.incrementLevelCount("Detection", level);
+                      UserData(
+                                            uid: FirebaseAuth
+                                                    .instance.currentUser?.uid ??
+                                                '',
+                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
                     }
                     return (obj[1] as dynamic).getMuted() == 0;
                   },

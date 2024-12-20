@@ -1,12 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
 // import 'package:svar_new/data/models/levelManagementModel/audio.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
+import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/exercise_video.dart';
-import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
+import 'package:svar_new/presentation/exercises/exercises_speaking_phoneme.dart';
 import 'package:svar_new/presentation/speaking_phoneme/speaking_phoneme.dart';
 
 class ExercisesScreen extends StatefulWidget {
@@ -142,7 +144,13 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ExerciseVideo(videoUrl: videoUrl),
+            builder: (context) => ExerciseVideo(videoUrl: videoUrl,  onVideoComplete:  (){
+              UserData(uid: 
+              FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
+                eid: data["eid"],
+                date: data["date"],
+              ).then((value) => print("Exercise data updated"));
+            },),
           ),
         );
       } else {
@@ -159,10 +167,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         
           data_pro.currentExerciseIndex,
             data["eid"],
+            data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
 
-        NavigatorService.pushNamed(AppRoutes.detection,
+        NavigatorService.pushNamed(AppRoutes.exerciseDetection,
             arguments: argumentsList);
       }
     } catch (e) {
@@ -200,7 +209,15 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ExerciseVideo(videoUrl: videoUrl),
+            builder: (context) => ExerciseVideo(videoUrl: videoUrl,
+            onVideoComplete:  (){
+              UserData(uid: 
+              FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
+                eid: data["eid"],
+                date: data["date"],
+              ).then((value) => print("Exercise data updated"));
+            },
+            ),
           ),
         );
       } else {
@@ -214,11 +231,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           params,
           data_pro.currentExerciseIndex,
             data["eid"],
+            data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
 
         // Pass the 'type' and 'data' to the Discrimination widget
-        NavigatorService.pushNamed(AppRoutes.discrimination,
+        NavigatorService.pushNamed(AppRoutes.exerciseDiscrimination,
             arguments: argumentsList);
       }
     } catch (e) {
@@ -256,12 +274,21 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
         debugPrint("Navigating to Video Player Screen with URL: $videoUrl");
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ExerciseVideo(videoUrl: videoUrl),
+        await Future.delayed(Duration.zero);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ExerciseVideo(videoUrl: videoUrl,
+          onVideoComplete:  (){
+              UserData(uid: 
+              FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
+                eid: data["eid"],
+                date: data["date"],
+              ).then((value) => print("Exercise data updated"));
+            },
           ),
-        );
+        ),
+      );
       } else {
         print("Type is not video");
         print(type);
@@ -275,15 +302,17 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           params,
           data_pro.currentExerciseIndex,
             data["eid"],
+            data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
 
-        NavigatorService.pushNamed(AppRoutes.identification,
+        NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
             arguments: argumentsList);
       }
     } catch (e) {
       debugPrint("Error in Identification handling: $e");
     }
+
   }
 
   void _handleLevel(BuildContext context, String params) async {
@@ -306,19 +335,29 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ExerciseVideo(videoUrl: data["video"]),
+            builder: (context) => ExerciseVideo(videoUrl: data["video"],  onVideoComplete:  (){
+              UserData(uid: 
+              FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
+                eid: data["eid"],
+                date: data["date"],
+              ).then((value) => print("Exercise data updated"));
+            },),
           ),
         );
       } else if (type == "speech") {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => SpeakingPhonemeScreen(
+            builder: (context) => ExercisesSpeakingPhoneme(
               text: (data["text"] as List)
                   .map((item) => Map<String, dynamic>.from(item))
                   .toList(),
               videoUrl: data["video_url"],
               testSpeech: data["test_speech"],
+              eid: data["eid"],
+              date: data["date"],
+          
+            
             ),
           ),
         );
@@ -331,10 +370,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           params,
           data_pro.currentExerciseIndex,
             data["eid"],
+            data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
 
-        NavigatorService.pushNamed(AppRoutes.identification,
+        NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
             arguments: argumentsList);
       }
     } catch (e) {
@@ -357,8 +397,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       artboard.addController(_controller!);
       print("data_pro.todaysExercises");
       print(data_pro.todaysExercises);
-
-      TextValueRun? textRun_subtype = artboard.textRun('level1');
+WidgetsBinding.instance!.addPostFrameCallback((_) {
+        TextValueRun? textRun_subtype = artboard.textRun('level1');
       textRun_subtype!.text =
           data_pro.todaysExercises[data_pro.currentExerciseIndex]['type'] ??
               "Subtype";
@@ -375,7 +415,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       textRun_type!.text = data_pro
           .todaysExercises[data_pro.currentExerciseIndex]['exerciseType'];
       train = artboard.component('train');
-      if (train != null) {
+        if (train != null) {
         print("train position: ${train.x}");
         // Store the initial value of train.x
         _previousTrainX = train.x;
@@ -391,7 +431,10 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
       data_pro.changeCurrentLevel(data_pro.currentExerciseIndex.toDouble());
       _controller!.addEventListener(tapHandle);
-      // trackTrainPosition();
+      });
+    
+    
+      trackTrainPosition();
     }
   }
 

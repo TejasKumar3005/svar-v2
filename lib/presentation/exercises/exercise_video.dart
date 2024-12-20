@@ -1,4 +1,3 @@
-
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,8 +7,9 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 class ExerciseVideo extends StatefulWidget {
   final String videoUrl;
+  final Function onVideoComplete; // Callback function to run on completion
 
-  ExerciseVideo({required this.videoUrl});
+  ExerciseVideo({required this.videoUrl, required this.onVideoComplete});
 
   @override
   _ExerciseVideoState createState() => _ExerciseVideoState();
@@ -20,21 +20,21 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
   ChewieController? _chewieController;
   bool _showPlayButton = false;
 
-  
   @override
   void initState() {
     super.initState();
-      SystemChrome.setPreferredOrientations([
+    SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    _initializePlayer();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializePlayer();
+    });
   }
 
   void _initializePlayer() async {
-    CachingManager cachingManager=CachingManager();
-
-    // _videoPlayerController = VideoPlayerController.file((await cachingManager.getCachedFile(widget.videoUrl))!);
+    CachingManager cachingManager = CachingManager();
 
     if (kIsWeb) {
       // For web, use the network URL directly
@@ -50,11 +50,16 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
       }
     }
     await _videoPlayerController.initialize();
+
     _videoPlayerController.addListener(() {
-      if (_videoPlayerController.value.position == _videoPlayerController.value.duration) {
+      if (_videoPlayerController.value.position ==
+          _videoPlayerController.value.duration) {
+        // Video completed! Call the callback function
+        widget.onVideoComplete();
         Navigator.pop(context, true);
       }
     });
+
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController,
       autoPlay: false,
@@ -67,7 +72,6 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
         DeviceOrientation.landscapeRight,
       ],
     );
-    setState(() {});
   }
 
   @override
@@ -104,14 +108,17 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              _chewieController != null && _videoPlayerController.value.isInitialized
+              _chewieController != null &&
+                      _videoPlayerController.value.isInitialized
                   ? Chewie(controller: _chewieController!)
                   : Center(child: CircularProgressIndicator()),
               if (_showPlayButton)
                 GestureDetector(
                   onTap: _togglePlayPause,
                   child: Icon(
-                    _videoPlayerController.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                    _videoPlayerController.value.isPlaying
+                        ? Icons.pause
+                        : Icons.play_arrow,
                     color: Colors.white,
                     size: 100.0,
                   ),
