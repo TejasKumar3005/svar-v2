@@ -309,9 +309,9 @@ Future<List<dynamic>> getTodaysExercise(
       return null;
     }
   }
-
-  Future<void> incrementLevelCount(String auditoryType) async {
+Future<void> incrementLevelCount(String auditoryType, int level) async {
     try {
+      var provider2 = Provider.of<RiveProvider>(buildContext!, listen: false);
       String? uid = FirebaseAuth.instance.currentUser?.uid;
       DocumentReference userRef =
           FirebaseFirestore.instance.collection('patients').doc(uid);
@@ -322,27 +322,44 @@ Future<List<dynamic>> getTodaysExercise(
 
         if (snapshot.exists) {
           Map<String, dynamic> levels =
-              (snapshot.data() as Map<String, dynamic>?)?['LevelMap'];
+              (snapshot.data() as Map<String, dynamic>?)?['levelMap'];
           int currentLevelCount = levels[auditoryType];
-
-          int newLevelCount = currentLevelCount + 1;
-          levels[auditoryType] = newLevelCount;
-
-          transaction.update(userRef, {'LevelMap': levels});
-          await addActivity(
-              "Level $newLevelCount completed",
+            print("1");
+          if (currentLevelCount <= level) {
+            // Add the condition to only increment if currentLevelCount <= level
+            int newLevelCount = currentLevelCount + 1;
+            levels[auditoryType] = newLevelCount;
+           print("2");
+            transaction.update(userRef, {'levelMap': levels});
+            await addActivity(
+              "Level  $newLevelCount completed",
               DateTime.now().toString().substring(0, 10),
               DateTime.now().toString().substring(11, 16),
-              uid!);
-          var data = provider.userModel;
-          data.levelMap = LevelMap.fromJson(levels);
-          provider.setUser(data);
+              uid!,
+            );
+            print("3");
+            var data = provider.userModel;
+            print("4");
+            data.levelMap = LevelMap.fromJson(levels);
+            print("5");
+            provider.setUser(data);
+            print("6");
+            print("newLevelCount: $newLevelCount"); 
+            provider2.changeCurrentLevel(newLevelCount.toDouble());
+          } else {
+            print(
+                'Current level is already higher than or equal to the provided level.');
+          }
         } else {
           throw Exception('User not found!');
         }
       });
-
+      
+          
       print('levelCount incremented successfully!');
+     
+    
+      
     } catch (e) {
       print('Error incrementing levelCount: $e');
     }

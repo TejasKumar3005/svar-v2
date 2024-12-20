@@ -15,27 +15,31 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 
-class ExerciseDetection extends StatefulWidget {
-  const ExerciseDetection({
+class Detection extends StatefulWidget {
+  const Detection({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<ExerciseDetection> createState() => _ExerciseDetectionState();
+  State<Detection> createState() => _DetectionState();
 
   static Widget builder(BuildContext context) {
-    return const ExerciseDetection();
+    return const Detection();
   }
 }
 
-class _ExerciseDetectionState extends State<ExerciseDetection> {
+class _DetectionState extends State<Detection> {
   final GlobalKey<AudioWidgetState> _audioWidgetKey =
       GlobalKey<AudioWidgetState>();
   String quizType = "video";
   int selectedOption = -1;
+  int level = 0;
   PlayAudio playAudio = PlayAudio();
-
+  late UserData userData;
   VideoPlayerController? _videoPlayerController1;
   VideoPlayerController? _videoPlayerController2;
   ChewieController? _chewieController1;
@@ -49,7 +53,9 @@ class _ExerciseDetectionState extends State<ExerciseDetection> {
   @override
   void initState() {
     super.initState();
-    
+    String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    userData = UserData(uid: uid, buildContext: context);
+
     // Defer the video initialization to after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
@@ -64,7 +70,8 @@ class _ExerciseDetectionState extends State<ExerciseDetection> {
   }
 
   // Initialize both videos sequentially
-  Future<void> _initializeVideoFlow(List<String> videoUrls, int mutedVideoIndex) async {
+  Future<void> _initializeVideoFlow(
+      List<String> videoUrls, int mutedVideoIndex) async {
     await initiliaseVideo(videoUrls[0], 1, mutedVideoIndex);
     await initiliaseVideo(videoUrls[1], 2, mutedVideoIndex);
   }
@@ -81,9 +88,11 @@ class _ExerciseDetectionState extends State<ExerciseDetection> {
     super.dispose();
   }
 
-  Future<void> initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) async {
+  Future<void> initiliaseVideo(
+      String videoUrl, int video, int mutedVideoIndex) async {
     if (video == 1 && _videoPlayerController1 == null) {
-      _videoPlayerController1 = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+      _videoPlayerController1 =
+          VideoPlayerController.networkUrl(Uri.parse(videoUrl));
 
       try {
         await _videoPlayerController1!.initialize();
@@ -112,7 +121,8 @@ class _ExerciseDetectionState extends State<ExerciseDetection> {
         print("Error initializing video 1: $e");
       }
     } else if (video == 2 && _videoPlayerController2 == null) {
-      _videoPlayerController2 = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+      _videoPlayerController2 =
+          VideoPlayerController.networkUrl(Uri.parse(videoUrl));
 
       try {
         await _videoPlayerController2!.initialize();
@@ -196,6 +206,7 @@ class _ExerciseDetectionState extends State<ExerciseDetection> {
 
   Widget MutedUnmuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    level = obj[4] as int;
     dynamic dtcontainer = obj[1] as dynamic;
     return Column(
       children: [
@@ -221,6 +232,7 @@ class _ExerciseDetectionState extends State<ExerciseDetection> {
         SizedBox(
           height: 26.v,
         ),
+        
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -289,6 +301,9 @@ class _ExerciseDetectionState extends State<ExerciseDetection> {
                     },
                   ),
                   isCorrect: () {
+                    if ((obj[1] as dynamic).getMuted() == 1) {
+                      userData.incrementLevelCount("Detection", level);
+                    }
                     return (obj[1] as dynamic).getMuted() == 1;
                   },
                 ),
@@ -307,6 +322,9 @@ class _ExerciseDetectionState extends State<ExerciseDetection> {
                     },
                   ),
                   isCorrect: () {
+                    if ((obj[1] as dynamic).getMuted() == 0) {
+                      userData.incrementLevelCount("Detection", level);
+                    }
                     return (obj[1] as dynamic).getMuted() == 0;
                   },
                 ),
@@ -410,7 +428,6 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
             double currentProgress = _childKey.currentState!.progress;
             print("Current progress is $currentProgress");
 
-// Define the acceptable range, e.g., ans ± 0.1
             const double tolerance = 0.4;
             bool condition =
                 currentProgress > ans && currentProgress < ans + tolerance;

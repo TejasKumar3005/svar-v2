@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
+// import 'package:svar_new/data/models/levelManagementModel/audio.dart';
+import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
@@ -422,5 +424,36 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         
       }
     });
+  }
+
+  Object retrieveObject(String type, Map<String, dynamic> data) {
+    if (type == "ImageToAudio") {
+      print("In Image to audio section");
+      print(ImageToAudio.fromJson(data));
+      return ImageToAudio.fromJson(data);
+    } else if (type == "WordToFig") {
+      return WordToFiG.fromJson(data);
+    } else if (type == "FigToWord") {
+      return FigToWord.fromJson(data);
+    } else if (type == "AudioToImage") {
+      debugPrint("In audio to image section");
+      return AudioToImage.fromJson(data);
+    } else if (type == "AudioToAudio") {
+      return AudioToAudio.fromJson(data);
+    } else if (type == "MutedUnmuted") {
+      return MutedUnmuted.fromJson(data);
+    } else if (type == "HalfMuted") {
+      return HalfMuted.fromJson(data);
+    } else if (type == "DiffSounds") {
+      return DiffSounds.fromJson(data);
+    } else if (type == "OddOne") {
+      return OddOne.fromJson(data);
+    } else if (type == "DiffHalf") {
+      return DiffHalf.fromJson(data);
+    } else if (type == "MaleFemale") {
+      return MaleFemale.fromJson(data);
+    } else {
+      return "unexpected value";
+    }
   }
 }
