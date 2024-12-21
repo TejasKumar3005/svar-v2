@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
+import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/widgets/circularScore.dart';
@@ -169,7 +170,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
             children: [
               Column(
                 children: [
-                  _buildAppBar(context),
+                 DisciAppBar(context),
                 ],
               ),
               Positioned(
@@ -195,19 +196,24 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                         endRadius: 90.0,
                         glowColor: Colors.blue,
                         duration: const Duration(milliseconds: 2000),
-                        repeat: lingLearningProvider.isRecording,
-                        showTwoGlows: lingLearningProvider.isRecording,
+                        repeat: false,
+                        showTwoGlows: false,
                         repeatPauseDuration: const Duration(milliseconds: 100),
                         child: Material(
                           elevation: 8.0,
                           shape: const CircleBorder(),
                           child: Container(
-                            height: 120,
-                            width: 120,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(60),
-                              // REMOVE the green border styling completely
-                            ),
+                            height: 80,
+                            width: 80,
+                            decoration: lingLearningProvider.isRecording
+                                ? BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.green,
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(60),
+                                  )
+                                : null,
                             child: CustomButton(
                               type: ButtonType.Mic,
                               onPressed: () async {
@@ -216,7 +222,8 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                                 print(permission);
                                 print("hiiiii");
                                 onTapMicrophonebutton(
-                                    context, lingLearningProvider);
+                                    context, lingLearningProvider
+                                );
                               },
                             ),
                           ),
@@ -241,7 +248,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                 bottom: 50,
                 child: Container(
                   height: 70,
-                  width: 100,
+                  width: 70,
                   child: CustomButton(
                     type: ButtonType.Tip,
                     onPressed: () {

@@ -14,11 +14,13 @@ Widget DisciAppBar(BuildContext context) {
             }),
       ),
       Spacer(),
-      // CustomButton(type: ButtonType.Replay, onPressed: () {}),
+
       SizedBox(
         width: 10.h,
       ),
-      CustomButton(type: ButtonType.Menu, onPressed: () {}),
+      CustomButton(type: ButtonType.Menu, onPressed: () {
+        Navigator.pushNamed(context, AppRoutes.setting); 
+      }),
       
     ],
   );
