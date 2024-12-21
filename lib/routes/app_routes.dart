@@ -72,7 +72,7 @@ class AppRoutes {
 
 
   static Map<String, WidgetBuilder> get routes => {
-        // auditoryScreenAssessmentScreenAudioVisualResizScreen:AuditoryScreenAssessmentScreenAudioVisualResizScreen.builder,
+       
         welcomeScreenPotraitScreen: WelcomeScreenPotraitScreen.builder,
         loginSignup: LoginSignUpScreen.builder,
         login: LoginScreen.builder,
@@ -98,6 +98,5 @@ class AppRoutes {
         initialRoute: LoadingScreen.builder,
         userProfileScreen: UserProfileScreen.builder,
         introScreen: SupportScreen.builder,
-
       };
 }
