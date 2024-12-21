@@ -253,7 +253,7 @@ class LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     hintText: name.tr,
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 22.h),
-                    // Remove all borders
+                    
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
