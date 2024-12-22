@@ -39,7 +39,7 @@ extension _TextExtension on rive.Artboard {
 }
 
 class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
-   late Future<RiveFile?> _riveFileFuture;
+  late Future<RiveFile?> _riveFileFuture;
   late double currentLevelCount = 3;
   bool _initialized = false;
   int val = 1;
@@ -60,7 +60,9 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       DeviceOrientation.landscapeRight,
     ]);
 
-   _riveFileFuture = RivePreloader().initialize().then((_) => RivePreloader().getRiveFile('assets/rive/levels.riv'));
+    _riveFileFuture = RivePreloader()
+        .initialize()
+        .then((_) => RivePreloader().getRiveFile('assets/rive/levels.riv'));
   }
 
   @override
@@ -381,9 +383,11 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
           future: _riveFileFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator()); // Show loading indicator
+              return const Center(
+                  child: CircularProgressIndicator()); // Show loading indicator
             } else if (snapshot.hasError || snapshot.data == null) {
-              return const Center(child: Text('Error loading Rive file')); // Handle errors
+              return const Center(
+                  child: Text('Error loading Rive file')); // Handle errors
             } else {
               final riveFile = snapshot.data!;
               return SingleChildScrollView(
@@ -473,10 +477,15 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       train = artboard.component('train');
       if (train != null) {
         print("train position: ${train.x}");
+
         // Store the initial value of train.x
+
         SchedulerBinding.instance.addPostFrameCallback((_) {
-          _trackTrainPosition(); // Start tracking on the first frame
+          Timer.periodic(const Duration(milliseconds: 100), (timer) {
+            _trackTrainPosition();
+          });
         });
+
         _previousTrainX = train.x;
       } else {
         debugPrint("Error: 'train' not found!");
@@ -496,24 +505,27 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   }
 
   void _trackTrainPosition() {
-    if (train != null &&
-        _previousTrainX != null &&
-        train.x != _previousTrainX) {
-      // Train position has changed, update the scroll position
-      print("New train position: ${train.x}");
+    if (train != null && train.artboard != null) {
+      double trainX = train.x;
 
-      double screenWidth = MediaQuery.of(context).size.height * 13.7176;
-      double maxTrainX = 10000; // Or your actual max X value
-      double scaledOffset = (train.x / maxTrainX) * screenWidth;
+      if (_previousTrainX != trainX) {
+        double screenWidth = MediaQuery.of(context).size.height * 13.7176;
+        double maxTrainX = train.artboard!.width;
+        double scaledOffset = (trainX / maxTrainX) * screenWidth;
 
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          scaledOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-          duration: const Duration(milliseconds: 200), // Smoother animation
-          curve: Curves.easeInOut,
-        );
+        if (_scrollController.hasClients) {
+          // Calculate the distance and use it to adjust animation duration
+          double deltaX = (trainX - _previousTrainX!).abs();
+          int animationDuration = (deltaX * 10).toInt().clamp(50, 200);
+
+          _scrollController.animateTo(
+            scaledOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+            duration: Duration(milliseconds: animationDuration),
+            curve: Curves.easeOut, // Use a smoother curve
+          );
+        }
+        _previousTrainX = trainX;
       }
-      _previousTrainX = train.x;
     }
   }
 
