@@ -76,7 +76,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     );
   }
 
-  void _handleLevelType(String params) {
+  void _handleLevelType(int startExerciseIndex, String params) {
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
 
@@ -85,7 +85,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         return;
       }
       String? exerciseType = data_pro
-          .todaysExercises[data_pro.currentExerciseIndex]["exerciseType"];
+          .todaysExercises[startExerciseIndex]["exerciseType"];
 
       if (exerciseType == null) {
         debugPrint("Exercise type is null in the arguments.");
@@ -94,16 +94,16 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
       switch (exerciseType) {
         case "Detection":
-          _handleDetection(context, "notcompleted");
+          _handleDetection(context, "notcompleted", startExerciseIndex);
           break;
         case "Discrimination":
-          _handleDiscrimination(context, "notcompleted");
+          _handleDiscrimination(context, "notcompleted", startExerciseIndex );
           break;
         case "Identification":
-          _handleIdentification(context, "notcompleted");
+          _handleIdentification(context, "notcompleted", startExerciseIndex);
           break;
         case "Level":
-          _handleLevel(context, "notcompleted");
+          _handleLevel(context, "notcompleted", startExerciseIndex);
           break;
         default:
           debugPrint("Unexpected exercise type: $exerciseType");
@@ -114,11 +114,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     }
   }
 
-  void _handleDetection(BuildContext context, String params) async {
+  void _handleDetection(BuildContext context, String params, int startExerciseIndex) async {
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
       Map<String, dynamic> data =
-          data_pro.todaysExercises[data_pro.currentExerciseIndex];
+          data_pro.todaysExercises[startExerciseIndex];
       ;
 
       if (data == null || data.isEmpty) {
@@ -141,7 +141,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         }
 
         debugPrint("Navigating to Video Player Screen with URL: $videoUrl");
-
+  await Future.delayed(Duration.zero);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -169,7 +169,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           type,
           dtcontainer,
           params,
-          data_pro.currentExerciseIndex,
+          startExerciseIndex,
           data["eid"],
           data["date"]
         ];
@@ -183,11 +183,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     }
   }
 
-  void _handleDiscrimination(BuildContext context, String params) async {
+  void _handleDiscrimination(BuildContext context, String params, int startExerciseIndex) async {
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
       Map<String, dynamic> data =
-          data_pro.todaysExercises[data_pro.currentExerciseIndex];
+          data_pro.todaysExercises[startExerciseIndex];
       ;
 
       if (data == null || data.isEmpty) {
@@ -202,7 +202,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
       debugPrint("Fetched type for Identification: $type");
       debugPrint("Data is: $data");
-
+  await Future.delayed(Duration.zero);
       if (type == "sound") {
         String? videoUrl = data["video_url"];
         if (videoUrl == null) {
@@ -235,7 +235,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           type,
           dtcontainer,
           params,
-          data_pro.currentExerciseIndex,
+          startExerciseIndex,
           data["eid"],
           data["date"]
         ];
@@ -250,11 +250,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     }
   }
 
-  void _handleIdentification(BuildContext context, String params) async {
+  void _handleIdentification(BuildContext context, String params, int startExerciseIndex) async {
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
       Map<String, dynamic> data =
-          data_pro.todaysExercises[data_pro.currentExerciseIndex];
+            data_pro.todaysExercises[startExerciseIndex];
       ;
 
       if (data == null || data.isEmpty) {
@@ -309,12 +309,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           type,
           dtcontainer,
           params,
-          data_pro.currentExerciseIndex,
+          startExerciseIndex,
           data["eid"],
           data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
-
+    await Future.delayed(Duration.zero);
         NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
             arguments: argumentsList);
       }
@@ -323,12 +323,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     }
   }
 
-  void _handleLevel(BuildContext context, String params) async {
+  void _handleLevel(BuildContext context, String params, int startExerciseIndex) async {
     try {
       debugPrint("Entering in level section");
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
       Map<String, dynamic> data =
-          data_pro.todaysExercises[data_pro.currentExerciseIndex];
+            data_pro.todaysExercises[startExerciseIndex];
       ;
 
       String? type = data["type"];
@@ -338,8 +338,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       }
 
       debugPrint("Fetched type for Level: $type");
-
+  await Future.delayed(Duration.zero);
       if (type == "video") {
+        
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -362,6 +363,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           ),
         );
       } else if (type == "speech") {
+
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -383,7 +385,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           type,
           dtcontainer,
           params,
-          data_pro.currentExerciseIndex,
+          startExerciseIndex,
           data["eid"],
           data["date"]
         ];
@@ -398,8 +400,21 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   }
 
   void tapHandle(RiveEvent event) {
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+      int startExerciseIndex =
+        (data_pro.currentExerciseIndex ~/ 5) * 5; 
+  print("startExerciseIndex: $startExerciseIndex");
     if (event.name == "level 1") {
-      _handleLevelType("notcompleted");
+    
+      _handleLevelType(startExerciseIndex, "notcompleted");
+    }else if (event.name == "level 2") {
+      _handleLevelType(startExerciseIndex+1, "notcompleted");
+    }else if (event.name == "level 3") {
+      _handleLevelType(startExerciseIndex+2, "notcompleted");
+    }else if (event.name == "level 4") {
+      _handleLevelType(startExerciseIndex+3, "notcompleted");
+    }else if (event.name == "level 5") {
+      _handleLevelType(startExerciseIndex+4, "notcompleted");
     }
   }
 
@@ -428,8 +443,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           String subtypeKey = "level${i + 1}";
           TextValueRun? textRun_subtype = artboard.textRun(subtypeKey);
           if (textRun_subtype != null) {
+            print("type ${actualIndex}: ${data_pro.todaysExercises[actualIndex]['type']}");
             textRun_subtype.text =
-                data_pro.todaysExercises[actualIndex]['type'] ?? "Subtype";
+                data_pro.todaysExercises[actualIndex]['type'];
           } else {
             debugPrint("Error: '$subtypeKey' text run not found!");
           }
@@ -449,7 +465,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           TextValueRun? textRun_type = artboard.textRun(typeKey);
           if (textRun_type != null) {
             textRun_type.text =
-                data_pro.todaysExercises[actualIndex]['exerciseType'];
+                data_pro.todaysExercises[actualIndex]['exerciseType']??"Exercise Type";
           } else {
             debugPrint("Error: '$typeKey' text run not found!");
           }
