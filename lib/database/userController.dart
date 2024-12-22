@@ -128,8 +128,8 @@ class UserData {
       DateTime now = DateTime.now();
       String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
-      if (exercises["2024-12-06"] != null) {
-        List<dynamic> data = exercises["2024-12-06"];
+      if (exercises[formattedDate] != null) {
+        List<dynamic> data = exercises[formattedDate];
         print("data: " + data.toString());
         List<Map<String, dynamic>> updatedData = [];
 
@@ -148,7 +148,7 @@ class UserData {
               ...exercise,
               ...exerciseData,
               "exerciseType": exercise["type"],
-              "date": "2024-12-06"
+              "date": formattedDate
             });
           } else {
             debugPrint("Document with id ${exercise['eid']} does not exist.");

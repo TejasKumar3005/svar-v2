@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -45,7 +48,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       _riveFileFuture = RivePreloader()
         .initialize()
         .then((_) => RivePreloader().getRiveFile('assets/rive/levels.riv'));
-    trackTrainPosition();
+    _trackTrainPosition();
   }
 
   @override
@@ -86,6 +89,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                   child: RiveAnimation.direct(
                     riveFile,
                     fit: BoxFit.contain,
+
                     onInit: _onRiveInit,
                   ),
                 ),
@@ -495,11 +499,18 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         train = artboard.component('train');
         if (train != null) {
           print("train position: ${train.x}");
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+          Timer.periodic(const Duration(milliseconds: 100), (timer) {
+            _trackTrainPosition();
+          });
+        });
           _previousTrainX = train.x;
-          trackTrainPosition();
+        
         } else {
           debugPrint("Error: 'train' not found!");
         }
+
+        
 
         data_pro.initiliaseSMINumber(
             _controller?.getNumberInput('current level') as SMINumber);
@@ -507,42 +518,38 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           debugPrint("Error: 'current level' input not found!");
         }
 
-        data_pro.changeCurrentLevel(startExerciseIndex.toDouble()+1);
+        data_pro.changeCurrentLevel(data_pro.currentExerciseIndex.toDouble()+1);
         _controller!.addEventListener(tapHandle);
       });
 
-      trackTrainPosition();
+      
     }
   }
 
-  void trackTrainPosition() {
-    // You can use a simple loop or a frame callback to track changes continuously
-    Future.delayed(Duration(milliseconds: 16), () {
-      if (train != null &&
-          _previousTrainX != null &&
-          train.x != _previousTrainX) {
-        // Train position has changed, update the scroll position
-        print("New train position: ${train.x}");
+  void _trackTrainPosition() {
+    if (train != null && train.artboard != null) {
+      double trainX = train.x;
 
-        // Ensure that train.x is within the valid scroll range
-        double screenWidth = MediaQuery.of(context).size.height *
-            13.7176; // Get the screen width
-        double maxTrainX =
-            1000; // Example max value for train.x; replace with your actual maximum value
-        double scaledOffset =
-            (train.x / maxTrainX) * screenWidth; // Scale train.x proportionally
+      if (_previousTrainX != trainX) {
+        double screenWidth = MediaQuery.of(context).size.height * 13.7176;
+        double maxTrainX = train.artboard!.width;
+        double scaledOffset = (trainX / maxTrainX) * screenWidth;
 
         if (_scrollController.hasClients) {
-          // Update scroll position (clamp to valid range if necessary)
-          // _scrollController.jumpTo(scaledOffset.clamp(
-          //     0.0, _scrollController.position.maxScrollExtent));
+          // Calculate the distance and use it to adjust animation duration
+          double deltaX = (trainX - _previousTrainX!).abs();
+          int animationDuration = (deltaX * 10).toInt().clamp(50, 200);
+
+          _scrollController.animateTo(
+            scaledOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+            duration: Duration(milliseconds: animationDuration),
+            curve: Curves.easeOut, // Use a smoother curve
+          );
+
         }
-
-        _previousTrainX = train.x; // Update the previous value
-
-        // Recursively call trackTrainPosition to keep checking for changes
+        _previousTrainX = trainX;
       }
-    });
+    }
   }
 
   Object retrieveObject(String type, Map<String, dynamic> data) {

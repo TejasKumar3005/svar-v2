@@ -232,7 +232,7 @@ case "ImageToAudio":
               crossAxisCount: 2,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
-              childAspectRatio: 0.8, // Adjust aspect ratio as needed
+              childAspectRatio: 0.5, // Adjust aspect ratio as needed
             ),
             itemCount: dtcontainer.getAudioList().length,
             itemBuilder: (context, index) {
