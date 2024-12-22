@@ -21,14 +21,19 @@ class ExerciseProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void setCurrentExerciseIndex(int idx) {
+    currentExerciseIndex = idx;
+    notifyListeners();
+  }
+
   void incrementLevel() {
-    
-    if (currentExerciseIndex == todaysExercises.length-1) {
+    if (currentExerciseIndex == todaysExercises.length - 1) {
       return;
     }
     currentExerciseIndex++;
-    currentLevelInput!.change(currentExerciseIndex.toDouble()+1);
-    
+    currentLevelInput!.change(currentExerciseIndex.toDouble() + 1);
+
     notifyListeners();
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/userModel.dart';
+import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
 
@@ -65,6 +66,7 @@ class UserData {
   Future<void> updateExerciseData({
     required String date,
     required String eid,
+    bool isCompleted = true,
     Map<String, dynamic>? performance,
   }) async {
     try {
@@ -103,18 +105,28 @@ class UserData {
             }
 
             // Update the exercise data
-            exercisesForDate[exerciseIndex] = {
-              ...exerciseData,
-              'completedAt': DateTime.now().toString()
-            };
 
             // Update the Firestore document
 
-            await userDoc.update({
-              'exercises.$date': exercisesForDate,
-              'completedTillExercise': eid,
-              'completedTillDate': date
-            });
+            if (exerciseData["completedAt"] == null && isCompleted) {
+              exerciseData["completedAt"] = DateTime.now().toString();
+              exercisesForDate[exerciseIndex] = exerciseData;
+              await userDoc.update({
+                'exercises.$date': exercisesForDate,
+                'completedTillExercise': eid,
+                'completedTillDate': date
+              });
+            } else {
+              if (isCompleted) {
+                exerciseData["completedAt"] = DateTime.now().toString();
+                exercisesForDate[exerciseIndex] = exerciseData;
+              }
+
+              await userDoc.update({
+                'exercises.$date': exercisesForDate,
+              });
+            }
+
             print('Exercise data updated successfully!');
           } else {
             print('Exercise with eid $eid not found for date $date.');
@@ -176,6 +188,18 @@ class UserData {
         }
       }
 
+      var data_pro =
+          Provider.of<ExerciseProvider>(buildContext!, listen: false);
+      var user_pro =
+          Provider.of<UserDataProvider>(buildContext!, listen: false);
+
+      data_pro.setTodaysExercises(finaldata);
+      for (int i = 0; i < finaldata.length; i++) {
+        if (finaldata[i]["eid"] ==
+            user_pro.userModel.exercises["completedTillExercise"]) {
+          data_pro.setCurrentExerciseIndex(i);
+        }
+      }
       return finaldata;
     } catch (e) {
       ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
@@ -318,6 +342,7 @@ class UserData {
         // userModel.gameStats.levels_on = await loadJsonFromAsset().then((value) => value.map((e) => Level.fromJson(e)).toList());
         Provider.of<UserDataProvider>(buildContext!, listen: false)
             .setUser(userModel);
+
         return true;
       }
       return true;

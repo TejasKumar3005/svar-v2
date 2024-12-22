@@ -1,3 +1,5 @@
+import 'dart:js_interop';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -6,6 +8,7 @@ import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:flutter/material.dart';
+import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -18,8 +21,7 @@ class LoadingScreen extends StatefulWidget {
   LoadingScreenState createState() => LoadingScreenState();
 
   static Widget builder(BuildContext context) {
-    return 
-    LoadingScreen();
+    return LoadingScreen();
   }
 }
 
@@ -35,31 +37,34 @@ class LoadingScreenState extends State<LoadingScreen>
   }
 
   void cacheLevels(BuildContext context) {
-  var provider=Provider.of<UserDataProvider>(context, listen: false);
-  CachingManager.cacheFilesInIsolate(provider.userModel.levelMap);
+    var provider = Provider.of<UserDataProvider>(context, listen: false);
+    CachingManager.cacheFilesInIsolate(provider.userModel.levelMap);
   }
 
-  void getUserData(BuildContext context) async{
-   try {
-    UserData userData = UserData(
-      uid: FirebaseAuth.instance.currentUser!.uid,
-      buildContext: context,
-    );
+  void getUserData(BuildContext context) async {
+    try {
+      UserData userData = UserData(
+        uid: FirebaseAuth.instance.currentUser!.uid,
+        buildContext: context,
+      );
 
-    // Run both futures concurrently and wait for both to complete
-    await Future.wait([
-      userData.getUserData(),
-      userData.getParentalTip(),
-    ]);
-  cacheLevels(context);
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      AppRoutes.home, 
-      (route) => false,
-    );
-  } catch (error) {
-    // Handle any exceptions that occur during the process
-    print('Error occurred: $error');
-  }
+      // Run both futures concurrently and wait for both to complete
+      await Future.wait([
+        userData.getUserData(),
+        userData.getParentalTip(),
+      ]);
+      var data_pro = Provider.of<UserDataProvider>(context, listen: false);
+      await userData.getfortnightExercises(data_pro.userModel.exercises);
+
+      cacheLevels(context);
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        AppRoutes.home,
+        (route) => false,
+      );
+    } catch (error) {
+      // Handle any exceptions that occur during the process
+      print('Error occurred: $error');
+    }
   }
 
   @override
@@ -81,7 +86,6 @@ class LoadingScreenState extends State<LoadingScreen>
           ),
         ),
         child: Container(
-          
           padding: EdgeInsets.symmetric(vertical: 38.v),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -135,7 +139,6 @@ class LoadingScreenState extends State<LoadingScreen>
                         child: LinearProgressIndicator(
                           borderRadius: BorderRadiusStyle.roundedBorder15,
                           color: PrimaryColors().green30001,
-                          
                           semanticsLabel: 'Linear progress indicator',
                         ),
                       ),

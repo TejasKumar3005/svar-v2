@@ -41,6 +41,7 @@ class HomeScreenState extends State<HomeScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+  
   }
 
   @override
@@ -145,11 +146,8 @@ class HomeScreenState extends State<HomeScreen> {
               () {
                 var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
                 var user_pro=Provider.of<UserDataProvider>(context,listen: false);
-                UserData(uid: FirebaseAuth.instance.currentUser!.uid).getfortnightExercises(user_pro.userModel.exercises).then((value) {
-                  print("value");
-                  print(value);
-                  data_pro.setTodaysExercises(value);
-                  if(value.isNotEmpty){
+              
+                                  if(user_pro.todaysExercises.isNotEmpty){
                     Navigator.push(context, 
                     MaterialPageRoute(builder: (context) => ExercisesScreen()));
                   }else{
@@ -157,7 +155,6 @@ class HomeScreenState extends State<HomeScreen> {
                       content: Text('No exercises assigned'),
                     ));
                   }
-                });
                 
 
               },

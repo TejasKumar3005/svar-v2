@@ -142,14 +142,11 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
     );
   }
 
-  Widget discriminationOptions(
-      String type, Object d, dynamic dtcontainer) {
+  Widget discriminationOptions(String type, Object d, dynamic dtcontainer) {
     switch (type) {
       case "DiffSounds":
-
         return DiffSoundsW(d as DiffSounds, dtcontainer);
       case "OddOne":
-      
         return OddOneW(d as OddOne, dtcontainer);
       case "DiffHalf":
         return DiffHalfW(d as DiffHalf, dtcontainer);
@@ -182,17 +179,27 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               child: OptionWidget(
                 child: ImageWidget(imagePath: "assets/images/female.png"),
                 isCorrect: () {
-                  if (maleFemale.getCorrectOutput() == "female") {
-                    var data_pro =
-                        Provider.of<ExerciseProvider>(context, listen: false);
+                  var condition = maleFemale.getCorrectOutput() == "female";
+                  var data_pro =
+                      Provider.of<ExerciseProvider>(context, listen: false);
+                  if (condition) {
                     data_pro.incrementLevel();
-                    UserData(
-                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                    )
-                        .updateExerciseData(date: obj[5], eid: obj[4])
-                        .then((value) => null);
                   }
-                  return maleFemale.getCorrectOutput() == "female";
+
+                  UserData(
+                    uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                  )
+                      .updateExerciseData(
+                          isCompleted: condition,
+                          performance: {
+                            "result": condition,
+                            "time": DateTime.now().toString()
+                          },
+                          date: obj[5],
+                          eid: obj[4])
+                      .then((value) => null);
+
+                  return condition;
                 },
               ),
             ),
@@ -200,17 +207,27 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               child: OptionWidget(
                 child: ImageWidget(imagePath: "assets/images/male.png"),
                 isCorrect: () {
-                  if (maleFemale.getCorrectOutput() == "male") {
-                    var data_pro =
-                        Provider.of<ExerciseProvider>(context, listen: false);
+                  var condition = maleFemale.getCorrectOutput() == "male";
+                  var data_pro =
+                      Provider.of<ExerciseProvider>(context, listen: false);
+                  if (condition) {
                     data_pro.incrementLevel();
-                    UserData(
-                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                    )
-                        .updateExerciseData(date: obj[5], eid: obj[4])
-                        .then((value) => null);
                   }
-                  return maleFemale.getCorrectOutput() == "male";
+
+                  UserData(
+                    uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                  )
+                      .updateExerciseData(
+                          isCompleted: condition,
+                          performance: {
+                            "result": condition,
+                            "time": DateTime.now().toString()
+                          },
+                          date: obj[5],
+                          eid: obj[4])
+                      .then((value) => null);
+
+                  return condition;
                 },
               ),
             ),
@@ -281,23 +298,34 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               List<double> total_length = _childKey.currentState!.lengths;
               double ans =
                   total_length[0] / (total_length[1] + total_length[0]);
+
+              var condition = _childKey.currentState!.progress > ans &&
+                  _childKey.currentState!.progress < ans + 0.4;
               print(
                   "ans is $ans current progress is ${_childKey.currentState!.progress}");
-              if (_childKey.currentState!.progress > ans &&
-                  _childKey.currentState!.progress < ans + 0.1) {
-                var data_pro =
-                    Provider.of<ExerciseProvider>(context, listen: false);
-                data_pro.incrementLevel();
-                UserData(
-                  uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                )
-                    .updateExerciseData(date: obj[5], eid: obj[4])
-                    .then((value) => null);
 
-                return true;
-              } else {
-                return false;
+              var data_pro =
+                  Provider.of<ExerciseProvider>(context, listen: false);
+
+              if (condition) {
+                data_pro.incrementLevel();
               }
+              UserData(
+                uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+              )
+                  .updateExerciseData(
+                      isCompleted: condition,
+                      performance: {
+                        "time": DateTime.now().toString(),
+                        "result": condition,
+                        "timeDiff":
+                            (_childKey.currentState!.progress - ans).abs()
+                      },
+                      date: obj[5],
+                      eid: obj[4])
+                  .then((value) => null);
+
+              return condition;
             })
       ],
     );
@@ -333,24 +361,29 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             OptionWidget(
-              child: OptionButton(
-                  type: ButtonType.Same,
-                  onPressed: () {
-                    var provider =
-                        Provider.of<UserDataProvider>(context, listen: false);
-                    if (diffSounds.getSame()) {
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                      data_pro.incrementLevel();
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(date: obj[5], eid: obj[4])
-                          .then((value) => null);
-                    }
-                  }),
+              child: OptionButton(type: ButtonType.Same, onPressed: () {}),
               isCorrect: () {
-                return !diffSounds.getSame();
+                var condition = diffSounds.getSame();
+
+                var data_pro =
+                    Provider.of<ExerciseProvider>(context, listen: false);
+                if (condition) {
+                  data_pro.incrementLevel();
+                }
+                UserData(
+                  uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                )
+                    .updateExerciseData(
+                        isCompleted: condition,
+                        performance: {
+                          "time": DateTime.now().toString(),
+                          "result": condition,
+                        },
+                        date: obj[5],
+                        eid: obj[4])
+                    .then((value) => null);
+
+                return condition;
               },
             ),
             SizedBox(
@@ -362,19 +395,27 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   onPressed: () {
                     var provider =
                         Provider.of<UserDataProvider>(context, listen: false);
-                    if (!diffSounds.getSame()) {
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                      data_pro.incrementLevel();
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(date: obj[5], eid: obj[4])
-                          .then((value) => null);
-                    }
                   }),
               isCorrect: () {
-                return diffSounds.getSame();
+                var condition = diffSounds.getSame();
+                
+                  var data_pro =
+                      Provider.of<ExerciseProvider>(context, listen: false);
+              if (condition) {   data_pro.incrementLevel();}
+                  UserData(
+                    uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                  )
+                      .updateExerciseData(
+                          isCompleted: condition,
+                          performance: {
+                            "time": DateTime.now().toString(),
+                            "result": condition,
+                          },
+                          date: obj[5],
+                          eid: obj[4])
+                      .then((value) => null);
+                
+                return condition;
               },
             ),
           ],
@@ -405,19 +446,26 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     ],
                   ),
                   isCorrect: () {
-                    if (oddOne.getVideoUrls()[0] ==
-                        oddOne.getCorrectOutput()) {
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                      data_pro.incrementLevel();
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(date: obj[5], eid: obj[4])
-                          .then((value) => null);
-                    }
-                    return oddOne.getVideoUrls()[0] ==
-                        oddOne.getCorrectOutput();
+                    var condition =
+                        oddOne.getVideoUrls()[0] == oddOne.getCorrectOutput();
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                if (condition)   { data_pro.incrementLevel();}
+                    UserData(
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(
+                            isCompleted: condition,
+                            performance: {
+                              "time": DateTime.now().toString(),
+                              "result": condition,
+                            },
+                            date: obj[5],
+                            eid: obj[4])
+                        .then((value) => null);
+
+                    return condition;
                   },
                 ),
                 SizedBox(
@@ -430,19 +478,26 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     ],
                   ),
                   isCorrect: () {
-                    if (oddOne.getVideoUrls()[1] ==
-                        oddOne.getCorrectOutput()) {
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                      data_pro.incrementLevel();
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(date: obj[5], eid: obj[4])
-                          .then((value) => null);
-                    }
-                    return oddOne.getVideoUrls()[1] ==
-                        oddOne.getCorrectOutput();
+                      var condition =
+                        oddOne.getVideoUrls()[1] == oddOne.getCorrectOutput();
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                if (condition)   { data_pro.incrementLevel();}
+                    UserData(
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(
+                            isCompleted: condition,
+                            performance: {
+                              "time": DateTime.now().toString(),
+                              "result": condition,
+                            },
+                            date: obj[5],
+                            eid: obj[4])
+                        .then((value) => null);
+
+                    return condition;
                   },
                 ),
               ],
@@ -468,19 +523,26 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     ],
                   ),
                   isCorrect: () {
-                    if (oddOne.getVideoUrls()[0] ==
-                        oddOne.getCorrectOutput()) {
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                      data_pro.incrementLevel();
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(date: obj[5], eid: obj[4])
-                          .then((value) => null);
-                    }
-                    return oddOne.getVideoUrls()[0] ==
-                        oddOne.getCorrectOutput();
+                    var condition =
+                        oddOne.getVideoUrls()[0] == oddOne.getCorrectOutput();
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                if (condition)   { data_pro.incrementLevel();}
+                    UserData(
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(
+                            isCompleted: condition,
+                            performance: {
+                              "time": DateTime.now().toString(),
+                              "result": condition,
+                            },
+                            date: obj[5],
+                            eid: obj[4])
+                        .then((value) => null);
+
+                    return condition;
                   },
                 ),
                 SizedBox(
@@ -493,19 +555,26 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     ],
                   ),
                   isCorrect: () {
-                    if (oddOne.getVideoUrls()[1] ==
-                        oddOne.getCorrectOutput()) {
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                      data_pro.incrementLevel();
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(date: obj[5], eid: obj[4])
-                          .then((value) => null);
-                    }
-                    return oddOne.getVideoUrls()[1] ==
-                        oddOne.getCorrectOutput();
+                      var condition =
+                        oddOne.getVideoUrls()[1] == oddOne.getCorrectOutput();
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                if (condition)   { data_pro.incrementLevel();}
+                    UserData(
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(
+                            isCompleted: condition,
+                            performance: {
+                              "time": DateTime.now().toString(),
+                              "result": condition,
+                            },
+                            date: obj[5],
+                            eid: obj[4])
+                        .then((value) => null);
+
+                    return condition;
                   },
                 ),
               ],
@@ -524,19 +593,26 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     ],
                   ),
                   isCorrect: () {
-                    if (oddOne.getVideoUrls()[2] ==
-                        oddOne.getCorrectOutput()) {
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                      data_pro.incrementLevel();
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(date: obj[5], eid: obj[4])
-                          .then((value) => null);
-                    }
-                    return oddOne.getVideoUrls()[2] ==
-                        oddOne.getCorrectOutput();
+                    var condition =
+                        oddOne.getVideoUrls()[2] == oddOne.getCorrectOutput();
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                if (condition)   { data_pro.incrementLevel();}
+                    UserData(
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(
+                            isCompleted: condition,
+                            performance: {
+                              "time": DateTime.now().toString(),
+                              "result": condition,
+                            },
+                            date: obj[5],
+                            eid: obj[4])
+                        .then((value) => null);
+
+                    return condition;
                   },
                 ),
               ],
@@ -562,19 +638,26 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     ],
                   ),
                   isCorrect: () {
-                    if (oddOne.getVideoUrls()[0] ==
-                        oddOne.getCorrectOutput()) {
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                      data_pro.incrementLevel();
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(date: obj[5], eid: obj[4])
-                          .then((value) => null);
-                    }
-                    return oddOne.getVideoUrls()[0] ==
-                        oddOne.getCorrectOutput();
+                    var condition =
+                        oddOne.getVideoUrls()[0] == oddOne.getCorrectOutput();
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                if (condition)   { data_pro.incrementLevel();}
+                    UserData(
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(
+                            isCompleted: condition,
+                            performance: {
+                              "time": DateTime.now().toString(),
+                              "result": condition,
+                            },
+                            date: obj[5],
+                            eid: obj[4])
+                        .then((value) => null);
+
+                    return condition;
                   },
                 ),
                 SizedBox(
@@ -587,19 +670,26 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     ],
                   ),
                   isCorrect: () {
-                    if (oddOne.getVideoUrls()[1] ==
-                        oddOne.getCorrectOutput()) {
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                      data_pro.incrementLevel();
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(date: obj[5], eid: obj[4])
-                          .then((value) => null);
-                    }
-                    return oddOne.getVideoUrls()[1] ==
-                        oddOne.getCorrectOutput();
+                    var condition =
+                        oddOne.getVideoUrls()[1] == oddOne.getCorrectOutput();
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                if (condition)   { data_pro.incrementLevel();}
+                    UserData(
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(
+                            isCompleted: condition,
+                            performance: {
+                              "time": DateTime.now().toString(),
+                              "result": condition,
+                            },
+                            date: obj[5],
+                            eid: obj[4])
+                        .then((value) => null);
+
+                    return condition;
                   },
                 ),
               ],
@@ -618,19 +708,26 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     ],
                   ),
                   isCorrect: () {
-                    if (oddOne.getVideoUrls()[2] ==
-                        oddOne.getCorrectOutput()) {
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                      data_pro.incrementLevel();
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(date: obj[5], eid: obj[4])
-                          .then((value) => null);
-                    }
-                    return oddOne.getVideoUrls()[2] ==
-                        oddOne.getCorrectOutput();
+                    var condition =
+                        oddOne.getVideoUrls()[2] == oddOne.getCorrectOutput();
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                if (condition)   { data_pro.incrementLevel();}
+                    UserData(
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(
+                            isCompleted: condition,
+                            performance: {
+                              "time": DateTime.now().toString(),
+                              "result": condition,
+                            },
+                            date: obj[5],
+                            eid: obj[4])
+                        .then((value) => null);
+
+                    return condition;
                   },
                 ),
                 SizedBox(
@@ -643,19 +740,26 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     ],
                   ),
                   isCorrect: () {
-                    if (oddOne.getVideoUrls()[3] ==
-                        oddOne.getCorrectOutput()) {
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                      data_pro.incrementLevel();
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(date: obj[5], eid: obj[4])
-                          .then((value) => null);
-                    }
-                    return oddOne.getVideoUrls()[3] ==
-                        oddOne.getCorrectOutput();
+                    var condition =
+                        oddOne.getVideoUrls()[3] == oddOne.getCorrectOutput();
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                if (condition)   { data_pro.incrementLevel();}
+                    UserData(
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(
+                            isCompleted: condition,
+                            performance: {
+                              "time": DateTime.now().toString(),
+                              "result": condition,
+                            },
+                            date: obj[5],
+                            eid: obj[4])
+                        .then((value) => null);
+
+                    return condition;
                   },
                 ),
               ],

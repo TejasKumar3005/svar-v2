@@ -236,21 +236,26 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                         bool isCorrect = dtcontainer
                                                 .getCorrectOutput() ==
                                             dtcontainer.getAudioList()[index];
-                                        if (isCorrect) {
+                                      
                                           var data_pro =
                                               Provider.of<ExerciseProvider>(
                                                   context,
                                                   listen: false);
-                                          data_pro.incrementLevel();
+                                      if (isCorrect)  {  data_pro.incrementLevel();}
                                           UserData(
                                             uid: FirebaseAuth.instance
                                                     .currentUser?.uid ??
                                                 '',
                                           )
                                               .updateExerciseData(
+                                                isCompleted: isCorrect,
+                                                performance: {
+                                                  "result":isCorrect,
+                                                  "time": DateTime.now().toString(),
+                                                },
                                                   date: obj[5], eid: obj[4])
                                               .then((value) => null);
-                                        }
+                                        
                                         return isCorrect;
                                       },
                                     ),
@@ -298,21 +303,26 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                           bool isCorrect = dtcontainer
                                                   .getCorrectOutput() ==
                                               dtcontainer.getTextList()[index];
-                                          if (isCorrect) {
+                                          
                                             var data_pro =
                                                 Provider.of<ExerciseProvider>(
                                                     context,
                                                     listen: false);
-                                            data_pro.incrementLevel();
+                                        if (isCorrect)   { data_pro.incrementLevel();}
                                             UserData(
                                               uid: FirebaseAuth.instance
                                                       .currentUser?.uid ??
                                                   '',
                                             )
                                                 .updateExerciseData(
+                                                  isCompleted: isCorrect,
+                                                  performance: {
+                                                    "time": DateTime.now().toString(),
+                                                    "result": "correct",
+                                                  },
                                                     date: obj[5], eid: obj[4])
                                                 .then((value) => null);
-                                          }
+                                          
                                           return isCorrect;
                                         },
                                       ),
@@ -368,20 +378,27 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                 bool isCorrect =
                                     dtcontainer.getCorrectOutput() ==
                                         dtcontainer.getImageUrlList()[index];
-                                if (isCorrect) {
+                              
                                   var data_pro = Provider.of<ExerciseProvider>(
                                       context,
                                       listen: false);
-                                  data_pro.incrementLevel();
+                              if (isCorrect) {   data_pro.incrementLevel();}
+                                
                                   UserData(
                                     uid: FirebaseAuth
                                             .instance.currentUser?.uid ??
                                         '',
                                   )
                                       .updateExerciseData(
+                                        isCompleted: isCorrect,
+                                        performance: {
+                                          "time": DateTime.now().toString(),
+                                          "result": isCorrect,
+
+                                        },
                                           date: obj[5], eid: obj[4])
                                       .then((value) => null);
-                                }
+                              
                                 return isCorrect;
                               },
                             ),

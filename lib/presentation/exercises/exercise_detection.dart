@@ -23,11 +23,8 @@ class ExerciseDetection extends StatefulWidget {
   State<ExerciseDetection> createState() => _DetectionState();
 
   static Widget builder(BuildContext context) {
-
     return const ExerciseDetection();
-
   }
-
 }
 
 class _DetectionState extends State<ExerciseDetection> {
@@ -230,7 +227,6 @@ class _DetectionState extends State<ExerciseDetection> {
         SizedBox(
           height: 26.v,
         ),
-        
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -299,16 +295,26 @@ class _DetectionState extends State<ExerciseDetection> {
                     },
                   ),
                   isCorrect: () {
-                    if ((obj[1] as dynamic).getMuted() == 1) {
-                        var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
-          data_pro.incrementLevel();
-                        UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                    }
-                    return (obj[1] as dynamic).getMuted() == 1;
+                    var condition = (obj[1] as dynamic).getMuted() == 1;
+                    
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                       if (condition) {data_pro.incrementLevel();}
+                      UserData(
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(
+                              isCompleted: condition,
+                              performance: {
+                                "time": DateTime.now().toString(),
+                                "result": condition,
+                              },
+                              date: obj[5],
+                              eid: obj[4])
+                          .then((value) => null);
+                    
+
+                    return condition;
                   },
                 ),
               ),
@@ -326,16 +332,27 @@ class _DetectionState extends State<ExerciseDetection> {
                     },
                   ),
                   isCorrect: () {
-                    if ((obj[1] as dynamic).getMuted() == 0) {
-                        var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
-          data_pro.incrementLevel();
+
+                    var condition = (obj[1] as dynamic).getMuted() == 0;
+                    
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                       if (condition) {data_pro.incrementLevel();}
                       UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                    }
-                    return (obj[1] as dynamic).getMuted() == 0;
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(
+                              isCompleted: condition,
+                              performance: {
+                                "time": DateTime.now().toString(),
+                                "result": condition,
+                              },
+                              date: obj[5],
+                              eid: obj[4])
+                          .then((value) => null);
+                    
+
+                    return condition;
                   },
                 ),
               ),
@@ -444,16 +461,22 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                 currentProgress > ans && currentProgress < ans + tolerance;
             print("Condition result: $condition");
 
+            // Increment the level if the condition is met
+            var data_pro =
+                Provider.of<ExerciseProvider>(context, listen: false);
             if (condition) {
-              // Increment the level if the condition is met
-              var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
               data_pro.incrementLevel();
-              UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
             }
+            UserData(
+              uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+            ).updateExerciseData(
+              isCompleted: condition,
+              performance: {
+              "time": DateTime.now().toString(),
+              "result": condition,
+              "timeDiff": (currentProgress - ans).abs()
+            }, date: obj[5], eid: obj[4]).then((value) => null);
+
             return condition;
           },
         ),
