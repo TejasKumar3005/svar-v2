@@ -55,6 +55,7 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
       if (_videoPlayerController.value.position ==
           _videoPlayerController.value.duration) {
         // Video completed! Call the callback function
+        print("Video completed");
         widget.onVideoComplete();
         Navigator.pop(context, true);
       }

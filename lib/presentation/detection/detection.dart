@@ -323,6 +323,7 @@ class _DetectionState extends State<Detection> {
                       userData.incrementLevelCount("Detection", level);
                     
                     }
+                    
                     return (obj[1] as dynamic).getMuted() == 0;
                   },
                 ),

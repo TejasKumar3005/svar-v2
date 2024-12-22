@@ -85,7 +85,7 @@ class _DiscriminationState extends State<Discrimination> {
     String type = obj[0] as String;
     level = obj[3] as int;
 
-    Map<String, dynamic> data = obj[1] as Map<String, dynamic>;
+  Object data = obj[1] as Object;
     dynamic dtcontainer = obj[2] as dynamic;
 
     return Scaffold(
@@ -144,20 +144,20 @@ class _DiscriminationState extends State<Discrimination> {
   }
 
   Widget discriminationOptions(
-      String type, Map<String, dynamic> d, dynamic dtcontainer) {
+      String type, Object d, dynamic dtcontainer) {
     switch (type) {
       case "DiffSounds":
-        var data = DiffSounds.fromJson(d);
-        return DiffSoundsW(data, dtcontainer);
+      
+        return DiffSoundsW(d as DiffSounds, d);
       case "OddOne":
-        var data = OddOne.fromJson(d);
-        return OddOneW(data, dtcontainer);
+      
+        return OddOneW(d as OddOne, d);
       case "DiffHalf":
-        var data = DiffHalf.fromJson(d);
-        return DiffHalfW(data, dtcontainer);
+      
+        return DiffHalfW(d as DiffHalf, d);
       case "MaleFemale":
-        var data = MaleFemale.fromJson(d);
-        return MaleFemaleW(data, dtcontainer);
+      
+        return MaleFemaleW(d as MaleFemale, d);
       default:
         return Container();
     }

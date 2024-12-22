@@ -136,7 +136,9 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       if (type == "video") {
         String? videoUrl = data["video_url"];
         if (videoUrl == null) {
+
           debugPrint("Video URL is null in the fetched data.");
+
           return;
         }
 
@@ -189,6 +191,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       debugPrint("Data is: $data");
 
       if (type == "sound") {
+
         String? videoUrl = data["video_url"];
         if (videoUrl == null) {
           debugPrint("Video URL is null in the fetched data.");
@@ -438,6 +441,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       _handleLevelType(startLevel + 4, "notcompleted");
       // provider.changeCurrentLevel(5);
     }
+
   }
 
   void _onRiveInit(Artboard artboard) async {
@@ -554,6 +558,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       }
     }
   }
+  
 
   Object retrieveObject(String type, Map<String, dynamic> data) {
     if (type == "ImageToAudio") {

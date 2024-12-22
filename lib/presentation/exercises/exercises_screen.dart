@@ -10,6 +10,7 @@ import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/presentation/exercises/exercises_speaking_phoneme.dart';
 import 'package:svar_new/presentation/speaking_phoneme/speaking_phoneme.dart';
+import 'package:svar_new/widgets/rive_preloader.dart';
 
 class ExercisesScreen extends StatefulWidget {
   const ExercisesScreen({super.key});
@@ -28,6 +29,7 @@ extension _TextExtension on Artboard {
 class _ExercisesScreenState extends State<ExercisesScreen> {
   ScrollController _scrollController = ScrollController();
   StateMachineController? _controller;
+  late Future<RiveFile?> _riveFileFuture;
   final GlobalKey _key = GlobalKey();
   Artboard? _riveArtboard;
   var train;
@@ -40,6 +42,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       DeviceOrientation.landscapeRight,
     ]);
     super.initState();
+      _riveFileFuture = RivePreloader()
+        .initialize()
+        .then((_) => RivePreloader().getRiveFile('assets/rive/levels.riv'));
     trackTrainPosition();
   }
 
@@ -53,24 +58,40 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       child: Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
-        body: SingleChildScrollView(
-          controller: _scrollController,
-          scrollDirection: Axis.horizontal,
-          child: provider.todaysExercises.isNotEmpty
-              ? Container(
-                  key: _key,
-                  alignment: Alignment.centerLeft,
-                  height: MediaQuery.of(context).size.height,
+        body: FutureBuilder<RiveFile?>(
+          future: _riveFileFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: CircularProgressIndicator()); // Show loading indicator
+            } else if (snapshot.hasError || snapshot.data == null) {
+              return const Center(
+                  child: Text('Error loading Rive file')); // Handle errors
+            } else {
+              final riveFile = snapshot.data!;
+
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: _scrollController,
+                // Use a custom ScrollPhysics for smoother scrolling
+                physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics()),
+                child: AnimatedContainer(
+                  duration: const Duration(
+                      milliseconds: 500), // Adjust animation duration as needed
+                  curve: Curves.easeInOut, // Customize animation curve
                   width: MediaQuery.of(context).size.height * 13.7176,
-                  child: RiveAnimation.asset(
-                    'assets/rive/levels.riv',
+                  height: MediaQuery.of(context).size.height,
+                  alignment: Alignment.centerLeft,
+                  child: RiveAnimation.direct(
+                    riveFile,
                     fit: BoxFit.contain,
                     onInit: _onRiveInit,
                   ),
-                )
-              : Container(
-                  child: Text("No exercises found for today."),
                 ),
+              );
+            }
+          },
         ),
       ),
     );

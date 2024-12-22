@@ -170,7 +170,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AudioWidget(
-          audioLinks: dtcontainer.getVideoUrl(),
+          audioLinks: maleFemale.getVideoUrl(),
         ),
         SizedBox(
           height: 20.v,
@@ -182,7 +182,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               child: OptionWidget(
                 child: ImageWidget(imagePath: "assets/images/female.png"),
                 isCorrect: () {
-                  if (dtcontainer.getCorrectOutput() == "female") {
+                  if (maleFemale.getCorrectOutput() == "female") {
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
                     data_pro.incrementLevel();
@@ -192,7 +192,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                         .updateExerciseData(date: obj[5], eid: obj[4])
                         .then((value) => null);
                   }
-                  return dtcontainer.getCorrectOutput() == "female";
+                  return maleFemale.getCorrectOutput() == "female";
                 },
               ),
             ),
@@ -200,7 +200,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               child: OptionWidget(
                 child: ImageWidget(imagePath: "assets/images/male.png"),
                 isCorrect: () {
-                  if (dtcontainer.getCorrectOutput() == "male") {
+                  if (maleFemale.getCorrectOutput() == "male") {
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
                     data_pro.incrementLevel();
@@ -210,7 +210,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                         .updateExerciseData(date: obj[5], eid: obj[4])
                         .then((value) => null);
                   }
-                  return dtcontainer.getCorrectOutput() == "male";
+                  return maleFemale.getCorrectOutput() == "male";
                 },
               ),
             ),
@@ -270,7 +270,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
       children: [
         AudioWidget(
           key: _childKey,
-          audioLinks: dtcontainer.getVideoUrls(),
+          audioLinks: diffHalf.getVideoUrls(),
         ),
         SizedBox(
           height: 20.v,
@@ -311,13 +311,13 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (dtcontainer.getVideoUrls().length <= 4)
-              ...List.generate(dtcontainer.getVideoUrls().length, (index) {
+            if (diffSounds.getVideoUrls().length <= 4)
+              ...List.generate(diffSounds.getVideoUrls().length, (index) {
                 return Row(
                   children: [
                     AudioWidget(
                       audioLinks: [
-                        dtcontainer.getVideoUrls()[index],
+                        diffSounds.getVideoUrls()[index],
                       ],
                     ),
                     SizedBox(width: 20), // Adds gap between each OptionWidget
@@ -338,7 +338,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   onPressed: () {
                     var provider =
                         Provider.of<UserDataProvider>(context, listen: false);
-                    if (dtcontainer.getSame()) {
+                    if (diffSounds.getSame()) {
                       var data_pro =
                           Provider.of<ExerciseProvider>(context, listen: false);
                       data_pro.incrementLevel();
@@ -350,7 +350,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     }
                   }),
               isCorrect: () {
-                return !dtcontainer.getSame();
+                return !diffSounds.getSame();
               },
             ),
             SizedBox(
@@ -362,7 +362,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   onPressed: () {
                     var provider =
                         Provider.of<UserDataProvider>(context, listen: false);
-                    if (!dtcontainer.getSame()) {
+                    if (!diffSounds.getSame()) {
                       var data_pro =
                           Provider.of<ExerciseProvider>(context, listen: false);
                       data_pro.incrementLevel();
@@ -374,7 +374,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     }
                   }),
               isCorrect: () {
-                return dtcontainer.getSame();
+                return diffSounds.getSame();
               },
             ),
           ],
@@ -401,12 +401,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 OptionWidget(
                   child: AudioWidget(
                     audioLinks: [
-                      dtcontainer.getVideoUrls()[0],
+                      oddOne.getVideoUrls()[0],
                     ],
                   ),
                   isCorrect: () {
-                    if (dtcontainer.getVideoUrls()[0] ==
-                        dtcontainer.getCorrectOutput()) {
+                    if (oddOne.getVideoUrls()[0] ==
+                        oddOne.getCorrectOutput()) {
                       var data_pro =
                           Provider.of<ExerciseProvider>(context, listen: false);
                       data_pro.incrementLevel();
@@ -416,8 +416,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                           .updateExerciseData(date: obj[5], eid: obj[4])
                           .then((value) => null);
                     }
-                    return dtcontainer.getVideoUrls()[0] ==
-                        dtcontainer.getCorrectOutput();
+                    return oddOne.getVideoUrls()[0] ==
+                        oddOne.getCorrectOutput();
                   },
                 ),
                 SizedBox(
@@ -426,12 +426,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 OptionWidget(
                   child: AudioWidget(
                     audioLinks: [
-                      dtcontainer.getVideoUrls()[1],
+                      oddOne.getVideoUrls()[1],
                     ],
                   ),
                   isCorrect: () {
-                    if (dtcontainer.getVideoUrls()[1] ==
-                        dtcontainer.getCorrectOutput()) {
+                    if (oddOne.getVideoUrls()[1] ==
+                        oddOne.getCorrectOutput()) {
                       var data_pro =
                           Provider.of<ExerciseProvider>(context, listen: false);
                       data_pro.incrementLevel();
@@ -441,8 +441,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                           .updateExerciseData(date: obj[5], eid: obj[4])
                           .then((value) => null);
                     }
-                    return dtcontainer.getVideoUrls()[1] ==
-                        dtcontainer.getCorrectOutput();
+                    return oddOne.getVideoUrls()[1] ==
+                        oddOne.getCorrectOutput();
                   },
                 ),
               ],
@@ -464,12 +464,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 OptionWidget(
                   child: AudioWidget(
                     audioLinks: [
-                      dtcontainer.getVideoUrls()[0],
+                      oddOne.getVideoUrls()[0],
                     ],
                   ),
                   isCorrect: () {
-                    if (dtcontainer.getVideoUrls()[0] ==
-                        dtcontainer.getCorrectOutput()) {
+                    if (oddOne.getVideoUrls()[0] ==
+                        oddOne.getCorrectOutput()) {
                       var data_pro =
                           Provider.of<ExerciseProvider>(context, listen: false);
                       data_pro.incrementLevel();
@@ -479,8 +479,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                           .updateExerciseData(date: obj[5], eid: obj[4])
                           .then((value) => null);
                     }
-                    return dtcontainer.getVideoUrls()[0] ==
-                        dtcontainer.getCorrectOutput();
+                    return oddOne.getVideoUrls()[0] ==
+                        oddOne.getCorrectOutput();
                   },
                 ),
                 SizedBox(
@@ -489,12 +489,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 OptionWidget(
                   child: AudioWidget(
                     audioLinks: [
-                      dtcontainer.getVideoUrls()[1],
+                      oddOne.getVideoUrls()[1],
                     ],
                   ),
                   isCorrect: () {
-                    if (dtcontainer.getVideoUrls()[1] ==
-                        dtcontainer.getCorrectOutput()) {
+                    if (oddOne.getVideoUrls()[1] ==
+                        oddOne.getCorrectOutput()) {
                       var data_pro =
                           Provider.of<ExerciseProvider>(context, listen: false);
                       data_pro.incrementLevel();
@@ -504,8 +504,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                           .updateExerciseData(date: obj[5], eid: obj[4])
                           .then((value) => null);
                     }
-                    return dtcontainer.getVideoUrls()[1] ==
-                        dtcontainer.getCorrectOutput();
+                    return oddOne.getVideoUrls()[1] ==
+                        oddOne.getCorrectOutput();
                   },
                 ),
               ],
@@ -520,12 +520,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 OptionWidget(
                   child: AudioWidget(
                     audioLinks: [
-                      dtcontainer.getVideoUrls()[2],
+                      oddOne.getVideoUrls()[2],
                     ],
                   ),
                   isCorrect: () {
-                    if (dtcontainer.getVideoUrls()[2] ==
-                        dtcontainer.getCorrectOutput()) {
+                    if (oddOne.getVideoUrls()[2] ==
+                        oddOne.getCorrectOutput()) {
                       var data_pro =
                           Provider.of<ExerciseProvider>(context, listen: false);
                       data_pro.incrementLevel();
@@ -535,8 +535,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                           .updateExerciseData(date: obj[5], eid: obj[4])
                           .then((value) => null);
                     }
-                    return dtcontainer.getVideoUrls()[2] ==
-                        dtcontainer.getCorrectOutput();
+                    return oddOne.getVideoUrls()[2] ==
+                        oddOne.getCorrectOutput();
                   },
                 ),
               ],
@@ -558,12 +558,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 OptionWidget(
                   child: AudioWidget(
                     audioLinks: [
-                      dtcontainer.getVideoUrls()[0],
+                      oddOne.getVideoUrls()[0],
                     ],
                   ),
                   isCorrect: () {
-                    if (dtcontainer.getVideoUrls()[0] ==
-                        dtcontainer.getCorrectOutput()) {
+                    if (oddOne.getVideoUrls()[0] ==
+                        oddOne.getCorrectOutput()) {
                       var data_pro =
                           Provider.of<ExerciseProvider>(context, listen: false);
                       data_pro.incrementLevel();
@@ -573,8 +573,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                           .updateExerciseData(date: obj[5], eid: obj[4])
                           .then((value) => null);
                     }
-                    return dtcontainer.getVideoUrls()[0] ==
-                        dtcontainer.getCorrectOutput();
+                    return oddOne.getVideoUrls()[0] ==
+                        oddOne.getCorrectOutput();
                   },
                 ),
                 SizedBox(
@@ -583,12 +583,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 OptionWidget(
                   child: AudioWidget(
                     audioLinks: [
-                      dtcontainer.getVideoUrls()[1],
+                      oddOne.getVideoUrls()[1],
                     ],
                   ),
                   isCorrect: () {
-                    if (dtcontainer.getVideoUrls()[1] ==
-                        dtcontainer.getCorrectOutput()) {
+                    if (oddOne.getVideoUrls()[1] ==
+                        oddOne.getCorrectOutput()) {
                       var data_pro =
                           Provider.of<ExerciseProvider>(context, listen: false);
                       data_pro.incrementLevel();
@@ -598,8 +598,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                           .updateExerciseData(date: obj[5], eid: obj[4])
                           .then((value) => null);
                     }
-                    return dtcontainer.getVideoUrls()[1] ==
-                        dtcontainer.getCorrectOutput();
+                    return oddOne.getVideoUrls()[1] ==
+                        oddOne.getCorrectOutput();
                   },
                 ),
               ],
@@ -614,12 +614,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 OptionWidget(
                   child: AudioWidget(
                     audioLinks: [
-                      dtcontainer.getVideoUrls()[2],
+                      oddOne.getVideoUrls()[2],
                     ],
                   ),
                   isCorrect: () {
-                    if (dtcontainer.getVideoUrls()[2] ==
-                        dtcontainer.getCorrectOutput()) {
+                    if (oddOne.getVideoUrls()[2] ==
+                        oddOne.getCorrectOutput()) {
                       var data_pro =
                           Provider.of<ExerciseProvider>(context, listen: false);
                       data_pro.incrementLevel();
@@ -629,8 +629,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                           .updateExerciseData(date: obj[5], eid: obj[4])
                           .then((value) => null);
                     }
-                    return dtcontainer.getVideoUrls()[2] ==
-                        dtcontainer.getCorrectOutput();
+                    return oddOne.getVideoUrls()[2] ==
+                        oddOne.getCorrectOutput();
                   },
                 ),
                 SizedBox(
@@ -639,12 +639,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 OptionWidget(
                   child: AudioWidget(
                     audioLinks: [
-                      dtcontainer.getVideoUrls()[3],
+                      oddOne.getVideoUrls()[3],
                     ],
                   ),
                   isCorrect: () {
-                    if (dtcontainer.getVideoUrls()[3] ==
-                        dtcontainer.getCorrectOutput()) {
+                    if (oddOne.getVideoUrls()[3] ==
+                        oddOne.getCorrectOutput()) {
                       var data_pro =
                           Provider.of<ExerciseProvider>(context, listen: false);
                       data_pro.incrementLevel();
@@ -654,8 +654,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                           .updateExerciseData(date: obj[5], eid: obj[4])
                           .then((value) => null);
                     }
-                    return dtcontainer.getVideoUrls()[3] ==
-                        dtcontainer.getCorrectOutput();
+                    return oddOne.getVideoUrls()[3] ==
+                        oddOne.getCorrectOutput();
                   },
                 ),
               ],
