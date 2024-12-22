@@ -40,16 +40,15 @@ extension _TextExtension on rive.Artboard {
 
 class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   late Future<RiveFile?> _riveFileFuture;
-  late double currentLevelCount = 3;
-  bool _initialized = false;
+  late double currentLevelCount = 0;
+
   int val = 1;
   final GlobalKey _key = GlobalKey();
-  double _containerWidth = 0.0;
-  double _animationHeight = 0.0;
+
   ScrollController _scrollController = ScrollController();
   var train;
-  double? _previousTrainX;
-  Artboard? _riveArtboard;
+  double _previousTrainX = 0;
+
   StateMachineController? _controller;
 
   @override
@@ -340,28 +339,23 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         final String uid = user.uid;
         var obj =
             ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-
         var data = await FirebaseFirestore.instance
             .collection('patients')
             .doc(uid)
             .get();
-
         if (data.exists) {
           Map<String, dynamic> levelMap =
               data['levelMap'] as Map<String, dynamic>? ?? {};
 
           var levelData = levelMap[obj?["exerciseType"]];
-
           double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
+          // provider.changeCurrentLevel(currentLevel);
 
           if (currentLevelCount != currentLevel) {
             setState(() {
               currentLevelCount = currentLevel;
             });
-
-            provider.changeCurrentLevel(currentLevelCount);
-
-            print("level changed to $currentLevel");
+            print("level changed to $currentLevel" "from $currentLevelCount");
           }
         } else {
           debugPrint("No data found for user $uid.");
@@ -375,6 +369,8 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // _fetchCurrentLevel();
+
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -390,12 +386,20 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
                   child: Text('Error loading Rive file')); // Handle errors
             } else {
               final riveFile = snapshot.data!;
+
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  height: MediaQuery.of(context).size.height,
+                controller: _scrollController,
+                // Use a custom ScrollPhysics for smoother scrolling
+                physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics()),
+                child: AnimatedContainer(
+                  duration: const Duration(
+                      milliseconds: 500), // Adjust animation duration as needed
+                  curve: Curves.easeInOut, // Customize animation curve
                   width: MediaQuery.of(context).size.height * 13.7176,
+                  height: MediaQuery.of(context).size.height,
+                  alignment: Alignment.centerLeft,
                   child: RiveAnimation.direct(
                     riveFile,
                     fit: BoxFit.contain,
@@ -436,8 +440,29 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     }
   }
 
-  void _onRiveInit(Artboard artboard) {
+  void _onRiveInit(Artboard artboard) async {
     var provider = Provider.of<RiveProvider>(context, listen: false);
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    final String uid = user!.uid;
+    var obj =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    var data =
+        await FirebaseFirestore.instance.collection('patients').doc(uid).get();
+    if (data.exists) {
+      Map<String, dynamic> levelMap =
+          data['levelMap'] as Map<String, dynamic>? ?? {};
+
+      var levelData = levelMap[obj?["exerciseType"]];
+      double currentLevel = levelData >= 1 ? levelData.toDouble() : 1.0;
+      setState(() {
+        currentLevelCount = currentLevel;
+      });
+      // provider.changeCurrentLevel(currentLevel);
+    } else {
+      debugPrint("No data found for user $uid.");
+    }
+
     int startLevel = (currentLevelCount ~/ 5) * 5 +
         1; // This will give the start of the current range (e.g., 16 for currentLevel = 17)
 
@@ -496,8 +521,9 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       if (provider.currentLevelInput == null) {
         debugPrint("Error: 'current level' input not found!");
       }
+      print("current level count is $currentLevelCount");
+      provider.changeCurrentLevel(currentLevelCount);
 
-      provider.changeCurrentLevel(4);
       _controller!.addEventListener(tapHandle);
     } else {
       debugPrint("Error: State Machine 'State Machine 1' not found.");
@@ -515,7 +541,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
         if (_scrollController.hasClients) {
           // Calculate the distance and use it to adjust animation duration
-          double deltaX = (trainX - _previousTrainX!).abs();
+          double deltaX = (trainX - _previousTrainX).abs();
           int animationDuration = (deltaX * 10).toInt().clamp(50, 200);
 
           _scrollController.animateTo(

@@ -78,7 +78,7 @@ class AppRoutes {
 
 
   static Map<String, WidgetBuilder> get routes => {
-        // auditoryScreenAssessmentScreenAudioVisualResizScreen:AuditoryScreenAssessmentScreenAudioVisualResizScreen.builder,
+       
         welcomeScreenPotraitScreen: WelcomeScreenPotraitScreen.builder,
         loginSignup: LoginSignUpScreen.builder,
         login: LoginScreen.builder,

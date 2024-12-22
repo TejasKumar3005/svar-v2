@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
+import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/widgets/circularScore.dart';
@@ -34,7 +35,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
 
   @override
   void initState() {
-      SystemChrome.setPreferredOrientations([
+    SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
@@ -169,7 +170,7 @@ class LingLearningScreenState extends State<LingLearningScreen> {
             children: [
               Column(
                 children: [
-                  _buildAppBar(context),
+                 DisciAppBar(context),
                 ],
               ),
               Positioned(
@@ -194,16 +195,16 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                     ? AvatarGlow(
                         endRadius: 90.0,
                         glowColor: Colors.blue,
-                        duration: Duration(milliseconds: 2000),
-                        repeat: lingLearningProvider.isRecording,
-                        showTwoGlows: lingLearningProvider.isRecording,
-                        repeatPauseDuration: Duration(milliseconds: 100),
+                        duration: const Duration(milliseconds: 2000),
+                        repeat: false,
+                        showTwoGlows: false,
+                        repeatPauseDuration: const Duration(milliseconds: 100),
                         child: Material(
                           elevation: 8.0,
-                          shape: CircleBorder(),
+                          shape: const CircleBorder(),
                           child: Container(
-                            height: 120,
-                            width: 120,
+                            height: 80,
+                            width: 80,
                             decoration: lingLearningProvider.isRecording
                                 ? BoxDecoration(
                                     border: Border.all(
@@ -219,13 +220,10 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                                 print("pressed");
                                 bool permission = await requestPermissions();
                                 print(permission);
-                                // if (!permission) {
-                                //   return;
-                                // }
                                 print("hiiiii");
                                 onTapMicrophonebutton(
                                     context, lingLearningProvider
-                                    );
+                                );
                               },
                             ),
                           ),
@@ -250,11 +248,11 @@ class LingLearningScreenState extends State<LingLearningScreen> {
                 bottom: 50,
                 child: Container(
                   height: 70,
-                  width: 100,
+                  width: 70,
                   child: CustomButton(
                     type: ButtonType.Tip,
                     onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.tipBoxVideoScreen);
+                      Navigator.pushNamed(context, AppRoutes.tipBoxVideoScreen);
                     },
                   ),
                 ),
@@ -331,62 +329,64 @@ class LingLearningScreenState extends State<LingLearningScreen> {
     }
   }
 
- onTapMicrophonebutton(
-  BuildContext context,
-  LingLearningProvider provider,
-) async {
-  print("Microphone button tapped");
+  onTapMicrophonebutton(
+    BuildContext context,
+    LingLearningProvider provider,
+  ) async {
+    print("Microphone button tapped");
 
-  try {
-    bool recordingStarted = await provider.toggleRecording(context);
-    print("Recording started: $recordingStarted");
+    try {
+      bool recordingStarted = await provider.toggleRecording(context);
+      print("Recording started: $recordingStarted");
 
-    if (recordingStarted) {
-      print("Recording in progress...");
-      // The glow effect will start automatically due to isRecording being true
-    } else {
-      print("Recording stopped");
-      setState(() {
-        loading = true;
-      });
+      if (recordingStarted) {
+        print("Recording in progress...");
+        // The glow effect will start automatically due to isRecording being true
+      } else {
+        print("Recording stopped");
+        setState(() {
+          loading = true;
+        });
 
-      Directory tempDir = await getTemporaryDirectory();
-      String tempPath = tempDir.path;
-      String path = '$tempPath/audio.wav';
-      print("Audio file path: $path");
+        Directory tempDir = await getTemporaryDirectory();
+        String tempPath = tempDir.path;
+        String path = '$tempPath/audio.wav';
+        print("Audio file path: $path");
 
-      
-      const timeoutDuration = Duration(seconds: 5);
-      var timer = Timer(timeoutDuration, () {
-        if (mounted) {
+        const timeoutDuration = Duration(seconds: 5);
+        var timer = Timer(timeoutDuration, () {
+          if (mounted) {
+            setState(() {
+              loading = false;
+              provider.isRecording = false; // Stop recording animation
+              _errorMessage = "API call timed out. Please try again later.";
+            });
+          }
+        });
+
+        try {
+          double result = await sendWavFile(
+              path,
+              PhonmesListModel()
+                  .hindiToEnglishPhonemeMap[provider.selectedCharacter]!);
+          print("Processing result: $result");
+          timer.cancel(); // Cancel timer if successful
+        } catch (e) {
+          print("Error processing audio: ${e.toString()}");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error processing audio: ${e.toString()}")),
+          );
+        } finally {
           setState(() {
             loading = false;
-            provider.isRecording = false; // Stop recording animation
-            _errorMessage = "API call timed out. Please try again later.";
           });
         }
-      });
-
-      try {
-        double result = await sendWavFile(path, PhonmesListModel().hindiToEnglishPhonemeMap[provider.selectedCharacter]!);
-        print("Processing result: $result");
-        timer.cancel(); // Cancel timer if successful
-      } catch (e) {
-        print("Error processing audio: ${e.toString()}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error processing audio: ${e.toString()}")),
-        );
-      } finally {
-        setState(() {
-          loading = false;
-        });
       }
+    } catch (e) {
+      print("Error toggling recording: ${e.toString()}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error toggling recording: ${e.toString()}")),
+      );
     }
-  } catch (e) {
-    print("Error toggling recording: ${e.toString()}");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error toggling recording: ${e.toString()}")),
-    );
   }
-}
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:async';
+import 'package:svar_new/widgets/custom_button.dart';
+import 'package:svar_new/routes/app_routes.dart'; // Import the file where AppRoutes is defined
 
 class SupportScreen extends StatefulWidget {
   @override
@@ -13,7 +15,7 @@ class SupportScreen extends StatefulWidget {
 
 class _SupportScreenState extends State<SupportScreen> {
   late VideoPlayerController _backgroundVideoController;
-  
+
   // Combined data structure for GIFs and their corresponding texts
   final List<Map<String, String>> _content = [
     {
@@ -25,7 +27,7 @@ class _SupportScreenState extends State<SupportScreen> {
       'text': 'How can I assist you today?',
     },
   ];
-  
+
   int _currentIndex = 0;
   late Timer _contentTimer;
 
@@ -33,13 +35,14 @@ class _SupportScreenState extends State<SupportScreen> {
   void initState() {
     super.initState();
 
-    _backgroundVideoController = VideoPlayerController.asset('assets/video/bgg_animation.mp4')
-      ..initialize().then((_) {
-        setState(() {
-          _backgroundVideoController.play();
-          _backgroundVideoController.setLooping(true);
-        });
-      });
+    _backgroundVideoController =
+        VideoPlayerController.asset('assets/video/bgg_animation.mp4')
+          ..initialize().then((_) {
+            setState(() {
+              _backgroundVideoController.play();
+              _backgroundVideoController.setLooping(true);
+            });
+          });
 
     // Set up a timer to cycle through content every 5 seconds
     _contentTimer = Timer.periodic(Duration(seconds: 5), (_) {
@@ -74,7 +77,7 @@ class _SupportScreenState extends State<SupportScreen> {
                   ),
                 )
               : Container(color: Colors.black),
-          
+
           // Top Circle with GIF
           Positioned(
             top: 50,
@@ -83,7 +86,6 @@ class _SupportScreenState extends State<SupportScreen> {
             child: Container(
               width: 400,
               height: 400,
-              
               child: ClipOval(
                 child: Image.asset(
                   _content[_currentIndex]['gif']!,
@@ -92,10 +94,10 @@ class _SupportScreenState extends State<SupportScreen> {
               ),
             ),
           ),
-          
+
           // Bottom Text with Animation
           Positioned(
-            bottom: 50,
+            bottom: 150,
             left: 20,
             right: 20,
             child: AnimatedSwitcher(
@@ -116,6 +118,19 @@ class _SupportScreenState extends State<SupportScreen> {
                   color: Colors.white,
                 ),
               ),
+            ),
+          ),
+
+          Positioned(
+            bottom: 50,
+            left: 20,
+            right: 20,
+            child: CustomButton(
+              type: ButtonType.Next,
+              onPressed: () async {
+                // Navigate to the next screen
+                Navigator.of(context).pushNamed(AppRoutes.loginSignup);
+              },
             ),
           ),
         ],

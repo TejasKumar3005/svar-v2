@@ -2,24 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'dart:async';
-
 
 // Global audio player to ensure only one instance plays at a time
 AudioPlayer globalAudioPlayer = AudioPlayer();
 
 class AudioWidget extends StatefulWidget {
   final List<String> audioLinks;
-  final double progress; // Pass the current progress
+  final double progress;
   final Color spectrumColor;
+  final bool isGrid;
 
   const AudioWidget({
     Key? key,
     required this.audioLinks,
     this.progress = 0.0,
     this.spectrumColor = Colors.green,
+    this.isGrid = false, // Add isGrid parameter
   }) : super(key: key);
 
   @override
@@ -44,12 +44,9 @@ class AudioWidgetState extends State<AudioWidget> {
     completed = 0.0;
     totalLength = 0.0;
     lengths = [];
-
-    // Load audio lengths
     loadAudioLengths();
 
-    
-      _positionSubscription =_audioPlayer.positionStream.listen((position) {
+    _positionSubscription = _audioPlayer.positionStream.listen((position) {
       if (_audioPlayer.duration != null &&
           _audioPlayer.duration!.inSeconds > 0) {
         setState(() {
@@ -68,44 +65,49 @@ class AudioWidgetState extends State<AudioWidget> {
   }
 
   Future<double> getAudioLength(String link) async {
-    var duration = await _audioPlayer.setUrl(link);
-    if (duration != null) {
-      await _audioPlayer.load(); // Wait for the audio to load
-      return duration.inSeconds.toDouble(); // Return length in seconds
-    } else {
-      return 5.0; // Fallback value if the audio URL couldn't be loaded
+    try {
+      var duration = await _audioPlayer.setUrl(link);
+      if (duration != null) {
+        await _audioPlayer.load();
+        return duration.inSeconds.toDouble();
+      }
+    } catch (e) {
+      print('Error loading audio: $e');
     }
+    return 5.0; // Fallback value
   }
 
   Future<void> playNext() async {
-    // Pause or stop any audio that is currently playing
     if (globalAudioPlayer.playing) {
       await globalAudioPlayer.stop();
     }
 
-    // Assign the globalAudioPlayer to control playback across widgets
     globalAudioPlayer = _audioPlayer;
 
     if (currentIndex < widget.audioLinks.length) {
-      await _audioPlayer.setUrl(widget.audioLinks[currentIndex]);
-      await _audioPlayer.play();
-      _audioPlayer.playerStateStream.listen((state) {
-        if (state.processingState == ProcessingState.completed) {
-          if (currentIndex < widget.audioLinks.length - 1) {
-            setState(() {
-              completed += lengths[currentIndex];
-              currentIndex++;
-            });
-            playNext();
-          } else {
-            setState(() {
-              currentIndex = 0;
-              progress = 0.0;
-              _audioPlayer.stop();
-            });
+      try {
+        await _audioPlayer.setUrl(widget.audioLinks[currentIndex]);
+        await _audioPlayer.play();
+        _audioPlayer.playerStateStream.listen((state) {
+          if (state.processingState == ProcessingState.completed) {
+            if (currentIndex < widget.audioLinks.length - 1) {
+              setState(() {
+                completed += lengths[currentIndex];
+                currentIndex++;
+              });
+              playNext();
+            } else {
+              setState(() {
+                currentIndex = 0;
+                progress = 0.0;
+                _audioPlayer.stop();
+              });
+            }
           }
-        }
-      });
+        });
+      } catch (e) {
+        print('Error playing audio: $e');
+      }
     }
   }
 
@@ -119,68 +121,75 @@ class AudioWidgetState extends State<AudioWidget> {
   @override
   Widget build(BuildContext context) {
     final click = ClickProvider.of(context)?.click;
-    final screenWidth = MediaQuery.of(context).size.height;
-
+    double containerWidth =
+        MediaQuery.of(context).size.width * (widget.isGrid ? 0.4 : 0.9);
     return Container(
-      width: screenWidth * 0.9, // Adjust the container width based on screen size
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 8.0,
-      ),
+      width: containerWidth,
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         color: const Color(0xFFF47C37),
-        border: Border.all(
-          color: Colors.black,
-          width: 3,
-        ),
+        border: Border.all(color: Colors.black, width: 3),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CustomButton(
-            type: ButtonType.ImagePlay,
-            onPressed: () {
-              if (_audioPlayer.playing) {
-                print("paused");
-                _audioPlayer.pause();
-              } else {
-                playNext();
-              }
-            },
-          ),
-          const SizedBox(width: 5.0),
-          Container(
-            height: 50,
-            width: 5,
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 255, 255, 255),
+      child: widget.isGrid
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomButton(
+                  type: ButtonType.ImagePlay,
+                  onPressed: () {
+                    _audioPlayer.playing ? _audioPlayer.pause() : playNext();
+                  },
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: CustomButton(
+                    type: ButtonType.Spectrum,
+                    onPressed: () {
+                      if (click != null) {
+                        click();
+                      }
+                    },
+                    progress: progress,
+                    color: widget.spectrumColor,
+                  ),
+                ),
+              ],
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CustomButton(
+                  type: ButtonType.ImagePlay,
+                  onPressed: () {
+                    _audioPlayer.playing ? _audioPlayer.pause() : playNext();
+                  },
+                ),
+                const SizedBox(width: 5.0),
+                Container(
+                  height: 50,
+                  width: 5,
+                  decoration: const BoxDecoration(color: Colors.white),
+                ),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: click,
+                    child: CustomButton(
+                      type: ButtonType.Spectrum,
+                      onPressed: () {
+                        if (click != null) {
+                          click();
+                        }
+                      },
+                      progress: progress,
+                      color: widget.spectrumColor,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(width: 16.0),
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                if (click != null) {
-                  click();
-                }
-              },
-              child: CustomButton(
-                type: ButtonType.Spectrum,
-                onPressed: () {
-                  if (click != null) {
-                    click();
-                  }
-                },
-                progress: progress, // Pass dynamic progress
-                color: widget.spectrumColor, // Pass dynamic color
-              ),
-            ),
-            // Use Expanded to handle overflow
-          ),
-        ],
-      ),
     );
   }
 }

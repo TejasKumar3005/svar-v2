@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
+import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_provider.dart';
 import 'package:svar_new/widgets/grid_item_model.dart';
@@ -66,7 +67,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                 Expanded(
                   child: Column(
                     children: [
-                      _buildAppBar(context),
+                    DisciAppBar(context),
                       SizedBox(height: size.height * 0.02),
                       Container(
                         padding: EdgeInsets.symmetric(

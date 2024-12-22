@@ -203,63 +203,55 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     dynamic dtcontainer = obj[1] as dynamic;
     int level = obj[3] as int;
     switch (quizType) {
-      case "ImageToAudio":
-        return dtcontainer.getAudioList().length <= 4
-            ? Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 16.0), // Adjust padding as needed
-                child: Container(
-                    height: MediaQuery.of(context).size.height *
-                        0.5, // Adjust height as needed
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    // Adjust width as needed
-                    child: Column(
-                      children: [
-                        if (dtcontainer.getAudioList().length <= 4)
-                          ...List.generate(dtcontainer.getAudioList().length,
-                              (index) {
-                            return Expanded(
-                              // Each column item will take a proportional amount of available space
-                              flex:
-                                  1, // You can modify this value to divide space differently
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    // Adjust the flex value based on your layout needs
-                                    child: OptionWidget(
-                                      child: AudioWidget(
-                                        audioLinks: [
-                                          dtcontainer.getAudioList()[index],
-                                        ],
-                                      ),
-                                      isCorrect: () {
-                                        bool isCorrect = dtcontainer
-                                                .getCorrectOutput() ==
-                                            dtcontainer.getAudioList()[index];
-                                        if (isCorrect) {
-                                          print("Level Incremented");
-                                          userData.incrementLevelCount(
-                                              "Identification", level);
-                                          if (true) {
-                                            print("fetch function called");
-                                            
-                                          }
-                                        }
-                                        return isCorrect;
-                                      },
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      height:
-                                          10), // Adds gap between each OptionWidget
-                                ],
-                              ),
-                            );
-                          }),
-                      ],
-                    )),
-              )
-            : SizedBox();
+      // Usage in your "ImageToAudio" case:
+case "ImageToAudio":
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    child: dtcontainer.getAudioList().length <= 2
+        ? Column(
+            children: List.generate(dtcontainer.getAudioList().length, (index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: OptionWidget(
+                  child: AudioWidget(
+                    audioLinks: [dtcontainer.getAudioList()[index]],
+                  ),
+                  isCorrect: () {
+                    bool isCorrect = dtcontainer.getCorrectOutput() == dtcontainer.getAudioList()[index];
+                    if (isCorrect) {
+                      userData.incrementLevelCount("Identification", level);
+                    }
+                    return isCorrect;
+                  },
+                ),
+              );
+            }),
+          )
+        : GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 0.8, // Adjust aspect ratio as needed
+            ),
+            itemCount: dtcontainer.getAudioList().length,
+            itemBuilder: (context, index) {
+              return OptionWidget(
+                child: AudioWidget(
+                  audioLinks: [dtcontainer.getAudioList()[index]],
+                  isGrid: true,
+                ),
+                isCorrect: () {
+                  bool isCorrect = dtcontainer.getCorrectOutput() == dtcontainer.getAudioList()[index];
+                  if (isCorrect) {
+                    userData.incrementLevelCount("Identification", level);
+                  }
+                  return isCorrect;
+                },
+              );
+            },
+          ),
+  );
 
       case "FigToWord":
         return StatefulBuilder(

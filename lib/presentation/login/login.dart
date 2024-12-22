@@ -258,29 +258,34 @@ class LoginScreenState extends State<LoginScreen> {
                   controller: controller,
                   style: TextStyle(color: Colors.black, fontSize: 22.h),
                   decoration: InputDecoration(
-                      hintText: name.tr,
-                      suffixIcon: name == "password"
-                          ? hide
-                              ? InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      hide = !hide;
-                                    });
-                                  },
-                                  child: Icon(Icons.visibility))
-                              : InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      hide = !hide;
-                                    });
-                                  },
-                                  child: Icon(Icons.visibility_off))
-                          : null,
-                      hintStyle: TextStyle(color: Colors.grey, fontSize: 22.h),
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 6.h)),
+                    hintText: name.tr,
+                    hintStyle: TextStyle(color: Colors.grey, fontSize: 22.h),
+                    
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 16.h, horizontal: 6.h),
+                    suffixIcon: name == "password"
+                        ? hide
+                            ? InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    hide = !hide;
+                                  });
+                                },
+                                child: Icon(Icons.visibility))
+                            : InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    hide = !hide;
+                                  });
+                                },
+                                child: Icon(Icons.visibility_off))
+                        : null,
+                  ),
+                  textAlign: TextAlign.left, // Center the text horizontally
                   validator: (value) {
                     if (value == null || value == "") {
                       return "Please enter $name";
