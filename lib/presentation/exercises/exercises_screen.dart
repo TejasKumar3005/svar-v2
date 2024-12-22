@@ -486,7 +486,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           debugPrint("Error: 'current level' input not found!");
         }
 
-        data_pro.changeCurrentLevel(data_pro.currentExerciseIndex.toDouble());
+        data_pro.changeCurrentLevel(startExerciseIndex.toDouble()+1);
         _controller!.addEventListener(tapHandle);
       });
 
