@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/widgets/circularScore.dart';
@@ -329,6 +330,8 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
           result = ((data["result"] * 100.0).toInt()).toString();
           loading = false;
         });
+        var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
+          data_pro.incrementLevel();
           UserData(uid: 
               FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
                 eid: widget.eid,

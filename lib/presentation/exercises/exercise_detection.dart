@@ -7,6 +7,7 @@ import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
+import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
@@ -299,6 +300,8 @@ class _DetectionState extends State<ExerciseDetection> {
                   ),
                   isCorrect: () {
                     if ((obj[1] as dynamic).getMuted() == 1) {
+                        var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
+          data_pro.incrementLevel();
                         UserData(
                                             uid: FirebaseAuth
                                                     .instance.currentUser?.uid ??
@@ -324,6 +327,8 @@ class _DetectionState extends State<ExerciseDetection> {
                   ),
                   isCorrect: () {
                     if ((obj[1] as dynamic).getMuted() == 0) {
+                        var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
+          data_pro.incrementLevel();
                       UserData(
                                             uid: FirebaseAuth
                                                     .instance.currentUser?.uid ??
@@ -393,6 +398,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -438,6 +444,16 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                 currentProgress > ans && currentProgress < ans + tolerance;
             print("Condition result: $condition");
 
+            if (condition) {
+              // Increment the level if the condition is met
+              var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
+              data_pro.incrementLevel();
+              UserData(
+                                            uid: FirebaseAuth
+                                                    .instance.currentUser?.uid ??
+                                                '',
+                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
+            }
             return condition;
           },
         ),

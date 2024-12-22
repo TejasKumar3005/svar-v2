@@ -12,6 +12,7 @@ import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/identification_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
@@ -134,8 +135,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
             SizedBox(
               height: 20.v,
             ),
-            discriminationOptions(type, data,
-                dtcontainer), 
+            discriminationOptions(type, data, dtcontainer),
           ],
         ),
       ),
@@ -164,7 +164,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
 
   Widget MaleFemaleW(MaleFemale maleFemale, dynamic dtcontainer) {
     // print("MaleFemaleW ${dtcontainer.getVideoUrl()}");
-      var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     print("MaleFemaleW ${dtcontainer}");
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -185,12 +185,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 child: ImageWidget(imagePath: "assets/images/female.png"),
                 isCorrect: () {
                   if (dtcontainer.getCorrectOutput() == "female") {
-                      UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                    data_pro.incrementLevel();
+                    UserData(
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(date: obj[5], eid: obj[4])
+                        .then((value) => null);
                   }
                   return dtcontainer.getCorrectOutput() == "female";
                 },
@@ -201,12 +203,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 child: ImageWidget(imagePath: "assets/images/male.png"),
                 isCorrect: () {
                   if (dtcontainer.getCorrectOutput() == "male") {
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                    data_pro.incrementLevel();
                     UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                  
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(date: obj[5], eid: obj[4])
+                        .then((value) => null);
                   }
                   return dtcontainer.getCorrectOutput() == "male";
                 },
@@ -283,12 +287,15 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   "ans is $ans current progress is ${_childKey.currentState!.progress}");
               if (_childKey.currentState!.progress > ans &&
                   _childKey.currentState!.progress < ans + 0.1) {
-                  UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                
+                var data_pro =
+                    Provider.of<ExerciseProvider>(context, listen: false);
+                data_pro.incrementLevel();
+                UserData(
+                  uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                )
+                    .updateExerciseData(date: obj[5], eid: obj[4])
+                    .then((value) => null);
+
                 return true;
               } else {
                 return false;
@@ -334,11 +341,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     var provider =
                         Provider.of<UserDataProvider>(context, listen: false);
                     if (dtcontainer.getSame()) {
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                      data_pro.incrementLevel();
                       UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(date: obj[5], eid: obj[4])
+                          .then((value) => null);
                     }
                   }),
               isCorrect: () {
@@ -355,12 +365,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     var provider =
                         Provider.of<UserDataProvider>(context, listen: false);
                     if (!dtcontainer.getSame()) {
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                      data_pro.incrementLevel();
                       UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                      
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(date: obj[5], eid: obj[4])
+                          .then((value) => null);
                     }
                   }),
               isCorrect: () {
@@ -397,12 +409,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   isCorrect: () {
                     if (dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput()) {
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                      data_pro.incrementLevel();
                       UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                     
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(date: obj[5], eid: obj[4])
+                          .then((value) => null);
                     }
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
@@ -420,12 +434,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   isCorrect: () {
                     if (dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput()) {
-  UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                     
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                      data_pro.incrementLevel();
+                      UserData(
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(date: obj[5], eid: obj[4])
+                          .then((value) => null);
                     }
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
@@ -456,12 +472,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   isCorrect: () {
                     if (dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput()) {
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                      data_pro.incrementLevel();
                       UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                   
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(date: obj[5], eid: obj[4])
+                          .then((value) => null);
                     }
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
@@ -479,12 +497,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   isCorrect: () {
                     if (dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput()) {
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                      data_pro.incrementLevel();
                       UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                     
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(date: obj[5], eid: obj[4])
+                          .then((value) => null);
                     }
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
@@ -508,12 +528,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   isCorrect: () {
                     if (dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput()) {
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                      data_pro.incrementLevel();
                       UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                    
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(date: obj[5], eid: obj[4])
+                          .then((value) => null);
                     }
                     return dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput();
@@ -544,12 +566,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   isCorrect: () {
                     if (dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput()) {
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                      data_pro.incrementLevel();
                       UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                     
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(date: obj[5], eid: obj[4])
+                          .then((value) => null);
                     }
                     return dtcontainer.getVideoUrls()[0] ==
                         dtcontainer.getCorrectOutput();
@@ -567,12 +591,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   isCorrect: () {
                     if (dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput()) {
-                    UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                       
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                      data_pro.incrementLevel();
+                      UserData(
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(date: obj[5], eid: obj[4])
+                          .then((value) => null);
                     }
                     return dtcontainer.getVideoUrls()[1] ==
                         dtcontainer.getCorrectOutput();
@@ -596,12 +622,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   isCorrect: () {
                     if (dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput()) {
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                      data_pro.incrementLevel();
                       UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                       
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(date: obj[5], eid: obj[4])
+                          .then((value) => null);
                     }
                     return dtcontainer.getVideoUrls()[2] ==
                         dtcontainer.getCorrectOutput();
@@ -619,12 +647,14 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   isCorrect: () {
                     if (dtcontainer.getVideoUrls()[3] ==
                         dtcontainer.getCorrectOutput()) {
+                      var data_pro =
+                          Provider.of<ExerciseProvider>(context, listen: false);
+                      data_pro.incrementLevel();
                       UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                       
+                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                      )
+                          .updateExerciseData(date: obj[5], eid: obj[4])
+                          .then((value) => null);
                     }
                     return dtcontainer.getVideoUrls()[3] ==
                         dtcontainer.getCorrectOutput();

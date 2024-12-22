@@ -41,15 +41,14 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     ]);
     super.initState();
     trackTrainPosition();
-
   }
 
   @override
   Widget build(BuildContext context) {
-    var provider=context.watch<ExerciseProvider>(); 
+    var provider = context.watch<ExerciseProvider>();
     print("provider.todaysExercises");
     print(provider.todaysExercises);
-    
+
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -57,19 +56,21 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         body: SingleChildScrollView(
           controller: _scrollController,
           scrollDirection: Axis.horizontal,
-          child:provider.todaysExercises.isNotEmpty? Container(
-            key: _key,
-            alignment: Alignment.centerLeft,
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.height * 13.7176,
-            child: RiveAnimation.asset(
-              'assets/rive/levels.riv',
-              fit: BoxFit.contain,
-              onInit: _onRiveInit,
-            ),
-          ):Container(
-            child: Text("No exercises found for today."),
-          ),
+          child: provider.todaysExercises.isNotEmpty
+              ? Container(
+                  key: _key,
+                  alignment: Alignment.centerLeft,
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.height * 13.7176,
+                  child: RiveAnimation.asset(
+                    'assets/rive/levels.riv',
+                    fit: BoxFit.contain,
+                    onInit: _onRiveInit,
+                  ),
+                )
+              : Container(
+                  child: Text("No exercises found for today."),
+                ),
         ),
       ),
     );
@@ -144,13 +145,17 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ExerciseVideo(videoUrl: videoUrl,  onVideoComplete:  (){
-              UserData(uid: 
-              FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
-                eid: data["eid"],
-                date: data["date"],
-              ).then((value) => print("Exercise data updated"));
-            },),
+            builder: (context) => ExerciseVideo(
+              videoUrl: videoUrl,
+              onVideoComplete: () {
+                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                    .updateExerciseData(
+                      eid: data["eid"],
+                      date: data["date"],
+                    )
+                    .then((value) => print("Exercise data updated"));
+              },
+            ),
           ),
         );
       } else {
@@ -164,10 +169,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           type,
           dtcontainer,
           params,
-        
           data_pro.currentExerciseIndex,
-            data["eid"],
-            data["date"]
+          data["eid"],
+          data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
 
@@ -209,14 +213,16 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ExerciseVideo(videoUrl: videoUrl,
-            onVideoComplete:  (){
-              UserData(uid: 
-              FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
-                eid: data["eid"],
-                date: data["date"],
-              ).then((value) => print("Exercise data updated"));
-            },
+            builder: (context) => ExerciseVideo(
+              videoUrl: videoUrl,
+              onVideoComplete: () {
+                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                    .updateExerciseData(
+                      eid: data["eid"],
+                      date: data["date"],
+                    )
+                    .then((value) => print("Exercise data updated"));
+              },
             ),
           ),
         );
@@ -230,8 +236,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           dtcontainer,
           params,
           data_pro.currentExerciseIndex,
-            data["eid"],
-            data["date"]
+          data["eid"],
+          data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
 
@@ -275,20 +281,23 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         debugPrint("Navigating to Video Player Screen with URL: $videoUrl");
 
         await Future.delayed(Duration.zero);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ExerciseVideo(videoUrl: videoUrl,
-          onVideoComplete:  (){
-              UserData(uid: 
-              FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
-                eid: data["eid"],
-                date: data["date"],
-              ).then((value) => print("Exercise data updated"));
-            },
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ExerciseVideo(
+              videoUrl: videoUrl,
+              onVideoComplete: () {
+                  data_pro.incrementLevel();
+                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                    .updateExerciseData(
+                      eid: data["eid"],
+                      date: data["date"],
+                    )
+                    .then((value) => print("Exercise data updated"));
+              },
+            ),
           ),
-        ),
-      );
+        );
       } else {
         print("Type is not video");
         print(type);
@@ -301,8 +310,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           dtcontainer,
           params,
           data_pro.currentExerciseIndex,
-            data["eid"],
-            data["date"]
+          data["eid"],
+          data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
 
@@ -312,7 +321,6 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     } catch (e) {
       debugPrint("Error in Identification handling: $e");
     }
-
   }
 
   void _handleLevel(BuildContext context, String params) async {
@@ -335,13 +343,22 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ExerciseVideo(videoUrl: data["video"],  onVideoComplete:  (){
-              UserData(uid: 
-              FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
-                eid: data["eid"],
-                date: data["date"],
-              ).then((value) => print("Exercise data updated"));
-            },),
+            builder: (context) => ExerciseVideo(
+              videoUrl: data["video"],
+              onVideoComplete: () {
+              
+                  data_pro.incrementLevel();
+                
+              
+                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                    .updateExerciseData(
+                      eid: data["eid"],
+                      date: data["date"],
+                    )
+                    .then((value) => print("Exercise data updated"));
+                    
+              },
+            ),
           ),
         );
       } else if (type == "speech") {
@@ -356,8 +373,6 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
               testSpeech: data["test_speech"],
               eid: data["eid"],
               date: data["date"],
-          
-            
             ),
           ),
         );
@@ -369,8 +384,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           dtcontainer,
           params,
           data_pro.currentExerciseIndex,
-            data["eid"],
-            data["date"]
+          data["eid"],
+          data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
 
@@ -390,50 +405,75 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
   void _onRiveInit(Artboard artboard) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int exerciseCount = data_pro.todaysExercises.length;
+    int startExerciseIndex =
+        (data_pro.currentExerciseIndex ~/ 5) * 5; // Calculate starting index
+    int endExerciseIndex = startExerciseIndex + 5;
+    if (endExerciseIndex > exerciseCount) {
+      endExerciseIndex = exerciseCount;
+    }
     _controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
 
-    if (_controller != null ) {
+    if (_controller != null) {
       artboard.addController(_controller!);
-      print("data_pro.todaysExercises");
-      print(data_pro.todaysExercises);
-WidgetsBinding.instance!.addPostFrameCallback((_) {
-        TextValueRun? textRun_subtype = artboard.textRun('level1');
-      textRun_subtype!.text =
-          data_pro.todaysExercises[data_pro.currentExerciseIndex]['type'] ??
-              "Subtype";
 
-      TextValueRun? textRun_desc = artboard.textRun('desc1');
-      textRun_desc!.text = data_pro
-              .todaysExercises[data_pro.currentExerciseIndex]['description']
-              .isEmpty
-          ? 'No Description'
-          : data_pro.todaysExercises[data_pro.currentExerciseIndex]
-              ['description'];
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        for (int i = 0; i < 5; i++) {
+          int actualIndex = startExerciseIndex +
+              i; // Calculate the actual index in todaysExercises
+          if (actualIndex >= endExerciseIndex)
+            break; // Stop if we've processed all available exercises
 
-      TextValueRun? textRun_type = artboard.textRun('type1');
-      textRun_type!.text = data_pro
-          .todaysExercises[data_pro.currentExerciseIndex]['exerciseType'];
-      train = artboard.component('train');
+          String subtypeKey = "level${i + 1}";
+          TextValueRun? textRun_subtype = artboard.textRun(subtypeKey);
+          if (textRun_subtype != null) {
+            textRun_subtype.text =
+                data_pro.todaysExercises[actualIndex]['type'] ?? "Subtype";
+          } else {
+            debugPrint("Error: '$subtypeKey' text run not found!");
+          }
+
+          String descKey = "desc${i + 1}";
+          TextValueRun? textRun_desc = artboard.textRun(descKey);
+          if (textRun_desc != null) {
+            textRun_desc.text =
+                data_pro.todaysExercises[actualIndex]['description'].isEmpty
+                    ? 'No Description'
+                    : data_pro.todaysExercises[actualIndex]['description'];
+          } else {
+            debugPrint("Error: '$descKey' text run not found!");
+          }
+
+          String typeKey = "type${i + 1}";
+          TextValueRun? textRun_type = artboard.textRun(typeKey);
+          if (textRun_type != null) {
+            textRun_type.text =
+                data_pro.todaysExercises[actualIndex]['exerciseType'];
+          } else {
+            debugPrint("Error: '$typeKey' text run not found!");
+          }
+        }
+
+        train = artboard.component('train');
         if (train != null) {
-        print("train position: ${train.x}");
-        // Store the initial value of train.x
-        _previousTrainX = train.x;
-      } else {
-        debugPrint("Error: 'train' not found!");
-      }
+          print("train position: ${train.x}");
+          _previousTrainX = train.x;
+          trackTrainPosition();
+        } else {
+          debugPrint("Error: 'train' not found!");
+        }
 
-      data_pro.initiliaseSMINumber(
-          _controller?.getNumberInput('current level') as SMINumber);
-      if (data_pro.currentLevelInput == null) {
-        debugPrint("Error: 'current level' input not found!");
-      }
+        data_pro.initiliaseSMINumber(
+            _controller?.getNumberInput('current level') as SMINumber);
+        if (data_pro.currentLevelInput == null) {
+          debugPrint("Error: 'current level' input not found!");
+        }
 
-      data_pro.changeCurrentLevel(data_pro.currentExerciseIndex.toDouble());
-      _controller!.addEventListener(tapHandle);
+        data_pro.changeCurrentLevel(data_pro.currentExerciseIndex.toDouble());
+        _controller!.addEventListener(tapHandle);
       });
-    
-    
+
       trackTrainPosition();
     }
   }
@@ -464,7 +504,6 @@ WidgetsBinding.instance!.addPostFrameCallback((_) {
         _previousTrainX = train.x; // Update the previous value
 
         // Recursively call trackTrainPosition to keep checking for changes
-        
       }
     });
   }

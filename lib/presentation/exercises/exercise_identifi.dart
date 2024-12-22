@@ -1,8 +1,7 @@
-
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
+import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/identification_screen/audioToImage.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
@@ -16,7 +15,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 
 class ExerciseIdentification extends StatefulWidget {
-
   const ExerciseIdentification({Key? key})
       : super(
           key: key,
@@ -67,7 +65,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   }
 
   int sel = 0;
-
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +143,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
         : AudiotoimageScreen(
             dtcontainer: dtcontainer,
             params: params,
-   );
+          );
   }
 
   /// Section Widget
@@ -240,11 +237,19 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                 .getCorrectOutput() ==
                                             dtcontainer.getAudioList()[index];
                                         if (isCorrect) {
+                                          var data_pro =
+                                              Provider.of<ExerciseProvider>(
+                                                  context,
+                                                  listen: false);
+                                          data_pro.incrementLevel();
                                           UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
+                                            uid: FirebaseAuth.instance
+                                                    .currentUser?.uid ??
                                                 '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
+                                          )
+                                              .updateExerciseData(
+                                                  date: obj[5], eid: obj[4])
+                                              .then((value) => null);
                                         }
                                         return isCorrect;
                                       },
@@ -294,12 +299,20 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                   .getCorrectOutput() ==
                                               dtcontainer.getTextList()[index];
                                           if (isCorrect) {
-                                          UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                                        }
+                                            var data_pro =
+                                                Provider.of<ExerciseProvider>(
+                                                    context,
+                                                    listen: false);
+                                            data_pro.incrementLevel();
+                                            UserData(
+                                              uid: FirebaseAuth.instance
+                                                      .currentUser?.uid ??
+                                                  '',
+                                            )
+                                                .updateExerciseData(
+                                                    date: obj[5], eid: obj[4])
+                                                .then((value) => null);
+                                          }
                                           return isCorrect;
                                         },
                                       ),
@@ -356,12 +369,19 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     dtcontainer.getCorrectOutput() ==
                                         dtcontainer.getImageUrlList()[index];
                                 if (isCorrect) {
-                                          UserData(
-                                            uid: FirebaseAuth
-                                                    .instance.currentUser?.uid ??
-                                                '',
-                                          ).updateExerciseData(date: obj[5], eid: obj[4]).then((value) => null);
-                                        }
+                                  var data_pro = Provider.of<ExerciseProvider>(
+                                      context,
+                                      listen: false);
+                                  data_pro.incrementLevel();
+                                  UserData(
+                                    uid: FirebaseAuth
+                                            .instance.currentUser?.uid ??
+                                        '',
+                                  )
+                                      .updateExerciseData(
+                                          date: obj[5], eid: obj[4])
+                                      .then((value) => null);
+                                }
                                 return isCorrect;
                               },
                             ),

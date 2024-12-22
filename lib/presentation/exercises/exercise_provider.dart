@@ -21,4 +21,10 @@ class ExerciseProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+  void incrementLevel() {
+    if (currentExerciseIndex < todaysExercises.length - 1) {
+      currentExerciseIndex++;
+    }
+    notifyListeners();
+  }
 }
