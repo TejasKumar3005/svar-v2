@@ -18,7 +18,7 @@ class LoginFormMethods {
         Provider.of<LoginProvider>(context, listen: false);
     provider.changeState();
     ctrler
-        .login(provider.emailController.text.toString(),provider.passController.text.toString())
+        .login(provider.emailController.text.trim().toString(),provider.passController.text.trim().toString())
         .then((value) => {
               if (value)
                 {

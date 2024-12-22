@@ -94,18 +94,27 @@ class UserData {
             if (exercisesForDate[exerciseIndex]['subtype'] == "video") {
               exerciseData['views'] = views + 1;
             }
-            if(performance != null){
-              exerciseData['performance'] = performance;
+            if (performance != null) {
+              if (exerciseData['performance'] != null) {
+                exerciseData['performance'].add(performance);
+              } else {
+                exerciseData['performance'] = [performance];
+              }
             }
 
             // Update the exercise data
             exercisesForDate[exerciseIndex] = {
               ...exerciseData,
-              'completedAt': date
+              'completedAt': DateTime.now().toString()
             };
 
             // Update the Firestore document
-            await userDoc.update({'exercises.$date': exercisesForDate});
+
+            await userDoc.update({
+              'exercises.$date': exercisesForDate,
+              'completedTillExercise': eid,
+              'completedTillDate': date
+            });
             print('Exercise data updated successfully!');
           } else {
             print('Exercise with eid $eid not found for date $date.');
@@ -121,51 +130,58 @@ class UserData {
     }
   }
 
-  Future<List<dynamic>> getTodaysExercise(
+  Future<List<dynamic>> getfortnightExercises(
       Map<String, dynamic> exercises) async {
     try {
+      // Calculate dates
+      DateTime today = DateTime.now();
+      DateTime startDate = today.subtract(Duration(days: 7));
+      DateTime endDate = today.add(Duration(days: 7));
+
       var finaldata = [];
-      DateTime now = DateTime.now();
-      String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
-      if (exercises[formattedDate] != null) {
-        List<dynamic> data = exercises[formattedDate];
-        print("data: " + data.toString());
-        List<Map<String, dynamic>> updatedData = [];
+      // Loop through dates (14 days)
+      for (var day = startDate;
+          day.isBefore(endDate.add(Duration(days: 1)));
+          day = day.add(Duration(days: 1))) {
+        String formattedDate = DateFormat('yyyy-MM-dd').format(day);
 
-        await Future.wait(data.map((exercise) async {
-          DocumentSnapshot docSnapshot = await exercisesCollection
-              .doc(exercise["type"])
-              .collection(exercise["phoneme"])
-              .doc(exercise['eid'])
-              .get();
+        if (exercises[formattedDate] != null) {
+          List<dynamic> data = exercises[formattedDate];
+          List<Map<String, dynamic>> updatedData = [];
 
-          if (docSnapshot.exists) {
-            Map<String, dynamic> exerciseData =
-                docSnapshot.data() as Map<String, dynamic>;
+          await Future.wait(data.map((exercise) async {
+            DocumentSnapshot docSnapshot = await exercisesCollection
+                .doc(exercise["type"])
+                .collection(exercise["phoneme"])
+                .doc(exercise['eid'])
+                .get();
 
-            updatedData.add({
-              ...exercise,
-              ...exerciseData,
-              "exerciseType": exercise["type"],
-              "date": formattedDate
-            });
-          } else {
-            debugPrint("Document with id ${exercise['eid']} does not exist.");
-          }
-        }).toList());
+            if (docSnapshot.exists) {
+              Map<String, dynamic> exerciseData =
+                  docSnapshot.data() as Map<String, dynamic>;
 
-        return updatedData;
-      } else {
-        return finaldata;
+              updatedData.add({
+                ...exercise,
+                ...exerciseData,
+                "exerciseType": exercise["type"],
+                "date": formattedDate
+              });
+            } else {
+              debugPrint("Document with id ${exercise['eid']} does not exist.");
+            }
+          }).toList());
+
+          finaldata.addAll(updatedData);
+        }
       }
-    } on FirebaseException catch (e) {
+
+      return finaldata;
+    } catch (e) {
       ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
         content: Text(e.toString()),
         backgroundColor: Colors.red,
       ));
-      return [];
-    } catch (e) {
       return [];
     }
   }

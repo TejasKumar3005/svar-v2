@@ -23,6 +23,9 @@ class ExerciseProvider extends ChangeNotifier {
   }
   void incrementLevel() {
     
+    if (currentExerciseIndex == todaysExercises.length-1) {
+      return;
+    }
     currentExerciseIndex++;
     currentLevelInput!.change(currentExerciseIndex.toDouble()+1);
     

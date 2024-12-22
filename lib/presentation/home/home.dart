@@ -145,13 +145,17 @@ class HomeScreenState extends State<HomeScreen> {
               () {
                 var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
                 var user_pro=Provider.of<UserDataProvider>(context,listen: false);
-                UserData(uid: FirebaseAuth.instance.currentUser!.uid).getTodaysExercise(user_pro.userModel.exercises).then((value) {
+                UserData(uid: FirebaseAuth.instance.currentUser!.uid).getfortnightExercises(user_pro.userModel.exercises).then((value) {
                   print("value");
                   print(value);
                   data_pro.setTodaysExercises(value);
                   if(value.isNotEmpty){
                     Navigator.push(context, 
                     MaterialPageRoute(builder: (context) => ExercisesScreen()));
+                  }else{
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('No exercises assigned'),
+                    ));
                   }
                 });
                 
@@ -205,27 +209,27 @@ class HomeScreenState extends State<HomeScreen> {
                     // Remove height so it adjusts to the image's aspect ratio
                   ),
                 ),
-                if (false)
-                  Center(
-                    child: Container(
-                      height: 101.adaptSize,
-                      width: 101.adaptSize,
-                      padding: EdgeInsets.all(20.h),
-                      decoration: AppDecoration.outlineWhiteA.copyWith(
-                        color: AppDecoration.fillDeepOrange.color,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular((121.adaptSize) / 2),
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: SvgPicture.asset(
-                        ImageConstant.imgPlayBtn,
-                        height: 45.adaptSize,
-                        width: 45.adaptSize,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
+                // if (false)
+                //   Center(
+                //     child: Container(
+                //       height: 101.adaptSize,
+                //       width: 101.adaptSize,
+                //       padding: EdgeInsets.all(20.h),
+                //       decoration: AppDecoration.outlineWhiteA.copyWith(
+                //         color: AppDecoration.fillDeepOrange.color,
+                //         borderRadius: BorderRadius.all(
+                //           Radius.circular((121.adaptSize) / 2),
+                //         ),
+                //       ),
+                //       alignment: Alignment.center,
+                //       child: SvgPicture.asset(
+                //         ImageConstant.imgPlayBtn,
+                //         height: 45.adaptSize,
+                //         width: 45.adaptSize,
+                //         fit: BoxFit.contain,
+                //       ),
+                //     ),
+                //   ),
               ],
             ),
           ),

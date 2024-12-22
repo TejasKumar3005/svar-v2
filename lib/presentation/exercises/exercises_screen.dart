@@ -45,7 +45,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       DeviceOrientation.landscapeRight,
     ]);
     super.initState();
-      _riveFileFuture = RivePreloader()
+    _riveFileFuture = RivePreloader()
         .initialize()
         .then((_) => RivePreloader().getRiveFile('assets/rive/levels.riv'));
     _trackTrainPosition();
@@ -89,7 +89,6 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                   child: RiveAnimation.direct(
                     riveFile,
                     fit: BoxFit.contain,
-
                     onInit: _onRiveInit,
                   ),
                 ),
@@ -109,8 +108,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         debugPrint("No exercises found for today.");
         return;
       }
-      String? exerciseType = data_pro
-          .todaysExercises[startExerciseIndex]["exerciseType"];
+      String? exerciseType =
+          data_pro.todaysExercises[startExerciseIndex]["exerciseType"];
 
       if (exerciseType == null) {
         debugPrint("Exercise type is null in the arguments.");
@@ -122,7 +121,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           _handleDetection(context, "notcompleted", startExerciseIndex);
           break;
         case "Discrimination":
-          _handleDiscrimination(context, "notcompleted", startExerciseIndex );
+          _handleDiscrimination(context, "notcompleted", startExerciseIndex);
           break;
         case "Identification":
           _handleIdentification(context, "notcompleted", startExerciseIndex);
@@ -139,11 +138,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     }
   }
 
-  void _handleDetection(BuildContext context, String params, int startExerciseIndex) async {
+  void _handleDetection(
+      BuildContext context, String params, int startExerciseIndex) async {
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-      Map<String, dynamic> data =
-          data_pro.todaysExercises[startExerciseIndex];
+      Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
       ;
 
       if (data == null || data.isEmpty) {
@@ -166,19 +165,23 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         }
 
         debugPrint("Navigating to Video Player Screen with URL: $videoUrl");
-  await Future.delayed(Duration.zero);
+        await Future.delayed(Duration.zero);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                  data_pro.incrementLevel();
+                if(data["completedAt"]==null){
+                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                     .updateExerciseData(
                       eid: data["eid"],
                       date: data["date"],
                     )
                     .then((value) => print("Exercise data updated"));
+
+              }
               },
             ),
           ),
@@ -208,11 +211,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     }
   }
 
-  void _handleDiscrimination(BuildContext context, String params, int startExerciseIndex) async {
+  void _handleDiscrimination(
+      BuildContext context, String params, int startExerciseIndex) async {
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-      Map<String, dynamic> data =
-          data_pro.todaysExercises[startExerciseIndex];
+      Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
       ;
 
       if (data == null || data.isEmpty) {
@@ -227,7 +230,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
       debugPrint("Fetched type for Identification: $type");
       debugPrint("Data is: $data");
-  await Future.delayed(Duration.zero);
+      await Future.delayed(Duration.zero);
       if (type == "sound") {
         String? videoUrl = data["video_url"];
         if (videoUrl == null) {
@@ -241,12 +244,16 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                data_pro.incrementLevel();
+                if(data["completedAt"]==null){
+                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                     .updateExerciseData(
                       eid: data["eid"],
                       date: data["date"],
                     )
                     .then((value) => print("Exercise data updated"));
+
+              }
               },
             ),
           ),
@@ -275,11 +282,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     }
   }
 
-  void _handleIdentification(BuildContext context, String params, int startExerciseIndex) async {
+  void _handleIdentification(
+      BuildContext context, String params, int startExerciseIndex) async {
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-      Map<String, dynamic> data =
-            data_pro.todaysExercises[startExerciseIndex];
+      Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
       ;
 
       if (data == null || data.isEmpty) {
@@ -312,13 +319,16 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                  data_pro.incrementLevel();
-                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                data_pro.incrementLevel();
+                if(data["completedAt"]==null){
+                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                     .updateExerciseData(
                       eid: data["eid"],
                       date: data["date"],
                     )
                     .then((value) => print("Exercise data updated"));
+
+              }
               },
             ),
           ),
@@ -339,7 +349,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
-    await Future.delayed(Duration.zero);
+        await Future.delayed(Duration.zero);
         NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
             arguments: argumentsList);
       }
@@ -348,12 +358,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     }
   }
 
-  void _handleLevel(BuildContext context, String params, int startExerciseIndex) async {
+  void _handleLevel(
+      BuildContext context, String params, int startExerciseIndex) async {
     try {
       debugPrint("Entering in level section");
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-      Map<String, dynamic> data =
-            data_pro.todaysExercises[startExerciseIndex];
+      Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
       ;
 
       String? type = data["type"];
@@ -363,32 +373,32 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       }
 
       debugPrint("Fetched type for Level: $type");
-  await Future.delayed(Duration.zero);
+      await Future.delayed(Duration.zero);
+
       if (type == "video") {
-        
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ExerciseVideo(
               videoUrl: data["video"],
               onVideoComplete: () {
-              
-                  data_pro.incrementLevel();
-                
-              
-                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                data_pro.incrementLevel();
+
+              if(data["completedAt"]==null){
+                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                     .updateExerciseData(
                       eid: data["eid"],
                       date: data["date"],
                     )
                     .then((value) => print("Exercise data updated"));
-                    
+
+              }
+              
               },
             ),
           ),
         );
       } else if (type == "speech") {
-
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -420,26 +430,26 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             arguments: argumentsList);
       }
     } catch (e) {
+
       debugPrint("Error in Level handling: $e");
+
     }
   }
 
   void tapHandle(RiveEvent event) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-      int startExerciseIndex =
-        (data_pro.currentExerciseIndex ~/ 5) * 5; 
-  print("startExerciseIndex: $startExerciseIndex");
+    int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
+    print("startExerciseIndex: $startExerciseIndex");
     if (event.name == "level 1") {
-    
       _handleLevelType(startExerciseIndex, "notcompleted");
-    }else if (event.name == "level 2") {
-      _handleLevelType(startExerciseIndex+1, "notcompleted");
-    }else if (event.name == "level 3") {
-      _handleLevelType(startExerciseIndex+2, "notcompleted");
-    }else if (event.name == "level 4") {
-      _handleLevelType(startExerciseIndex+3, "notcompleted");
-    }else if (event.name == "level 5") {
-      _handleLevelType(startExerciseIndex+4, "notcompleted");
+    } else if (event.name == "level 2") {
+      _handleLevelType(startExerciseIndex + 1, "notcompleted");
+    } else if (event.name == "level 3") {
+      _handleLevelType(startExerciseIndex + 2, "notcompleted");
+    } else if (event.name == "level 4") {
+      _handleLevelType(startExerciseIndex + 3, "notcompleted");
+    } else if (event.name == "level 5") {
+      _handleLevelType(startExerciseIndex + 4, "notcompleted");
     }
   }
 
@@ -468,7 +478,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           String subtypeKey = "level${i + 1}";
           TextValueRun? textRun_subtype = artboard.textRun(subtypeKey);
           if (textRun_subtype != null) {
-            print("type ${actualIndex}: ${data_pro.todaysExercises[actualIndex]['type']}");
+            print(
+                "type ${actualIndex}: ${data_pro.todaysExercises[actualIndex]['type']}");
             textRun_subtype.text =
                 data_pro.todaysExercises[actualIndex]['type'];
           } else {
@@ -489,8 +500,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           String typeKey = "type${i + 1}";
           TextValueRun? textRun_type = artboard.textRun(typeKey);
           if (textRun_type != null) {
-            textRun_type.text =
-                data_pro.todaysExercises[actualIndex]['exerciseType']??"Exercise Type";
+            textRun_type.text = data_pro.todaysExercises[actualIndex]
+                    ['exerciseType'] ??
+                "Exercise Type";
           } else {
             debugPrint("Error: '$typeKey' text run not found!");
           }
@@ -500,17 +512,14 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         if (train != null) {
           print("train position: ${train.x}");
           SchedulerBinding.instance.addPostFrameCallback((_) {
-          Timer.periodic(const Duration(milliseconds: 100), (timer) {
-            _trackTrainPosition();
+            Timer.periodic(const Duration(milliseconds: 100), (timer) {
+              _trackTrainPosition();
+            });
           });
-        });
           _previousTrainX = train.x;
-        
         } else {
           debugPrint("Error: 'train' not found!");
         }
-
-        
 
         data_pro.initiliaseSMINumber(
             _controller?.getNumberInput('current level') as SMINumber);
@@ -518,11 +527,10 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           debugPrint("Error: 'current level' input not found!");
         }
 
-        data_pro.changeCurrentLevel(data_pro.currentExerciseIndex.toDouble()+1);
+        data_pro
+            .changeCurrentLevel(data_pro.currentExerciseIndex.toDouble() + 1);
         _controller!.addEventListener(tapHandle);
       });
-
-      
     }
   }
 
@@ -545,7 +553,6 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             duration: Duration(milliseconds: animationDuration),
             curve: Curves.easeOut, // Use a smoother curve
           );
-
         }
         _previousTrainX = trainX;
       }
