@@ -39,6 +39,7 @@ Future<User?> initializeFirebaseAuth() async {
 
 final globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);

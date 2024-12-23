@@ -54,9 +54,12 @@ class LoadingScreenState extends State<LoadingScreen>
         userData.getParentalTip(),
       ]);
       var data_pro = Provider.of<UserDataProvider>(context, listen: false);
-      await userData.getfortnightExercises(data_pro.userModel.exercises);
+      var exx =
+          await userData.getfortnightExercises(data_pro.userModel.exercises);
+      print(exx);
 
       cacheLevels(context);
+      
       Navigator.of(context).pushNamedAndRemoveUntil(
         AppRoutes.home,
         (route) => false,

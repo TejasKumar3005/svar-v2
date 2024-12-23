@@ -84,6 +84,7 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ));
+        
   }
 
   Widget carouselSlider(
@@ -147,7 +148,7 @@ class HomeScreenState extends State<HomeScreen> {
                 var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
                 var user_pro=Provider.of<UserDataProvider>(context,listen: false);
               
-                                  if(user_pro.todaysExercises.isNotEmpty){
+                                  if(data_pro.todaysExercises.isNotEmpty){
                     Navigator.push(context, 
                     MaterialPageRoute(builder: (context) => ExercisesScreen()));
                   }else{
