@@ -39,7 +39,6 @@ Future<User?> initializeFirebaseAuth() async {
 
 final globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
@@ -59,8 +58,12 @@ void main() async {
   }
 
   Future.wait([
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.landscapeRight, DeviceOrientation.landscapeLeft]),
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown
+    ]),
     PrefUtils().init()
   ]).then((value) {
     initializeFirebaseAuth();
@@ -109,9 +112,7 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(
                 create: (context) => IdentificationProvider()),
             ChangeNotifierProvider(create: (context) => RiveProvider()),
-                    ChangeNotifierProvider(
-                create: (context) =>
-                    ExerciseProvider()),
+            ChangeNotifierProvider(create: (context) => ExerciseProvider()),
           ],
           child: Consumer<ThemeProvider>(
             builder: (context, provider, child) {

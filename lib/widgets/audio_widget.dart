@@ -4,6 +4,7 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'dart:async';
+import 'package:chiclet/chiclet.dart';
 
 // Global audio player to ensure only one instance plays at a time
 AudioPlayer globalAudioPlayer = AudioPlayer();
@@ -123,14 +124,17 @@ class AudioWidgetState extends State<AudioWidget> {
     final click = ClickProvider.of(context)?.click;
     double containerWidth =
         MediaQuery.of(context).size.width * (widget.isGrid ? 0.4 : 0.9);
-    return Container(
+
+    return ChicletAnimatedButton(
+      onPressed: () {
+        if (click != null) {
+          click();
+        }
+      },
+      buttonType: ChicletButtonTypes.roundedRectangle,
+      backgroundColor: Color(0xFFF47C37),
+      height: 50,
       width: containerWidth,
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        color: const Color(0xFFF47C37),
-        border: Border.all(color: Colors.black, width: 3),
-      ),
       child: widget.isGrid
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
