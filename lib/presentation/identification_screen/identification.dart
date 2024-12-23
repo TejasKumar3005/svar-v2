@@ -188,7 +188,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
               ),
               Expanded(
                 flex: 1,
-                child: buildDynamicOptions(type, provider, dtcontainer, params),
+                child: Center(child: buildDynamicOptions(type, provider, dtcontainer, params)),
               ),
             ],
           ),
@@ -227,30 +227,32 @@ case "ImageToAudio":
               );
             }),
           )
-        : GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              childAspectRatio: 0.5, // Adjust aspect ratio as needed
+        : Center(
+          child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+               crossAxisCount: 2,
+              crossAxisSpacing: 5, // Adjust spacing as needed
+              mainAxisSpacing: 5,  // Adjust spacing as needed
+              childAspectRatio: 1.6// Adjust aspect ratio as needed
+              ),
+              itemCount: dtcontainer.getAudioList().length,
+              itemBuilder: (context, index) {
+                return OptionWidget(
+                  child: AudioWidget(
+                    audioLinks: [dtcontainer.getAudioList()[index]],
+                    isGrid: true,
+                  ),
+                  isCorrect: () {
+                    bool isCorrect = dtcontainer.getCorrectOutput() == dtcontainer.getAudioList()[index];
+                    if (isCorrect) {
+                      userData.incrementLevelCount("Identification", level);
+                    }
+                    return isCorrect;
+                  },
+                );
+              },
             ),
-            itemCount: dtcontainer.getAudioList().length,
-            itemBuilder: (context, index) {
-              return OptionWidget(
-                child: AudioWidget(
-                  audioLinks: [dtcontainer.getAudioList()[index]],
-                  isGrid: true,
-                ),
-                isCorrect: () {
-                  bool isCorrect = dtcontainer.getCorrectOutput() == dtcontainer.getAudioList()[index];
-                  if (isCorrect) {
-                    userData.incrementLevelCount("Identification", level);
-                  }
-                  return isCorrect;
-                },
-              );
-            },
-          ),
+        ),
   );
 
       case "FigToWord":

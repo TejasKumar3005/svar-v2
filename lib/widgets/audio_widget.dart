@@ -127,9 +127,9 @@ class AudioWidgetState extends State<AudioWidget> {
 
     return ChicletAnimatedButton(
       onPressed: () {
-        if (click != null) {
-          click();
-        }
+        
+      
+        
       },
       buttonType: ChicletButtonTypes.roundedRectangle,
       backgroundColor: Color(0xFFF47C37),
