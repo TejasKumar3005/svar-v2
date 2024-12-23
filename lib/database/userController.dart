@@ -156,6 +156,8 @@ class UserData {
       for (var day = startDate;
           day.isBefore(endDate.add(Duration(days: 1)));
           day = day.add(Duration(days: 1))) {
+
+            print("fetching data for date: $day");
         String formattedDate = DateFormat('yyyy-MM-dd').format(day);
 
         if (exercises[formattedDate] != null) {

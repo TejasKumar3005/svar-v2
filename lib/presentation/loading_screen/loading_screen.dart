@@ -36,10 +36,7 @@ class LoadingScreenState extends State<LoadingScreen>
     ]);
   }
 
-  void cacheLevels(BuildContext context) {
-    var provider = Provider.of<UserDataProvider>(context, listen: false);
-    CachingManager.cacheFilesInIsolate(provider.userModel.levelMap);
-  }
+
 
   void getUserData(BuildContext context) async {
     try {
@@ -58,8 +55,8 @@ class LoadingScreenState extends State<LoadingScreen>
           await userData.getfortnightExercises(data_pro.userModel.exercises);
       print(exx);
 
-      cacheLevels(context);
-      
+      CachingManager.cacheFilesInIsolate(exx);
+
       Navigator.of(context).pushNamedAndRemoveUntil(
         AppRoutes.home,
         (route) => false,

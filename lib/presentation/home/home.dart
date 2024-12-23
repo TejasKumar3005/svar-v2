@@ -30,6 +30,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+
   int _currentIndex = 0;
 
   @override
@@ -84,7 +85,7 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ));
-        
+
   }
 
   Widget carouselSlider(
@@ -145,6 +146,7 @@ class HomeScreenState extends State<HomeScreen> {
               ImageConstant.imgIdentification,
               5,
               () {
+                
                 var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
                 var user_pro=Provider.of<UserDataProvider>(context,listen: false);
               
