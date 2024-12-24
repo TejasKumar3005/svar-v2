@@ -9,6 +9,7 @@ import 'package:svar_new/core/app_export.dart';
 // import 'package:svar_new/data/models/levelManagementModel/audio.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/exercises/exercise_pronunciation.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/presentation/exercises/exercises_speaking_phoneme.dart';
@@ -128,6 +129,18 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           break;
         case "Level":
           _handleLevel(context, "notcompleted", startExerciseIndex);
+          break;
+        case 'Pronunciation':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ExercisePronunciation(
+                character: data_pro.todaysExercises[startExerciseIndex]["word"],
+                eid: data_pro.todaysExercises[startExerciseIndex]["eid"],
+                date: data_pro.todaysExercises[startExerciseIndex]["date"],
+              ),
+            ),
+          );
           break;
         default:
           debugPrint("Unexpected exercise type: $exerciseType");
@@ -252,7 +265,6 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                       date: data["date"],
                     )
                     .then((value) => print("Exercise data updated"));
-
               }
               },
             ),
