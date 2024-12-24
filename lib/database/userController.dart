@@ -156,8 +156,7 @@ class UserData {
       for (var day = startDate;
           day.isBefore(endDate.add(Duration(days: 1)));
           day = day.add(Duration(days: 1))) {
-
-            print("fetching data for date: $day");
+        print("fetching data for date: $day");
         String formattedDate = DateFormat('yyyy-MM-dd').format(day);
 
         if (exercises[formattedDate] != null) {
@@ -165,24 +164,33 @@ class UserData {
           List<Map<String, dynamic>> updatedData = [];
 
           await Future.wait(data.map((exercise) async {
-            DocumentSnapshot docSnapshot = await exercisesCollection
-                .doc(exercise["type"])
-                .collection(exercise["phoneme"])
-                .doc(exercise['eid'])
-                .get();
+            if (exercise["eid"].toString().startsWith("Word")) {
+              DocumentSnapshot docSnapshot = await exercisesCollection
+                  .doc(exercise["type"])
+                  .collection(exercise["phoneme"])
+                  .doc(exercise['eid'])
+                  .get();
 
-            if (docSnapshot.exists) {
-              Map<String, dynamic> exerciseData =
-                  docSnapshot.data() as Map<String, dynamic>;
+              if (docSnapshot.exists) {
+                Map<String, dynamic> exerciseData =
+                    docSnapshot.data() as Map<String, dynamic>;
 
+                updatedData.add({
+                  ...exercise,
+                  ...exerciseData,
+                  "exerciseType": exercise["type"],
+                  "date": formattedDate
+                });
+              } else {
+                debugPrint(
+                    "Document with id ${exercise['eid']} does not exist.");
+              }
+            }else{
               updatedData.add({
-                ...exercise,
-                ...exerciseData,
-                "exerciseType": exercise["type"],
-                "date": formattedDate
-              });
-            } else {
-              debugPrint("Document with id ${exercise['eid']} does not exist.");
+                  ...exercise,
+                  "date": formattedDate,
+                  "exerciseType": "Pronunciation",
+                });
             }
           }).toList());
 

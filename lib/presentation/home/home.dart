@@ -107,6 +107,7 @@ class HomeScreenState extends State<HomeScreen> {
                 NavigatorService.pushNamed(AppRoutes.phonmesListScreen);
               },
             ),
+
             // buildCarouselItem(
             //   context,
             //   provider,
@@ -172,9 +173,11 @@ class HomeScreenState extends State<HomeScreen> {
             viewportFraction: 0.4,
             autoPlayAnimationDuration: const Duration(milliseconds: 800),
             onPageChanged: (index, reason) {
+              
               setState(() {
                 _currentIndex = index;
               });
+
             },
           ),
         ),
