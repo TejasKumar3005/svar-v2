@@ -164,7 +164,7 @@ class UserData {
           List<Map<String, dynamic>> updatedData = [];
 
           await Future.wait(data.map((exercise) async {
-            if (exercise["eid"].toString().length > 0) {
+            if (exercise["eid"].toString().startsWith("Word")) {
               DocumentSnapshot docSnapshot = await exercisesCollection
                   .doc(exercise["type"])
                   .collection(exercise["phoneme"])
@@ -188,7 +188,8 @@ class UserData {
             }else{
               updatedData.add({
                   ...exercise,
-                  "date": formattedDate
+                  "date": formattedDate,
+                  "exerciseType": "Pronunciation",
                 });
             }
           }).toList());
