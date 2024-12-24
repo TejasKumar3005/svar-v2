@@ -19,6 +19,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 import 'package:rive/rive.dart' as rive;
+import 'package:flutter/services.dart' show rootBundle;
 class Detection extends StatefulWidget {
   const Detection({
     Key? key,
@@ -49,13 +50,18 @@ class _DetectionState extends State<Detection> {
   Timer? volumeTimer;
   double currentProgress = 0.0;
   double totalDuration = 0.0;
+   rive.Artboard? _riveArtboard;
+  rive.StateMachineController? _controller;
+  rive.SMIInput<bool>? _correctInput;
+  rive.SMIInput<bool>? _incorrectInput;
+
 
   @override
   void initState() {
     super.initState();
       String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     userData = UserData(uid: uid, buildContext: context);
-    
+    _loadRiveFile();
     // Defer the video initialization to after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
@@ -86,6 +92,34 @@ class _DetectionState extends State<Detection> {
     volumeTimer?.cancel();
     super.dispose();
   }
+   Future<void> _loadRiveFile() async {
+    try {
+      final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
+      final file = rive.RiveFile.import(bytes);
+      final artboard = file.mainArtboard;
+      _controller = rive.StateMachineController.fromArtboard(artboard, 'State Machine 1');
+
+      if (_controller != null) {
+        artboard.addController(_controller!);
+        _correctInput = _controller!.findInput<bool>('correct');
+        _incorrectInput = _controller!.findInput<bool>('incorrect');
+      }
+      
+      setState(() => _riveArtboard = artboard);
+    } catch (e) {
+      print('Error loading Rive file: $e');
+    }
+  }
+
+  void _triggerAnimation(bool isCorrect) {
+    if (_correctInput != null && _incorrectInput != null) {
+      setState(() {
+        _correctInput!.value = isCorrect;
+        _incorrectInput!.value = !isCorrect;
+      });
+    }
+  }
+
 
   Future<void> initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) async {
     if (video == 1 && _videoPlayerController1 == null) {
@@ -182,12 +216,15 @@ Widget build(BuildContext context) {
                   children: [
                     Center(child: detectionQuiz(context, type)),
                     Positioned(
-                      bottom: 16.h,
-                      left: 16.h,
-                      child: rive.RiveAnimation.asset(
-                        'assets/rive/Celebration_animation.riv',
-                      ),
-                    ),
+                                    bottom: 16.h,
+                                    left: 16.h,
+                                    child: _riveArtboard == null
+                                        ? const Center(child: CircularProgressIndicator())
+                                        : rive.RiveAnimation.direct(
+                                            rive.RiveFile.import(await rootBundle.load('assets/rive/Celebration_animation.riv')),
+                                            fit: BoxFit.contain,
+                                          ),
+                                  ),
                   ],
                 ),
               ),
@@ -308,6 +345,7 @@ Widget build(BuildContext context) {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
+                   triggerAnimation: _triggerAnimation,
                   child: OptionButton(
                     type: ButtonType.Video1,
                     onPressed: () {
@@ -330,6 +368,7 @@ Widget build(BuildContext context) {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
+                    triggerAnimation: _triggerAnimation,
                   child: OptionButton(
                     type: ButtonType.Video2,
                     onPressed: () {
@@ -373,14 +412,47 @@ class HalfMutedWidget extends StatefulWidget {
 class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   final GlobalKey<AudioWidgetState> _childKey = GlobalKey<AudioWidgetState>();
   Timer? _volumeTimer;
+   rive.Artboard? _riveArtboard;
+  rive.StateMachineController? _controller;
+  rive.SMIInput<bool>? _correctInput;
+  rive.SMIInput<bool>? _incorrectInput;
 
   @override
   void initState() {
     super.initState();
+    _loadRiveFile();
     // Start the volume control after the first frame is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startVolumeControl();
     });
+  }
+
+  Future<void> _loadRiveFile() async {
+    try {
+      final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
+      final file = rive.RiveFile.import(bytes);
+      final artboard = file.mainArtboard;
+      _controller = rive.StateMachineController.fromArtboard(artboard, 'State Machine 1');
+
+      if (_controller != null) {
+        artboard.addController(_controller!);
+        _correctInput = _controller!.findInput<bool>('correct');
+        _incorrectInput = _controller!.findInput<bool>('incorrect');
+      }
+
+      setState(() => _riveArtboard = artboard);
+    } catch (e) {
+      print('Error loading Rive file: $e');
+    }
+  }
+
+  void _triggerAnimation(bool isCorrect) {
+    if (_correctInput != null && _incorrectInput != null) {
+      setState(() {
+        _correctInput!.value = isCorrect;
+        _incorrectInput!.value = !isCorrect;
+      });
+    }
   }
 
   void _startVolumeControl() {
@@ -421,6 +493,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
           height: 20.v,
         ),
         OptionWidget(
+            triggerAnimation: _triggerAnimation,
           child: OptionButton(
             type: ButtonType.Stop,
             onPressed: () {

@@ -6,10 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:chewie/chewie.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
-
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/identification_screen/celebration_overlay.dart';
@@ -44,12 +42,14 @@ class _DiscriminationState extends State<Discrimination> {
   int selectedOption = -1;
   List<double> samples = [];
   OverlayEntry? _overlayEntry;
-
   bool isPlaying = false;
-
   int currentIndex = 0;
   double currentProgress = 0.0;
   List<double> total_length = [];
+  rive.Artboard? _riveArtboard;
+  rive.StateMachineController? _controller;
+  rive.SMIInput<bool>? _correctInput;
+  rive.SMIInput<bool>? _incorrectInput;
 
   void getAudioProgress() {
     setState(() {
@@ -73,12 +73,40 @@ class _DiscriminationState extends State<Discrimination> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-
+     _loadRiveFile();
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     userData = UserData(uid: uid, buildContext: context);
   }
 
   int level = 0;
+
+  Future<void> _loadRiveFile() async {
+    try {
+      final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
+      final file = rive.RiveFile.import(bytes);
+      final artboard = file.mainArtboard;
+      _controller = rive.StateMachineController.fromArtboard(artboard, 'State Machine 1');
+
+      if (_controller != null) {
+        artboard.addController(_controller!);
+        _correctInput = _controller!.findInput<bool>('correct');
+        _incorrectInput = _controller!.findInput<bool>('incorrect');
+      }
+
+      setState(() => _riveArtboard = artboard);
+    } catch (e) {
+      print('Error loading Rive file: $e');
+    }
+  }
+
+  void _triggerAnimation(bool isCorrect) {
+    if (_correctInput != null && _incorrectInput != null) {
+      setState(() {
+        _correctInput!.value = isCorrect;
+        _incorrectInput!.value = !isCorrect;
+      });
+    }
+  }
 
   @override
 Widget build(BuildContext context) {
@@ -139,20 +167,16 @@ Widget build(BuildContext context) {
               SizedBox(
                 height: 20.v,
               ),
-              Expanded( // Wrap the options in Expanded
-                child: Stack(
-                  children: [
-                    Center(child: discriminationOptions(type, data, dtcontainer)), // Center the content
-                    Positioned(
-                      bottom: 16.h,
-                      left: 16.h,
-                      child: rive.RiveAnimation.asset(
-                        'assets/rive/Celebration_animation.riv',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+             Positioned(
+                                    bottom: 16.h,
+                                    left: 16.h,
+                                    child: _riveArtboard == null
+                                        ? const Center(child: CircularProgressIndicator())
+                                        : rive.RiveAnimation.direct(
+                                            rive.RiveFile.import(await rootBundle.load('assets/rive/Celebration_animation.riv')),
+                                            fit: BoxFit.contain,
+                                          ),
+                                  ),
             ],
           ),
         ),
@@ -200,6 +224,7 @@ Widget build(BuildContext context) {
           children: [
             Expanded(
               child: OptionWidget(
+                triggerAnimation: _triggerAnimation,
                 child: ImageWidget(imagePath: "assets/images/female.png"),
                 isCorrect: () {
                   if (dtcontainer.getCorrectOutput() == "female") {
@@ -212,6 +237,7 @@ Widget build(BuildContext context) {
             ),
             Expanded(
               child: OptionWidget(
+                triggerAnimation: _triggerAnimation,
                 child: ImageWidget(imagePath: "assets/images/male.png"),
                 isCorrect: () {
                   if (dtcontainer.getCorrectOutput() == "male") {
@@ -283,6 +309,7 @@ Widget build(BuildContext context) {
           height: 20.v,
         ),
         OptionWidget(
+          triggerAnimation: _triggerAnimation,
             child: OptionButton(type: ButtonType.Change, onPressed: () {}),
             isCorrect: () {
               List<double> total_length = _childKey.currentState!.lengths;
@@ -332,6 +359,7 @@ Widget build(BuildContext context) {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             OptionWidget(
+              triggerAnimation: _triggerAnimation,
               child: OptionButton(
                   type: ButtonType.Same,
                   onPressed: () {
@@ -357,6 +385,7 @@ Widget build(BuildContext context) {
               width: 20.h,
             ),
             OptionWidget(
+              triggerAnimation: _triggerAnimation,
               child: OptionButton(
                   type: ButtonType.Diff,
                   onPressed: () {
@@ -398,6 +427,7 @@ Widget build(BuildContext context) {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
+                  triggerAnimation: _triggerAnimation,
                   child: AudioWidget(
                     audioLinks: [
                       dtcontainer.getVideoUrls()[0],
@@ -417,6 +447,7 @@ Widget build(BuildContext context) {
                   width: 20.h,
                 ),
                 OptionWidget(
+                  triggerAnimation: _triggerAnimation,
                   child: AudioWidget(
                     audioLinks: [
                       dtcontainer.getVideoUrls()[1],
@@ -449,6 +480,7 @@ Widget build(BuildContext context) {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
+                  triggerAnimation: _triggerAnimation,
                   child: AudioWidget(
                     audioLinks: [
                       dtcontainer.getVideoUrls()[0],
@@ -468,6 +500,7 @@ Widget build(BuildContext context) {
                   width: 20.h,
                 ),
                 OptionWidget(
+                  triggerAnimation: _triggerAnimation,
                   child: AudioWidget(
                     audioLinks: [
                       dtcontainer.getVideoUrls()[1],
@@ -493,6 +526,7 @@ Widget build(BuildContext context) {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
+                  triggerAnimation: _triggerAnimation,
                   child: AudioWidget(
                     audioLinks: [
                       dtcontainer.getVideoUrls()[2],
@@ -525,6 +559,7 @@ Widget build(BuildContext context) {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
+                  triggerAnimation: _triggerAnimation,
                   child: AudioWidget(
                     audioLinks: [
                       dtcontainer.getVideoUrls()[0],
@@ -544,6 +579,7 @@ Widget build(BuildContext context) {
                   width: 20.h,
                 ),
                 OptionWidget(
+                  triggerAnimation: _triggerAnimation,
                   child: AudioWidget(
                     audioLinks: [
                       dtcontainer.getVideoUrls()[1],
@@ -569,6 +605,7 @@ Widget build(BuildContext context) {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
+                  triggerAnimation: _triggerAnimation,
                   child: AudioWidget(
                     audioLinks: [
                       dtcontainer.getVideoUrls()[2],
@@ -588,6 +625,7 @@ Widget build(BuildContext context) {
                   width: 20.h,
                 ),
                 OptionWidget(
+                  triggerAnimation: _triggerAnimation,
                   child: AudioWidget(
                     audioLinks: [
                       dtcontainer.getVideoUrls()[3],
