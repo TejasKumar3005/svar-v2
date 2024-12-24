@@ -23,6 +23,7 @@ import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:svar_new/database/userController.dart';
+import 'package:rive/rive.dart' as rive;
 
 class Discrimination extends StatefulWidget {
   const Discrimination({
@@ -80,68 +81,85 @@ class _DiscriminationState extends State<Discrimination> {
   int level = 0;
 
   @override
-  Widget build(BuildContext context) {
-    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    String type = obj[0] as String;
-    level = obj[3] as int;
-
+Widget build(BuildContext context) {
+  var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+  String type = obj[0] as String;
+  level = obj[3] as int;
   Object data = obj[1] as Object;
-    dynamic dtcontainer = obj[2] as dynamic;
+  dynamic dtcontainer = obj[2] as dynamic;
 
-    return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/discri_bg.png"),
+  return Scaffold(
+    body: Stack(
+      children: [
+        // Background Image
+        Positioned.fill(
+          child: Image.asset(
+            "assets/images/discri_bg.png",
             fit: BoxFit.cover,
           ),
         ),
-        padding: EdgeInsets.symmetric(
-          horizontal: 15.h,
-          vertical: 10.v,
-        ),
-        child: Column(
-          children: [
-            DisciAppBar(context),
-            SizedBox(
-              height: 26.v,
-            ),
-            Visibility(
-              visible: type != "MaleFemale" && type != "DiffHalf",
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.7,
-                padding: EdgeInsets.symmetric(
-                  vertical: 5.v,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: Center(
-                  child: Text(
-                    type == "OddOne"
-                        ? ("Pick the odd One Out").toUpperCase()
-                        : ("SAME OR DIfferent?").toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+        // Main Content
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.symmetric(
+            horizontal: 15.h,
+            vertical: 10.v,
+          ),
+          child: Column(
+            children: [
+              DisciAppBar(context),
+              SizedBox(
+                height: 26.v,
+              ),
+              Visibility(
+                visible: type != "MaleFemale" && type != "DiffHalf",
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  padding: EdgeInsets.symmetric(
+                    vertical: 5.v,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: Center(
+                    child: Text(
+                      type == "OddOne"
+                          ? ("Pick the odd One Out").toUpperCase()
+                          : ("SAME OR DIfferent?").toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 20.v,
-            ),
-            discriminationOptions(type, data,
-                dtcontainer), 
-          ],
+              SizedBox(
+                height: 20.v,
+              ),
+              Expanded( // Wrap the options in Expanded
+                child: Stack(
+                  children: [
+                    Center(child: discriminationOptions(type, data, dtcontainer)), // Center the content
+                    Positioned(
+                      bottom: 16.h,
+                      left: 16.h,
+                      child: rive.RiveAnimation.asset(
+                        'assets/rive/Celebration_animation.riv',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
 
   Widget discriminationOptions(
       String type, Object d, dynamic dtcontainer) {

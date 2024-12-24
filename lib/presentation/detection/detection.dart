@@ -18,7 +18,7 @@ import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
-
+import 'package:rive/rive.dart' as rive;
 class Detection extends StatefulWidget {
   const Detection({
     Key? key,
@@ -149,36 +149,55 @@ class _DetectionState extends State<Detection> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    String type = obj[0] as String;
-    return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/discri_bg.png"),
+ @override
+Widget build(BuildContext context) {
+  var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+  String type = obj[0] as String;
+  return Scaffold(
+    body: Stack(
+      children: [
+        // Background Image
+        Positioned.fill(
+          child: Image.asset(
+            "assets/images/discri_bg.png",
             fit: BoxFit.cover,
           ),
         ),
-        padding: EdgeInsets.symmetric(
-          horizontal: 15.h,
-          vertical: 10.v,
+        // Main Content
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.symmetric(
+            horizontal: 15.h,
+            vertical: 10.v,
+          ),
+          child: Column(
+            children: [
+              DisciAppBar(context),
+              SizedBox(
+                height: 26.v,
+              ),
+              Expanded( // Important: Wrap the quiz in an Expanded
+                child: Stack( // Added Stack to hold the Rive animation
+                  children: [
+                    Center(child: detectionQuiz(context, type)),
+                    Positioned(
+                      bottom: 16.h,
+                      left: 16.h,
+                      child: rive.RiveAnimation.asset(
+                        'assets/rive/Celebration_animation.riv',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        child: Column(
-          children: [
-            DisciAppBar(context),
-            SizedBox(
-              height: 26.v,
-            ),
-            detectionQuiz(context, type),
-          ],
-        ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
 
   Widget detectionQuiz(BuildContext context, String quizType) {
     switch (quizType) {
