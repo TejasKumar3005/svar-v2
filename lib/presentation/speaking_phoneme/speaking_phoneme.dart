@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
+import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/widgets/circularScore.dart';
@@ -107,7 +108,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
             children: [
               Column(
                 children: [
-                  _buildAppBar(context),
+                  DisciAppBar(context),
                 ],
               ),
               _buildText(),
@@ -370,9 +371,9 @@ Widget pronunciationResultWidget(
   return Container(
     margin: EdgeInsets.fromLTRB(width_screen * 0.4, 16.0, 16.0, 16.0),
     decoration: BoxDecoration(
-      color: const Color.fromARGB(255, 36, 52, 36),
+      color: Colors.green[700],
       borderRadius: BorderRadius.circular(16.0),
-      boxShadow: [
+      boxShadow: const [
         BoxShadow(
           color: Colors.black26,
           blurRadius: 8.0,
@@ -382,63 +383,61 @@ Widget pronunciationResultWidget(
     ),
     child: Column(
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          decoration: BoxDecoration(
-            // color: Colors.blue,
-            borderRadius: BorderRadius.all(Radius.circular(16.0)),
-          ),
-          child: Column(
-            children: [
-              // Word Heading
-              Container(
-                padding: EdgeInsets.all(10.0), // Adjust padding as needed
-                decoration: BoxDecoration(
-                  // color: Colors.blue, // Background color of the circle
-                  shape: BoxShape.circle, // Makes the container circular
-                ),
-                child: Text(
-                  txt, // Replace dynamically as needed
-                  style: TextStyle(
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white, // Text color
-                  ),
-                ),
-              )
-            ],
+        Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: CircleAvatar(
+            backgroundColor: Colors.white,
+            radius: 30, // Adjust radius as needed
+            child: Text(
+              txt,
+              style: TextStyle(
+                fontSize: 25.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.green[700],
+              ),
+            ),
           ),
         ),
-        // Body with phoneme results
+        const SizedBox(height: 8),
+        const Divider(
+          color: Colors.white38,
+          thickness: 1.0,
+          indent: 20,
+          endIndent: 20,
+        ),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(24.0, 4.0, 16.0, 4.0),
+            padding: const EdgeInsets.fromLTRB(24.0, 8.0, 16.0, 8.0),
             child: ListView.builder(
               itemCount: result.length,
               itemBuilder: (context, index) {
-                // Accessing the first entry of each map in the list
                 String key = result[index].entries.first.key;
                 String value = result[index].entries.first.value;
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        key.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(221, 234, 235, 233),
+                      Expanded(
+                        flex: 1,
+                        child: Text(
+                          key.toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8.0),
                       Expanded(
+                        flex: 2,
                         child: Text(
                           value,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18.0,
-                            color: const Color.fromARGB(255, 244, 239, 239),
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -450,37 +449,34 @@ Widget pronunciationResultWidget(
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-          child: Column(
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  // Handle the next button click
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 32.0, vertical: 5.0),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "NEXT",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 8.0),
-                    Icon(Icons.arrow_forward),
-                  ],
-                ),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          child: ElevatedButton(
+            onPressed: () {
+              // Handle the next button click
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[900],
+              foregroundColor: Colors.white, // Text Color
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
               ),
-            ],
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "NEXT",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: 8.0),
+                Icon(Icons.arrow_forward),
+              ],
+            ),
           ),
         ),
       ],
