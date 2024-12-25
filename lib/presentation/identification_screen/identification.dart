@@ -59,17 +59,19 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   Future<void> _loadRiveFile() async {
     try {
       final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
-      final file = RiveFile.import(bytes);
-      final artboard = file.mainArtboard;
-      _controller = StateMachineController.fromArtboard(artboard, 'State Machine 1');
+      final _riveFile = RiveFile.import(bytes);
+     
+      _controller = StateMachineController.fromArtboard(_riveFile.mainArtboard, 'State Machine 1');
 
       if (_controller != null) {
-        artboard.addController(_controller!);
+        _riveFile.mainArtboard.addController(_controller!);
         _correctInput = _controller!.findInput<bool>('correct');
         _incorrectInput = _controller!.findInput<bool>('incorrect');
       }
 
-      setState(() => _riveArtboard = artboard);
+     setState(() {
+        _riveArtboard = _riveFile.mainArtboard; // Extract the Artboard
+      });
     } catch (e) {
       print('Error loading Rive file: $e');
     }
@@ -141,16 +143,16 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                       level,
                                     ),
                                   ),
-                                  Positioned(
-                                    bottom: 16.h,
-                                    left: 16.h,
-                                    child: _riveArtboard == null
-                                        ? const Center(child: CircularProgressIndicator())
-                                        : RiveAnimation.direct(
-                                            RiveFile.import(await rootBundle.load('assets/rive/Celebration_animation.riv')),
-                                            fit: BoxFit.contain,
-                                          ),
-                                  ),
+                                  // Positioned(
+                                  //   bottom: 16.h,
+                                  //   left: 16.h,
+                                  //   child: _riveArtboard == null
+                                  //       ? const Center(child: CircularProgressIndicator())
+                                  //       : RiveAnimation.direct(
+                                  //            _riveFile,
+                                  //           fit: BoxFit.contain,
+                                  //         ),
+                                  // ),
                                   Positioned(
                                     bottom: 0,
                                     right: 0,

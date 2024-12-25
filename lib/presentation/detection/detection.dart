@@ -215,16 +215,16 @@ Widget build(BuildContext context) {
                 child: Stack( // Added Stack to hold the Rive animation
                   children: [
                     Center(child: detectionQuiz(context, type)),
-                    Positioned(
-                                    bottom: 16.h,
-                                    left: 16.h,
-                                    child: _riveArtboard == null
-                                        ? const Center(child: CircularProgressIndicator())
-                                        : rive.RiveAnimation.direct(
-                                            rive.RiveFile.import(await rootBundle.load('assets/rive/Celebration_animation.riv')),
-                                            fit: BoxFit.contain,
-                                          ),
-                                  ),
+                    // Positioned(
+                    //                 bottom: 16.h,
+                    //                 left: 16.h,
+                    //                 child: _riveArtboard == null
+                    //                     ? const Center(child: CircularProgressIndicator())
+                    //                     : rive.RiveAnimation.direct(
+                    //                         rive.RiveFile.import(await rootBundle.load('assets/rive/Celebration_animation.riv')),
+                    //                         fit: BoxFit.contain,
+                    //                       ),
+                    //               ),
                   ],
                 ),
               ),

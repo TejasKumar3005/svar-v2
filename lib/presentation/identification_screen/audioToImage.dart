@@ -16,6 +16,7 @@ import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rive/rive.dart';
 
 class AudiotoimageScreen extends StatefulWidget {
   final dynamic dtcontainer;
@@ -38,6 +39,9 @@ class AudiotoimageScreen extends StatefulWidget {
   }
 }
 
+
+
+
 class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   late AudioPlayer _player;
   late UserData userData;
@@ -45,6 +49,10 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   int sel = 0;
   List<double> samples = [];
   OverlayEntry? _overlayEntry;
+  Artboard? _riveArtboard;
+  StateMachineController? _controller;
+  SMIInput<bool>? _correctInput;
+  SMIInput<bool>? _incorrectInput;
   // Variable to store the correct answer
 
   @override
@@ -53,13 +61,45 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
+   
     ]);
     _player = AudioPlayer();
     leveltracker = 0;
+    _loadRiveFile();
     
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     userData = UserData(uid: uid, buildContext: context);
    
+  }
+
+   Future<void> _loadRiveFile() async {
+    try {
+      final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
+      final _riveFile = RiveFile.import(bytes);
+     
+      _controller = StateMachineController.fromArtboard(_riveFile.mainArtboard, 'State Machine 1');
+
+      if (_controller != null) {
+        _riveFile.mainArtboard.addController(_controller!);
+        _correctInput = _controller!.findInput<bool>('correct');
+        _incorrectInput = _controller!.findInput<bool>('incorrect');
+      }
+
+     setState(() {
+        _riveArtboard = _riveFile.mainArtboard; // Extract the Artboard
+      });
+    } catch (e) {
+      print('Error loading Rive file: $e');
+    }
+  }
+
+  void _triggerAnimation(bool isCorrect) {
+    if (_correctInput != null && _incorrectInput != null) {
+      setState(() {
+        _correctInput!.value = isCorrect;
+        _incorrectInput!.value = !isCorrect;
+      });
+    }
   }
 
   // Function to fetch the correct answer from the database
@@ -106,6 +146,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                           Center(
                             child: GestureDetector(
                               child: OptionWidget(
+                                 triggerAnimation: _triggerAnimation,
                                 child: AudioWidget(
                                   audioLinks: widget.dtcontainer.getAudioUrl(),
                                 ),
@@ -136,6 +177,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                       return Row(
                                         children: [
                                           OptionWidget(
+                                            triggerAnimation: _triggerAnimation,
                                             child: ImageWidget(
                                               imagePath: widget.dtcontainer
                                                   .getImageUrlList()[index],
@@ -160,7 +202,17 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                   ),
                               ],
                             ),
-                          )
+                          ),
+                          // Positioned(
+                          //           bottom: 16.h,
+                          //           left: 16.h,
+                          //           child: _riveArtboard == null
+                          //               ? const Center(child: CircularProgressIndicator())
+                          //               : RiveAnimation.direct(
+                          //                    _riveFile,
+                          //                   fit: BoxFit.contain,
+                          //                 ),
+                          //         ),
                         ],
                       ),
                     ),
