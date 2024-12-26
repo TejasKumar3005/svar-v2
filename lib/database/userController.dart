@@ -164,7 +164,7 @@ class UserData {
           List<Map<String, dynamic>> updatedData = [];
 
           await Future.wait(data.map((exercise) async {
-            if (exercise["eid"].toString().startsWith("Word")) {
+            if (!exercise["eid"].toString().startsWith("Word")) {
               DocumentSnapshot docSnapshot = await exercisesCollection
                   .doc(exercise["type"])
                   .collection(exercise["phoneme"])

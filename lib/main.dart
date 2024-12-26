@@ -27,7 +27,7 @@ Future<void> initializeFirebase() async {
 
 Future<User?> initializeFirebaseAuth() async {
   final completer = Completer<User?>();
-
+  
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (!completer.isCompleted) {
       completer.complete(user);

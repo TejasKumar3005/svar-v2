@@ -101,7 +101,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     );
   }
 
-  void _handleLevelType(int startExerciseIndex, String params) {
+  void _handleLevelType(int startExerciseIndex, String params) async{
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
 
@@ -131,6 +131,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           _handleLevel(context, "notcompleted", startExerciseIndex);
           break;
         case 'Pronunciation':
+          await Future.delayed(Duration.zero);
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -385,6 +386,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       }
 
       debugPrint("Fetched type for Level: $type");
+      
       await Future.delayed(Duration.zero);
 
       if (type == "video") {
@@ -502,7 +504,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           TextValueRun? textRun_desc = artboard.textRun(descKey);
           if (textRun_desc != null) {
             textRun_desc.text =
-                data_pro.todaysExercises[actualIndex]['description'].isEmpty
+                data_pro.todaysExercises[actualIndex]['description']==null
                     ? 'No Description'
                     : data_pro.todaysExercises[actualIndex]['description'];
           } else {

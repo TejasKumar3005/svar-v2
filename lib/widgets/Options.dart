@@ -30,10 +30,10 @@ class _OptionWidgetState extends State<OptionWidget> {
     widget.triggerAnimation(isCorrectResult); // Trigger animation
 
     if (isCorrectResult) {
-      _overlayEntry = celebrationOverlay(context, () {
-        _overlayEntry?.remove();
-      });
-      Overlay.of(context).insert(_overlayEntry!);
+      // _overlayEntry = celebrationOverlay(context, () {
+      //   _overlayEntry?.remove();
+      // });
+      // Overlay.of(context).insert(_overlayEntry!);
     } else {
       setState(() {
         _isGlowing = true;

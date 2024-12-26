@@ -20,6 +20,7 @@ import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 import 'package:rive/rive.dart' as rive;
 import 'package:flutter/services.dart' show rootBundle;
+
 class Detection extends StatefulWidget {
   const Detection({
     Key? key,
@@ -38,7 +39,7 @@ class _DetectionState extends State<Detection> {
       GlobalKey<AudioWidgetState>();
   String quizType = "video";
   int selectedOption = -1;
-  int level = 0;  
+  int level = 0;
   PlayAudio playAudio = PlayAudio();
   late UserData userData;
   VideoPlayerController? _videoPlayerController1;
@@ -50,16 +51,16 @@ class _DetectionState extends State<Detection> {
   Timer? volumeTimer;
   double currentProgress = 0.0;
   double totalDuration = 0.0;
-   rive.Artboard? _riveArtboard;
+  rive.Artboard? _riveArtboard;
   rive.StateMachineController? _controller;
   rive.SMIInput<bool>? _correctInput;
   rive.SMIInput<bool>? _incorrectInput;
-
+  late rive.RiveFile file;
 
   @override
   void initState() {
     super.initState();
-      String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     userData = UserData(uid: uid, buildContext: context);
     _loadRiveFile();
     // Defer the video initialization to after the first frame
@@ -76,7 +77,8 @@ class _DetectionState extends State<Detection> {
   }
 
   // Initialize both videos sequentially
-  Future<void> _initializeVideoFlow(List<String> videoUrls, int mutedVideoIndex) async {
+  Future<void> _initializeVideoFlow(
+      List<String> videoUrls, int mutedVideoIndex) async {
     await initiliaseVideo(videoUrls[0], 1, mutedVideoIndex);
     await initiliaseVideo(videoUrls[1], 2, mutedVideoIndex);
   }
@@ -92,19 +94,22 @@ class _DetectionState extends State<Detection> {
     volumeTimer?.cancel();
     super.dispose();
   }
-   Future<void> _loadRiveFile() async {
+
+  Future<void> _loadRiveFile() async {
     try {
-      final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
-      final file = rive.RiveFile.import(bytes);
+      final bytes =
+          await rootBundle.load('assets/rive/Celebration_animation.riv');
+       file = rive.RiveFile.import(bytes);
       final artboard = file.mainArtboard;
-      _controller = rive.StateMachineController.fromArtboard(artboard, 'State Machine 1');
+      _controller =
+          rive.StateMachineController.fromArtboard(artboard, 'State Machine 1');
 
       if (_controller != null) {
         artboard.addController(_controller!);
         _correctInput = _controller!.findInput<bool>('correct');
         _incorrectInput = _controller!.findInput<bool>('incorrect');
       }
-      
+
       setState(() => _riveArtboard = artboard);
     } catch (e) {
       print('Error loading Rive file: $e');
@@ -120,10 +125,11 @@ class _DetectionState extends State<Detection> {
     }
   }
 
-
-  Future<void> initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) async {
+  Future<void> initiliaseVideo(
+      String videoUrl, int video, int mutedVideoIndex) async {
     if (video == 1 && _videoPlayerController1 == null) {
-      _videoPlayerController1 = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+      _videoPlayerController1 =
+          VideoPlayerController.networkUrl(Uri.parse(videoUrl));
 
       try {
         await _videoPlayerController1!.initialize();
@@ -152,7 +158,8 @@ class _DetectionState extends State<Detection> {
         print("Error initializing video 1: $e");
       }
     } else if (video == 2 && _videoPlayerController2 == null) {
-      _videoPlayerController2 = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+      _videoPlayerController2 =
+          VideoPlayerController.networkUrl(Uri.parse(videoUrl));
 
       try {
         await _videoPlayerController2!.initialize();
@@ -183,58 +190,60 @@ class _DetectionState extends State<Detection> {
     }
   }
 
- @override
-Widget build(BuildContext context) {
-  var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-  String type = obj[0] as String;
-  return Scaffold(
-    body: Stack(
-      children: [
-        // Background Image
-        Positioned.fill(
-          child: Image.asset(
-            "assets/images/discri_bg.png",
-            fit: BoxFit.cover,
+  @override
+  Widget build(BuildContext context) {
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    String type = obj[0] as String;
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              "assets/images/discri_bg.png",
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        // Main Content
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.symmetric(
-            horizontal: 15.h,
-            vertical: 10.v,
-          ),
-          child: Column(
-            children: [
-              DisciAppBar(context),
-              SizedBox(
-                height: 26.v,
-              ),
-              Expanded( // Important: Wrap the quiz in an Expanded
-                child: Stack( // Added Stack to hold the Rive animation
-                  children: [
-                    Center(child: detectionQuiz(context, type)),
-                    // Positioned(
-                    //                 bottom: 16.h,
-                    //                 left: 16.h,
-                    //                 child: _riveArtboard == null
-                    //                     ? const Center(child: CircularProgressIndicator())
-                    //                     : rive.RiveAnimation.direct(
-                    //                         rive.RiveFile.import(await rootBundle.load('assets/rive/Celebration_animation.riv')),
-                    //                         fit: BoxFit.contain,
-                    //                       ),
-                    //               ),
-                  ],
+          // Main Content
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            padding: EdgeInsets.symmetric(
+              horizontal: 15.h,
+              vertical: 10.v,
+            ),
+            child: Column(
+              children: [
+                DisciAppBar(context),
+                SizedBox(
+                  height: 26.v,
                 ),
-              ),
-            ],
+                Expanded(
+                  // Important: Wrap the quiz in an Expanded
+                  child: Stack(
+                    // Added Stack to hold the Rive animation
+                    children: [
+                      Center(child: detectionQuiz(context, type)),
+                      Positioned(
+                                      bottom: 16.h,
+                                      left: 16.h,
+                                      child: _riveArtboard == null
+                                          ? const Center(child: CircularProgressIndicator())
+                                          : rive.RiveAnimation.direct(
+                                            file,
+                                              fit: BoxFit.contain,
+                                            ),
+                                    ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Widget detectionQuiz(BuildContext context, String quizType) {
     switch (quizType) {
@@ -258,7 +267,7 @@ Widget build(BuildContext context) {
 
   Widget MutedUnmuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    level = obj[4] as int;  
+    level = obj[4] as int;
     dynamic dtcontainer = obj[1] as dynamic;
     return Column(
       children: [
@@ -345,7 +354,7 @@ Widget build(BuildContext context) {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
-                   triggerAnimation: _triggerAnimation,
+                  triggerAnimation: _triggerAnimation,
                   child: OptionButton(
                     type: ButtonType.Video1,
                     onPressed: () {
@@ -353,10 +362,9 @@ Widget build(BuildContext context) {
                     },
                   ),
                   isCorrect: () {
-                       if((obj[1] as dynamic).getMuted() == 1){
-                         userData.incrementLevelCount("Detection", level);
-                        
-                       }
+                    if ((obj[1] as dynamic).getMuted() == 1) {
+                      userData.incrementLevelCount("Detection", level);
+                    }
                     return (obj[1] as dynamic).getMuted() == 1;
                   },
                 ),
@@ -368,7 +376,7 @@ Widget build(BuildContext context) {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
-                    triggerAnimation: _triggerAnimation,
+                  triggerAnimation: _triggerAnimation,
                   child: OptionButton(
                     type: ButtonType.Video2,
                     onPressed: () {
@@ -376,12 +384,10 @@ Widget build(BuildContext context) {
                     },
                   ),
                   isCorrect: () {
-
-                    if((obj[1] as dynamic).getMuted() == 0){
+                    if ((obj[1] as dynamic).getMuted() == 0) {
                       userData.incrementLevelCount("Detection", level);
-                    
                     }
-                    
+
                     return (obj[1] as dynamic).getMuted() == 0;
                   },
                 ),
@@ -412,7 +418,7 @@ class HalfMutedWidget extends StatefulWidget {
 class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   final GlobalKey<AudioWidgetState> _childKey = GlobalKey<AudioWidgetState>();
   Timer? _volumeTimer;
-   rive.Artboard? _riveArtboard;
+  rive.Artboard? _riveArtboard;
   rive.StateMachineController? _controller;
   rive.SMIInput<bool>? _correctInput;
   rive.SMIInput<bool>? _incorrectInput;
@@ -429,10 +435,12 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
   Future<void> _loadRiveFile() async {
     try {
-      final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
+      final bytes =
+          await rootBundle.load('assets/rive/Celebration_animation.riv');
       final file = rive.RiveFile.import(bytes);
       final artboard = file.mainArtboard;
-      _controller = rive.StateMachineController.fromArtboard(artboard, 'State Machine 1');
+      _controller =
+          rive.StateMachineController.fromArtboard(artboard, 'State Machine 1');
 
       if (_controller != null) {
         artboard.addController(_controller!);
@@ -493,7 +501,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
           height: 20.v,
         ),
         OptionWidget(
-            triggerAnimation: _triggerAnimation,
+          triggerAnimation: _triggerAnimation,
           child: OptionButton(
             type: ButtonType.Stop,
             onPressed: () {
@@ -518,7 +526,6 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
             double currentProgress = _childKey.currentState!.progress;
             print("Current progress is $currentProgress");
-
 
             const double tolerance = 0.4;
             bool condition =

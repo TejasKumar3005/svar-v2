@@ -177,6 +177,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
           children: [
             Expanded(
               child: OptionWidget(
+                  triggerAnimation: (value){
+                    
+                  },
                 child: ImageWidget(imagePath: "assets/images/female.png"),
                 isCorrect: () {
                   var condition = maleFemale.getCorrectOutput() == "female";
@@ -205,6 +208,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
             ),
             Expanded(
               child: OptionWidget(
+                  triggerAnimation: (value){
+                    
+                  },
                 child: ImageWidget(imagePath: "assets/images/male.png"),
                 isCorrect: () {
                   var condition = maleFemale.getCorrectOutput() == "male";
@@ -293,6 +299,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
           height: 20.v,
         ),
         OptionWidget(
+            triggerAnimation: (value){
+                    
+                  },
             child: OptionButton(type: ButtonType.Change, onPressed: () {}),
             isCorrect: () {
               List<double> total_length = _childKey.currentState!.lengths;
@@ -361,6 +370,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             OptionWidget(
+                triggerAnimation: (value){
+                    
+                  },
               child: OptionButton(type: ButtonType.Same, onPressed: () {}),
               isCorrect: () {
                 var condition = diffSounds.getSame();
@@ -390,6 +402,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               width: 20.h,
             ),
             OptionWidget(
+                triggerAnimation: (value){
+                    
+                  },
               child: OptionButton(
                   type: ButtonType.Diff,
                   onPressed: () {
@@ -440,6 +455,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
+                    triggerAnimation: (value){
+                    
+                  },
                   child: AudioWidget(
                     audioLinks: [
                       oddOne.getVideoUrls()[0],
@@ -472,6 +490,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   width: 20.h,
                 ),
                 OptionWidget(
+                    triggerAnimation: (value){
+                    
+                  },
                   child: AudioWidget(
                     audioLinks: [
                       oddOne.getVideoUrls()[1],
@@ -517,6 +538,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
+                    triggerAnimation: (value){
+                    
+                  },
                   child: AudioWidget(
                     audioLinks: [
                       oddOne.getVideoUrls()[0],
@@ -549,6 +573,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   width: 20.h,
                 ),
                 OptionWidget(
+                    triggerAnimation: (value){
+                    
+                  },
                   child: AudioWidget(
                     audioLinks: [
                       oddOne.getVideoUrls()[1],
@@ -587,6 +614,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
+                  triggerAnimation: (value){
+
+                  },
                   child: AudioWidget(
                     audioLinks: [
                       oddOne.getVideoUrls()[2],
@@ -632,6 +662,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
+                    triggerAnimation: (value){
+                    
+                  },
                   child: AudioWidget(
                     audioLinks: [
                       oddOne.getVideoUrls()[0],
@@ -664,6 +697,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   width: 20.h,
                 ),
                 OptionWidget(
+                    triggerAnimation: (value){
+                    
+                  },
                   child: AudioWidget(
                     audioLinks: [
                       oddOne.getVideoUrls()[1],
@@ -702,6 +738,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
+                    triggerAnimation: (value){
+                    
+                  },
                   child: AudioWidget(
                     audioLinks: [
                       oddOne.getVideoUrls()[2],
@@ -734,6 +773,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   width: 20.h,
                 ),
                 OptionWidget(
+                    triggerAnimation: (value){
+                    
+                  },
                   child: AudioWidget(
                     audioLinks: [
                       oddOne.getVideoUrls()[3],

@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
+import 'package:rive/rive.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/identification_screen/audioToImage.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,13 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   OverlayEntry? _overlayEntry;
   late UserData userData;
 
+  Artboard? _riveArtboard;
+  StateMachineController? _controller;
+  SMITrigger? _correctTriger;
+  SMITrigger? _incorrectTriger;
+
+  late RiveFile _riveFile;
+
   @override
   void dispose() {
     super.dispose();
@@ -58,6 +66,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     _player = AudioPlayer();
 
     leveltracker = 0;
+    _loadRiveFile();
 
     // Initialize userData with uid and context
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -65,6 +74,37 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   }
 
   int sel = 0;
+
+  Future<void> _loadRiveFile() async {
+    try {
+      final bytes =
+          await rootBundle.load('assets/rive/Celebration_animation.riv');
+      _riveFile = RiveFile.import(bytes);
+
+      _controller = StateMachineController.fromArtboard(
+          _riveFile.mainArtboard, 'State Machine 1');
+
+      if (_controller != null) {
+        _riveFile.mainArtboard.addController(_controller!);
+        _correctTriger = _controller!.getTriggerInput("correct");
+        _incorrectTriger = _controller!.getTriggerInput("incorrect");
+      }
+
+      setState(() {
+        _riveArtboard = _riveFile.mainArtboard; // Extract the Artboard
+      });
+    } catch (e) {
+      print('Error loading Rive file: $e');
+    }
+  }
+
+  void _triggerAnimation(bool isCorrect) {
+    if (isCorrect) {
+      _correctTriger?.fire();
+    } else {
+      _incorrectTriger?.fire();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +154,21 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                       dtcontainer,
                                       params,
                                     ),
+                                  ),
+                                  Positioned(
+                                    bottom: -55.h,
+                                    left: 16.h,
+                                    child: _riveArtboard == null
+                                        ? const Center(
+                                            child: CircularProgressIndicator())
+                                        : SizedBox(
+                                            height: 300,
+                                            width: 350,
+                                            child: RiveAnimation.direct(
+                                              _riveFile,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
                                   ),
                                   Positioned(
                                     bottom: 0,
@@ -227,6 +282,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                   Expanded(
                                     // Adjust the flex value based on your layout needs
                                     child: OptionWidget(
+                                      triggerAnimation: (value) {},
                                       child: AudioWidget(
                                         audioLinks: [
                                           dtcontainer.getAudioList()[index],
@@ -236,26 +292,30 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                         bool isCorrect = dtcontainer
                                                 .getCorrectOutput() ==
                                             dtcontainer.getAudioList()[index];
-                                      
-                                          var data_pro =
-                                              Provider.of<ExerciseProvider>(
-                                                  context,
-                                                  listen: false);
-                                      if (isCorrect)  {  data_pro.incrementLevel();}
-                                          UserData(
-                                            uid: FirebaseAuth.instance
-                                                    .currentUser?.uid ??
-                                                '',
-                                          )
-                                              .updateExerciseData(
+
+                                        var data_pro =
+                                            Provider.of<ExerciseProvider>(
+                                                context,
+                                                listen: false);
+                                        if (isCorrect) {
+                                          data_pro.incrementLevel();
+                                        }
+                                        UserData(
+                                          uid: FirebaseAuth
+                                                  .instance.currentUser?.uid ??
+                                              '',
+                                        )
+                                            .updateExerciseData(
                                                 isCompleted: isCorrect,
                                                 performance: {
-                                                  "result":isCorrect,
-                                                  "time": DateTime.now().toString(),
+                                                  "result": isCorrect,
+                                                  "time":
+                                                      DateTime.now().toString(),
                                                 },
-                                                  date: obj[5], eid: obj[4])
-                                              .then((value) => null);
-                                        
+                                                date: obj[5],
+                                                eid: obj[4])
+                                            .then((value) => null);
+
                                         return isCorrect;
                                       },
                                     ),
@@ -295,6 +355,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       OptionWidget(
+                                        triggerAnimation: (value) {},
                                         child: TextContainer(
                                           text:
                                               dtcontainer.getTextList()[index],
@@ -303,26 +364,30 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                           bool isCorrect = dtcontainer
                                                   .getCorrectOutput() ==
                                               dtcontainer.getTextList()[index];
-                                          
-                                            var data_pro =
-                                                Provider.of<ExerciseProvider>(
-                                                    context,
-                                                    listen: false);
-                                        if (isCorrect)   { data_pro.incrementLevel();}
-                                            UserData(
-                                              uid: FirebaseAuth.instance
-                                                      .currentUser?.uid ??
-                                                  '',
-                                            )
-                                                .updateExerciseData(
+
+                                          var data_pro =
+                                              Provider.of<ExerciseProvider>(
+                                                  context,
+                                                  listen: false);
+                                          if (isCorrect) {
+                                            data_pro.incrementLevel();
+                                          }
+                                          UserData(
+                                            uid: FirebaseAuth.instance
+                                                    .currentUser?.uid ??
+                                                '',
+                                          )
+                                              .updateExerciseData(
                                                   isCompleted: isCorrect,
                                                   performance: {
-                                                    "time": DateTime.now().toString(),
+                                                    "time": DateTime.now()
+                                                        .toString(),
                                                     "result": "correct",
                                                   },
-                                                    date: obj[5], eid: obj[4])
-                                                .then((value) => null);
-                                          
+                                                  date: obj[5],
+                                                  eid: obj[4])
+                                              .then((value) => null);
+
                                           return isCorrect;
                                         },
                                       ),
@@ -371,6 +436,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                             flex:
                                 2, // Adjust the flex value for the OptionWidget
                             child: OptionWidget(
+                              triggerAnimation: (value) {},
                               child: ImageWidget(
                                 imagePath: dtcontainer.getImageUrlList()[index],
                               ),
@@ -378,27 +444,28 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                 bool isCorrect =
                                     dtcontainer.getCorrectOutput() ==
                                         dtcontainer.getImageUrlList()[index];
-                              
-                                  var data_pro = Provider.of<ExerciseProvider>(
-                                      context,
-                                      listen: false);
-                              if (isCorrect) {   data_pro.incrementLevel();}
-                                
-                                  UserData(
-                                    uid: FirebaseAuth
-                                            .instance.currentUser?.uid ??
-                                        '',
-                                  )
-                                      .updateExerciseData(
+
+                                var data_pro = Provider.of<ExerciseProvider>(
+                                    context,
+                                    listen: false);
+                                if (isCorrect) {
+                                  data_pro.incrementLevel();
+                                }
+
+                                UserData(
+                                  uid: FirebaseAuth.instance.currentUser?.uid ??
+                                      '',
+                                )
+                                    .updateExerciseData(
                                         isCompleted: isCorrect,
                                         performance: {
                                           "time": DateTime.now().toString(),
                                           "result": isCorrect,
-
                                         },
-                                          date: obj[5], eid: obj[4])
-                                      .then((value) => null);
-                              
+                                        date: obj[5],
+                                        eid: obj[4])
+                                    .then((value) => null);
+
                                 return isCorrect;
                               },
                             ),

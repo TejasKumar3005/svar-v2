@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
@@ -45,6 +47,13 @@ class _DetectionState extends State<ExerciseDetection> {
   double currentProgress = 0.0;
   double totalDuration = 0.0;
 
+  Artboard? _riveArtboard;
+  StateMachineController? _controller;
+  SMITrigger? _correctTriger;
+  SMITrigger? _incorrectTriger;
+
+  late RiveFile _riveFile;
+
   @override
   void initState() {
     super.initState();
@@ -62,6 +71,37 @@ class _DetectionState extends State<ExerciseDetection> {
         _initializeVideoFlow(dtcontainer.getVideoUrls(), mutedVideoIndex);
       }
     });
+  }
+
+  Future<void> _loadRiveFile() async {
+    try {
+      final bytes =
+          await rootBundle.load('assets/rive/Celebration_animation.riv');
+      _riveFile = RiveFile.import(bytes);
+
+      _controller = StateMachineController.fromArtboard(
+          _riveFile.mainArtboard, 'State Machine 1');
+
+      if (_controller != null) {
+        _riveFile.mainArtboard.addController(_controller!);
+        _correctTriger = _controller!.getTriggerInput("correct");
+        _incorrectTriger = _controller!.getTriggerInput("incorrect");
+      }
+
+      setState(() {
+        _riveArtboard = _riveFile.mainArtboard; // Extract the Artboard
+      });
+    } catch (e) {
+      print('Error loading Rive file: $e');
+    }
+  }
+
+  void _triggerAnimation(bool isCorrect) {
+    if (isCorrect) {
+      _correctTriger?.fire();
+    } else {
+      _incorrectTriger?.fire();
+    }
   }
 
   // Initialize both videos sequentially
@@ -172,7 +212,30 @@ class _DetectionState extends State<ExerciseDetection> {
             SizedBox(
               height: 26.v,
             ),
-            detectionQuiz(context, type),
+            Expanded(
+                  // Important: Wrap the quiz in an Expanded
+                  child: Stack(
+                    // Added Stack to hold the Rive animation
+                    children: [
+                      Center(child: detectionQuiz(context, type)),
+                      Positioned(
+                                    bottom: -55.h,
+                                    left: 16.h,
+                                    child: _riveArtboard == null
+                                        ? const Center(
+                                            child: CircularProgressIndicator())
+                                        : SizedBox(
+                                            height: 300,
+                                            width: 350,
+                                            child: RiveAnimation.direct(
+                                              _riveFile,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                  ),
+                    ],
+                  ),
+                ),
           ],
         ),
       ),
@@ -288,6 +351,9 @@ class _DetectionState extends State<ExerciseDetection> {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
+                  triggerAnimation: (bool value) {
+                    
+                  },
                   child: OptionButton(
                     type: ButtonType.Video1,
                     onPressed: () {
@@ -325,6 +391,9 @@ class _DetectionState extends State<ExerciseDetection> {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
+                  triggerAnimation: (value){
+
+                  },
                   child: OptionButton(
                     type: ButtonType.Video2,
                     onPressed: () {
@@ -431,6 +500,9 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
           height: 20.v,
         ),
         OptionWidget(
+          triggerAnimation: (value){
+
+          },
           child: OptionButton(
             type: ButtonType.Stop,
             onPressed: () {

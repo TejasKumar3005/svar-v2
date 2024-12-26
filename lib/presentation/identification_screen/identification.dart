@@ -42,6 +42,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   StateMachineController? _controller;
   SMIInput<bool>? _correctInput;
   SMIInput<bool>? _incorrectInput;
+  late RiveFile _riveFile;
 
   @override
   void initState() {
@@ -58,10 +59,12 @@ class AuditoryScreenState extends State<IdentificationScreen> {
 
   Future<void> _loadRiveFile() async {
     try {
-      final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
-      final _riveFile = RiveFile.import(bytes);
-     
-      _controller = StateMachineController.fromArtboard(_riveFile.mainArtboard, 'State Machine 1');
+      final bytes =
+          await rootBundle.load('assets/rive/Celebration_animation.riv');
+      _riveFile = RiveFile.import(bytes);
+
+      _controller = StateMachineController.fromArtboard(
+          _riveFile.mainArtboard, 'State Machine 1');
 
       if (_controller != null) {
         _riveFile.mainArtboard.addController(_controller!);
@@ -69,7 +72,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
         _incorrectInput = _controller!.findInput<bool>('incorrect');
       }
 
-     setState(() {
+      setState(() {
         _riveArtboard = _riveFile.mainArtboard; // Extract the Artboard
       });
     } catch (e) {
@@ -80,8 +83,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   void _triggerAnimation(bool isCorrect) {
     if (_correctInput != null && _incorrectInput != null) {
       setState(() {
-        _correctInput!.value = isCorrect;
-        _incorrectInput!.value = !isCorrect;
+        _correctInput!.change(true);
+        _incorrectInput!.change(!isCorrect);
       });
     }
   }
@@ -143,16 +146,21 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                       level,
                                     ),
                                   ),
-                                  // Positioned(
-                                  //   bottom: 16.h,
-                                  //   left: 16.h,
-                                  //   child: _riveArtboard == null
-                                  //       ? const Center(child: CircularProgressIndicator())
-                                  //       : RiveAnimation.direct(
-                                  //            _riveFile,
-                                  //           fit: BoxFit.contain,
-                                  //         ),
-                                  // ),
+                                  Positioned(
+                                    bottom: -55.h,
+                                    left: 16.h,
+                                    child: _riveArtboard == null
+                                        ? const Center(
+                                            child: CircularProgressIndicator())
+                                        : SizedBox(
+                                            height: 300,
+                                            width: 350,
+                                            child: RiveAnimation.direct(
+                                              _riveFile,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                  ),
                                   Positioned(
                                     bottom: 0,
                                     right: 0,
@@ -218,15 +226,21 @@ class AuditoryScreenState extends State<IdentificationScreen> {
           Expanded(
             flex: 1,
             child: Center(
-                child: buildDynamicOptions(type, provider, dtcontainer, params, level, _triggerAnimation)),
+                child: buildDynamicOptions(type, provider, dtcontainer, params,
+                    level, _triggerAnimation)),
           ),
         ],
       ),
     );
   }
 
-  Widget buildDynamicOptions(String quizType, IdentificationProvider provider,
-      dynamic dtcontainer, String params, int level, Function(bool) triggerAnimation) {
+  Widget buildDynamicOptions(
+      String quizType,
+      IdentificationProvider provider,
+      dynamic dtcontainer,
+      String params,
+      int level,
+      Function(bool) triggerAnimation) {
     switch (quizType) {
       case "ImageToAudio":
         return Padding(
@@ -243,9 +257,11 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                           audioLinks: [dtcontainer.getAudioList()[index]],
                         ),
                         isCorrect: () {
-                          bool isCorrect = dtcontainer.getCorrectOutput() == dtcontainer.getAudioList()[index];
+                          bool isCorrect = dtcontainer.getCorrectOutput() ==
+                              dtcontainer.getAudioList()[index];
                           if (isCorrect) {
-                            userData.incrementLevelCount("Identification", level);
+                            userData.incrementLevelCount(
+                                "Identification", level);
                           }
                           return isCorrect;
                         },
@@ -271,9 +287,11 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                           isGrid: true,
                         ),
                         isCorrect: () {
-                          bool isCorrect = dtcontainer.getCorrectOutput() == dtcontainer.getAudioList()[index];
+                          bool isCorrect = dtcontainer.getCorrectOutput() ==
+                              dtcontainer.getAudioList()[index];
                           if (isCorrect) {
-                            userData.incrementLevelCount("Identification", level);
+                            userData.incrementLevelCount(
+                                "Identification", level);
                           }
                           return isCorrect;
                         },
@@ -308,9 +326,12 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                       text: dtcontainer.getTextList()[index],
                                     ),
                                     isCorrect: () {
-                                      bool isCorrect = dtcontainer.getCorrectOutput() == dtcontainer.getTextList()[index];
+                                      bool isCorrect =
+                                          dtcontainer.getCorrectOutput() ==
+                                              dtcontainer.getTextList()[index];
                                       if (isCorrect) {
-                                        userData.incrementLevelCount("Identification", level);
+                                        userData.incrementLevelCount(
+                                            "Identification", level);
                                       }
                                       return isCorrect;
                                     },
@@ -349,9 +370,11 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                               imagePath: dtcontainer.getImageUrlList()[index],
                             ),
                             isCorrect: () {
-                              bool isCorrect = dtcontainer.getCorrectOutput() == dtcontainer.getImageUrlList()[index];
+                              bool isCorrect = dtcontainer.getCorrectOutput() ==
+                                  dtcontainer.getImageUrlList()[index];
                               if (isCorrect) {
-                                userData.incrementLevelCount("Identification", level);
+                                userData.incrementLevelCount(
+                                    "Identification", level);
                               }
                               return isCorrect;
                             },

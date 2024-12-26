@@ -50,6 +50,7 @@ class _DiscriminationState extends State<Discrimination> {
   rive.StateMachineController? _controller;
   rive.SMIInput<bool>? _correctInput;
   rive.SMIInput<bool>? _incorrectInput;
+  late rive.RiveFile file;
 
   void getAudioProgress() {
     setState(() {
@@ -83,7 +84,7 @@ class _DiscriminationState extends State<Discrimination> {
   Future<void> _loadRiveFile() async {
     try {
       final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
-      final file = rive.RiveFile.import(bytes);
+       file = rive.RiveFile.import(bytes);
       final artboard = file.mainArtboard;
       _controller = rive.StateMachineController.fromArtboard(artboard, 'State Machine 1');
 
@@ -167,16 +168,16 @@ Widget build(BuildContext context) {
               SizedBox(
                 height: 20.v,
               ),
-            //  Positioned(
-            //                         bottom: 16.h,
-            //                         left: 16.h,
-            //                         child: _riveArtboard == null
-            //                             ? const Center(child: CircularProgressIndicator())
-            //                             : rive.RiveAnimation.direct(
-            //                                 rive.RiveFile.import(await rootBundle.load('assets/rive/Celebration_animation.riv')),
-            //                                 fit: BoxFit.contain,
-            //                               ),
-            //                       ),
+             Positioned(
+                                    bottom: 16.h,
+                                    left: 16.h,
+                                    child: _riveArtboard == null
+                                        ? const Center(child: CircularProgressIndicator())
+                                        : rive.RiveAnimation.direct(
+                                          file,
+                                            fit: BoxFit.contain,
+                                          ),
+                                  ),
             ],
           ),
         ),
