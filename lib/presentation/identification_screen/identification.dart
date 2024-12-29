@@ -40,8 +40,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   late UserData userData;
   Artboard? _riveArtboard;
   StateMachineController? _controller;
-  SMIInput<bool>? _correctInput;
-  SMIInput<bool>? _incorrectInput;
+  SMITrigger? _correctTriger;
+  SMITrigger? _incorrectTriger;
   late RiveFile _riveFile;
 
   @override
@@ -68,8 +68,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
 
       if (_controller != null) {
         _riveFile.mainArtboard.addController(_controller!);
-        _correctInput = _controller!.findInput<bool>('correct');
-        _incorrectInput = _controller!.findInput<bool>('incorrect');
+        _correctTriger = _controller!.getTriggerInput("correct");
+        _incorrectTriger = _controller!.getTriggerInput("incorrect");
       }
 
       setState(() {
@@ -81,11 +81,10 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   }
 
   void _triggerAnimation(bool isCorrect) {
-    if (_correctInput != null && _incorrectInput != null) {
-      setState(() {
-        _correctInput!.change(true);
-        _incorrectInput!.change(!isCorrect);
-      });
+    if (isCorrect) {
+      _correctTriger?.fire();
+    } else {
+      _incorrectTriger?.fire();
     }
   }
 
@@ -136,15 +135,13 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                             Expanded(
                               child: Stack(
                                 children: [
-                                  Center(
-                                    child: _buildOptionGRP(
-                                      context,
-                                      provider,
-                                      type,
-                                      dtcontainer,
-                                      params,
-                                      level,
-                                    ),
+                                  _buildOptionGRP(
+                                    context,
+                                    provider,
+                                    type,
+                                    dtcontainer,
+                                    params,
+                                    level,
                                   ),
                                   Positioned(
                                     bottom: -55.h,
@@ -191,45 +188,49 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       String type, dynamic dtcontainer, String params, int level) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.h),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Container(
-              height: 192.v,
-              padding: EdgeInsets.all(1.h),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadiusStyle.roundedBorder15,
-                    child: SvgPicture.asset(
-                      "assets/images/svg/QUestion.svg",
-                      fit: BoxFit.contain,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: Container(
+                height: 192.v,
+                padding: EdgeInsets.all(1.h),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadiusStyle.roundedBorder15,
+                      child: SvgPicture.asset(
+                        "assets/images/svg/QUestion.svg",
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                  ),
-                  (type == "WordToFig")
-                      ? Center(
-                          child: Text(
-                            dtcontainer.getImageUrl(),
-                            style: const TextStyle(fontSize: 90),
+                    (type == "WordToFig")
+                        ? Center(
+                            child: Text(
+                              dtcontainer.getImageUrl(),
+                              style: const TextStyle(fontSize: 90),
+                            ),
+                          )
+                        : CustomImageView(
+                            imagePath: dtcontainer.getImageUrl(),
+                            radius: BorderRadiusStyle.roundedBorder15,
                           ),
-                        )
-                      : CustomImageView(
-                          imagePath: dtcontainer.getImageUrl(),
-                          radius: BorderRadiusStyle.roundedBorder15,
-                        ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Center(
-                child: buildDynamicOptions(type, provider, dtcontainer, params,
-                    level, _triggerAnimation)),
-          ),
-        ],
+            Expanded(
+              flex: 1,
+              child: Center(
+                  child: buildDynamicOptions(type, provider, dtcontainer, params,
+                      level, _triggerAnimation)),
+            ),
+          ],
+        ),
+        ]
       ),
     );
   }

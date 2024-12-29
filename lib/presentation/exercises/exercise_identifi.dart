@@ -146,14 +146,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                             Expanded(
                               child: Stack(
                                 children: [
-                                  Center(
-                                    child: _buildOptionGRP(
-                                      context,
-                                      provider,
-                                      type,
-                                      dtcontainer,
-                                      params,
-                                    ),
+                                  _buildOptionGRP(
+                                    context,
+                                    provider,
+                                    type,
+                                    dtcontainer,
+                                    params,
                                   ),
                                   Positioned(
                                     bottom: -55.h,
@@ -206,7 +204,8 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
       String type, dynamic dtcontainer, String params) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.h),
-      child: Stack(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
             children: [

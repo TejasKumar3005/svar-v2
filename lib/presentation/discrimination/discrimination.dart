@@ -625,6 +625,8 @@ Widget build(BuildContext context) {
                 SizedBox(
                   width: 20.h,
                 ),
+
+                
                 OptionWidget(
                   triggerAnimation: _triggerAnimation,
                   child: AudioWidget(

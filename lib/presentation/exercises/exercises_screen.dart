@@ -50,7 +50,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         .initialize()
         .then((_) => RivePreloader().getRiveFile('assets/rive/levels.riv'));
     _trackTrainPosition();
+
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +204,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             ),
           ),
         );
+
       } else {
         print("Type is not video");
         print(type);
@@ -342,6 +347,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                     .then((value) => print("Exercise data updated"));
 
               }
+
               },
             ),
           ),
@@ -455,8 +461,10 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
     print("startExerciseIndex: $startExerciseIndex");
     if (event.name == "level 1") {
+
       _handleLevelType(startExerciseIndex, "notcompleted");
     } else if (event.name == "level 2") {
+
       _handleLevelType(startExerciseIndex + 1, "notcompleted");
     } else if (event.name == "level 3") {
       _handleLevelType(startExerciseIndex + 2, "notcompleted");
@@ -523,6 +531,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         }
 
         train = artboard.component('train');
+        
         if (train != null) {
           print("train position: ${train.x}");
           SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -602,5 +611,6 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     } else {
       return "unexpected value";
     }
+
   }
 }

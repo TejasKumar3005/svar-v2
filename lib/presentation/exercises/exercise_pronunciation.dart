@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,9 +24,12 @@ import 'package:svar_new/widgets/loading.dart';
 class ExercisePronunciation extends StatefulWidget {
   final String character;
   final String eid;
-  final String date;    
+  final String date;
   const ExercisePronunciation(
-      {Key? key, required this.character, required this.eid, required this.date})
+      {Key? key,
+      required this.character,
+      required this.eid,
+      required this.date})
       : super(key: key);
 
   @override
@@ -40,6 +44,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   String? _errorMessage;
   late AudioPlayer _audioPlayer;
   var model;
+  FlutterTts flutterTts = FlutterTts();
+  bool isSpeaking = false;
 
   @override
   void initState() {
@@ -47,7 +53,59 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+    initTTS();
     super.initState();
+  }
+
+  Future<void> initTTS() async {
+    // Configure TTS for Hindi
+    await flutterTts.setLanguage("hi-IN");
+    await flutterTts.setPitch(1.0); // Normal pitch
+    await flutterTts
+        .setSpeechRate(0.5); // Slower rate for better Hindi pronunciation
+    await flutterTts.setVolume(1.0);
+
+    // Optional: Set completion handler
+    flutterTts.setCompletionHandler(() {
+      setState(() {
+        isSpeaking = false;
+      });
+    });
+
+    // Optional: Set error handler
+    flutterTts.setErrorHandler((message) {
+      setState(() {
+        isSpeaking = false;
+      });
+      print("TTS Error: $message");
+    });
+  }
+
+  Future<void> speakHindi(String text) async {
+    if (text.isEmpty) return;
+
+    if (isSpeaking) {
+      await flutterTts.stop();
+      setState(() {
+        isSpeaking = false;
+      });
+      return;
+    }
+
+    try {
+      setState(() {
+        isSpeaking = true;
+      });
+      await flutterTts.speak(text);
+    } catch (e) {
+      print("Error speaking: $e");
+      setState(() {
+        isSpeaking = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error in text to speech: $e')),
+      );
+    }
   }
 
   @override
@@ -187,12 +245,21 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                 bottom: 100,
                 child: result == null
                     ? GestureDetector(
-                        onTap: () {
-                          // _playAudio(lingLearningProvider.selectedCharacter);
+                        onTap: () async {
+                      await    speakHindi(widget.character);
                         },
-                        child: Text(
-                          widget.character,
-                          style: TextStyle(fontSize: 160),
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: Text(
+                              widget.character,
+                              style: TextStyle(
+                                height: 1, // Helps with vertical alignment
+                              ),
+                            ),
+                          ),
                         ),
                       )
                     : Container(),
