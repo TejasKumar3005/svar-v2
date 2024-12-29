@@ -108,38 +108,7 @@ class HomeScreenState extends State<HomeScreen> {
               },
             ),
 
-            buildCarouselItem(
-              context,
-              provider,
-              "Level",
-              ImageConstant.thumbnailPhonemes,
-              1,
-              () => handleExercise(provider, "Level", context),
-            ),
-            buildCarouselItem(
-              context,
-              provider,
-              "Detection",
-              ImageConstant.imgDetection,
-              2,
-              () => handleExercise(provider, "Detection", context),
-            ),
-            buildCarouselItem(
-              context,
-              provider,
-              "Discrimination",
-              ImageConstant.imgDiscrimination,
-              3,
-              () => handleExercise(provider, "Discrimination", context),
-            ),
-            buildCarouselItem(
-              context,
-              provider,
-              "Identification",
-              ImageConstant.imgIdentification,
-              4,
-              () => handleExercise(provider, "Identification", context),
-            ), 
+          
              buildCarouselItem(
               context,
               provider,

@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:rive/rive.dart' hide Image;
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
@@ -206,7 +207,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
-  String? result;
+  List<Map<String, dynamic>> result = [];
   bool loading = false;
   OverlayEntry? _overlayEntry;
   @override
@@ -246,7 +247,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                 child: result == null
                     ? GestureDetector(
                         onTap: () async {
-                      await    speakHindi(widget.character);
+                          await speakHindi(widget.character);
                         },
                         child: Container(
                           width: 120,
@@ -332,20 +333,26 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                   ),
                 ),
               ),
-              result != null
-                  ? Positioned(
-                      left: MediaQuery.of(context).size.width * 0.1,
-                      bottom: 10,
-                      child: circularScore(result!),
-                    )
-                  : Container()
+            if  (result.isEmpty)
+                resultRive()
+                
             ],
           ),
         ),
       ),
     );
   }
-
+  Widget resultRive(){
+    double width_screen = MediaQuery.of(context).size.width;
+    return Container(
+        margin: EdgeInsets.fromLTRB(width_screen * 0.4, 16.0, 16.0, 16.0),
+    height: 500,
+      child: RiveAnimation.asset(
+        'assets/rive/result.riv',
+        fit: BoxFit.contain,
+      ),
+    );
+  }
   Widget _buildAppBar(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
@@ -378,7 +385,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
-  Future<double> sendWavFile(String wavFile, String word) async {
+  Future<dynamic> sendWavFile(String wavFile, String word) async {
     var uri = Uri.parse("https://gameapi.svar.in/process_wav");
 
     var request = http.MultipartRequest('POST', uri)
@@ -391,8 +398,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       String body = await response.stream.bytesToString();
       print(body);
       Map<String, dynamic> data = json.decode(body);
+
       setState(() {
-        result = ((data["result"] * 100.0).toInt()).toString();
+        result = data["result"];
         loading = false;
       });
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
@@ -401,12 +409,13 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         eid: widget.eid,
         date: widget.date,
         performance: {
-          "score": (data["result"] * 100.0).toInt(),
+          "result": result,
           "word": word,
         },
       ).then((value) => print("Exercise data updated"));
       return data['result'];
     } else {
+    
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Something went wrong")));
       throw Exception(
@@ -450,7 +459,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         });
 
         try {
-          double result = await sendWavFile(path, widget.character);
+          dynamic result = await sendWavFile(path, widget.character);
           print("Processing result: $result");
           timer.cancel(); // Cancel timer if successful
         } catch (e) {
