@@ -50,11 +50,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         .initialize()
         .then((_) => RivePreloader().getRiveFile('assets/rive/levels.riv'));
     _trackTrainPosition();
-
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +101,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     );
   }
 
-  void _handleLevelType(int startExerciseIndex, String params) async{
+  void _handleLevelType(int startExerciseIndex, String params) async {
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
 
@@ -190,21 +186,19 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                  data_pro.incrementLevel();
-                if(data["completedAt"]==null){
+                data_pro.incrementLevel();
+                if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                    .updateExerciseData(
-                      eid: data["eid"],
-                      date: data["date"],
-                    )
-                    .then((value) => print("Exercise data updated"));
-
-              }
+                      .updateExerciseData(
+                        eid: data["eid"],
+                        date: data["date"],
+                      )
+                      .then((value) => print("Exercise data updated"));
+                }
               },
             ),
           ),
         );
-
       } else {
         print("Type is not video");
         print(type);
@@ -264,14 +258,14 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
               videoUrl: videoUrl,
               onVideoComplete: () {
                 data_pro.incrementLevel();
-                if(data["completedAt"]==null){
+                if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                    .updateExerciseData(
-                      eid: data["eid"],
-                      date: data["date"],
-                    )
-                    .then((value) => print("Exercise data updated"));
-              }
+                      .updateExerciseData(
+                        eid: data["eid"],
+                        date: data["date"],
+                      )
+                      .then((value) => print("Exercise data updated"));
+                }
               },
             ),
           ),
@@ -338,16 +332,14 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
               videoUrl: videoUrl,
               onVideoComplete: () {
                 data_pro.incrementLevel();
-                if(data["completedAt"]==null){
+                if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                    .updateExerciseData(
-                      eid: data["eid"],
-                      date: data["date"],
-                    )
-                    .then((value) => print("Exercise data updated"));
-
-              }
-
+                      .updateExerciseData(
+                        eid: data["eid"],
+                        date: data["date"],
+                      )
+                      .then((value) => print("Exercise data updated"));
+                }
               },
             ),
           ),
@@ -392,7 +384,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       }
 
       debugPrint("Fetched type for Level: $type");
-      
+
       await Future.delayed(Duration.zero);
 
       if (type == "video") {
@@ -404,16 +396,14 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
               onVideoComplete: () {
                 data_pro.incrementLevel();
 
-              if(data["completedAt"]==null){
+                if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                    .updateExerciseData(
-                      eid: data["eid"],
-                      date: data["date"],
-                    )
-                    .then((value) => print("Exercise data updated"));
-
-              }
-              
+                      .updateExerciseData(
+                        eid: data["eid"],
+                        date: data["date"],
+                      )
+                      .then((value) => print("Exercise data updated"));
+                }
               },
             ),
           ),
@@ -450,27 +440,86 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             arguments: argumentsList);
       }
     } catch (e) {
-
       debugPrint("Error in Level handling: $e");
-
     }
   }
 
   void tapHandle(RiveEvent event) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
+    int currentExerciseIndex = data_pro.currentExerciseIndex;
     print("startExerciseIndex: $startExerciseIndex");
     if (event.name == "level 1") {
+      if(data_pro.todaysExercises.length-1 < startExerciseIndex){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("No exercises found for today"),
+        ));
+        return;
+      }
 
+      if (startExerciseIndex - currentExerciseIndex >= 2) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Please complete the previous levels"),
+        ));
+        return;
+      }
       _handleLevelType(startExerciseIndex, "notcompleted");
     } else if (event.name == "level 2") {
-
+      
+      if(data_pro.todaysExercises.length-1 < startExerciseIndex+1){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("No exercises found for today"),
+        ));
+        return;
+      }
+      if (startExerciseIndex - currentExerciseIndex >= 3) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Please complete the previous levels"),
+        ));
+        return;
+      }
       _handleLevelType(startExerciseIndex + 1, "notcompleted");
     } else if (event.name == "level 3") {
+        if(data_pro.todaysExercises.length-1 < startExerciseIndex+2){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("No exercises found for today"),
+        ));
+        return;
+      }
+        if (startExerciseIndex - currentExerciseIndex >= 4) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Please complete the previous levels"),
+        ));
+        return;
+      }
       _handleLevelType(startExerciseIndex + 2, "notcompleted");
     } else if (event.name == "level 4") {
+        if(data_pro.todaysExercises.length-1 < startExerciseIndex+3){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("No exercises found for today"),
+        ));
+        return;
+      }
+        if (startExerciseIndex - currentExerciseIndex >= 5) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Please complete the previous levels"),
+        ));
+        return;
+      }
       _handleLevelType(startExerciseIndex + 3, "notcompleted");
     } else if (event.name == "level 5") {
+        if(data_pro.todaysExercises.length-1 < startExerciseIndex+4){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("No exercises found for today"),
+        ));
+        return;
+      }
+        if (startExerciseIndex - currentExerciseIndex >= 6) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Please complete the previous levels"),
+        ));
+        return;
+      }
       _handleLevelType(startExerciseIndex + 4, "notcompleted");
     }
   }
@@ -480,9 +529,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     int exerciseCount = data_pro.todaysExercises.length;
     int startExerciseIndex =
         (data_pro.currentExerciseIndex ~/ 5) * 5; // Calculate starting index
-    int endExerciseIndex = startExerciseIndex + 5;
+    int endExerciseIndex = startExerciseIndex + 4;
     if (endExerciseIndex > exerciseCount) {
-      endExerciseIndex = exerciseCount;
+      endExerciseIndex = exerciseCount-1;
     }
     _controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
@@ -512,7 +561,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           TextValueRun? textRun_desc = artboard.textRun(descKey);
           if (textRun_desc != null) {
             textRun_desc.text =
-                data_pro.todaysExercises[actualIndex]['description']==null
+                data_pro.todaysExercises[actualIndex]['description'] == null
                     ? 'No Description'
                     : data_pro.todaysExercises[actualIndex]['description'];
           } else {
@@ -531,7 +580,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         }
 
         train = artboard.component('train');
-        
+
         if (train != null) {
           print("train position: ${train.x}");
           SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -611,6 +660,5 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     } else {
       return "unexpected value";
     }
-
   }
 }

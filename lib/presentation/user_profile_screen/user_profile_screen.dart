@@ -1,8 +1,6 @@
 // import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/widgets/game_stats_header.dart';
-import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -314,6 +312,8 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                             return null;
                                           },
                                         ),
+
+
                                         SizedBox(height: 10),
                                         CustomTextFormField(
                                           controller: _emailController,
@@ -438,7 +438,29 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
+                                        ), 
+                                         SizedBox(height: 10),
+                                         
+                                        ElevatedButton(
+                                          onPressed: () async {
+                                            await FirebaseAuth.instance.signOut();
+                                            Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                                          
+                                          },
+                                          child: Text('Log out'),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                appTheme.orangeA200,
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 24, vertical: 12),
+                                            textStyle: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                         ),
+                                        
                                       ],
                                     ),
 
