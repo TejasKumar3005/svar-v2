@@ -3,6 +3,7 @@ import 'package:svar_new/presentation/exercises/exercise_detection.dart';
 import 'package:svar_new/presentation/exercises/exercise_discrimination.dart';
 import 'package:svar_new/presentation/exercises/exercise_identifi.dart';
 import 'package:svar_new/presentation/exercises/exercise_pronunciation.dart';
+import 'package:svar_new/presentation/exercises/exercises_screen.dart';
 import 'package:svar_new/presentation/identification_screen/identification.dart';
 import 'package:svar_new/presentation/camera_video_excercise/videoCam.dart';
 import 'package:svar_new/presentation/discrimination/discrimination.dart';
@@ -77,6 +78,7 @@ class AppRoutes {
   static const String exerciseDiscrimination = '/exercise_discrimination';
   static const String exerciseDetection = '/exercise_detection';
   static const String exercisePronunciation = '/exercise_pronunciation';
+  static const String exercisesScreen = '/exercises_screen';
 
   static Map<String, WidgetBuilder> get routes => {
        
@@ -109,5 +111,6 @@ class AppRoutes {
         exerciseDiscrimination: ExerciseDiscrimination.builder,
         exerciseDetection: ExerciseDetection.builder,
         exercisePronunciation: ExercisePronunciation.builder,
+        exercisesScreen: ExercisesScreen.builder,
       };
 }

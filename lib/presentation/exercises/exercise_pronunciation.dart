@@ -41,12 +41,17 @@ class ExercisePronunciation extends StatefulWidget {
   }
 }
 
+extension _TextExtension on Artboard {
+  TextValueRun? textRun(String name) => component<TextValueRun>(name);
+}
+
 class ExercisePronunciationState extends State<ExercisePronunciation> {
   String? _errorMessage;
   late AudioPlayer _audioPlayer;
   var model;
   FlutterTts flutterTts = FlutterTts();
   bool isSpeaking = false;
+  StateMachineController? _controller;
 
   @override
   void initState() {
@@ -244,7 +249,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
               Positioned(
                 left: 80,
                 bottom: 100,
-                child: result == null
+                child: result.isEmpty
                     ? GestureDetector(
                         onTap: () async {
                           await speakHindi(widget.character);
@@ -268,7 +273,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
               Positioned(
                 left: 180,
                 bottom: 120,
-                child: result == null
+                child: result.isEmpty
                     ? AvatarGlow(
                         endRadius: 90.0,
                         glowColor: Colors.blue,
@@ -311,8 +316,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                 right: 80,
                 bottom: 0,
                 child: Container(
-                  height: 360,
-                  width: 270,
+                  height: 200,
+                  width: 150,
                   child: Image.asset(
                     ImageConstant.imgProtaganist1,
                     fit: BoxFit.contain,
@@ -333,26 +338,44 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                   ),
                 ),
               ),
-            if  (result.isEmpty)
-                resultRive()
-                
+              if (result.isNotEmpty) resultRive()
             ],
           ),
         ),
       ),
     );
   }
-  Widget resultRive(){
+
+  Widget resultRive() {
     double width_screen = MediaQuery.of(context).size.width;
     return Container(
-        margin: EdgeInsets.fromLTRB(width_screen * 0.4, 16.0, 16.0, 16.0),
-    height: 500,
+      margin: EdgeInsets.fromLTRB(width_screen * 0.4, 16.0, 16.0, 16.0),
+      height: 200,
       child: RiveAnimation.asset(
         'assets/rive/result.riv',
+        onInit: onInit,
         fit: BoxFit.contain,
       ),
     );
   }
+
+  void onInit(Artboard artboard) {
+    _controller =
+        StateMachineController.fromArtboard(artboard, 'State Machine 1');
+    if (_controller != null) {
+      artboard.addController(_controller!);
+      // Get all text runs from the artboard
+       artboard.forEachComponent((component) {
+      print("Component: ${component.runtimeType} - Name: ${component.name}");
+    });
+
+      TextValueRun? textRun_desc = artboard.textRun("is prolonged");
+      if (textRun_desc != null) {
+        textRun_desc.text = "a is prolonged";
+      }
+    }
+  }
+
   Widget _buildAppBar(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
@@ -415,7 +438,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       ).then((value) => print("Exercise data updated"));
       return data['result'];
     } else {
-    
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Something went wrong")));
       throw Exception(

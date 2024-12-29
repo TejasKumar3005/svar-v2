@@ -1,7 +1,4 @@
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:rive/rive.dart' as rive;
@@ -118,11 +115,9 @@ class HomeScreenState extends State<HomeScreen> {
               () {
                 
                 var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
-                var user_pro=Provider.of<UserDataProvider>(context,listen: false);
               
                                   if(data_pro.todaysExercises.isNotEmpty){
-                    Navigator.push(context, 
-                    MaterialPageRoute(builder: (context) => ExercisesScreen()));
+                    NavigatorService.pushNamed(AppRoutes.exercisesScreen);
                   }else{
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text('No exercises assigned'),
