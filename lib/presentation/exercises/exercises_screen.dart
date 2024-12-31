@@ -538,7 +538,10 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
     if (_controller != null) {
       artboard.addController(_controller!);
-
+artboard.forEachComponent((component) {
+  if (component is TextValueRun)
+    {  print("Component: ${component.runtimeType} - Name: ${component.name}");}
+    });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         for (int i = 0; i < 5; i++) {
           int actualIndex = startExerciseIndex +

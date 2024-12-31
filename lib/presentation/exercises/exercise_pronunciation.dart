@@ -52,6 +52,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   FlutterTts flutterTts = FlutterTts();
   bool isSpeaking = false;
   StateMachineController? _controller;
+  List<Map<String, String>>? wrd_map;
 
   @override
   void initState() {
@@ -212,7 +213,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
-  List<Map<String, dynamic>> result = [];
+  List<Map<String, String>> result = [];
   bool loading = false;
   OverlayEntry? _overlayEntry;
   @override
@@ -338,7 +339,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                   ),
                 ),
               ),
-              if (result.isNotEmpty) resultRive()
+              if (result.isEmpty)
+                pronunciationResultWidget(result, context, widget.character),
             ],
           ),
         ),
@@ -359,15 +361,135 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     );
   }
 
+  Widget pronunciationResultWidget(
+      List<Map<String, String>> result, BuildContext context, String txt) {
+    double width_screen = MediaQuery.of(context).size.width;
+    return Container(
+      margin: EdgeInsets.fromLTRB(width_screen * 0.4, 16.0, 16.0, 16.0),
+      decoration: BoxDecoration(
+        color: Colors.green[700],
+        borderRadius: BorderRadius.circular(16.0),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 8.0,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 30, // Adjust radius as needed
+              child: Text(
+                txt,
+                style: TextStyle(
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green[700],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Divider(
+            color: Colors.white38,
+            thickness: 1.0,
+            indent: 20,
+            endIndent: 20,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24.0, 8.0, 16.0, 8.0),
+              child: ListView.builder(
+                itemCount: result.length,
+                itemBuilder: (context, index) {
+                  String key = result[index].entries.first.key;
+                  String value = result[index].entries.first.value;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Text(
+                            key.toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8.0),
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            value,
+                            style: const TextStyle(
+                              fontSize: 18.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+            child: ElevatedButton(
+              onPressed: () {
+                // Handle the next button click
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[900],
+                foregroundColor: Colors.white, // Text Color
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 32.0, vertical: 12.0),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "NEXT",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 8.0),
+                  Icon(Icons.arrow_forward),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void onInit(Artboard artboard) {
     _controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
     if (_controller != null) {
       artboard.addController(_controller!);
       // Get all text runs from the artboard
-       artboard.forEachComponent((component) {
-      print("Component: ${component.runtimeType} - Name: ${component.name}");
-    });
+      artboard.forEachComponent((component) {
+        print("Component: ${component.runtimeType} - Name: ${component.name}");
+      });
 
       TextValueRun? textRun_desc = artboard.textRun("is prolonged");
       if (textRun_desc != null) {
@@ -424,6 +546,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
       setState(() {
         result = data["result"];
+        wrd_map = data["result"];
         loading = false;
       });
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
