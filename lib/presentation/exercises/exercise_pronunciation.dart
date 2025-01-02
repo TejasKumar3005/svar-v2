@@ -213,7 +213,12 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
-  List<Map<String, String>> result = [];
+  List<Map<String, String>> result = [
+    {
+      "a": "A is missing",
+    },
+    {"b": "B is correctly pronounced "}
+  ];
   bool loading = false;
   OverlayEntry? _overlayEntry;
   @override
@@ -314,7 +319,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                     : Container(),
               ),
               Positioned(
-                right: 80,
+                right: result.isEmpty ? 80 : null,
+                left: result.isNotEmpty ? 80 : null,
                 bottom: 0,
                 child: Container(
                   height: 200,
@@ -339,24 +345,11 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                   ),
                 ),
               ),
-              if (result.isEmpty)
+              if (result.isNotEmpty)
                 pronunciationResultWidget(result, context, widget.character),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget resultRive() {
-    double width_screen = MediaQuery.of(context).size.width;
-    return Container(
-      margin: EdgeInsets.fromLTRB(width_screen * 0.4, 16.0, 16.0, 16.0),
-      height: 200,
-      child: RiveAnimation.asset(
-        'assets/rive/result.riv',
-        onInit: onInit,
-        fit: BoxFit.contain,
       ),
     );
   }
@@ -415,6 +408,16 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Icon(
+                          Icons.emoji_emotions,
+                          color: value.contains("correct")
+                              ? Colors.amber[600]
+                              : Colors.red,
+                          size: 30,
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
                         Expanded(
                           flex: 1,
                           child: Text(
@@ -449,7 +452,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
             child: ElevatedButton(
               onPressed: () {
-                // Handle the next button click
+                var data_pro =
+                    Provider.of<ExerciseProvider>(context, listen: false);
+                data_pro.incrementLevel();
+                Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green[900],
@@ -479,23 +485,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         ],
       ),
     );
-  }
-
-  void onInit(Artboard artboard) {
-    _controller =
-        StateMachineController.fromArtboard(artboard, 'State Machine 1');
-    if (_controller != null) {
-      artboard.addController(_controller!);
-      // Get all text runs from the artboard
-      artboard.forEachComponent((component) {
-        print("Component: ${component.runtimeType} - Name: ${component.name}");
-      });
-
-      TextValueRun? textRun_desc = artboard.textRun("is prolonged");
-      if (textRun_desc != null) {
-        textRun_desc.text = "a is prolonged";
-      }
-    }
   }
 
   Widget _buildAppBar(BuildContext context) {
