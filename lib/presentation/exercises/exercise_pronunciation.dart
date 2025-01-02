@@ -214,10 +214,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   }
 
   List<Map<String, String>> result = [
-    {
-      "a": "A is missing",
-    },
-    {"b": "B is correctly pronounced "}
+  
   ];
   bool loading = false;
   OverlayEntry? _overlayEntry;
