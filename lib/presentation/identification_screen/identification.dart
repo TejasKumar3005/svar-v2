@@ -63,17 +63,26 @@ class AuditoryScreenState extends State<IdentificationScreen> {
           await rootBundle.load('assets/rive/Celebration_animation.riv');
       _riveFile = RiveFile.import(bytes);
 
-      _controller = StateMachineController.fromArtboard(
-          _riveFile.mainArtboard, 'State Machine 1');
+      final artboard = _riveFile.mainArtboard;
+      _controller =
+          StateMachineController.fromArtboard(artboard, 'State Machine 1');
 
-      if (_controller != null) {
-        _riveFile.mainArtboard.addController(_controller!);
-        _correctTriger = _controller!.getTriggerInput("correct");
-        _incorrectTriger = _controller!.getTriggerInput("incorrect");
+      if (_controller == null) {
+        print('Error: Unable to get StateMachineController');
+        return;
+      }
+
+      artboard.addController(_controller!);
+      _correctTriger = _controller!.findSMI('correct') as SMITrigger?;
+      _incorrectTriger = _controller!.findSMI('incorrect') as SMITrigger?;
+
+      if (_correctTriger == null || _incorrectTriger == null) {
+        print('Error: Unable to find triggers');
+        return;
       }
 
       setState(() {
-        _riveArtboard = _riveFile.mainArtboard; // Extract the Artboard
+        _riveArtboard = artboard;
       });
     } catch (e) {
       print('Error loading Rive file: $e');
@@ -81,6 +90,16 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   }
 
   void _triggerAnimation(bool isCorrect) {
+    print('Triggering animation: ${isCorrect ? 'correct' : 'incorrect'}');
+    if (_controller == null) {
+      print('Controller is null');
+      return;
+    }
+    if (_correctTriger == null || _incorrectTriger == null) {
+      print('Triggers are null');
+      return;
+    }
+
     if (isCorrect) {
       _correctTriger?.fire();
     } else {
@@ -152,8 +171,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
                                         : SizedBox(
                                             height: 300,
                                             width: 350,
-                                            child: RiveAnimation.direct(
-                                              _riveFile,
+                                            child: Rive(
+                                              artboard: _riveArtboard!,
                                               fit: BoxFit.contain,
                                             ),
                                           ),
@@ -188,9 +207,8 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       String type, dynamic dtcontainer, String params, int level) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.h),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [Row(
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Row(
           children: [
             Expanded(
               flex: 1,
@@ -225,13 +243,12 @@ class AuditoryScreenState extends State<IdentificationScreen> {
             Expanded(
               flex: 1,
               child: Center(
-                  child: buildDynamicOptions(type, provider, dtcontainer, params,
-                      level, _triggerAnimation)),
+                  child: buildDynamicOptions(type, provider, dtcontainer,
+                      params, level, _triggerAnimation)),
             ),
           ],
         ),
-        ]
-      ),
+      ]),
     );
   }
 
