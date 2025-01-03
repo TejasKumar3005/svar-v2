@@ -423,57 +423,148 @@ class UserData {
     }
   }
 
-  Future<void> incrementLevelCount(String auditoryType, int level) async {
-    try {
-      var provider2 = Provider.of<RiveProvider>(buildContext!, listen: false);
-      String? uid = FirebaseAuth.instance.currentUser?.uid;
-      DocumentReference userRef =
-          FirebaseFirestore.instance.collection('patients').doc(uid);
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(userRef);
-        var provider =
-            Provider.of<UserDataProvider>(buildContext!, listen: false);
+Future<int> getCurrentLevel(String auditoryType) async {
+  try {
+    String? uid = FirebaseAuth.instance.currentUser?.uid;
+    
+    // Get reference to exercises collection
+    CollectionReference exercisesRef = FirebaseFirestore.instance
+        .collection('patients')
+        .doc(uid)
+        .collection('exercises');
 
-        if (snapshot.exists) {
-          Map<String, dynamic> levels =
-              (snapshot.data() as Map<String, dynamic>?)?['levelMap'];
-          int currentLevelCount = levels[auditoryType];
-          print("1");
-          if (currentLevelCount <= level) {
-            // Add the condition to only increment if currentLevelCount <= level
-            int newLevelCount = currentLevelCount + 1;
-            levels[auditoryType] = newLevelCount;
-            print("2");
-            transaction.update(userRef, {'levelMap': levels});
-            await addActivity(
-              "Level  $newLevelCount completed",
-              DateTime.now().toString().substring(0, 10),
-              DateTime.now().toString().substring(11, 16),
-              uid!,
-            );
-            print("3");
-            var data = provider.userModel;
-            print("4");
-            data.levelMap = LevelMap.fromJson(levels);
-            print("5");
-            provider.setUser(data);
-            print("6");
-            print("newLevelCount: $newLevelCount");
-            provider2.changeCurrentLevel(newLevelCount.toDouble());
-          } else {
-            print(
-                'Current level is already higher than or equal to the provided level.');
+    // Get the completedTillExercise
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('patients')
+        .doc(uid)
+        .get();
+    
+    String completedTillExercise = (userDoc.data() as Map<String, dynamic>)['completedTillExercise'] ?? '';
+
+    // Calculate date range (7 days before and after)
+    DateTime today = DateTime.now();
+    DateTime startDate = today.subtract(Duration(days: 7));
+    DateTime endDate = today.add(Duration(days: 7));
+
+    // Get all exercises within date range
+    QuerySnapshot exerciseDocs = await exercisesRef
+        .where(FieldPath.documentId, 
+              isGreaterThanOrEqualTo: startDate.toString().substring(0, 10))
+        .where(FieldPath.documentId, 
+              isLessThanOrEqualTo: endDate.toString().substring(0, 10))
+        .get();
+
+    // Collect all exercise IDs in order
+    List<String> allExerciseIds = [];
+    
+    for (var doc in exerciseDocs.docs) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      
+      // Iterate through all numbered fields (levels)
+      for (var field in data.keys) {
+        if (field.toString().contains(RegExp(r'^[0-9]+$'))) {
+          List<dynamic> exercises = data[field] as List<dynamic>;
+          
+          for (var exercise in exercises) {
+            if (exercise['assignedBy'] != null &&
+                exercise['assignedBy']['type'] == 'Level' &&
+                exercise['assignedBy']['subtype'] == auditoryType) {
+              String eid = exercise['assignedBy']['eid'];
+              allExerciseIds.add(eid);
+            }
           }
-        } else {
-          throw Exception('User not found!');
         }
+      }
+    }
+
+    // Sort exercise IDs
+    allExerciseIds.sort();
+
+    // Find position of completedTillExercise
+    int currentLevel = allExerciseIds.indexOf(completedTillExercise) + 1;
+    
+    // If not found, return 0 or handle appropriately
+    if (currentLevel <= 0) {
+      return 0;
+    }
+
+    return currentLevel;
+
+  } catch (e) {
+    print('Error getting current level: $e');
+    return 0;
+  }
+}
+
+// Modify incrementLevelCount to update completedTillExercise
+Future<void> incrementLevelCount(String auditoryType, int level) async {
+  try {
+    var provider2 = Provider.of<RiveProvider>(buildContext!, listen: false);
+    String? uid = FirebaseAuth.instance.currentUser?.uid;
+    
+    // Reference to exercises collection and user doc
+    CollectionReference exercisesRef = FirebaseFirestore.instance
+        .collection('patients')
+        .doc(uid)
+        .collection('exercises');
+    DocumentReference userRef = FirebaseFirestore.instance
+        .collection('patients')
+        .doc(uid);
+
+    String today = DateTime.now().toString().substring(0, 10);
+    
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+      DocumentSnapshot exerciseSnapshot = await transaction.get(exercisesRef.doc(today));
+      
+      // Generate new exercise ID
+      String newEid = DateTime.now().millisecondsSinceEpoch.toString();
+      
+      Map<String, dynamic> newExercise = {
+        'assignedBy': {
+          'id': uid,
+          'type': 'user',
+          'eid': newEid,
+          'phoneme': 'P',
+          'subtype': auditoryType,
+          'type': 'Level'
+        }
+      };
+
+      if (exerciseSnapshot.exists) {
+        List<dynamic> exercises = (exerciseSnapshot.data() as Map<String, dynamic>)?[level.toString()] ?? [];
+        exercises.add(newExercise);
+        
+        transaction.set(exercisesRef.doc(today), 
+          {level.toString(): exercises},
+          SetOptions(merge: true)
+        );
+      } else {
+        transaction.set(exercisesRef.doc(today), {
+          level.toString(): [newExercise]
+        });
+      }
+
+      // Update completedTillExercise in user document
+      transaction.update(userRef, {
+        'completedTillExercise': newEid
       });
 
-      print('levelCount incremented successfully!');
-    } catch (e) {
-      print('Error incrementing levelCount: $e');
-    }
+      await addActivity(
+        "Exercise completed for $auditoryType",
+        today,
+        DateTime.now().toString().substring(11, 16),
+        uid!,
+      );
+
+      // Update provider with new level
+      int newLevel = await getCurrentLevel(auditoryType);
+      provider2.changeCurrentLevel(newLevel.toDouble());
+    });
+
+  } catch (e) {
+    print('Error recording exercise completion: $e');
   }
+}
 
   Future<void> addActivity(
       String activity, String date, String time, String uid) async {
