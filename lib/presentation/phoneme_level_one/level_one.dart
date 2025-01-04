@@ -136,7 +136,6 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       if (type == "video") {
         String? videoUrl = data["video_url"];
         if (videoUrl == null) {
-
           debugPrint("Video URL is null in the fetched data.");
 
           return;
@@ -191,7 +190,6 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       debugPrint("Data is: $data");
 
       if (type == "sound") {
-
         String? videoUrl = data["video_url"];
         if (videoUrl == null) {
           debugPrint("Video URL is null in the fetched data.");
@@ -372,46 +370,57 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // _fetchCurrentLevel();
-
     return SafeArea(
       child: Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
-        body: FutureBuilder<RiveFile?>(
-          future: _riveFileFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                  child: CircularProgressIndicator()); // Show loading indicator
-            } else if (snapshot.hasError || snapshot.data == null) {
-              return const Center(
-                  child: Text('Error loading Rive file')); // Handle errors
-            } else {
-              final riveFile = snapshot.data!;
+        body: NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            // Prevent vertical scroll
+            if (notification is ScrollUpdateNotification &&
+                notification.dragDetails != null &&
+                notification.dragDetails!.delta.dy.abs() >
+                    notification.dragDetails!.delta.dx.abs()) {
+              return true;
+            }
+            return false;
+          },
+          child: FutureBuilder<RiveFile?>(
+            future: _riveFileFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError || snapshot.data == null) {
+                return const Center(child: Text('Error loading Rive file'));
+              }
 
+              final riveFile = snapshot.data!;
+              // Or your background color
+            
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 controller: _scrollController,
-                // Use a custom ScrollPhysics for smoother scrolling
-                physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
-                child: AnimatedContainer(
-                  duration: const Duration(
-                      milliseconds: 500), // Adjust animation duration as needed
-                  curve: Curves.easeInOut, // Customize animation curve
+                physics:
+                    const ClampingScrollPhysics(), // Changed to ClampingScrollPhysics
+                child: Container(
                   width: MediaQuery.of(context).size.height * 13.7176,
                   height: MediaQuery.of(context).size.height,
-                  alignment: Alignment.centerLeft,
-                  child: RiveAnimation.direct(
-                    riveFile,
-                    fit: BoxFit.contain,
-                    onInit: _onRiveInit,
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: RiveAnimation.direct(
+                          riveFile,
+                          fit: BoxFit.cover, // Changed to cover
+                          onInit: _onRiveInit,
+                          antialiasing: true,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
-            }
-          },
+            },
+          ),
         ),
       ),
     );
@@ -441,7 +450,6 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
       _handleLevelType(startLevel + 4, "notcompleted");
       // provider.changeCurrentLevel(5);
     }
-
   }
 
   void _onRiveInit(Artboard artboard) async {
@@ -502,18 +510,18 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         }
         _levelText?.text = "type ${startLevel + i}";
       }
- 
+
       train = artboard.component('train');
       if (train != null) {
         print("train position: ${train.x}");
-      // Remove the Timer and use Rive's own animation events instead
-      _controller?.addEventListener((event) {
-        if (event is RiveEvent) {
-          _trackTrainPosition();
-        }
-      });
-      _previousTrainX = train.x;
-    } else {
+        // Remove the Timer and use Rive's own animation events instead
+        _controller?.addEventListener((event) {
+          if (event is RiveEvent) {
+            _trackTrainPosition();
+          }
+        });
+        _previousTrainX = train.x;
+      } else {
         debugPrint("Error: 'train' not found!");
       }
 
@@ -536,18 +544,17 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
     double trainX = train.x;
     // Add a threshold to prevent tiny movements from triggering scrolls
-    if (_previousTrainX != null && (trainX - _previousTrainX!).abs() < 0.1) return;
+    if (_previousTrainX != null && (trainX - _previousTrainX!).abs() < 0.1)
+      return;
 
     // Cache these values
     final screenWidth = MediaQuery.of(context).size.height * 13.7176;
     final maxTrainX = train.artboard!.width;
-    
+
     // Optimize calculation
     final scaledOffset = (trainX / maxTrainX) * screenWidth;
-    final targetOffset = scaledOffset.clamp(
-      0.0, 
-      _scrollController.position.maxScrollExtent
-    );
+    final targetOffset =
+        scaledOffset.clamp(0.0, _scrollController.position.maxScrollExtent);
 
     // Use jumpTo instead of animateTo for smoother scrolling
     // Or keep animateTo but with optimized duration
@@ -562,8 +569,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
     }
 
     _previousTrainX = trainX;
-}
-  
+  }
 
   Object retrieveObject(String type, Map<String, dynamic> data) {
     if (type == "ImageToAudio") {
