@@ -27,7 +27,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-
   int _currentIndex = 0;
 
   @override
@@ -39,7 +38,6 @@ class HomeScreenState extends State<HomeScreen> {
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-  
   }
 
   @override
@@ -82,7 +80,6 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ));
-
   }
 
   Widget carouselSlider(
@@ -91,7 +88,7 @@ class HomeScreenState extends State<HomeScreen> {
       alignment: Alignment.center,
       child: SizedBox(
         height: MediaQuery.of(context).size.height * 0.7,
-        width: MediaQuery.of(context).size.width * 0.95,
+        width: MediaQuery.of(context).size.width ,
         child: CarouselSlider(
           items: [
             buildCarouselItem(
@@ -104,44 +101,42 @@ class HomeScreenState extends State<HomeScreen> {
                 NavigatorService.pushNamed(AppRoutes.phonmesListScreen);
               },
             ),
-
-          
-             buildCarouselItem(
+            
+            buildCarouselItem(
               context,
               provider,
               "Level",
               ImageConstant.thumbnailPhonemes,
               5,
               () {
-                
-                var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
-              
-                                  if(data_pro.todaysExercises.isNotEmpty){
-                    NavigatorService.pushNamed(AppRoutes.exercisesScreen);
-                  }else{
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('No exercises assigned'),
-                    ));
-                  }
-                
+                var data_pro =
+                    Provider.of<ExerciseProvider>(context, listen: false);
 
+                if (data_pro.todaysExercises.isNotEmpty) {
+                  NavigatorService.pushNamed(AppRoutes.exercisesScreen);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('No exercises assigned'),
+                  ));
+                }
               },
             ),
+           
             
           ],
           options: CarouselOptions(
             autoPlay: true,
             autoPlayCurve: Curves.decelerate,
-            enlargeCenterPage: true,
-            enlargeFactor: 0.5,
-            viewportFraction: 0.4,
+            enlargeCenterPage:
+                false, // Disabled enlarging to maintain consistent size
+            viewportFraction: 0.5, // Adjusted to show exactly two items
             autoPlayAnimationDuration: const Duration(milliseconds: 800),
+            padEnds: false, // Removes padding at the ends
+            enableInfiniteScroll: true,
             onPageChanged: (index, reason) {
-              
               setState(() {
                 _currentIndex = index;
               });
-
             },
           ),
         ),
@@ -149,61 +144,40 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget buildCarouselItem(
-    BuildContext context,
-    MainInteractionProvider provider,
-    String exerciseType,
-    String imagePath,
-    int index,
-    VoidCallback onTap,
-  ) {
-    return ClipRect(
-      child: GestureDetector(
-        onTap: onTap,
+
+
+// And update the buildCarouselItem to add margin:
+
+Widget buildCarouselItem(
+  BuildContext context,
+  MainInteractionProvider provider,
+  String exerciseType,
+  String imagePath,
+  int index,
+  VoidCallback onTap,
+) {
+  return ClipRect(
+    child: GestureDetector(
+      onTap: onTap,
+      child: Container(
+         width: MediaQuery.of(context).size.width * 0.5,
+        margin: EdgeInsets.symmetric(horizontal: 12.h), 
         child: Center(
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.6,
-            height: MediaQuery.of(context).size.width * 0.3,
-            child: Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                      20), // Set the desired corner radius
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.contain,
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    // Remove height so it adjusts to the image's aspect ratio
-                  ),
-                ),
-                // if (false)
-                //   Center(
-                //     child: Container(
-                //       height: 101.adaptSize,
-                //       width: 101.adaptSize,
-                //       padding: EdgeInsets.all(20.h),
-                //       decoration: AppDecoration.outlineWhiteA.copyWith(
-                //         color: AppDecoration.fillDeepOrange.color,
-                //         borderRadius: BorderRadius.all(
-                //           Radius.circular((121.adaptSize) / 2),
-                //         ),
-                //       ),
-                //       alignment: Alignment.center,
-                //       child: SvgPicture.asset(
-                //         ImageConstant.imgPlayBtn,
-                //         height: 45.adaptSize,
-                //         width: 45.adaptSize,
-                //         fit: BoxFit.contain,
-                //       ),
-                //     ),
-                //   ),
-              ],
+            width: MediaQuery.of(context).size.width * 0.5,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Future<void> handleExercise(MainInteractionProvider provider,
       String exerciseType, BuildContext context) async {

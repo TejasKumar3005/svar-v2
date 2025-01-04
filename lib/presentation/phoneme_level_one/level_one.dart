@@ -502,21 +502,18 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
         }
         _levelText?.text = "type ${startLevel + i}";
       }
-
+ 
       train = artboard.component('train');
       if (train != null) {
         print("train position: ${train.x}");
-
-        // Store the initial value of train.x
-
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          Timer.periodic(const Duration(milliseconds: 100), (timer) {
-            _trackTrainPosition();
-          });
-        });
-
-        _previousTrainX = train.x;
-      } else {
+      // Remove the Timer and use Rive's own animation events instead
+      _controller?.addEventListener((event) {
+        if (event is RiveEvent) {
+          _trackTrainPosition();
+        }
+      });
+      _previousTrainX = train.x;
+    } else {
         debugPrint("Error: 'train' not found!");
       }
 
@@ -535,29 +532,37 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
   }
 
   void _trackTrainPosition() {
-    if (train != null && train.artboard != null) {
-      double trainX = train.x;
+    if (train == null || !mounted || !_scrollController.hasClients) return;
 
-      if (_previousTrainX != trainX) {
-        double screenWidth = MediaQuery.of(context).size.height * 13.7176;
-        double maxTrainX = train.artboard!.width;
-        double scaledOffset = (trainX / maxTrainX) * screenWidth;
+    double trainX = train.x;
+    // Add a threshold to prevent tiny movements from triggering scrolls
+    if (_previousTrainX != null && (trainX - _previousTrainX!).abs() < 0.1) return;
 
-        if (_scrollController.hasClients) {
-          // Calculate the distance and use it to adjust animation duration
-          double deltaX = (trainX - _previousTrainX).abs();
-          int animationDuration = (deltaX * 10).toInt().clamp(50, 200);
+    // Cache these values
+    final screenWidth = MediaQuery.of(context).size.height * 13.7176;
+    final maxTrainX = train.artboard!.width;
+    
+    // Optimize calculation
+    final scaledOffset = (trainX / maxTrainX) * screenWidth;
+    final targetOffset = scaledOffset.clamp(
+      0.0, 
+      _scrollController.position.maxScrollExtent
+    );
 
-          _scrollController.animateTo(
-            scaledOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
-            duration: Duration(milliseconds: animationDuration),
-            curve: Curves.easeOut, // Use a smoother curve
-          );
-        }
-        _previousTrainX = trainX;
-      }
+    // Use jumpTo instead of animateTo for smoother scrolling
+    // Or keep animateTo but with optimized duration
+    if ((targetOffset - _scrollController.offset).abs() > 1.0) {
+      _scrollController.jumpTo(targetOffset);
+      // Alternative with animation:
+      // _scrollController.animateTo(
+      //   targetOffset,
+      //   duration: const Duration(milliseconds: 50),
+      //   curve: Curves.linear,
+      // );
     }
-  }
+
+    _previousTrainX = trainX;
+}
   
 
   Object retrieveObject(String type, Map<String, dynamic> data) {
