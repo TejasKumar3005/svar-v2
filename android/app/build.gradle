@@ -25,8 +25,8 @@ if (flutterVersionName == null) {
 
 android {
     compileSdkVersion 34
-
-    ndkVersion = "25.1.8937393"
+    namespace 'com.svarnew.myapp'
+    ndkVersion "27.2.12479018"
 
 
     sourceSets {
@@ -41,7 +41,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.svarnew.app"
         minSdkVersion 26
-        targetSdkVersion 31 //flutter.targetSdkVersion
+        targetSdkVersion 35 //flutter.targetSdkVersion
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
