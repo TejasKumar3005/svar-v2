@@ -298,38 +298,51 @@ Widget build(BuildContext context) {
     );
   }
 
-  Widget DiffHalfW(DiffHalf diffHalf, dynamic dtcontainer) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AudioWidget(
-          key: _childKey,
-          audioLinks: dtcontainer.getVideoUrls(),
+Widget DiffHalfW(DiffHalf diffHalf, dynamic dtcontainer) {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      AudioWidget(
+        key: _childKey,
+        audioLinks: dtcontainer.getVideoUrls(),
+      ),
+      SizedBox(
+        height: 20.v,
+      ),
+      OptionWidget(
+        triggerAnimation: _triggerAnimation,
+        child: OptionButton(
+          type: ButtonType.Change,
+          onPressed: () {}
         ),
-        SizedBox(
-          height: 20.v,
-        ),
-        OptionWidget(
-          triggerAnimation: _triggerAnimation,
-            child: OptionButton(type: ButtonType.Change, onPressed: () {}),
-            isCorrect: () {
-              List<double> total_length = _childKey.currentState!.lengths;
-              double ans =
-                  total_length[0] / (total_length[1] + total_length[0]);
-              print(
-                  "ans is $ans current progress is ${_childKey.currentState!.progress}");
-              if (_childKey.currentState!.progress > ans &&
-                  _childKey.currentState!.progress < ans + 0.1) {
-                userData.incrementLevelCount("Discrimination", level);
-                
-                return true;
-              } else {
-                return false;
-              }
-            })
-      ],
-    );
-  }
+        isCorrect: () {
+          if (_childKey.currentState == null) return false;
+
+          // Get current position and total duration
+          final firstPartDuration = _childKey.currentState!.currentPosition;
+          final totalDuration = _childKey.currentState!.totalDuration;
+          
+          if (totalDuration == Duration.zero) return false;
+
+          // Calculate the ratio of first part to total duration
+          double ans = firstPartDuration.inMilliseconds.toDouble() / 
+                      totalDuration.inMilliseconds.toDouble();
+
+          double currentProgress = _childKey.currentState!.progress;
+          
+          print("ans is $ans current progress is $currentProgress");
+
+          if (currentProgress > ans && currentProgress < ans + 0.1) {
+            userData.incrementLevelCount("Discrimination", level);
+            return true;
+          } else {
+            return false;
+          }
+        }
+      )
+    ],
+  );
+}
 
   Widget DiffSoundsW(DiffSounds diffSounds, dynamic dtcontainer) {
     return Column(

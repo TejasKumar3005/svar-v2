@@ -35,6 +35,8 @@ dependencies:
   permission_handler: ^11.3.1
   provider: ^6.1.1
   rive: ^0.13.12
+  just_waveform: ^0.0.5
+  rxdart: ^0.27.0
   just_audio: ^0.9.18
   shared_preferences: ^2.2.2
   video_player: ^2.8.3
