@@ -111,6 +111,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
   void dispose() {
     super.dispose();
     _player.dispose();
+    _controller!.dispose();
     _videoPlayerController?.dispose();
     _chewieController?.dispose();
     super.dispose();
