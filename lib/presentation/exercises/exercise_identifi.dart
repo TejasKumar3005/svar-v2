@@ -82,7 +82,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
       _riveFile = RiveFile.import(bytes);
 
       _controller = StateMachineController.fromArtboard(
-          _riveFile.mainArtboard, 'State Machine 1');
+          _riveFile.mainArtboard, 'State Machine 2');
       print("controller added is ${_controller}");
 
       if (_controller != null) {
@@ -94,22 +94,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
           print("State Machine: ${stateMachine.name}");
         }
 
-         // Print all state machines and their active status
-        print("\nChecking currently active state machines:");
-        for (var sm in _riveFile.mainArtboard.stateMachines) {
-          print("State Machine: ${sm.name}");
-          print("Is Active: ${sm.isActive}");
-          print("Current State: ${sm.stateChanges()}");  // This will show state changes
-        }
-
-        // Print the specific state machine we're trying to use
-        var targetSM = _riveFile.mainArtboard.stateMachines
-            .firstWhere((sm) => sm.name == 'State Machine 1', orElse: () => null);
-        print("\nTarget State Machine (State Machine 1):");
-        print("Found: ${targetSM != null}");
-        if (targetSM != null) {
-          print("Is Active: ${targetSM.isActive}");
-        }
+   
 
 
         _correctTriger = _controller!.getTriggerInput("correct");
