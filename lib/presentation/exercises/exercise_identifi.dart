@@ -75,7 +75,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
 
   int sel = 0;
 
-  Future<void> _loadRiveFile() async {
+ Future<void> _loadRiveFile() async {
     try {
       final bytes =
           await rootBundle.load('assets/rive/Celebration_animation.riv');
@@ -83,26 +83,60 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
 
       _controller = StateMachineController.fromArtboard(
           _riveFile.mainArtboard, 'State Machine 1');
+      print("controller added is ${_controller}");
 
       if (_controller != null) {
         _riveFile.mainArtboard.addController(_controller!);
+        
+        // Print all state machines in the artboard
+        print("\nAll State Machines in artboard:");
+        for (var stateMachine in _riveFile.mainArtboard.stateMachines) {
+          print("State Machine: ${stateMachine.name}");
+        }
+
+         // Print all state machines and their active status
+        print("\nChecking currently active state machines:");
+        for (var sm in _riveFile.mainArtboard.stateMachines) {
+          print("State Machine: ${sm.name}");
+          print("Is Active: ${sm.isActive}");
+          print("Current State: ${sm.stateChanges()}");  // This will show state changes
+        }
+
+        // Print the specific state machine we're trying to use
+        var targetSM = _riveFile.mainArtboard.stateMachines
+            .firstWhere((sm) => sm.name == 'State Machine 1', orElse: () => null);
+        print("\nTarget State Machine (State Machine 1):");
+        print("Found: ${targetSM != null}");
+        if (targetSM != null) {
+          print("Is Active: ${targetSM.isActive}");
+        }
+
+
         _correctTriger = _controller!.getTriggerInput("correct");
         _incorrectTriger = _controller!.getTriggerInput("incorrect");
       }
 
       setState(() {
-        _riveArtboard = _riveFile.mainArtboard; // Extract the Artboard
+        _riveArtboard = _riveFile.mainArtboard;
       });
+
+     
+
     } catch (e) {
       print('Error loading Rive file: $e');
     }
   }
 
-  void _triggerAnimation(bool isCorrect) {
+ void _triggerAnimation(bool isCorrect) {
+    print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
+    
     if (isCorrect) {
-      _correctTriger?.fire();
+        print("Firing correct trigger");
+        _correctTriger?.fire();
+        print("Correct trigger fired");
     } else {
-      _incorrectTriger?.fire();
+        _incorrectTriger?.fire();
+        print("Incorrect trigger fired");
     }
   }
 
@@ -128,7 +162,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                       Positioned.fill(
                         child: SvgPicture.asset(
                           ImageConstant
-                              .imgAuditorybg, // Replace with your SVG path
+                              .imgAuditorybg, 
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -281,7 +315,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                   Expanded(
                                     // Adjust the flex value based on your layout needs
                                     child: OptionWidget(
-                                      triggerAnimation: (value) {},
+                                      triggerAnimation: (value) {
+                                        _triggerAnimation(value);  
+                                      },
                                       child: AudioWidget(
                                         audioLinks: [
                                           dtcontainer.getAudioList()[index],
@@ -299,6 +335,8 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                         if (isCorrect) {
                                           data_pro.incrementLevel();
                                         }
+
+                                        _triggerAnimation(isCorrect);
                                         UserData(
                                           uid: FirebaseAuth
                                                   .instance.currentUser?.uid ??

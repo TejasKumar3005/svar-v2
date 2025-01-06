@@ -54,7 +54,7 @@ class AuditoryScreenState extends State<IdentificationScreen> {
     _player = AudioPlayer();
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     userData = UserData(uid: uid, buildContext: context);
-    _loadRiveFile();
+    // _loadRiveFile();
   }
 
   Future<void> _loadRiveFile() async {
@@ -64,9 +64,11 @@ class AuditoryScreenState extends State<IdentificationScreen> {
       _riveFile = RiveFile.import(bytes);
 
       final artboard = _riveFile.mainArtboard;
+
+      
       _controller =
           StateMachineController.fromArtboard(artboard, 'State Machine 1');
-
+        print("Controller added is ${_controller}");
       if (_controller == null) {
         print('Error: Unable to get StateMachineController');
         return;

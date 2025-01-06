@@ -403,7 +403,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
                 physics:
                     const ClampingScrollPhysics(), // Changed to ClampingScrollPhysics
                 child: Container(
-                  width: MediaQuery.of(context).size.height * 13.7176,
+                  width: MediaQuery.of(context).size.height * 10.7176,
                   height: MediaQuery.of(context).size.height,
                   child: Stack(
                     children: [
