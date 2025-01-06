@@ -75,57 +75,53 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
 
   int sel = 0;
 
- Future<void> _loadRiveFile() async {
-    try {
-      final bytes =
-          await rootBundle.load('assets/rive/Celebration_animation.riv');
-      _riveFile = RiveFile.import(bytes);
+Future<void> _loadRiveFile() async {
+  try {
+    final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
+    _riveFile = RiveFile.import(bytes);
 
-      _controller = StateMachineController.fromArtboard(
-          _riveFile.mainArtboard, 'State Machine 1');
-      print("controller added is ${_controller}");
+    _controller = StateMachineController.fromArtboard(
+        _riveFile.mainArtboard, 'State Machine 1');
+    print("controller added is ${_controller}");
 
-      if (_controller != null) {
-        _riveFile.mainArtboard.addController(_controller!);
-        
-        // Print all state machines in the artboard
-        print("\nAll State Machines in artboard:");
-        for (var stateMachine in _riveFile.mainArtboard.stateMachines) {
-          print("State Machine: ${stateMachine.name}");
-        }
-
-         // Print all state machines and their active status
-        print("\nChecking currently active state machines:");
-        for (var sm in _riveFile.mainArtboard.stateMachines) {
-          print("State Machine: ${sm.name}");
-          print("Is Active: ${sm.isActive}");
-          print("Current State: ${sm.stateChanges()}");  // This will show state changes
-        }
-
-        // Print the specific state machine we're trying to use
-        var targetSM = _riveFile.mainArtboard.stateMachines
-            .firstWhere((sm) => sm.name == 'State Machine 1', orElse: () => null);
-        print("\nTarget State Machine (State Machine 1):");
-        print("Found: ${targetSM != null}");
-        if (targetSM != null) {
-          print("Is Active: ${targetSM.isActive}");
-        }
-
-
-        _correctTriger = _controller!.getTriggerInput("correct");
-        _incorrectTriger = _controller!.getTriggerInput("incorrect");
+    if (_controller != null) {
+      _riveFile.mainArtboard.addController(_controller!);
+      
+      // Print all state machines in the artboard
+      print("\nAll State Machines in artboard:");
+      for (var stateMachine in _riveFile.mainArtboard.stateMachines) {
+        print("State Machine: ${stateMachine.name}");
       }
 
-      setState(() {
-        _riveArtboard = _riveFile.mainArtboard;
-      });
+      // Print all states from the controller
+      print("\nChecking states:");
+      if (_controller != null) {
+        // Get all inputs from the controller
+        final inputs = _controller!.inputs;
+        print("Available inputs: ${inputs.map((input) => input.name).toList()}");
+        
+        // Get all layers
+      
+      }
 
-     
+      // Find the specific state machine
+      var targetSM = _riveFile.mainArtboard.stateMachines
+          .firstWhere((sm) => sm.name == 'State Machine 1');
+      print("\nTarget State Machine (State Machine 1) found");
 
-    } catch (e) {
-      print('Error loading Rive file: $e');
+      // Set up your triggers
+      _correctTriger = _controller!.findInput<bool>("correct") as SMITrigger;
+      _incorrectTriger = _controller!.findInput<bool>("incorrect") as SMITrigger;
     }
+
+    setState(() {
+      _riveArtboard = _riveFile.mainArtboard;
+    });
+
+  } catch (e) {
+    print('Error loading Rive file: $e');
   }
+}
 
  void _triggerAnimation(bool isCorrect) {
     print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");

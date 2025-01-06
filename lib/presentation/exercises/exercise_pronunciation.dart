@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +22,10 @@ import 'package:avatar_glow/avatar_glow.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
 import 'package:svar_new/widgets/loading.dart';
+import 'package:flutter_snowboy/flutter_snowboy.dart';
+import 'package:svar_new/presentation/exercises/exercise_provider.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 
 class ExercisePronunciation extends StatefulWidget {
   final String character;
@@ -46,6 +51,9 @@ extension _TextExtension on Artboard {
 }
 
 class ExercisePronunciationState extends State<ExercisePronunciation> {
+  StreamController<Uint8List>? _recordingDataController;
+  StreamSubscription? _recordingDataSubscription;
+  late FlutterSoundRecorder _micRecorder;
   String? _errorMessage;
   late AudioPlayer _audioPlayer;
   var model;
@@ -554,61 +562,243 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
-  onTapMicrophonebutton(
-    BuildContext context,
-    LingLearningProvider provider,
-  ) async {
-    print("Microphone button tapped");
+ List<List<Map<String, String>>> allResults = [];
+  List<int> currentAudioBuffer = [];
+  bool isRecordingSegment = false;
+  int silenceCounter = 0;
+  int attemptCount = 0;
+  
+  // Threshold settings
+  static const int AMPLITUDE_THRESHOLD = 2000;
+  static const int SILENCE_THRESHOLD = 50;
+  static const int MIN_SEGMENT_LENGTH = 8000;
 
-    try {
-      bool recordingStarted = await provider.toggleRecording(context);
-      print("Recording started: $recordingStarted");
+  void processAudioData(Uint8List audioData) {
+    LingLearningProvider provider = context.read<LingLearningProvider>();
+    if (!provider.isRecording) return ;
 
-      if (recordingStarted) {
-        print("Recording in progress...");
-        // The glow effect will start automatically due to isRecording being true
+    // Convert bytes to 16-bit PCM samples
+    for (int i = 0; i < audioData.length; i += 2) {
+      int sample = audioData[i] | (audioData[i + 1] << 8);
+      int amplitude = sample.abs();
+
+      if (amplitude > AMPLITUDE_THRESHOLD) {
+        if (!isRecordingSegment) {
+          startNewSegment();
+        }
+        silenceCounter = 0;
       } else {
-        print("Recording stopped");
-        setState(() {
-          loading = true;
-        });
-
-        Directory tempDir = await getTemporaryDirectory();
-        String tempPath = tempDir.path;
-        String path = '$tempPath/audio.wav';
-        print("Audio file path: $path");
-
-        const timeoutDuration = Duration(seconds: 5);
-        var timer = Timer(timeoutDuration, () {
-          if (mounted) {
-            setState(() {
-              loading = false;
-              provider.isRecording = false; // Stop recording animation
-              _errorMessage = "API call timed out. Please try again later.";
-            });
+        if (isRecordingSegment) {
+          silenceCounter++;
+          if (silenceCounter > SILENCE_THRESHOLD) {
+            completeSegment();
           }
+        }
+      }
+
+      if (isRecordingSegment) {
+        currentAudioBuffer.addAll([audioData[i], audioData[i + 1]]);
+      }
+    }
+  }
+
+  void startNewSegment() {
+    isRecordingSegment = true;
+    currentAudioBuffer.clear();
+    silenceCounter = 0;
+  }
+
+  Future<void> completeSegment() async {
+    LingLearningProvider provider = context.read<LingLearningProvider>();
+    if (currentAudioBuffer.length < MIN_SEGMENT_LENGTH) {
+      isRecordingSegment = false;
+      currentAudioBuffer.clear();
+      return;
+    }
+
+    isRecordingSegment = false;
+    
+    // Save buffer to temporary file
+    Directory tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+    String path = '$tempPath/audio_segment.wav';
+    
+    // Create WAV file with headers
+    List<int> wavHeader = createWavHeader(currentAudioBuffer.length);
+    await File(path).writeAsBytes(wavHeader + currentAudioBuffer);
+    
+    try {
+      dynamic result = await sendWavFile(path, widget.character);
+      if (result != null) {
+        allResults.add(result);
+        setState(() {
+          attemptCount++;
         });
 
-        try {
-          dynamic result = await sendWavFile(path, widget.character);
-          print("Processing result: $result");
-          timer.cancel(); // Cancel timer if successful
-        } catch (e) {
-          print("Error processing audio: ${e.toString()}");
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error processing audio: ${e.toString()}")),
-          );
-        } finally {
-          setState(() {
-            loading = false;
-          });
+        if (attemptCount >= 5) {
+          processAllResults();
+          // Stop recording after 5 attempts
+          onTapMicrophonebutton(context, provider);
         }
       }
     } catch (e) {
-      print("Error toggling recording: ${e.toString()}");
+      print("Error processing audio: $e");
+    }
+
+    currentAudioBuffer.clear();
+  }
+
+  List<int> createWavHeader(int dataLength) {
+    List<int> header = List<int>.filled(44, 0);
+    
+    // RIFF header
+    header.setRange(0, 4, 'RIFF'.codeUnits);
+    setInt32LE(header, 4, 36 + dataLength);
+    header.setRange(8, 12, 'WAVE'.codeUnits);
+    
+    // fmt chunk
+    header.setRange(12, 16, 'fmt '.codeUnits);
+    setInt32LE(header, 16, 16);
+    setInt16LE(header, 20, 1);
+    setInt16LE(header, 22, 1);
+    setInt32LE(header, 24, 16000);
+    setInt32LE(header, 28, 32000);
+    setInt16LE(header, 32, 2);
+    setInt16LE(header, 34, 16);
+    
+    // data chunk
+    header.setRange(36, 40, 'data'.codeUnits);
+    setInt32LE(header, 40, dataLength);
+    
+    return header;
+  }
+
+  void setInt16LE(List<int> buffer, int offset, int value) {
+    buffer[offset] = value & 0xFF;
+    buffer[offset + 1] = (value >> 8) & 0xFF;
+  }
+
+  void setInt32LE(List<int> buffer, int offset, int value) {
+    buffer[offset] = value & 0xFF;
+    buffer[offset + 1] = (value >> 8) & 0xFF;
+    buffer[offset + 2] = (value >> 16) & 0xFF;
+    buffer[offset + 3] = (value >> 24) & 0xFF;
+  }
+
+  void processAllResults() {
+    // Calculate average scores
+    Map<String, List<double>> scoreAggregates = {};
+    
+    for (var resultSet in allResults) {
+      for (var result in resultSet) {
+        String key = result.keys.first;
+        String value = result.values.first;
+        double score = extractScore(value);
+        
+        if (!scoreAggregates.containsKey(key)) {
+          scoreAggregates[key] = [];
+        }
+        scoreAggregates[key]!.add(score);
+      }
+    }
+
+    List<Map<String, String>> finalResults = [];
+    scoreAggregates.forEach((key, scores) {
+      double average = scores.reduce((a, b) => a + b) / scores.length;
+      String resultText = createResultText(average);
+      finalResults.add({key: resultText});
+    });
+
+    setState(() {
+      result = finalResults;
+    });
+
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    data_pro.incrementLevel();
+    UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
+      eid: widget.eid,
+      date: widget.date,
+      performance: {
+        "result": finalResults,
+        "word": widget.character,
+      },
+    );
+    
+    // Reset for next session
+    attemptCount = 0;
+    allResults.clear();
+  }
+
+  double extractScore(String value) {
+    // Extract numerical score from result string based on your format
+    // Example implementation:
+    if (value.contains("correct")) {
+      return 100.0;
+    }
+    return 0.0;
+  }
+
+  String createResultText(double score) {
+    if (score > 80) {
+      return "Pronunciation is correct";
+    }
+    return "Need more practice";
+  }
+
+onTapMicrophonebutton(
+    BuildContext context,
+    LingLearningProvider provider,
+  ) async {
+    try {
+      if (!provider.isRecording) {
+        bool permission = await requestPermissions();
+        if (!permission) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Microphone permission required")),
+          );
+          return;
+        }
+
+        await _micRecorder.openRecorder();
+        
+        // Create stream controller with dynamic type
+        _recordingDataController = StreamController<Uint8List>();
+
+        await _micRecorder.startRecorder(
+          toStream: _recordingDataController!.sink,  // Use dynamic sink directly
+          codec: Codec.pcm16,
+          numChannels: 1,
+          sampleRate: 16000,
+        );
+
+        // Updated stream handling
+        _recordingDataSubscription = _recordingDataController?.stream.listen((data) {
+          // Handle the raw audio data directly
+           processAudioData(data);
+         
+        });
+
+        setState(() {
+          provider.isRecording = true;
+        });
+      } else {
+        await _micRecorder.stopRecorder();
+        await _micRecorder.closeRecorder();
+        await _recordingDataSubscription?.cancel();
+        await _recordingDataController?.close();
+
+        setState(() {
+          provider.isRecording = false;
+          isRecordingSegment = false;
+          currentAudioBuffer.clear();
+        });
+      }
+    } catch (e) {
+      print("Error toggling recording: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error toggling recording: ${e.toString()}")),
+        SnackBar(content: Text("Error with recording: $e")),
       );
     }
   }
+
 }
