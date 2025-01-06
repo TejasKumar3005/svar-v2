@@ -286,66 +286,59 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
     );
   }
 
- Widget DiffHalfW(DiffHalf diffHalf, dynamic dtcontainer) {
-  var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      AudioWidget(
-        key: _childKey,
-        audioLinks: diffHalf.getVideoUrls(),
-      ),
-      SizedBox(
-        height: 20.v,
-      ),
-      OptionWidget(
-        triggerAnimation: (value) {
-          // Handle animation if needed
-        },
-        child: OptionButton(type: ButtonType.Change, onPressed: () {}),
-        isCorrect: () {
-          if (_childKey.currentState == null) return false;
+  Widget DiffHalfW(DiffHalf diffHalf, dynamic dtcontainer) {
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AudioWidget(
+          key: _childKey,
+          audioLinks: diffHalf.getVideoUrls(),
+        ),
+        SizedBox(
+          height: 20.v,
+        ),
+        OptionWidget(
+            triggerAnimation: (value){
+                    
+                  },
+            child: OptionButton(type: ButtonType.Change, onPressed: () {}),
+            isCorrect: () {
+              List<double> total_length = _childKey.currentState!.lengths;
+              double ans =
+                  total_length[0] / (total_length[1] + total_length[0]);
 
-          // Get current audio durations
-          final List<Duration> durations = [
-            _childKey.currentState!.currentPosition,
-            _childKey.currentState!.totalDuration - _childKey.currentState!.currentPosition
-          ];
+              var condition = _childKey.currentState!.progress > ans &&
+                  _childKey.currentState!.progress < ans + 0.4;
+              print(
+                  "ans is $ans current progress is ${_childKey.currentState!.progress}");
 
-          // Calculate the target ratio - duration of first part divided by total duration
-          double ans = durations[0].inMilliseconds.toDouble() / 
-                      (durations[0].inMilliseconds + durations[1].inMilliseconds);
+              var data_pro =
+                  Provider.of<ExerciseProvider>(context, listen: false);
 
-          double currentProgress = _childKey.currentState!.progress;
-          
-          var condition = currentProgress > ans && currentProgress < ans + 0.4;
-          print("ans is $ans current progress is $currentProgress");
+              if (condition) {
+                data_pro.incrementLevel();
+              }
+              UserData(
+                uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+              )
+                  .updateExerciseData(
+                      isCompleted: condition,
+                      performance: {
+                        "time": DateTime.now().toString(),
+                        "result": condition,
+                        "timeDiff":
+                            (_childKey.currentState!.progress - ans).abs()
+                      },
+                      date: obj[5],
+                      eid: obj[4])
+                  .then((value) => null);
 
-          var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-
-          if (condition) {
-            data_pro.incrementLevel();
-          }
-
-          UserData(
-            uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-          ).updateExerciseData(
-            isCompleted: condition,
-            performance: {
-              "time": DateTime.now().toString(),
-              "result": condition,
-              "timeDiff": (currentProgress - ans).abs()
-            },
-            date: obj[5],
-            eid: obj[4]
-          ).then((value) => null);
-
-          return condition;
-        }
-      )
-    ],
-  );
-}
+              return condition;
+            })
+      ],
+    );
+  }
 
   Widget DiffSoundsW(DiffSounds diffSounds, dynamic dtcontainer) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;

@@ -402,7 +402,7 @@ class _DetectionState extends State<Detection> {
 
 ///
 /// New StatefulWidget: HalfMutedWidget
-///import 'package:flutter/material.dart';
+///
 class HalfMutedWidget extends StatefulWidget {
   final List<String> audioLinks;
 
@@ -435,10 +435,12 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
   Future<void> _loadRiveFile() async {
     try {
-      final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
+      final bytes =
+          await rootBundle.load('assets/rive/Celebration_animation.riv');
       final file = rive.RiveFile.import(bytes);
       final artboard = file.mainArtboard;
-      _controller = rive.StateMachineController.fromArtboard(artboard, 'State Machine 1');
+      _controller =
+          rive.StateMachineController.fromArtboard(artboard, 'State Machine 1');
 
       if (_controller != null) {
         artboard.addController(_controller!);
@@ -467,10 +469,10 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
         double progress = _childKey.currentState!.progress;
         if (progress < 0.5) {
           // Mute for the first half
-          _childKey.currentState!.audioPlayer.setVolume(0.0);
+          globalAudioPlayer.setVolume(0.0);
         } else {
           // Unmute for the second half
-          _childKey.currentState!.audioPlayer.setVolume(1.0);
+          globalAudioPlayer.setVolume(1.0);
         }
       }
     });
@@ -479,7 +481,6 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   @override
   void dispose() {
     _volumeTimer?.cancel(); // Cancel the timer to prevent memory leaks
-    _controller?.dispose();
     super.dispose();
   }
 
@@ -505,26 +506,30 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
             type: ButtonType.Stop,
             onPressed: () {
               // Stop the audio playback
-              if (_childKey.currentState != null) {
-                _childKey.currentState!.audioPlayer.stop();
-              }
+              globalAudioPlayer.stop();
             },
           ),
           isCorrect: () {
             if (_childKey.currentState == null) return false;
 
-            final totalDuration = _childKey.currentState!.totalDuration;
-            if (totalDuration == Duration.zero) {
-              print("Error: total duration is zero.");
+            List<double> total_length = _childKey.currentState!.lengths;
+            if (total_length.isEmpty) {
+              // Ensure there is at least 1 element in the list (the audio length)
+              print("Error: total_length is empty.");
               return false;
             }
 
-            double ans = 0.5; // Since you're muting the first half, the threshold is 0.5
+            double audioLength = total_length[
+                0]; // Since there's only one length, take the first element
+            double ans =
+                0.5; // Since you're muting the first half, the threshold is 0.5
+
             double currentProgress = _childKey.currentState!.progress;
             print("Current progress is $currentProgress");
 
             const double tolerance = 0.4;
-            bool condition = currentProgress > ans && currentProgress < ans + tolerance;
+            bool condition =
+                currentProgress > ans && currentProgress < ans + tolerance;
             print("Condition result: $condition");
 
             return condition;

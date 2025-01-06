@@ -433,6 +433,9 @@ class _DetectionState extends State<ExerciseDetection> {
   }
 }
 
+///
+/// New StatefulWidget: HalfMutedWidget
+///
 class HalfMutedWidget extends StatefulWidget {
   final List<String> audioLinks;
 
@@ -461,18 +464,13 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   void _startVolumeControl() {
     _volumeTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
       if (_childKey.currentState != null) {
-        final currentPosition = _childKey.currentState!.currentPosition;
-        final totalDuration = _childKey.currentState!.totalDuration;
-        
-        if (totalDuration != Duration.zero) {
-          double progress = currentPosition.inMilliseconds / totalDuration.inMilliseconds;
-          if (progress < 0.5) {
-            // Mute for the first half
-            _childKey.currentState!.audioPlayer.setVolume(0.0);
-          } else {
-            // Unmute for the second half
-            _childKey.currentState!.audioPlayer.setVolume(1.0);
-          }
+        double progress = _childKey.currentState!.progress;
+        if (progress < 0.5) {
+          // Mute for the first half
+          globalAudioPlayer.setVolume(0.0);
+        } else {
+          // Unmute for the second half
+          globalAudioPlayer.setVolume(1.0);
         }
       }
     });
@@ -487,7 +485,6 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   @override
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -498,63 +495,59 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
         AudioWidget(
           key: _childKey,
           audioLinks: widget.audioLinks,
-          waveformColor: Colors.green, // You can customize the waveform color
         ),
         SizedBox(
           height: 20.v,
         ),
         OptionWidget(
-          triggerAnimation: (value) {
-            // Handle animation trigger if needed
+          triggerAnimation: (value){
+
           },
           child: OptionButton(
             type: ButtonType.Stop,
             onPressed: () {
               // Stop the audio playback
-              if (_childKey.currentState != null) {
-                _childKey.currentState!.audioPlayer.stop();
-              }
+              globalAudioPlayer.stop();
             },
           ),
           isCorrect: () {
             if (_childKey.currentState == null) return false;
 
-            final currentPosition = _childKey.currentState!.currentPosition;
-            final totalDuration = _childKey.currentState!.totalDuration;
-            
-            if (totalDuration == Duration.zero) {
-              print("Error: total duration is zero.");
+            List<double> total_length = _childKey.currentState!.lengths;
+            if (total_length.isEmpty) {
+              // Ensure there is at least 1 element in the list (the audio length)
+              print("Error: total_length is empty.");
               return false;
             }
 
-            double currentProgress = currentPosition.inMilliseconds / totalDuration.inMilliseconds;
-            double ans = 0.5; // Since you're muting the first half, the threshold is 0.5
+            double audioLength = total_length[
+                0]; // Since there's only one length, take the first element
+            double ans =
+                0.5; // Since you're muting the first half, the threshold is 0.5
 
+            double currentProgress = _childKey.currentState!.progress;
             print("Current progress is $currentProgress");
 
             const double tolerance = 0.4;
-            bool condition = currentProgress > ans && currentProgress < ans + tolerance;
+            bool condition =
+                currentProgress > ans && currentProgress < ans + tolerance;
             print("Condition result: $condition");
 
             // Increment the level if the condition is met
-            var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+            var data_pro =
+                Provider.of<ExerciseProvider>(context, listen: false);
             if (condition) {
               data_pro.incrementLevel();
             }
-
-            // Update exercise data
             UserData(
               uid: FirebaseAuth.instance.currentUser?.uid ?? '',
             ).updateExerciseData(
               isCompleted: condition,
               performance: {
-                "time": DateTime.now().toString(),
-                "result": condition,
-                "timeDiff": (currentProgress - ans).abs()
-              },
-              date: obj[5],
-              eid: obj[4]
-            ).then((value) => null);
+              "time": DateTime.now().toString(),
+              "result": condition,
+              "timeDiff": (currentProgress - ans).abs()
+            }, date: obj[5], eid: obj[4]).then((value) => null);
 
             return condition;
           },
@@ -563,4 +556,3 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
     );
   }
 }
-
