@@ -75,24 +75,23 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
 
   int sel = 0;
 
- Future<void> _loadRiveFile() async {
-    try {
-      final bytes =
-          await rootBundle.load('assets/rive/Celebration_animation.riv');
-      _riveFile = RiveFile.import(bytes);
+Future<void> _loadRiveFile() async {
+  try {
+    final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
+    _riveFile = RiveFile.import(bytes);
 
       _controller = StateMachineController.fromArtboard(
           _riveFile.mainArtboard, 'State Machine 2');
       print("controller added is ${_controller}");
 
-      if (_controller != null) {
-        _riveFile.mainArtboard.addController(_controller!);
-        
-        // Print all state machines in the artboard
-        print("\nAll State Machines in artboard:");
-        for (var stateMachine in _riveFile.mainArtboard.stateMachines) {
-          print("State Machine: ${stateMachine.name}");
-        }
+    if (_controller != null) {
+      _riveFile.mainArtboard.addController(_controller!);
+      
+      // Print all state machines in the artboard
+      print("\nAll State Machines in artboard:");
+      for (var stateMachine in _riveFile.mainArtboard.stateMachines) {
+        print("State Machine: ${stateMachine.name}");
+      }
 
    
 
@@ -101,16 +100,14 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
         _incorrectTriger = _controller!.getTriggerInput("incorrect");
       }
 
-      setState(() {
-        _riveArtboard = _riveFile.mainArtboard;
-      });
+    setState(() {
+      _riveArtboard = _riveFile.mainArtboard;
+    });
 
-     
-
-    } catch (e) {
-      print('Error loading Rive file: $e');
-    }
+  } catch (e) {
+    print('Error loading Rive file: $e');
   }
+}
 
  void _triggerAnimation(bool isCorrect) {
     print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
