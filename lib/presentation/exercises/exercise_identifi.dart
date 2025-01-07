@@ -92,10 +92,6 @@ Future<void> _loadRiveFile() async {
       for (var stateMachine in _riveFile.mainArtboard.stateMachines) {
         print("State Machine: ${stateMachine.name}");
       }
-
-   
-
-
         _correctTriger = _controller!.getTriggerInput("correct");
         _incorrectTriger = _controller!.getTriggerInput("incorrect");
       }
