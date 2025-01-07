@@ -1,799 +1,407 @@
-// import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:svar_new/presentation/discrimination/appbar.dart';
 
 class UserProfileScreen extends StatefulWidget {
-  const UserProfileScreen({Key? key})
-      : super(
-          key: key,
-        );
+  const UserProfileScreen({Key? key}) : super(key: key);
 
   @override
   UserProfileScreenState createState() => UserProfileScreenState();
-  static Widget builder(BuildContext context) {
-    return UserProfileScreen();
-  }
+  
+  static Widget builder(BuildContext context) => UserProfileScreen();
 }
 
 class UserProfileScreenState extends State<UserProfileScreen> {
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _currentPasswordController = TextEditingController();
-  TextEditingController _newPasswordController = TextEditingController();
-  bool hide = true;
+  final _formKey = GlobalKey<FormState>();
+  final _profileFormKey = GlobalKey<FormState>();
+  final _passwordFormKey = GlobalKey<FormState>();
+  
+  late final TextEditingController _nameController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _addressController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _currentPasswordController;
+  late final TextEditingController _newPasswordController;
+  
+  bool _isPasswordHidden = true;
   bool _showPasswordFields = true;
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
+    _initializeControllers();
     _fetchUserData();
+  }
+
+  void _initializeControllers() {
+    _nameController = TextEditingController();
+    _phoneController = TextEditingController();
+    _addressController = TextEditingController();
+    _emailController = TextEditingController();
+    _currentPasswordController = TextEditingController();
+    _newPasswordController = TextEditingController();
   }
 
   @override
   void dispose() {
+    _disposeControllers();
+    super.dispose();
+  }
+
+  void _disposeControllers() {
     _nameController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
     _emailController.dispose();
     _currentPasswordController.dispose();
     _newPasswordController.dispose();
-    super.dispose();
   }
 
   Future<void> _fetchUserData() async {
+    setState(() => _isLoading = true);
     try {
-      User? user = FirebaseAuth.instance.currentUser;
-
+      final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No user is currently logged in.')),
-        );
+        _showSnackBar('No user is currently logged in.');
         return;
       }
 
-      String uid = user.uid;
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+      final userDoc = await FirebaseFirestore.instance
           .collection('patients')
-          .doc(uid)
+          .doc(user.uid)
           .get();
 
       if (userDoc.exists) {
-        setState(() {
-          _nameController.text = userDoc['name'] ?? '';
-          _phoneController.text = userDoc['mobile'] ?? '';
-          _addressController.text = userDoc['address'] ?? '';
-          _emailController.text = userDoc['email'] ?? '';
-        });
-        print("User data fetched successfully: ${userDoc.data()}");
-      } else {
-        print("No user data found for the UID: $uid");
+        _populateUserData(userDoc.data() ?? {});
       }
     } catch (e) {
-      print("Failed to fetch user data: $e");
+      _showSnackBar('Failed to fetch user data: $e');
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
-  Future<void> _updateUserData() async {
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
+  void _populateUserData(Map<String, dynamic> data) {
+    setState(() {
+      _nameController.text = data['name'] ?? '';
+      _phoneController.text = data['mobile'] ?? '';
+      _addressController.text = data['address'] ?? '';
+      _emailController.text = data['email'] ?? '';
+    });
+  }
 
+  // UI Components
+  Widget _buildProfileForm() {
+    return Form(
+      key: _profileFormKey,
+      child: Column(
+        children: [
+          _buildProfileField(
+            controller: _nameController,
+            icon: Icons.person,
+            label: "Name",
+            validator: (value) => value?.isEmpty ?? true ? "Please enter name" : null,
+          ),
+          _buildPhoneField(),
+          _buildProfileField(
+            controller: _addressController,
+            icon: Icons.location_on,
+            label: "Address",
+            validator: (value) => value?.isEmpty ?? true ? "Please enter address" : null,
+          ),
+          _buildProfileField(
+            controller: _emailController,
+            icon: Icons.email,
+            label: "Email",
+            keyboardType: TextInputType.emailAddress,
+          ),
+          const SizedBox(height: 20),
+          _buildActionButton(
+            label: 'Save Changes',
+            onPressed: _handleProfileUpdate,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPasswordForm() {
+    return Form(
+      key: _passwordFormKey,
+      child: Column(
+        children: [
+          _buildPasswordField(
+            controller: _currentPasswordController,
+            label: "Current Password",
+          ),
+          _buildPasswordField(
+            controller: _newPasswordController,
+            label: "New Password",
+          ),
+          const SizedBox(height: 20),
+          _buildActionButton(
+            label: 'Change Password',
+            onPressed: _handlePasswordUpdate,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileField({
+    required TextEditingController controller,
+    required IconData icon,
+    required String label,
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: CustomTextFormField(
+        controller: controller,
+        hintText: label,
+        textInputType: keyboardType,
+        prefix: Icon(icon, color: appTheme.orangeA200, size: 24),
+        contentPadding: EdgeInsets.symmetric(vertical: 16.v, horizontal: 12.h),
+        validator: validator,
+      ),
+    );
+  }
+
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String label,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: CustomTextFormField(
+        controller: controller,
+        hintText: label,
+        prefix: Icon(Icons.lock, color: appTheme.orangeA200, size: 24),
+        suffix: GestureDetector(
+          onTap: () => setState(() => _isPasswordHidden = !_isPasswordHidden),
+          child: Icon(
+            _isPasswordHidden ? Icons.visibility : Icons.visibility_off,
+            color: appTheme.orangeA200,
+          ),
+        ),
+        obscureText: _isPasswordHidden,
+        validator: (value) => (value?.length ?? 0) < 6 
+            ? "Password must be at least 6 characters" 
+            : null,
+        contentPadding: EdgeInsets.symmetric(vertical: 16.v, horizontal: 12.h),
+      ),
+    );
+  }
+
+  Widget _buildPhoneField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: CustomTextFormField(
+        controller: _phoneController,
+        prefix: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: CustomImageView(
+                imagePath: ImageConstant.imgIndia,
+                width: 24,
+                height: 24,
+                fit: BoxFit.contain,
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              height: 24,
+              child: VerticalDivider(color: appTheme.orangeA200),
+            ),
+          ],
+        ),
+        validator: (value) =>
+            value?.length != 10 ? "Please enter valid phone number" : null,
+        hintText: "Phone Number",
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: appTheme.orangeA200,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleProfileUpdate() async {
+    if (!_profileFormKey.currentState!.validate()) return;
+    
+    setState(() => _isLoading = true);
+    try {
+      final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No user is currently logged in.')),
-        );
+        _showSnackBar('No user is currently logged in.');
         return;
       }
 
-      String uid = user.uid;
-      await FirebaseFirestore.instance.collection('patients').doc(uid).update({
+      await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(user.uid)
+          .update({
         'name': _nameController.text,
         'mobile': _phoneController.text,
         'address': _addressController.text,
         'email': _emailController.text,
       });
 
-      print("User data updated successfully!");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Profile updated successfully!')),
-      );
+      _showSnackBar('Profile updated successfully!');
       Navigator.pushReplacementNamed(context, '/nextScreenRoute');
     } catch (e) {
-      print("Failed to update user data: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update profile.')),
-      );
+      _showSnackBar('Failed to update profile: $e');
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
-  Future<void> _updatePassword() async {
+  Future<void> _handlePasswordUpdate() async {
+    if (!_passwordFormKey.currentState!.validate()) return;
+    
+    setState(() => _isLoading = true);
     try {
-      User? user = FirebaseAuth.instance.currentUser;
-
+      final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No user is currently logged in.')),
-        );
+        _showSnackBar('No user is currently logged in.');
         return;
       }
 
-      String uid = user.uid;
-
-      // Fetch the user's stored password from Firestore
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+      final userDoc = await FirebaseFirestore.instance
           .collection('patients')
-          .doc(uid)
+          .doc(user.uid)
           .get();
 
-      if (userDoc.exists) {
-        String storedPassword =
-            userDoc['password']; // Assume the password is stored in this field
-
-        // Compare the entered current password with the stored password
-        if (_currentPasswordController.text == storedPassword) {
-          // If passwords match, update the password
-          await FirebaseFirestore.instance
-              .collection('patients')
-              .doc(uid)
-              .update({
-            'password': _newPasswordController.text,
-          });
-
-          // Optionally, update the password in Firebase Authentication
-          await user.updatePassword(_newPasswordController.text);
-
-          print("User Password updated successfully!");
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Password updated successfully!')),
-          );
-        } else {
-          // If passwords don't match, show an error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Current password is incorrect.')),
-          );
-        }
-      } else {
-        print("User document not found.");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('User document not found.')),
-        );
+      if (!userDoc.exists) {
+        _showSnackBar('User document not found.');
+        return;
       }
+
+      final storedPassword = userDoc.data()?['password'];
+      if (_currentPasswordController.text != storedPassword) {
+        _showSnackBar('Current password is incorrect.');
+        return;
+      }
+
+      await Future.wait([
+        FirebaseFirestore.instance
+            .collection('patients')
+            .doc(user.uid)
+            .update({'password': _newPasswordController.text}),
+        user.updatePassword(_newPasswordController.text),
+      ]);
+
+      _showSnackBar('Password updated successfully!');
+      _currentPasswordController.clear();
+      _newPasswordController.clear();
     } catch (e) {
-      print("Failed to update password: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update password.')),
-      );
+      _showSnackBar('Failed to update password: $e');
+    } finally {
+      setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _handleLogout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    } catch (e) {
+      _showSnackBar('Failed to log out: $e');
+    }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.symmetric(
-            horizontal: 5.v,
-            vertical: 10.v,
-          ),
-          decoration: AppDecoration.fillGray.copyWith(
-            image: DecorationImage(
-              image: AssetImage(
-                ImageConstant.imgProfileBg,
-              ),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // AppStatsHeader(per: 30),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.v),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: Card(
-                          clipBehavior: Clip.antiAlias,
-                          elevation: 0,
-                          margin: EdgeInsets.all(0),
-                          color: appTheme.whiteA700,
-                          shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                              color: appTheme.whiteA700,
-                              width: 5.v,
-                            ),
-                            borderRadius: BorderRadiusStyle.roundedBorder15,
-                          ),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.8,
-                            decoration: AppDecoration.outlineWhiteA.copyWith(
-                              borderRadius: BorderRadiusStyle.roundedBorder15,
-                            ),
-                            child: Stack(
-                              alignment: Alignment.topCenter,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        SizedBox(height: 10),
-                                        CustomTextFormField(
-                                          controller: _nameController,
-                                          hintText: "name".tr,
-                                          autofocus: false,
-                                          prefix: Icon(
-                                            Icons.person,
-                                            size: 25,
-                                            color: appTheme.orangeA200,
-                                          ),
-                                          contentPadding: EdgeInsets.symmetric(
-                                              vertical: 6.v, horizontal: 2.v),
-                                          validator: (value) {
-                                            if (value!.isEmpty) {
-                                              return "Please enter name";
-                                            } else {
-                                              return null;
-                                            }
-                                          },
-                                        ),
-                                        SizedBox(height: 10),
-                                        CustomTextFormField(
-                                          width: 370.v,
-                                          controller: _phoneController,
-                                          prefix: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 8.0),
-                                                child: CustomImageView(
-                                                  imagePath:
-                                                      ImageConstant.imgIndia,
-                                                  width: 24.v,
-                                                  height: 23.v,
-                                                  fit: BoxFit.contain,
-                                                  alignment: Alignment.center,
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 4),
-                                                child: SizedBox(
-                                                  height: 23.v,
-                                                  child: VerticalDivider(
-                                                    width: 1.v,
-                                                    thickness: 1.v,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          validator: (value) {
-                                            if (value!.length < 10) {
-                                              return "Please enter valid phone number";
-                                            } else {
-                                              return null;
-                                            }
-                                          },
-                                          hintText: "lbl_9312211596".tr,
-                                        ),
-                                        SizedBox(height: 10),
-                                        CustomTextFormField(
-                                          controller: _addressController,
-                                          prefix: Icon(
-                                            Icons.location_on,
-                                            size: 25,
-                                            color: appTheme.orangeA200,
-                                          ),
-                                          hintText: "address".tr,
-                                          contentPadding: EdgeInsets.symmetric(
-                                              vertical: 6.v, horizontal: 2.v),
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return "err_msg_please_enter_valid_address"
-                                                  .tr;
-                                            }
-                                            return null;
-                                          },
-                                        ),
-
-
-                                        SizedBox(height: 10),
-                                        CustomTextFormField(
-                                          controller: _emailController,
-                                          hintText: "email".tr,
-                                          textInputType:
-                                              TextInputType.emailAddress,
-                                          prefix: Icon(
-                                            size: 25,
-                                            Icons.email,
-                                            color: appTheme.orangeA200,
-                                          ),
-                                          contentPadding: EdgeInsets.symmetric(
-                                              vertical: 6.v, horizontal: 2.v),
-                                        ),
-                                        if (_showPasswordFields) ...[
-                                          SizedBox(height: 10),
-                                          CustomTextFormField(
-                                            width: 370.v,
-                                            controller:
-                                                _currentPasswordController,
-                                            suffix: GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  hide = !hide;
-                                                });
-                                              },
-                                              child: Icon(
-                                                hide
-                                                    ? Icons.visibility
-                                                    : Icons.visibility_off,
-                                                color: appTheme.orangeA200,
-                                              ),
-                                            ),
-                                            validator: (value) {
-                                              if (value!.length < 6) {
-                                                return "Password must be at least 6 characters";
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            prefix: Icon(
-                                              Icons.lock,
-                                              size: 25,
-                                              color: appTheme.orangeA200,
-                                            ),
-                                            obscureText: hide,
-                                            hintText: "Current Password",
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    vertical: 6.v,
-                                                    horizontal: 2.v),
-                                          ),
-                                          SizedBox(height: 10),
-                                          CustomTextFormField(
-                                            width: 370.v,
-                                            controller: _newPasswordController,
-                                            suffix: GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  hide = !hide;
-                                                });
-                                              },
-                                              child: Icon(
-                                                hide
-                                                    ? Icons.visibility
-                                                    : Icons.visibility_off,
-                                                color: appTheme.orangeA200,
-                                              ),
-                                            ),
-                                            validator: (value) {
-                                              if (value!.length < 6) {
-                                                return "Password must be at least 6 characters";
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            prefix: Icon(
-                                              Icons.lock,
-                                              size: 25,
-                                              color: appTheme.orangeA200,
-                                            ),
-                                            obscureText: hide,
-                                            hintText: "New Password",
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    vertical: 6.v,
-                                                    horizontal: 2.v),
-                                          ),
-                                          SizedBox(height: 10),
-                                          ElevatedButton(
-                                            onPressed: () async {
-                                              await _updatePassword();
-                                            },
-                                            child: Text('Change Password'),
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  appTheme.orangeA200,
-                                              foregroundColor: Colors.white,
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 24, vertical: 12),
-                                              textStyle: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                        SizedBox(height: 10),
-                                        ElevatedButton(
-                                          onPressed: () async {
-                                            await _updateUserData();
-                                          },
-                                          child: Text('Save Changes'),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                appTheme.orangeA200,
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 24, vertical: 12),
-                                            textStyle: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ), 
-                                         SizedBox(height: 10),
-                                         
-                                        ElevatedButton(
-                                          onPressed: () async {
-                                            await FirebaseAuth.instance.signOut();
-                                            Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-                                          
-                                          },
-                                          child: Text('Log out'),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                appTheme.orangeA200,
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 24, vertical: 12),
-                                            textStyle: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        
-                                      ],
-                                    ),
-
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10.v),
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        height: 245.v,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6.v,
-                          vertical: 4.v,
-                        ),
-                        decoration:
-                            AppDecoration.outlineWhiteDeepOrangeA200.copyWith(
-                          borderRadius: BorderRadiusStyle.roundedBorder10,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  width: 340
-                                      .v, // Use a width that scales with the width of the device
-                                  height: 149
-                                      .v, // Keep the height scaling with the height of the device
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 7
-                                        .v, // Use width-based padding for consistency
-                                    vertical: 7.v,
-                                  ),
-                                  decoration:
-                                      AppDecoration.fillDeepOrange10.copyWith(
-                                    borderRadius:
-                                        BorderRadiusStyle.roundedBorder10,
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        width: MediaQuery.of(context)
-                                                .size
-                                                .width *
-                                            0.4, // Consistent width based on screen width
-                                        height: 40.v,
-                                        decoration: AppDecoration
-                                            .outlineFilledBlue
-                                            .copyWith(
-                                          borderRadius:
-                                              BorderRadiusStyle.roundedBorder5,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              "lbl_your_score".tr,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: CustomTextStyles
-                                                  .labelMediumGray90002,
-                                            ),
-                                            SizedBox(height: 2.v),
-                                            Container(
-                                              height: 15.v,
-                                              width: 80
-                                                  .v, // Width scaled based on device width
-                                              decoration: BoxDecoration(
-                                                color: appTheme.gray200,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  3.v,
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(height: 2.v)
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        width: MediaQuery.of(context)
-                                                .size
-                                                .width *
-                                            0.4, // Consistent width based on screen width
-                                        height: 40.v,
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 6
-                                              .v, // Use width-based padding for consistency
-                                          vertical: 2.v,
-                                        ),
-                                        decoration: AppDecoration
-                                            .outlineFilledBlue
-                                            .copyWith(
-                                          borderRadius:
-                                              BorderRadiusStyle.roundedBorder5,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              "lbl_coins_earned".tr,
-                                              style: CustomTextStyles
-                                                  .labelMediumGray90002,
-                                            ),
-                                            SizedBox(height: 2.v),
-                                            Container(
-                                              height: 15.v,
-                                              width: 80
-                                                  .v, // Width scaled based on device width
-                                              decoration: BoxDecoration(
-                                                color: appTheme.gray200,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  3.v,
-                                                ),
-                                              ),
-                                              child: Center(
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Text(
-                                                      "lbl_234".tr,
-                                                      style: CustomTextStyles
-                                                          .labelMediumGray90002,
-                                                    ),
-                                                    CustomImageView(
-                                                      imagePath:
-                                                          ImageConstant.imgCoin,
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(height: 2.v)
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        width: MediaQuery.of(context)
-                                                .size
-                                                .width *
-                                            0.3, // Consistent width based on screen width
-                                        height: 30.v,
-                                        decoration: BoxDecoration(
-                                          color: appTheme.yellow500,
-                                          borderRadius: BorderRadius.circular(
-                                            6.v,
-                                          ),
-                                          border: Border.all(
-                                            color: appTheme.whiteA700,
-                                            width: 2
-                                                .v, // Use width-based stroke for consistency
-                                            strokeAlign:
-                                                BorderSide.strokeAlignOutside,
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10.v),
-                            Container(
-                              height: 65.v,
-                              width: (MediaQuery.of(context).size.width) * 0.45,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12.v,
-                                vertical: 4.v,
-                              ),
-                              decoration:
-                                  AppDecoration.fillDeepOrange10.copyWith(
-                                borderRadius: BorderRadiusStyle.roundedBorder10,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  CustomImageView(
-                                    width: ((MediaQuery.of(context).size.width -
-                                                    44.v) *
-                                                0.45 -
-                                            24.v -
-                                            30.v) /
-                                        3,
-                                    height: 55.v,
-                                    fit: BoxFit.contain,
-                                    imagePath: "assets/images/badge_g.png",
-                                  ),
-                                  CustomImageView(
-                                    width: ((MediaQuery.of(context).size.width -
-                                                    44.v) *
-                                                0.45 -
-                                            24.v -
-                                            30.v) /
-                                        3,
-                                    height: 55.v,
-                                    fit: BoxFit.contain,
-                                    imagePath: "assets/images/badge_s.png",
-                                  ),
-                                  CustomImageView(
-                                    width: ((MediaQuery.of(context).size.width -
-                                                    44.v) *
-                                                0.45 -
-                                            24.v -
-                                            30.v) /
-                                        3,
-                                    height: 55.v,
-                                    fit: BoxFit.contain,
-                                    imagePath: "assets/images/badge_b.png",
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+        body: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(ImageConstant.imgProfileBg),
+                  fit: BoxFit.cover,
                 ),
               ),
-
-              SizedBox(height: 3.v)
-            ],
-          ),
+            ),
+            
+           
+            if (_isLoading)
+              const Center(child: CircularProgressIndicator())
+            else
+              SingleChildScrollView(
+                
+                padding: const EdgeInsets.all(16.0),
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Profile Settings',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: appTheme.orangeA200,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        _buildProfileForm(),
+                        const Divider(height: 40),
+                        if (_showPasswordFields) ...[
+                          _buildPasswordForm(),
+                          const Divider(height: 40),
+                        ],
+                        _buildActionButton(
+                          label: 'Log out',
+                          onPressed: _handleLogout,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
-  }
-
-  /// Common widget
-  Widget _buildSilverbadge(
-    BuildContext context, {
-    required String television,
-    required String userEleven,
-    required String inboxOne,
-    required String closeNine,
-  }) {
-    return SizedBox(
-      height: 55.v,
-      width: 35.v,
-      child: Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          CustomImageView(
-            imagePath: television,
-            height: 31.v,
-            width: 20.v,
-            radius: BorderRadius.circular(
-              2.v,
-            ),
-            alignment: Alignment.bottomLeft,
-          ),
-          CustomImageView(
-            imagePath: userEleven,
-            height: 31.v,
-            width: 20.v,
-            radius: BorderRadius.circular(
-              2.v,
-            ),
-            alignment: Alignment.bottomRight,
-          ),
-          Align(
-            alignment: Alignment.topCenter,
-            child: SizedBox(
-              height: 32.v,
-              width: 30.v,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  CustomImageView(
-                    imagePath: inboxOne,
-                    height: 32.v,
-                    width: 30.v,
-                    alignment: Alignment.center,
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: SizedBox(
-                      height: 23.v,
-                      width: 20.v,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          CustomImageView(
-                            imagePath: closeNine,
-                            height: 23.v,
-                            width: 20.v,
-                            alignment: Alignment.center,
-                          ),
-                          CustomImageView(
-                            imagePath: ImageConstant.imgStar14,
-                            height: 17.v,
-                            width: 15.v,
-                            radius: BorderRadius.circular(
-                              1.v,
-                            ),
-                            alignment: Alignment.center,
-                          )
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  /// Navigates to the wardrobeScreen when the action is triggered.
-  onTapMascotscreen(BuildContext context) {
-    // NavigatorService.pushNamed(
-    //   // AppRoutes.wardrobeScreen,
-    // );
   }
 }
