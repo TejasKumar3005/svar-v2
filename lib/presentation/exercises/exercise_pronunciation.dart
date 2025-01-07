@@ -69,7 +69,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       DeviceOrientation.landscapeRight,
     ]);
     initTTS();
+    _micRecorder = FlutterSoundRecorder();
+    _audioPlayer = AudioPlayer();
     super.initState();
+
   }
 
   Future<void> initTTS() async {
@@ -525,10 +528,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   }
 
   Future<dynamic> sendWavFile(String wavFile, String word) async {
-    var uri = Uri.parse("https://gameapi.svar.in/process_wav");
+    var uri = Uri.parse("https://gameapi.svar.in/process_aduio_sent");
 
     var request = http.MultipartRequest('POST', uri)
-      ..fields['phoneme'] = word
+      ..fields['text'] = word
       ..files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
 
     var response = await request.send();

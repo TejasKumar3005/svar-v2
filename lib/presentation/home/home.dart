@@ -27,153 +27,210 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Set the orientation to landscape
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
-  }
-
   @override
   Widget build(BuildContext context) {
-    var provider = Provider.of<MainInteractionProvider>(context, listen: false);
-
     return PopScope(
-        canPop: false,
-        onPopInvoked: (didPop) {
-          showQuitDialog(context);
-        },
-        child: SafeArea(
-          child: Scaffold(
-            extendBody: true,
-            extendBodyBehindAppBar: true,
-            body: Stack(
-              children: [
-                // Background Rive animation
-                Positioned.fill(
-                  child: rive.RiveAnimation.asset(
-                    'assets/rive/bg2.riv',
-                    fit: BoxFit.cover,
-                  ),
+      canPop: false,
+      onPopInvoked: (didPop) {
+        showQuitDialog(context);
+      },
+      child: SafeArea(
+        child: Scaffold(
+          extendBody: true,
+          extendBodyBehindAppBar: true,
+          body: Stack(
+            children: [
+              // Background Rive animation
+              Positioned.fill(
+                child: rive.RiveAnimation.asset(
+                  'assets/rive/bg2.riv',
+                  fit: BoxFit.cover,
                 ),
-                // Foreground content
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 10.v),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.h),
-                        child: AppStatsHeader(per: 40),
+              ),
+              // Main Content
+              Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    // Stats Header
+                    AppStatsHeader(per: 40),
+                    SizedBox(height: 24),
+                    // Main Content Area - Side by Side Layout with Different Heights
+                    Expanded(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final totalFlex = 3; // 3 + 2
+                          final maxHeight = constraints.maxHeight;
+                          
+                          // Calculate heights based on flex ratio
+                          final mainCardHeight = (maxHeight * 3 / totalFlex);
+                          final phonemesCardHeight = (maxHeight * 2 / totalFlex);
+                          
+                          return 
+                          Padding(padding: EdgeInsets.symmetric(horizontal: 40),
+                          child:
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center, // Changed from stretch
+                            
+                            children: [
+                              // Main Exercise Card - Larger
+                              Expanded(
+                                flex: 2,
+                                child: SizedBox(
+                                  height: mainCardHeight,
+                                  child: _buildExerciseCard(
+                                    context,
+                                    "Let's Practice Today's Exercises!",
+                                    ImageConstant.thumbnailPhonemes,
+                                    isPrimary: true,
+                                    () {
+                                      var dataPro = Provider.of<ExerciseProvider>(
+                                          context,
+                                          listen: false);
+                                      if (dataPro.todaysExercises.isNotEmpty) {
+                                        NavigatorService.pushNamed(
+                                            AppRoutes.exercisesScreen);
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: Text('No exercises assigned'),
+                                        ));
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 52),
+                              // Phonemes Card - Smaller
+                              Expanded(
+                                flex: 1,
+                                child: SizedBox(
+                                  height: phonemesCardHeight,
+                                  child: _buildExerciseCard(
+                                    context,
+                                    "Practice Phonemes!",
+                                    ImageConstant.thumbnailBarakhadi,
+                                    isPrimary: false,
+                                    () {
+                                      NavigatorService.pushNamed(
+                                          AppRoutes.phonmesListScreen);
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                          );
+                        },
                       ),
-                      Spacer(),
-                      carouselSlider(provider, context),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ));
-  }
-
-  Widget carouselSlider(
-      MainInteractionProvider provider, BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.7,
-        width: MediaQuery.of(context).size.width ,
-        child: CarouselSlider(
-          items: [
-            buildCarouselItem(
-              context,
-              provider,
-              "phonmesListScreen",
-              ImageConstant.thumbnailBarakhadi,
-              0,
-              () {
-                NavigatorService.pushNamed(AppRoutes.phonmesListScreen);
-              },
-            ),
-            
-            buildCarouselItem(
-              context,
-              provider,
-              "Level",
-              ImageConstant.thumbnailPhonemes,
-              5,
-              () {
-                var data_pro =
-                    Provider.of<ExerciseProvider>(context, listen: false);
-
-                if (data_pro.todaysExercises.isNotEmpty) {
-                  NavigatorService.pushNamed(AppRoutes.exercisesScreen);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('No exercises assigned'),
-                  ));
-                }
-              },
-            ),
-           
-            
-          ],
-          options: CarouselOptions(
-            autoPlay: true,
-            autoPlayCurve: Curves.decelerate,
-            enlargeCenterPage:
-                false, // Disabled enlarging to maintain consistent size
-            viewportFraction: 0.5, // Adjusted to show exactly two items
-            autoPlayAnimationDuration: const Duration(milliseconds: 800),
-            padEnds: false, // Removes padding at the ends
-            enableInfiniteScroll: true,
-            onPageChanged: (index, reason) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
+              ),
+            ],
           ),
         ),
       ),
     );
   }
-
-
-
-// And update the buildCarouselItem to add margin:
-
-Widget buildCarouselItem(
+Widget _buildExerciseCard(
   BuildContext context,
-  MainInteractionProvider provider,
-  String exerciseType,
+  String title,
   String imagePath,
-  int index,
-  VoidCallback onTap,
-) {
-  return ClipRect(
-    child: GestureDetector(
-      onTap: onTap,
-      child: Container(
-         width: MediaQuery.of(context).size.width * 0.5,
-        margin: EdgeInsets.symmetric(horizontal: 12.h), 
-        child: Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.5,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.contain,
-              ),
+  VoidCallback onTap, {
+  bool isPrimary = false,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isPrimary ? Colors.purple[200]! : Colors.blue[200]!,
+          width: 4,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: isPrimary ? 24 : 18,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Comic Sans MS',
+              color: isPrimary
+                  ? Color(0xFF7C3AED) // Purple for main exercise
+                  : Color(0xFF3B82F6), // Blue for phonemes
             ),
           ),
-        ),
+          SizedBox(height: isPrimary ? 12 : 9),
+          
+          Expanded(
+            child:Padding(
+            padding: EdgeInsets.symmetric(horizontal: isPrimary? 22 :0),
+          child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Calculate the available aspect ratio
+                double availableWidth = constraints.maxWidth;
+                double availableHeight = constraints.maxHeight;
+                double availableAspectRatio = availableWidth / availableHeight;
+
+                // Assuming the image's natural aspect ratio is close to 16:9
+                // Adjust this ratio based on your actual image dimensions
+                double targetAspectRatio = 2.0;
+
+                // Calculate padding to maintain equal spacing
+                double horizontalPadding = 0;
+                double verticalPadding = 0;
+
+                if (availableAspectRatio > targetAspectRatio) {
+                  // Available space is wider than needed
+                  double targetWidth = availableHeight * targetAspectRatio;
+                  horizontalPadding = (availableWidth - targetWidth) / 2;
+                  verticalPadding = availableHeight * 0.05; // 10% padding
+                  horizontalPadding = verticalPadding; // Make padding equal
+                } else {
+                  // Available space is taller than needed
+                  double targetHeight = availableWidth / targetAspectRatio;
+                  verticalPadding = (availableHeight - targetHeight) / 2;
+                  horizontalPadding = availableWidth * 0.05; // 10% padding
+                  verticalPadding = horizontalPadding; // Make padding equal
+                }
+
+                return Container(
+                  decoration: BoxDecoration(
+                    color: isPrimary ? Colors.purple[50] : Colors.blue[50],
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                    vertical: verticalPadding,
+                  ),
+                  child: Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        imagePath,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          )
+        ],
       ),
     ),
   );
