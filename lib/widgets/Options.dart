@@ -30,9 +30,9 @@ class _OptionWidgetState extends State<OptionWidget> {
   Future<void> _playAudio(bool isCorrect) async {
     try {
       if (isCorrect) {
-        await _audioPlayer.play(AssetSource('assets/audio/correct_answer.m4a'));
+        await _audioPlayer.play(AssetSource('assets/audio/correct_answer.mp3'));
       } else {
-        await _audioPlayer.play(AssetSource('assets/audio/wrong_answer.m4a'));
+        await _audioPlayer.play(AssetSource('assets/audio/wrong_answer.mp3'));
       }
     } catch (e) {
       debugPrint('Error playing audio: $e');
