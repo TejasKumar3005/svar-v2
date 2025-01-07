@@ -8,13 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rive/rive.dart' hide Image;
-import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
-import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
-import 'package:svar_new/widgets/circularScore.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:avatar_glow/avatar_glow.dart';
@@ -22,9 +19,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
 import 'package:svar_new/widgets/loading.dart';
 // import 'package:flutter_snowboy/flutter_snowboy.dart';
-import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:flutter_sound/flutter_sound.dart';
-import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 
 class ExercisePronunciation extends StatefulWidget {
   final String character;
@@ -338,20 +333,20 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                   ),
                 ),
               ),
-              Positioned(
-                right: 10,
-                bottom: 50,
-                child: Container(
-                  height: 70,
-                  width: 70,
-                  child: CustomButton(
-                    type: ButtonType.Tip,
-                    onPressed: () {
-                      Navigator.pushNamed(context, AppRoutes.tipBoxVideoScreen);
-                    },
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   right: 10,
+              //   bottom: 50,
+              //   child: Container(
+              //     height: 70,
+              //     width: 70,
+              //     child: CustomButton(
+              //       type: ButtonType.Tip,
+              //       onPressed: () {
+              //         Navigator.pushNamed(context, AppRoutes.tipBoxVideoScreen);
+              //       },
+              //     ),
+              //   ),
+              // ),
               if (result.isNotEmpty)
                 pronunciationResultWidget(result, context, widget.character),
             ],
@@ -365,9 +360,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       List<Map<String, String>> result, BuildContext context, String txt) {
     double width_screen = MediaQuery.of(context).size.width;
     return Container(
-      margin: EdgeInsets.fromLTRB(width_screen * 0.4, 16.0, 16.0, 16.0),
+      margin: EdgeInsets.fromLTRB(width_screen * 0.35, 16.0, 45.0, 16.0),
       decoration: BoxDecoration(
-        color: Colors.green[700],
+        color :Color.fromARGB(255, 52, 3, 62)      ,            //const Color.fromARGB(255, 36, 52, 36),
         borderRadius: BorderRadius.circular(16.0),
         boxShadow: const [
           BoxShadow(
@@ -389,7 +384,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                 style: TextStyle(
                   fontSize: 25.0,
                   fontWeight: FontWeight.bold,
-                  color: Colors.green[700],
+                  color: Color.fromARGB(255, 52, 3, 62) ,
                 ),
               ),
             ),
@@ -413,18 +408,32 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center, 
                       children: [
-                        Icon(
-                          Icons.emoji_emotions,
-                          color: value.contains("correct")
-                              ? Colors.amber[600]
-                              : Colors.red,
-                          size: 30,
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(211, 1, 5, 23), 
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          alignment: Alignment.center,
+                          child: Icon(
+                            value.contains("correct")
+                                ? Icons.check_circle
+                                : value.contains("prolonged") || value.contains("repeated")
+                                    ? Icons.hourglass_bottom
+                                    : Icons.cancel,
+                            color: value.contains("correct")
+                                ? Colors.green
+                                : value.contains("prolonged") || value.contains("repeated")
+                                    ? Colors.amber[600]
+                                    : Colors.red,
+                            size: 32,
+                          ),
                         ),
-                        SizedBox(
-                          width: 15,
-                        ),
+                        const SizedBox(width: 5),
                         Expanded(
                           flex: 1,
                           child: Text(
@@ -434,6 +443,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
+                            textAlign: TextAlign.center, // Ensure proper text alignment
                           ),
                         ),
                         const SizedBox(width: 8.0),
@@ -450,6 +460,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                       ],
                     ),
                   );
+
                 },
               ),
             ),
@@ -465,7 +476,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[900],
+                backgroundColor: Color.fromARGB(255, 52, 3, 62) ,
                 foregroundColor: Colors.white, // Text Color
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
@@ -536,13 +547,18 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     var response = await request.send();
 
     if (response.statusCode == 200) {
-      String body = await response.stream.bytesToString();
-      print(body);
-      Map<String, dynamic> data = json.decode(body);
+        String body = await response.stream.bytesToString();
+        // print(body);
+        Map<dynamic, dynamic> data = json.decode(body);
+        debugPrint("data received is ");
 
+        List<Map<String, String>> val = [];
+        for (var item in data['result']) {
+          val.add(Map<String, String>.from(item));
+        }
       setState(() {
-        result = data["result"];
-        wrd_map = data["result"];
+        result = val;
+        wrd_map = val;
         loading = false;
       });
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
@@ -747,60 +763,85 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     return "Need more practice";
   }
 
-onTapMicrophonebutton(
-    BuildContext context,
-    LingLearningProvider provider,
-  ) async {
-    try {
-      if (!provider.isRecording) {
-        bool permission = await requestPermissions();
-        if (!permission) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Microphone permission required")),
-          );
-          return;
-        }
+// onTapMicrophonebutton(
+//     BuildContext context,
+//     LingLearningProvider provider,
+//   ) async {
+//     try {
+//       if (!provider.isRecording) {
+//         bool permission = await requestPermissions();
+//         if (!permission) {
+//           ScaffoldMessenger.of(context).showSnackBar(
+//             SnackBar(content: Text("Microphone permission required")),
+//           );
+//           return;
+//         }
 
-        await _micRecorder.openRecorder();
+//         await _micRecorder.openRecorder();
         
-        // Create stream controller with dynamic type
-        _recordingDataController = StreamController<Uint8List>();
+//         // Create stream controller with dynamic type
+//         _recordingDataController = StreamController<Uint8List>();
 
-        await _micRecorder.startRecorder(
-          toStream: _recordingDataController!.sink,  // Use dynamic sink directly
-          codec: Codec.pcm16,
-          numChannels: 1,
-          sampleRate: 16000,
-        );
+//         await _micRecorder.startRecorder(
+//           toStream: _recordingDataController!.sink,  // Use dynamic sink directly
+//           codec: Codec.pcm16,
+//           numChannels: 1,
+//           sampleRate: 16000,
+//         );
 
-        // Updated stream handling
-        _recordingDataSubscription = _recordingDataController?.stream.listen((data) {
-          // Handle the raw audio data directly
-           processAudioData(data);
+//         // Updated stream handling
+//         _recordingDataSubscription = _recordingDataController?.stream.listen((data) {
+//           // Handle the raw audio data directly
+//            processAudioData(data);
          
-        });
+//         });
 
-        setState(() {
-          provider.isRecording = true;
-        });
-      } else {
-        await _micRecorder.stopRecorder();
-        await _micRecorder.closeRecorder();
-        await _recordingDataSubscription?.cancel();
-        await _recordingDataController?.close();
+//         setState(() {
+//           provider.isRecording = true;
+//         });
+//       } else {
+//         await _micRecorder.stopRecorder();
+//         await _micRecorder.closeRecorder();
+//         await _recordingDataSubscription?.cancel();
+//         await _recordingDataController?.close();
 
-        setState(() {
-          provider.isRecording = false;
-          isRecordingSegment = false;
-          currentAudioBuffer.clear();
-        });
-      }
+//         setState(() {
+//           provider.isRecording = false;
+//           isRecordingSegment = false;
+//           currentAudioBuffer.clear();
+//         });
+//       }
+//     } catch (e) {
+//       print("Error toggling recording: $e");
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text("Error with recording: $e")),
+//       );
+//     }
+//   }
+
+// }
+
+  onTapMicrophonebutton(
+      BuildContext context, LingLearningProvider provider) async {
+    try {
+      provider.toggleRecording(context).then((value) async {
+        if (!value) {
+          setState(() {
+            loading = true;
+          });
+          Directory tempDir = await getTemporaryDirectory();
+          String tempPath = tempDir.path;
+          debugPrint('audio path is ');
+          if (provider.selectedCharacter == '') {
+            debugPrint("something is going wrong here ");
+          }
+          String path = '$tempPath/audio.wav';
+          await sendWavFile(path, widget.character!);
+        }
+      });
     } catch (e) {
-      print("Error toggling recording: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error with recording: $e")),
-      );
+      print("error is caught!");
+      print(e.toString());
     }
   }
-
 }
