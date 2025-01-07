@@ -22,7 +22,7 @@ import 'package:avatar_glow/avatar_glow.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
 import 'package:svar_new/widgets/loading.dart';
-import 'package:flutter_snowboy/flutter_snowboy.dart';
+// import 'package:flutter_snowboy/flutter_snowboy.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
@@ -69,7 +69,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       DeviceOrientation.landscapeRight,
     ]);
     initTTS();
+    _micRecorder = FlutterSoundRecorder();
+    _audioPlayer = AudioPlayer();
     super.initState();
+
   }
 
   Future<void> initTTS() async {
@@ -525,10 +528,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   }
 
   Future<dynamic> sendWavFile(String wavFile, String word) async {
-    var uri = Uri.parse("https://gameapi.svar.in/process_wav");
+    var uri = Uri.parse("https://gameapi.svar.in/process_aduio_sent");
 
     var request = http.MultipartRequest('POST', uri)
-      ..fields['phoneme'] = word
+      ..fields['text'] = word
       ..files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
 
     var response = await request.send();
