@@ -28,12 +28,17 @@ class ExerciseProvider extends ChangeNotifier {
   }
 
   void incrementLevel() {
-    if (currentExerciseIndex == todaysExercises.length - 1) {
+    int startExerciseIndex =
+        (currentExerciseIndex ~/ 5) * 5; // Calculate starting index
+    int endExerciseIndex = startExerciseIndex + 4;
+    if (currentExerciseIndex == endExerciseIndex) {
+      currentExerciseIndex++;
+      currentLevelInput!.change(6);
+      currentLevelInput!.change(1);
       return;
     }
     currentExerciseIndex++;
     currentLevelInput!.change(currentExerciseIndex.toDouble() + 1);
-
     notifyListeners();
   }
 }
