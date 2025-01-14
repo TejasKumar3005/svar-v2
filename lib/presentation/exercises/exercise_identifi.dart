@@ -313,7 +313,6 @@ Future<void> _loadRiveFile() async {
                                         if (isCorrect) {
                                           data_pro.incrementLevel();
                                         }
-
                                         _triggerAnimation(isCorrect);
                                         UserData(
                                           uid: FirebaseAuth

@@ -54,9 +54,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var provider = context.watch<ExerciseProvider>();
-    print("provider.todaysExercises");
-    print(provider.todaysExercises);
+    //  Provider.of<ExerciseProvider>(context, listen: false).fetchAndOrganizeExercises();
+    
+    // print(provider.todaysExercises);
 
     return SafeArea(
       child: Scaffold(
@@ -523,7 +523,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       _handleLevelType(startExerciseIndex + 4, "notcompleted");
     }
   }
-
+     
   void _onRiveInit(Artboard artboard) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int exerciseCount = data_pro.todaysExercises.length;
@@ -574,9 +574,7 @@ artboard.forEachComponent((component) {
           String typeKey = "type${i + 1}";
           TextValueRun? textRun_type = artboard.textRun(typeKey);
           if (textRun_type != null) {
-            textRun_type.text = data_pro.todaysExercises[actualIndex]
-                    ['exerciseType'] ??
-                "Exercise Type";
+            textRun_type.text = data_pro.todaysExercises[actualIndex]['date'] ?? 'No Date';
           } else {
             debugPrint("Error: '$typeKey' text run not found!");
           }
@@ -596,7 +594,7 @@ artboard.forEachComponent((component) {
           debugPrint("Error: 'train' not found!");
         }
 
-        data_pro.initiliaseSMINumber(
+        data_pro.initializeSMINumber(
             _controller?.getNumberInput('current level') as SMINumber);
         if (data_pro.currentLevelInput == null) {
           debugPrint("Error: 'current level' input not found!");
