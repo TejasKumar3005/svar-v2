@@ -132,92 +132,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     model = ModalRoute.of(context)!.settings.arguments;
   }
 
-  void _playAudio(String character) async {
-    // Map character to audio file
-    String audioPath = '';
-    switch (character) {
-      case 'क':
-        audioPath = 'assets/audio/ka.mp3';
-        break;
-      case 'ख':
-        audioPath = 'assets/audio/kha.mp3';
-        break;
-      case 'ग':
-        audioPath = 'assets/audio/ga.mp3';
-
-        break;
-      case 'घ':
-        audioPath = 'assets/audio/gha.mp3';
-        break;
-      case 'च':
-        audioPath = 'assets/audio/cha.mp3';
-        break;
-      case 'छ':
-        audioPath = 'assets/audio/chha.mp3';
-        break;
-      case 'ज':
-        audioPath = 'assets/audio/ja.mp3';
-        break;
-      case 'झ':
-        audioPath = 'assets/audio/jha.mp3';
-        break;
-      case 'ट':
-        audioPath = 'assets/audio/ta.mp3';
-        break;
-      case 'ठ':
-        audioPath = 'assets/audio/thaa.mp3';
-        break;
-      case 'ड':
-        audioPath = 'assets/audio/da.mp3';
-        break;
-      case 'ढ':
-        audioPath = 'assets/audio/dhaa.mp3';
-        break;
-      case 'त':
-        audioPath = 'assets/audio/tha.mp3';
-        break;
-      case 'थ':
-        audioPath = 'assets/audio/taa.mp3';
-        break;
-      case 'ध':
-        audioPath = 'assets/audio/dhha.mp3';
-        break;
-      case 'न':
-        audioPath = 'assets/audio/naa.mp3';
-        break;
-      case 'प':
-        audioPath = 'assets/audio/pa.mp3';
-        break;
-      case 'फ':
-        audioPath = 'assets/audio/pha.mp3';
-        break;
-      case 'ब':
-        audioPath = 'assets/audio/ba.mp3';
-        break;
-      case 'भ':
-        audioPath = 'assets/audio/bha.mp3';
-        break;
-      case 'म':
-        audioPath = 'assets/audio/ma.mp3';
-        break;
-      default:
-        audioPath =
-            'assets/audio/default.mp3'; // Ensure a default.mp3 file exists or handle this case appropriately
-    }
-
-    bool fileExists = await rootBundle
-        .load(audioPath)
-        .then((value) => true)
-        .catchError((_) => false);
-    if (fileExists) {
-      await _audioPlayer.play(
-        AssetSource(audioPath, mimeType: "mp3"),
-      );
-    } else {
-      print("Audio file not found: $audioPath");
-    }
-  }
-
   List<Map<String, String>> result = [
   
   ];
@@ -333,20 +247,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                   ),
                 ),
               ),
-              // Positioned(
-              //   right: 10,
-              //   bottom: 50,
-              //   child: Container(
-              //     height: 70,
-              //     width: 70,
-              //     child: CustomButton(
-              //       type: ButtonType.Tip,
-              //       onPressed: () {
-              //         Navigator.pushNamed(context, AppRoutes.tipBoxVideoScreen);
-              //       },
-              //     ),
-              //   ),
-              // ),
               if (result.isNotEmpty)
                 pronunciationResultWidget(result, context, widget.character),
             ],
@@ -505,23 +405,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomButton(
-            type: ButtonType.Back,
-            onPressed: () {
-              NavigatorService.goBack();
-            },
-          ),
-          Spacer(),
-        ],
-      ),
-    );
-  }
+
 
   Future<bool> requestPermissions() async {
     Map<Permission, PermissionStatus> statuses = await [
