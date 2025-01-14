@@ -53,11 +53,11 @@ class _OptionWidgetState extends State<OptionWidget> {
     await _playAudio(isCorrectResult);
 
     if (isCorrectResult) {
-      // Uncomment if you want to show celebration overlay
-      // _overlayEntry = celebrationOverlay(context, () {
-      //   _overlayEntry?.remove();
-      // });
-      // Overlay.of(context).insert(_overlayEntry!);
+    
+      _overlayEntry = celebrationOverlay(context, () {
+        _overlayEntry?.remove();
+      });
+      Overlay.of(context).insert(_overlayEntry!);
     } else {
       setState(() {
         _isGlowing = true;

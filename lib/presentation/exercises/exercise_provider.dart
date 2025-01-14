@@ -25,7 +25,7 @@ class ExerciseProvider extends ChangeNotifier {
 
       // Fetch user's completed exercise status
       await _fetchCompletedExercise(uid);
-      
+
       // Process and filter exercises
       _processExercises(data);
 
@@ -37,31 +37,34 @@ class ExerciseProvider extends ChangeNotifier {
   }
 
   Future<void> _fetchCompletedExercise(String uid) async {
-    DocumentSnapshot userDoc = await _firestore
-        .collection('patients')
-        .doc(uid)
-        .get();
-    
-    completedTillExercise = (userDoc.data() as Map<String, dynamic>)['completedTillExercise'] ?? '';
+    DocumentSnapshot userDoc =
+        await _firestore.collection('patients').doc(uid).get();
+
+    completedTillExercise =
+        (userDoc.data() as Map<String, dynamic>)['completedTillExercise'] ?? '';
     print("📍 Last completed exercise: $completedTillExercise");
   }
 
   void _processExercises(List<dynamic> data) {
     print("\n=== Processing Exercises ===");
-    
+
     // Filter exercises by date range
-    todaysExercises = data.where((exercise) {
-      final date = exercise['date']?.toString();
-      final isInRange = date != null && _isDateInRange(date);
-      if (isInRange) print("Including exercise: ${exercise['eid']} | Date: $date");
-      return isInRange;
-    }).map((e) => Map<String, dynamic>.from(e)).toList();
+    todaysExercises = data
+        .where((exercise) {
+          final date = exercise['date']?.toString();
+          final isInRange = date != null && _isDateInRange(date);
+          if (isInRange)
+            print("Including exercise: ${exercise['eid']} | Date: $date");
+          return isInRange;
+        })
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
 
     // Sort exercises by date
     todaysExercises.sort((a, b) => a['date'].compareTo(b['date']));
 
     _updateCurrentExerciseIndex();
-    
+
     print("Total exercises in range: ${todaysExercises.length}");
     print("Current index: $currentExerciseIndex");
   }
@@ -123,10 +126,14 @@ class ExerciseProvider extends ChangeNotifier {
   }
 
   void _completeExerciseSet() {
+    print("this is the end of the set");
     currentExerciseIndex++;
+    print("currentExerciseIndex: $currentExerciseIndex");
     if (currentLevelInput != null) {
       currentLevelInput!.change(6);
-      currentLevelInput!.change(1);
+      Future.delayed(const Duration(seconds: 4), () {
+        currentLevelInput!.change(1);
+      });
     }
     notifyListeners();
   }
@@ -149,7 +156,7 @@ class ExerciseProvider extends ChangeNotifier {
           .collection('patients')
           .doc(uid)
           .update({'completedTillExercise': newCompletedId});
-      
+
       print("✅ Updated completedTillExercise: $newCompletedId");
     } catch (e) {
       print("❌ Error updating completedTillExercise: $e");
@@ -193,7 +200,7 @@ class ExerciseProvider extends ChangeNotifier {
 
   int getCurrentMaxIndex() {
     if (completedTillExercise.isEmpty) return 0;
-    
+
     for (int i = 0; i < todaysExercises.length; i++) {
       if (todaysExercises[i]['eid'] == completedTillExercise) {
         return i;
