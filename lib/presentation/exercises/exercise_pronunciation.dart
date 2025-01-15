@@ -21,9 +21,9 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/utils/image_constant.dart';
 import 'package:audioplayers/audioplayers.dart' as audioplayers; 
 import 'package:svar_new/routes/app_routes.dart'; 
-import 'dart:html' as html;
-
-
+// if (kIsWeb) {
+//   import 'dart:html' as html;
+// }
 class ExercisePronunciation extends StatefulWidget {
   final String character;
   final String eid;
@@ -221,16 +221,16 @@ void _setupVADHandlers() {
   }
 
   Future<bool> requestPermissions() async {
-    if (kIsWeb) {
-      try {
-       final stream = await html.window.navigator.mediaDevices!.getUserMedia({'audio': true});
-       stream.getTracks().forEach((track) => track.stop());
-       return true;
-      } catch (e) {
-        print('Error getting web permissions: $e');
-        return false;
-      }
-    } else {
+    // if (kIsWeb) {
+      // try {
+      //  final stream = await 
+      //  stream.getTracks().forEach((track) => track.stop());
+      //  return true;
+      // } catch (e) {
+      //   print('Error getting web permissions: $e');
+      //   return false;
+      // }
+    // } else {
       Map<Permission, PermissionStatus> statuses = await [
         Permission.microphone,
         Permission.storage,
@@ -238,7 +238,7 @@ void _setupVADHandlers() {
       
       return statuses[Permission.microphone]!.isGranted && 
              statuses[Permission.storage]!.isGranted;
-    }
+    // }
   }
 
   Future<void> startRecording() async {

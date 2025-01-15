@@ -19,6 +19,7 @@ import 'package:rive/rive.dart' as rive;
 import 'package:rive/rive.dart' hide LinearGradient;
 import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
 import 'package:svar_new/widgets/rive_preloader.dart';
+import 'package:svar_new/presentation/discrimination/appbar.dart';
 
 class PhonemeLevelOneScreen extends StatefulWidget {
   PhonemeLevelOneScreen({Key? key}) : super(key: key);
@@ -385,7 +386,12 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
             }
             return false;
           },
-          child: FutureBuilder<RiveFile?>(
+          child: 
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              DisciAppBar(context),
+          FutureBuilder<RiveFile?>(
             future: _riveFileFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -396,7 +402,7 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
 
               final riveFile = snapshot.data!;
               // Or your background color
-            
+             
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 controller: _scrollController,
@@ -421,6 +427,9 @@ class PhonemeLevelOneScreenState extends State<PhonemeLevelOneScreen> {
               );
             },
           ),
+        
+        ]
+        )
         ),
       ),
     );

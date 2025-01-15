@@ -21,6 +21,7 @@ class RivePreloader {
 
     print("rive file being preloaded");
     await preloadRiveFile('assets/rive/levels.riv');
+    await preloadRiveFile('assets/rive/Celebration_animation.riv');
     _isInitialized = true;
   }
 
