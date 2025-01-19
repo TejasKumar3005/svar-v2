@@ -1,7 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
-import 'package:rive/rive.dart';
+import 'package:rive/rive.dart' as rive;
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/identification_screen/audioToImage.dart';
 import 'package:flutter/material.dart';
@@ -40,12 +40,11 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   OverlayEntry? _overlayEntry;
   late UserData userData;
 
-  Artboard? _riveArtboard;
-  StateMachineController? _controller;
-  SMITrigger? _correctTriger;
-  SMITrigger? _incorrectTriger;
-
-  late RiveFile _riveFile;
+  // Rive variables
+  rive.StateMachineController? riveController;
+  rive.SMITrigger? _correctTrigger;
+  rive.SMITrigger? _incorrectTrigger;
+  rive.RiveAnimationController? controller;
 
   @override
   void dispose() {
@@ -64,57 +63,42 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     ]);
 
     _player = AudioPlayer();
-
     leveltracker = 0;
-    _loadRiveFile();
 
     // Initialize userData with uid and context
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     userData = UserData(uid: uid, buildContext: context);
   }
 
-  int sel = 0;
-
-Future<void> _loadRiveFile() async {
-  try {
-    final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
-    _riveFile = RiveFile.import(bytes);
-
-      _controller = StateMachineController.fromArtboard(
-          _riveFile.mainArtboard, 'State Machine 2');
-      print("controller added is ${_controller}");
-
-    if (_controller != null) {
-      _riveFile.mainArtboard.addController(_controller!);
-      
-      // Print all state machines in the artboard
-      print("\nAll State Machines in artboard:");
-      for (var stateMachine in _riveFile.mainArtboard.stateMachines) {
-        print("State Machine: ${stateMachine.name}");
-      }
-        _correctTriger = _controller!.getTriggerInput("correct");
-        _incorrectTriger = _controller!.getTriggerInput("incorrect");
-      }
-
-    setState(() {
-      _riveArtboard = _riveFile.mainArtboard;
-    });
-
-  } catch (e) {
-    print('Error loading Rive file: $e');
-  }
-}
-
- void _triggerAnimation(bool isCorrect) {
-    print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
+  void _onRiveInit(rive.Artboard artboard) {
+    final controller = rive.StateMachineController.fromArtboard(
+      artboard,
+      'State Machine 2'
+    );
     
-    if (isCorrect) {
-        print("Firing correct trigger");
-        _correctTriger?.fire();
-        print("Correct trigger fired");
+    if (controller != null) {
+      artboard.addController(controller);
+      riveController = controller;
+      _correctTrigger = controller.findInput<bool>('correct') as rive.SMITrigger;
+      _incorrectTrigger = controller.findInput<bool>('incorrect') as rive.SMITrigger;
     } else {
-        _incorrectTriger?.fire();
-        print("Incorrect trigger fired");
+      debugPrint('Controller initialization failed');
+    }
+  }
+
+  void _triggerAnimation(bool isCorrect) {
+    if (isCorrect) {
+      if (_correctTrigger != null) {
+        _correctTrigger!.fire();
+      } else {
+        debugPrint('Correct trigger not initialized');
+      }
+    } else {
+      if (_incorrectTrigger != null) {
+        _incorrectTrigger!.fire();
+      } else {
+        debugPrint('Incorrect trigger not initialized');
+      }
     }
   }
 
@@ -124,7 +108,6 @@ Future<void> _loadRiveFile() async {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
-
     String params = obj[2] as String;
 
     return type != "AudioToImage"
@@ -139,12 +122,10 @@ Future<void> _loadRiveFile() async {
                     children: [
                       Positioned.fill(
                         child: SvgPicture.asset(
-                          ImageConstant
-                              .imgAuditorybg, 
+                          ImageConstant.imgAuditorybg,
                           fit: BoxFit.cover,
                         ),
                       ),
-                      // Main content
                       Container(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height,
@@ -165,27 +146,27 @@ Future<void> _loadRiveFile() async {
                                     dtcontainer,
                                     params,
                                   ),
+                                  // Rive animation positioned at bottom left
                                   Positioned(
                                     bottom: -55.h,
                                     left: 16.h,
-                                    child: _riveArtboard == null
-                                        ? const Center(
-                                            child: CircularProgressIndicator())
-                                        : SizedBox(
-                                            height: 300,
-                                            width: 350,
-                                            child: RiveAnimation.direct(
-                                              _riveFile,
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
+                                    child: SizedBox(
+                                      height: 300,
+                                      width: 350,
+                                      child: rive.RiveAnimation.asset(
+                                        'assets/rive/Celebration_animation.riv',
+                                        onInit: _onRiveInit,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
                                   ),
+                                  // Tip button
                                   Positioned(
                                     bottom: 0,
                                     right: 0,
                                     child: GestureDetector(
                                       onTap: () {
-                                        // Define what happens when the button is tapped
+                                        // Add tip button functionality
                                       },
                                       child: CustomImageView(
                                         imagePath: ImageConstant.imgTipbtn,
@@ -210,6 +191,7 @@ Future<void> _loadRiveFile() async {
             params: params,
           );
   }
+
 
   /// Section Widget
   Widget _buildOptionGRP(BuildContext context, IdentificationProvider provider,

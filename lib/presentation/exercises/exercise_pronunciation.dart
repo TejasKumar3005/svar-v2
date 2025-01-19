@@ -19,7 +19,7 @@ import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/core/utils/image_constant.dart';
 import 'package:svar_new/routes/app_routes.dart';
-import 'dart:html' as html;
+// import 'dart:html' as html;
 
 class ExercisePronunciation extends StatefulWidget {
   final String character;
@@ -71,6 +71,154 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     _setupVadHandler();
     initializeApp();
   }
+  
+  @override
+Widget build(BuildContext context) {
+  final size = MediaQuery.of(context).size;
+  final isSmallScreen = size.width < 600;
+  
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (loading && _overlayEntry == null) {
+      _overlayEntry = createOverlayEntry(context);
+      Overlay.of(context)?.insert(_overlayEntry!);
+    } else if (!loading && _overlayEntry != null) {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+    }
+  });
+
+  return SafeArea(
+    child: Scaffold(
+      body: Container(
+        width: size.width,
+        height: size.height,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(ImageConstant.imgGroup7),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                DisciAppBar(context),
+              ],
+            ),
+            // Rive animation - larger and positioned at bottom left
+            Positioned(
+              left: 0,
+              bottom: size.height * 0,
+              child: SizedBox(
+                width: size.width ,
+                height: size.height,
+                child: rive.RiveAnimation.asset(
+                  'assets/rive/5_stepping_stone.riv',
+                  onInit: _onRiveInit,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+            // Hindi character - centered and larger
+            if (result.isEmpty)
+              Positioned(
+                left: size.width * 0.4,
+                top: size.height * 0.35,
+                child: GestureDetector(
+                  onTap: () async {
+                    await speakHindi(widget.character);
+                  },
+                  child: Container(
+                    width: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
+                    height: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(
+                        widget.character,
+                        style: TextStyle(
+                          height: 1,
+                          fontSize: isSmallScreen ? 60 : 80,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            // Protagonist image
+            // Positioned(
+            //   right: result.isEmpty ? size.width * 0.1 : null,
+            //   left: result.isNotEmpty ? size.width * 0.1 : null,
+            //   bottom: 0,
+            //   child: SizedBox(
+            //     height: size.height * 0.3,
+            //     width: size.width * 0.2,
+            //     child: Image.asset(
+            //       ImageConstant.imgProtaganist1,
+            //       fit: BoxFit.contain,
+            //     ),
+            //   ),
+            // ),
+            // Tip button
+            Positioned(
+              right: size.width * 0.02,
+              bottom: size.height * 0.08,
+              child: SizedBox(
+                height: isSmallScreen ? 50 : 70,
+                width: isSmallScreen ? 50 : 70,
+                child: CustomButton(
+                  type: ButtonType.Tip,
+                  onPressed: () {
+                    Navigator.pushNamed(context, AppRoutes.tipBoxVideoScreen);
+                  },
+                ),
+              ),
+            ),
+            if (result.isNotEmpty)
+              pronunciationResultWidget(result, context, widget.character),
+            if (isRecordingSegment)
+              Positioned(
+                right: size.width * 0.2,
+                bottom: size.height * 0.15,
+                child: Container(
+                  padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.mic,
+                        color: Colors.red,
+                        size: isSmallScreen ? 20 : 24,
+                      ),
+                      SizedBox(width: isSmallScreen ? 6 : 8),
+                      Text(
+                        "Recording ${currentSessionCount + 1}/5",
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 14 : 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
 
   void _onRiveInit(rive.Artboard artboard) {
     final controller =
@@ -183,17 +331,17 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   }
 
   Future<bool> requestPermissions() async {
-    if (kIsWeb) {
-      try {
-        final stream = await html.window.navigator.mediaDevices!
-            .getUserMedia({'audio': true});
-        stream.getTracks().forEach((track) => track.stop());
-        return true;
-      } catch (e) {
-        debugPrint('Error getting web permissions: $e');
-        return false;
-      }
-    } else {
+    // if (kIsWeb) {
+    //   try {
+    //     final stream = await html.window.navigator.mediaDevices!
+    //         .getUserMedia({'audio': true});
+    //     stream.getTracks().forEach((track) => track.stop());
+    //     return true;
+    //   } catch (e) {
+    //     debugPrint('Error getting web permissions: $e');
+    //     return false;
+    //   }
+    // } else {
       Map<Permission, PermissionStatus> statuses = await [
         Permission.microphone,
         Permission.storage,
@@ -201,7 +349,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
       return statuses[Permission.microphone]!.isGranted &&
           statuses[Permission.storage]!.isGranted;
-    }
+    // }
   }
 
   Future<void> startRecording() async {
@@ -552,144 +700,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (loading && _overlayEntry == null) {
-        _overlayEntry = createOverlayEntry(context);
-        Overlay.of(context)?.insert(_overlayEntry!);
-      } else if (!loading && _overlayEntry != null) {
-        _overlayEntry?.remove();
-        _overlayEntry = null;
-      }
-    });
-
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(ImageConstant.imgGroup7),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  DisciAppBar(context),
-                ],
-              ),
-              // Add Rive animation in center
-              Positioned(
-                left: MediaQuery.of(context).size.width * 0.5 - 150,
-                top: MediaQuery.of(context).size.height * 0.3,
-                child: SizedBox(
-                  width: 300,
-                  height: 300,
-                  child: rive.RiveAnimation.asset(
-                    'assets/rive/5_stepping_stone.riv',
-                    onInit: _onRiveInit,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 80,
-                bottom: 100,
-                child: result.isEmpty
-                    ? GestureDetector(
-                        onTap: () async {
-                          await speakHindi(widget.character);
-                        },
-                        child: Container(
-                          width: 120,
-                          height: 120,
-                          child: FittedBox(
-                            fit: BoxFit.contain,
-                            child: Text(
-                              widget.character,
-                              style: const TextStyle(height: 1),
-                            ),
-                          ),
-                        ),
-                      )
-                    : Container(),
-              ),
-              Positioned(
-                right: result.isEmpty ? 80 : null,
-                left: result.isNotEmpty ? 80 : null,
-                bottom: 0,
-                child: SizedBox(
-                  height: 200,
-                  width: 150,
-                  child: Image.asset(
-                    ImageConstant.imgProtaganist1,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 10,
-                bottom: 50,
-                child: SizedBox(
-                  height: 70,
-                  width: 70,
-                  child: CustomButton(
-                    type: ButtonType.Tip,
-                    onPressed: () {
-                      Navigator.pushNamed(context, AppRoutes.tipBoxVideoScreen);
-                    },
-                  ),
-                ),
-              ),
-              if (result.isNotEmpty)
-                pronunciationResultWidget(result, context, widget.character),
-              if (isRecordingSegment)
-                Positioned(
-                  right: 150,
-                  bottom: 100,
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.mic,
-                          color: Colors.red,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Recording ${currentSessionCount + 1}/5",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class Loading extends StatelessWidget {

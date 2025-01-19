@@ -58,8 +58,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     
     // print(provider.todaysExercises);
 
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
         body: FutureBuilder<RiveFile?>(
@@ -97,8 +96,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             }
           },
         ),
-      ),
-    );
+      );;
   }
 
   void _handleLevelType(int startExerciseIndex, String params) async {
