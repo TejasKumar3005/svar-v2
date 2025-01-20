@@ -357,12 +357,11 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   Future<bool> requestPermissions() async {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.microphone,
-      Permission.storage,
+      
     ].request();
 
-    return statuses[Permission.microphone]!.isGranted &&
-        statuses[Permission.storage]!.isGranted;
-   
+    return statuses[Permission.microphone]!.isGranted ;
+    
   }
 
   Future<void> startRecording() async {
