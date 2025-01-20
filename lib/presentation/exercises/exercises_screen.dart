@@ -55,48 +55,49 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   @override
   Widget build(BuildContext context) {
     //  Provider.of<ExerciseProvider>(context, listen: false).fetchAndOrganizeExercises();
-    
+
     // print(provider.todaysExercises);
 
     return Scaffold(
-        extendBody: true,
-        extendBodyBehindAppBar: true,
-        body: FutureBuilder<RiveFile?>(
-          future: _riveFileFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                  child: CircularProgressIndicator()); // Show loading indicator
-            } else if (snapshot.hasError || snapshot.data == null) {
-              return const Center(
-                  child: Text('Error loading Rive file')); // Handle errors
-            } else {
-              final riveFile = snapshot.data!;
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      body: FutureBuilder<RiveFile?>(
+        future: _riveFileFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+                child: CircularProgressIndicator()); // Show loading indicator
+          } else if (snapshot.hasError || snapshot.data == null) {
+            return const Center(
+                child: Text('Error loading Rive file')); // Handle errors
+          } else {
+            final riveFile = snapshot.data!;
 
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                controller: _scrollController,
-                // Use a custom ScrollPhysics for smoother scrolling
-                physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
-                child: AnimatedContainer(
-                  duration: const Duration(
-                      milliseconds: 500), // Adjust animation duration as needed
-                  curve: Curves.easeInOut, // Customize animation curve
-                  width: MediaQuery.of(context).size.height * 13.7176,
-                  height: MediaQuery.of(context).size.height,
-                  alignment: Alignment.centerLeft,
-                  child: RiveAnimation.direct(
-                    riveFile,
-                    fit: BoxFit.contain,
-                    onInit: _onRiveInit,
-                  ),
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              controller: _scrollController,
+              // Use a custom ScrollPhysics for smoother scrolling
+              physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
+              child: AnimatedContainer(
+                duration: const Duration(
+                    milliseconds: 500), // Adjust animation duration as needed
+                curve: Curves.easeInOut, // Customize animation curve
+                width: MediaQuery.of(context).size.height * 13.7176,
+                height: MediaQuery.of(context).size.height,
+                alignment: Alignment.centerLeft,
+                child: RiveAnimation.direct(
+                  riveFile,
+                  fit: BoxFit.contain,
+                  onInit: _onRiveInit,
                 ),
-              );
-            }
-          },
-        ),
-      );;
+              ),
+            );
+          }
+        },
+      ),
+    );
+    ;
   }
 
   void _handleLevelType(int startExerciseIndex, String params) async {
@@ -442,86 +443,67 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     }
   }
 
-  void tapHandle(RiveEvent event) {
-    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
-    int currentExerciseIndex = data_pro.currentExerciseIndex;
-    print("startExerciseIndex: $startExerciseIndex");
-    if (event.name == "level 1") {
-      if(data_pro.todaysExercises.length-1 < startExerciseIndex){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("No exercises found for today"),
-        ));
-        return;
-      }
+void tapHandle(RiveEvent event) {
+  var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+  int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
+  int currentExerciseIndex = data_pro.currentExerciseIndex;
+  int currentLevel = currentExerciseIndex - startExerciseIndex + 1;
+  
+  // Extract level number from event name
+  int targetLevel = int.parse(event.name.split(' ')[1]);
+  
+  print("startExerciseIndex: $startExerciseIndex");
 
-      if (startExerciseIndex - currentExerciseIndex >= 2) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Please complete the previous levels"),
-        ));
-        return;
+  // Check if the requested level exists in today's exercises
+  if (data_pro.todaysExercises.length - 1 < startExerciseIndex + targetLevel - 1) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text("No exercises found for today"),
+    ));
+    return;
+  }
+
+  // Check if trying to access a future level
+  if (targetLevel > currentLevel) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text("Please complete the previous levels"),
+    ));
+    return;
+  }
+
+  // If all checks pass, handle the level
+  _handleLevelType(startExerciseIndex + targetLevel - 1, "notcompleted");
+}
+
+  String formatDate(String date) {
+    try {
+      final months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ];
+
+      List<String> parts = date.split('-');
+      if (parts.length >= 3) {
+        // parts[0] is year, parts[1] is month, parts[2] is day
+        int day = int.parse(parts[2]);
+        int month = int.parse(parts[1]);
+        return '$day ${months[month - 1]}';
       }
-      _handleLevelType(startExerciseIndex, "notcompleted");
-    } else if (event.name == "level 2") {
-      
-      if(data_pro.todaysExercises.length-1 < startExerciseIndex+1){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("No exercises found for today"),
-        ));
-        return;
-      }
-      if (startExerciseIndex - currentExerciseIndex >= 3) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Please complete the previous levels"),
-        ));
-        return;
-      }
-      _handleLevelType(startExerciseIndex + 1, "notcompleted");
-    } else if (event.name == "level 3") {
-        if(data_pro.todaysExercises.length-1 < startExerciseIndex+2){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("No exercises found for today"),
-        ));
-        return;
-      }
-        if (startExerciseIndex - currentExerciseIndex >= 4) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Please complete the previous levels"),
-        ));
-        return;
-      }
-      _handleLevelType(startExerciseIndex + 2, "notcompleted");
-    } else if (event.name == "level 4") {
-        if(data_pro.todaysExercises.length-1 < startExerciseIndex+3){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("No exercises found for today"),
-        ));
-        return;
-      }
-        if (startExerciseIndex - currentExerciseIndex >= 5) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Please complete the previous levels"),
-        ));
-        return;
-      }
-      _handleLevelType(startExerciseIndex + 3, "notcompleted");
-    } else if (event.name == "level 5") {
-        if(data_pro.todaysExercises.length-1 < startExerciseIndex+4){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("No exercises found for today"),
-        ));
-        return;
-      }
-        if (startExerciseIndex - currentExerciseIndex >= 6) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Please complete the previous levels"),
-        ));
-        return;
-      }
-      _handleLevelType(startExerciseIndex + 4, "notcompleted");
+      return 'Invalid Date';
+    } catch (e) {
+      return 'Invalid Date';
     }
   }
-     
+
   void _onRiveInit(Artboard artboard) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int exerciseCount = data_pro.todaysExercises.length;
@@ -529,17 +511,19 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         (data_pro.currentExerciseIndex ~/ 5) * 5; // Calculate starting index
     int endExerciseIndex = startExerciseIndex + 4;
     if (endExerciseIndex > exerciseCount) {
-      endExerciseIndex = exerciseCount-1;
+      endExerciseIndex = exerciseCount - 1;
     }
     _controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
 
     if (_controller != null) {
       artboard.addController(_controller!);
-artboard.forEachComponent((component) {
-  if (component is TextValueRun)
-    {  print("Component: ${component.runtimeType} - Name: ${component.name}");}
-    });
+      artboard.forEachComponent((component) {
+        if (component is TextValueRun) {
+          print(
+              "Component: ${component.runtimeType} - Name: ${component.name}");
+        }
+      });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         for (int i = 0; i < 5; i++) {
           int actualIndex = startExerciseIndex +
@@ -572,7 +556,12 @@ artboard.forEachComponent((component) {
           String typeKey = "type${i + 1}";
           TextValueRun? textRun_type = artboard.textRun(typeKey);
           if (textRun_type != null) {
-            textRun_type.text = data_pro.todaysExercises[actualIndex]['date'] ?? 'No Date';
+            String dateStr =
+                data_pro.todaysExercises[actualIndex]['date'] ?? 'No Date';
+            if (dateStr != 'No Date') {
+              dateStr = formatDate(dateStr);
+            }
+            textRun_type.text = dateStr;
           } else {
             debugPrint("Error: '$typeKey' text run not found!");
           }
