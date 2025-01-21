@@ -4,7 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:vad/vad.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
+import 'package:flutter/foundation.dart' show kIsWeb, print;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
@@ -80,10 +80,12 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     });
   }
 
+  
+
   // Modify speakHindiWithoutRecording method
   Future<void> speakHindiWithoutRecording(String text) async {
     if (text.isEmpty) return;
-    
+
     // Temporarily pause VAD
     final wasListening = _isVadListening;
     if (wasListening) {
@@ -94,9 +96,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     try {
       setState(() => isSpeaking = true);
       await flutterTts.speak(text);
-      await Future.delayed(Duration(milliseconds: 1500)); // Wait for speech to complete
+      await Future.delayed(
+          Duration(milliseconds: 1500)); // Wait for speech to complete
     } catch (e) {
-      debugPrint("Error speaking: $e");
+      print("Error speaking: $e");
     } finally {
       setState(() => isSpeaking = false);
       // Resume VAD if it was listening before
@@ -255,13 +258,13 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     if (_nextTrigger != null) {
       _nextTrigger!.fire();
     } else {
-      debugPrint('Next trigger not initialized');
+      print('Next trigger not initialized');
     }
   }
 
   void _setupVadHandler() {
     _vadHandler.onSpeechStart.listen((_) {
-      debugPrint('Speech detected.');
+      print('Speech detected.');
       setState(() {
         isRecordingSegment = true;
         receivedEvents
@@ -272,7 +275,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     _vadHandler.onSpeechEnd.listen((List<double> samples) async {
       if (!isRecordingEnabled) return;
 
-      debugPrint('Speech ended for session ${currentSessionCount + 1}');
+      print('Speech ended for session ${currentSessionCount + 1}');
       setState(() {
         isRecordingSegment = false;
       });
@@ -292,14 +295,14 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     });
 
     _vadHandler.onVADMisfire.listen((_) {
-      debugPrint('VAD misfire detected.');
+      print('VAD misfire detected.');
       setState(() {
         receivedEvents.add('VAD misfire detected.');
       });
     });
 
     _vadHandler.onError.listen((String message) {
-      debugPrint('Error: $message');
+      print('Error: $message');
       setState(() {
         loading = false;
         isRecordingSegment = false;
@@ -350,18 +353,16 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
     flutterTts.setErrorHandler((message) {
       setState(() => isSpeaking = false);
-      debugPrint("TTS Error: $message");
+      print("TTS Error: $message");
     });
   }
 
   Future<bool> requestPermissions() async {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.microphone,
-      
     ].request();
 
-    return statuses[Permission.microphone]!.isGranted ;
-    
+    return statuses[Permission.microphone]!.isGranted;
   }
 
   Future<void> startRecording() async {
@@ -380,12 +381,12 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         preSpeechPadFrames: kIsWeb ? 12 : 6,
         redemptionFrames: kIsWeb ? 10 : 5,
         minSpeechFrames: 3,
-        positiveSpeechThreshold: 0.8,
+        positiveSpeechThreshold: 0.7,
         negativeSpeechThreshold: 0.35,
         submitUserSpeechOnPause: true,
       );
     } catch (e) {
-      debugPrint("Error starting recording: $e");
+      print("Error starting recording: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error starting recording: $e")),
       );
@@ -397,26 +398,68 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       List<String> wavPaths = [];
       final tempDir = await getTemporaryDirectory();
 
-      // Create WAV files for all sessions
+      print("=== Creating WAV files ===");
       for (int i = 0; i < audioSessions.length; i++) {
         final tempPath = '${tempDir.path}/recorded_audio_$i.wav';
         await createWavFile(audioSessions[i], tempPath);
         wavPaths.add(tempPath);
+        print("Created WAV file $i at: $tempPath");
       }
 
-      // Process all recordings
+      print("=== Sending ${wavPaths.length} recordings to API ===");
       List<dynamic> results = await Future.wait(
           wavPaths.map((path) => sendWavFile(path, widget.character)));
 
-      // Combine results
+      print("=== API Responses ===");
+      results.asMap().forEach((i, result) => print("Session $i: $result"));
+
       processResults(results);
     } catch (e) {
-      debugPrint("Error processing recordings: $e");
-      setState(() {
-        loading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error processing recordings: $e")));
+      print("Error processing recordings: $e");
+      setState(() => loading = false);
+    }
+  }
+
+// Modified sendWavFile function
+  Future<dynamic> sendWavFile(String wavFile, String word) async {
+    try {
+      var uri = Uri.parse("https://gameapi.svar.in/process_aduio_sent");
+      print("Sending API request to: ${uri.toString()}");
+      print("Word parameter: '$word'");
+      print("WAV file path: $wavFile");
+
+      http.MultipartRequest request = http.MultipartRequest('POST', uri);
+      request.fields['text'] = word;
+
+      if (kIsWeb) {
+        List<int> wavBytes = await File(wavFile).readAsBytes();
+        print("Web audio bytes length: ${wavBytes.length}");
+        request.files.add(http.MultipartFile.fromBytes('wav_file', wavBytes,
+            filename: 'audio.wav'));
+      } else {
+        print("File exists: ${File(wavFile).existsSync()}");
+        print("File size: ${File(wavFile).lengthSync()} bytes");
+        request.files
+            .add(await http.MultipartFile.fromPath('wav_file', wavFile));
+      }
+
+      var response = await request.send();
+      print("Received response status: ${response.statusCode}");
+
+      String body = await response.stream.bytesToString();
+      print("Response body: $body");
+
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(body);
+        print("API response result: ${jsonResponse['result']}");
+        return jsonResponse['result'];
+      } else {
+      print("API error response: $body");
+        throw Exception("API Error ${response.statusCode}: $body");
+      }
+    } catch (e) {
+      print("Error in sendWavFile: $e");
+      rethrow;
     }
   }
 
@@ -448,31 +491,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     await wavFile.writeAsBytes(wavWriter.buffer.asUint8List());
   }
 
-  Future<dynamic> sendWavFile(String wavFile, String word) async {
-    var uri = Uri.parse("https://gameapi.svar.in/process_aduio_sent");
-
-    http.MultipartRequest request = http.MultipartRequest('POST', uri);
-    request.fields['text'] = word;
-
-    if (kIsWeb) {
-      List<int> wavBytes = await File(wavFile).readAsBytes();
-      request.files.add(http.MultipartFile.fromBytes('wav_file', wavBytes,
-          filename: 'audio.wav'));
-    } else {
-      request.files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
-    }
-
-    var response = await request.send();
-    if (response.statusCode == 200) {
-      String body = await response.stream.bytesToString();
-      return json.decode(body)['result'];
-    } else {
-      throw Exception(
-          "Failed to send audio file. Status code: ${response.statusCode}");
-    }
-  }
-
   void processResults(List<dynamic> results) {
+    print("Raw API results:");
+    results.forEach((r) => print(r.toString()));
+
     Map<String, List<String>> combinedResults = {};
 
     // Combine all results
@@ -508,6 +530,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         "word": widget.character,
       },
     );
+
+    print("Final processed results:");
+    finalResults.forEach((r) => print(r.toString()));
   }
 
   String calculateFinalValue(List<String> values) {
@@ -537,7 +562,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       setState(() => isSpeaking = true);
       await flutterTts.speak(text);
     } catch (e) {
-      debugPrint("Error speaking: $e");
+      print("Error speaking: $e");
       setState(() => isSpeaking = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error in text to speech: $e')),
@@ -689,7 +714,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     );
   }
 
- @override
+  @override
   void dispose() {
     if (_isVadListening) {
       _vadHandler.stopListening();
@@ -701,7 +726,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     super.dispose();
   }
 
-
   Future<void> stopRecording() async {
     try {
       _vadHandler.stopListening();
@@ -712,7 +736,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       await _recordingDataSubscription?.cancel();
       await _recordingDataController?.close();
     } catch (e) {
-      debugPrint("Error stopping recording: $e");
+      print("Error stopping recording: $e");
     }
   }
 }
