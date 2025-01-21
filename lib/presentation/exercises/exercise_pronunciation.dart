@@ -2,23 +2,23 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/material.dart';
-import 'package:vad/vad.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, print;
-import 'package:flutter_tts/flutter_tts.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, print;
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:rive/rive.dart' as rive;
+import 'package:svar_new/core/utils/image_constant.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
-import 'package:svar_new/widgets/custom_button.dart';
-import 'package:svar_new/core/utils/image_constant.dart';
 import 'package:svar_new/routes/app_routes.dart';
+import 'package:svar_new/widgets/custom_button.dart';
+import 'package:vad/vad.dart';
 // import 'dart:html' as html;
 
 class ExercisePronunciation extends StatefulWidget {
@@ -43,10 +43,10 @@ class ExercisePronunciation extends StatefulWidget {
 
 class ExercisePronunciationState extends State<ExercisePronunciation> {
   final _vadHandler = VadHandler.create(isDebug: true);
-  late FlutterSoundRecorder _micRecorder;
-  StreamController<Uint8List>? _recordingDataController;
-  StreamSubscription? _recordingDataSubscription;
-  List<double> currentAudioBuffer = [];
+  // late FlutterSoundRecorder _micRecorder;
+  // StreamController<Uint8List>? _recordingDataController;
+  // StreamSubscription? _recordingDataSubscription;
+  // List<double> currentAudioBuffer = [];
   bool isRecordingSegment = false;
   final List<String> receivedEvents = [];
   FlutterTts flutterTts = FlutterTts();
@@ -125,8 +125,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       }
     });
 
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
         body: Container(
           width: size.width,
           height: size.height,
@@ -240,7 +239,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
             ],
           ),
         ),
-      ),
     );
   }
 
@@ -289,7 +287,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
           loading = true;
           isRecordingEnabled = false; // Stop further recordings
         });
-        await stopRecording(); // Stop the recorder
+        _vadHandler.dispose();
         await processAllRecordings();
       }
     });
@@ -313,8 +311,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   Future<void> initializeApp() async {
     await initTTS();
-    await initVAD();
-
     bool hasPermission = await requestPermissions();
     if (hasPermission) {
       await startRecording();
@@ -324,12 +320,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
-  Future<void> initVAD() async {
-    _micRecorder = FlutterSoundRecorder();
-    if (!kIsWeb) {
-      await _micRecorder.openRecorder();
-    }
-  }
 
   Future<void> initTTS() async {
     if (kIsWeb) {
@@ -367,15 +357,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   Future<void> startRecording() async {
     try {
-      _recordingDataController = StreamController<Uint8List>();
 
-      await _micRecorder.startRecorder(
-        toStream: _recordingDataController!.sink,
-        codec: Codec.pcm16,
-        numChannels: 1,
-        sampleRate: 16000,
-      );
-      _isVadListening = true;
       _vadHandler.startListening(
         frameSamples: 1536,
         preSpeechPadFrames: kIsWeb ? 12 : 6,
@@ -385,6 +367,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         negativeSpeechThreshold: 0.35,
         submitUserSpeechOnPause: true,
       );
+      _isVadListening = true;
     } catch (e) {
       print("Error starting recording: $e");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -408,7 +391,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
       print("=== Sending ${wavPaths.length} recordings to API ===");
       List<dynamic> results = await Future.wait(
-          wavPaths.map((path) => sendWavFile(path, widget.character)));
+          wavPaths.map((path) => sendWavFile(path, widget.character))
+          );
 
       print("=== API Responses ===");
       results.asMap().forEach((i, result) => print("Session $i: $result"));
@@ -462,34 +446,53 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       rethrow;
     }
   }
-
   Future<void> createWavFile(List<double> samples, String path) async {
-    final wavFile = await File(path).create();
-    final wavWriter = ByteData(44 + (samples.length * 2));
+    final wavData = float32ToWav(samples);
+    final file = File(path);
+    await file.writeAsBytes(wavData);
+  }
+
+  static Uint8List float32ToWav(List<double> float32Array) {
+    const int sampleRate = 16000;
+    const int byteRate = sampleRate * 2; // 16-bit = 2 bytes per sample
+    final int totalAudioLen = float32Array.length * 2;
+    final int totalDataLen = totalAudioLen + 36;
+
+    final ByteData buffer = ByteData(44 + totalAudioLen);
 
     // Write WAV header
-    wavWriter.setUint32(0, 0x46464952);
-    wavWriter.setUint32(4, 36 + (samples.length * 2), Endian.little);
-    wavWriter.setUint32(8, 0x45564157);
-    wavWriter.setUint32(12, 0x20746D66);
-    wavWriter.setUint32(16, 16, Endian.little);
-    wavWriter.setUint16(20, 1, Endian.little);
-    wavWriter.setUint16(22, 1, Endian.little);
-    wavWriter.setUint32(24, 16000, Endian.little);
-    wavWriter.setUint32(28, 32000, Endian.little);
-    wavWriter.setUint16(32, 2, Endian.little);
-    wavWriter.setUint16(34, 16, Endian.little);
-    wavWriter.setUint32(36, 0x61746164);
-    wavWriter.setUint32(40, samples.length * 2, Endian.little);
+    _writeString(buffer, 0, 'RIFF');
+    buffer.setInt32(4, totalDataLen, Endian.little);
+    _writeString(buffer, 8, 'WAVE');
+    _writeString(buffer, 12, 'fmt ');
+    buffer.setInt32(16, 16, Endian.little);
+    buffer.setInt16(20, 1, Endian.little);
+    buffer.setInt16(22, 1, Endian.little);
+    buffer.setInt32(24, sampleRate, Endian.little);
+    buffer.setInt32(28, byteRate, Endian.little);
+    buffer.setInt16(32, 2, Endian.little);
+    buffer.setInt16(34, 16, Endian.little);
+    _writeString(buffer, 36, 'data');
+    buffer.setInt32(40, totalAudioLen, Endian.little);
 
-    // Write samples
-    for (var i = 0; i < samples.length; i++) {
-      final intSample = (samples[i] * 32767).round().clamp(-32768, 32767);
-      wavWriter.setInt16(44 + (i * 2), intSample, Endian.little);
+    // Convert and write audio data
+    int offset = 44;
+    for (double sample in float32Array) {
+      sample = sample.clamp(-1.0, 1.0);
+      final int pcm = (sample < 0 ? sample * 0x8000 : sample * 0x7FFF).toInt();
+      buffer.setInt16(offset, pcm, Endian.little);
+      offset += 2;
     }
 
-    await wavFile.writeAsBytes(wavWriter.buffer.asUint8List());
+    return buffer.buffer.asUint8List();
   }
+
+  static void _writeString(ByteData view, int offset, String string) {
+    for (int i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.codeUnitAt(i));
+    }
+  }
+
 
   void processResults(List<dynamic> results) {
     print("Raw API results:");
@@ -719,25 +722,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     if (_isVadListening) {
       _vadHandler.stopListening();
     }
-    stopRecording();
     _vadHandler.dispose();
     flutterTts.stop();
     riveController?.dispose();
     super.dispose();
-  }
-
-  Future<void> stopRecording() async {
-    try {
-      _vadHandler.stopListening();
-      await _micRecorder.stopRecorder();
-      if (!kIsWeb) {
-        await _micRecorder.closeRecorder();
-      }
-      await _recordingDataSubscription?.cancel();
-      await _recordingDataController?.close();
-    } catch (e) {
-      print("Error stopping recording: $e");
-    }
   }
 }
 
