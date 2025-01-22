@@ -47,12 +47,10 @@ class _DetectionState extends State<ExerciseDetection> {
   double currentProgress = 0.0;
   double totalDuration = 0.0;
 
+ StateMachineController? riveController;
+  SMITrigger? _correctTrigger;
+  SMITrigger? _incorrectTrigger;
   Artboard? _riveArtboard;
-  StateMachineController? _controller;
-  SMITrigger? _correctTriger;
-  SMITrigger? _incorrectTriger;
-
-  late RiveFile _riveFile;
 
   @override
   void initState() {
@@ -73,34 +71,43 @@ class _DetectionState extends State<ExerciseDetection> {
     });
   }
 
-  Future<void> _loadRiveFile() async {
-    try {
-      final bytes =
-          await rootBundle.load('assets/rive/Celebration_animation.riv');
-      _riveFile = RiveFile.import(bytes);
+  
+void _onRiveInit(Artboard artboard) async {
+    final controller =
+        StateMachineController.fromArtboard(artboard, 'State Machine 2');
 
-      _controller = StateMachineController.fromArtboard(
-          _riveFile.mainArtboard, 'State Machine 1');
+    if (controller != null) {
+      artboard.addController(controller);
+      riveController = controller;
 
-      if (_controller != null) {
-        _riveFile.mainArtboard.addController(_controller!);
-        _correctTriger = _controller!.getTriggerInput("correct");
-        _incorrectTriger = _controller!.getTriggerInput("incorrect");
+      // Print all state machines for debugging
+      print("\nAll State Machines in artboard:");
+      for (var stateMachine in artboard.stateMachines) {
+        print("State Machine: ${stateMachine.name}");
       }
 
-      setState(() {
-        _riveArtboard = _riveFile.mainArtboard; // Extract the Artboard
-      });
-    } catch (e) {
-      print('Error loading Rive file: $e');
+      // Get the triggers
+      _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
+      _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
+
+      print("Controller added: $controller");
     }
   }
 
   void _triggerAnimation(bool isCorrect) {
+    print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
+
     if (isCorrect) {
-      _correctTriger?.fire();
+      if (_correctTrigger != null) {
+        print("Firing correct trigger");
+        _correctTrigger!.fire();
+        print("Correct trigger fired");
+      }
     } else {
-      _incorrectTriger?.fire();
+      if (_incorrectTrigger != null) {
+        _incorrectTrigger!.fire();
+        print("Incorrect trigger fired");
+      }
     }
   }
 
@@ -227,8 +234,9 @@ class _DetectionState extends State<ExerciseDetection> {
                                         : SizedBox(
                                             height: 300,
                                             width: 350,
-                                            child: RiveAnimation.direct(
-                                              _riveFile,
+                                            child: RiveAnimation.asset(
+                                              'assets/rive/Celebration_animation.riv',
+                                              onInit: _onRiveInit,
                                               fit: BoxFit.contain,
                                             ),
                                           ),

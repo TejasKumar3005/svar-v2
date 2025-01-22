@@ -37,14 +37,13 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   late int leveltracker;
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
-  OverlayEntry? _overlayEntry;
+
   late UserData userData;
 
-  RiveFile? _riveFile;
-StateMachineController? riveController;
-SMITrigger? _correctTrigger;
-SMITrigger? _incorrectTrigger;
-Artboard? _riveArtboard;
+  StateMachineController? riveController;
+  SMITrigger? _correctTrigger;
+  SMITrigger? _incorrectTrigger;
+  Artboard? _riveArtboard;
 
   @override
   void dispose() {
@@ -65,7 +64,6 @@ Artboard? _riveArtboard;
     _player = AudioPlayer();
 
     leveltracker = 0;
-    
 
     // Initialize userData with uid and context
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -74,44 +72,44 @@ Artboard? _riveArtboard;
 
   int sel = 0;
 
-void _onRiveInit(Artboard artboard) async {
-  final controller = StateMachineController.fromArtboard(artboard, 'State Machine 2');
-  
-  if (controller != null) {
-    artboard.addController(controller);
-    riveController = controller;
-    
-    // Print all state machines for debugging
-    print("\nAll State Machines in artboard:");
-    for (var stateMachine in artboard.stateMachines) {
-      print("State Machine: ${stateMachine.name}");
-    }
-    
-    // Get the triggers
-    _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
-    _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
-    
-    print("Controller added: $controller");
-  }
-}
+  void _onRiveInit(Artboard artboard) async {
+    final controller =
+        StateMachineController.fromArtboard(artboard, 'State Machine 2');
 
-void _triggerAnimation(bool isCorrect) {
-  print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
-  
-  if (isCorrect) {
-    if (_correctTrigger != null) {
-      print("Firing correct trigger");
-      _correctTrigger!.fire();
-      print("Correct trigger fired");
-    }
-  } else {
-    if (_incorrectTrigger != null) {
-      _incorrectTrigger!.fire();
-      print("Incorrect trigger fired");
+    if (controller != null) {
+      artboard.addController(controller);
+      riveController = controller;
+
+      // Print all state machines for debugging
+      print("\nAll State Machines in artboard:");
+      for (var stateMachine in artboard.stateMachines) {
+        print("State Machine: ${stateMachine.name}");
+      }
+
+      // Get the triggers
+      _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
+      _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
+
+      print("Controller added: $controller");
     }
   }
-}
 
+  void _triggerAnimation(bool isCorrect) {
+    print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
+
+    if (isCorrect) {
+      if (_correctTrigger != null) {
+        print("Firing correct trigger");
+        _correctTrigger!.fire();
+        print("Correct trigger fired");
+      }
+    } else {
+      if (_incorrectTrigger != null) {
+        _incorrectTrigger!.fire();
+        print("Incorrect trigger fired");
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,8 +132,7 @@ void _triggerAnimation(bool isCorrect) {
                     children: [
                       Positioned.fill(
                         child: SvgPicture.asset(
-                          ImageConstant
-                              .imgAuditorybg, 
+                          ImageConstant.imgAuditorybg,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -170,10 +167,10 @@ void _triggerAnimation(bool isCorrect) {
                                             height: 300,
                                             width: 350,
                                             child: RiveAnimation.asset(
-  'assets/rive/Celebration_animation.riv',
-  onInit: _onRiveInit,
-  fit: BoxFit.contain,
-),
+                                              'assets/rive/Celebration_animation.riv',
+                                              onInit: _onRiveInit,
+                                              fit: BoxFit.contain,
+                                            ),
                                           ),
                                   ),
                                   Positioned(
@@ -290,7 +287,7 @@ void _triggerAnimation(bool isCorrect) {
                                     // Adjust the flex value based on your layout needs
                                     child: OptionWidget(
                                       triggerAnimation: (value) {
-                                        _triggerAnimation(value);  
+                                        _triggerAnimation(value);
                                       },
                                       child: AudioWidget(
                                         audioLinks: [
