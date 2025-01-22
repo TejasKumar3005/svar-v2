@@ -11,6 +11,8 @@ import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -25,6 +27,8 @@ class HomeScreen extends StatefulWidget {
     );
   }
 }
+
+ 
 
 class HomeScreenState extends State<HomeScreen> {
   @override
@@ -91,10 +95,9 @@ class HomeScreenState extends State<HomeScreen> {
                                         NavigatorService.pushNamed(
                                             AppRoutes.exercisesScreen);
                                       } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                          content: Text('No exercises assigned'),
-                                        ));
+                                        showErrorSnackBar(
+                                            'No exercises assigned ');
+                                       
                                       }
                                     },
                                   ),
@@ -133,6 +136,23 @@ class HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  void showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Oh Snap!',
+        message: message,
+        contentType: ContentType.failure,
+      ),
+    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+
 Widget _buildExerciseCard(
   BuildContext context,
   String title,

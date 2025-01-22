@@ -3,6 +3,7 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
@@ -65,7 +66,8 @@ class UserProfileScreenState extends State<UserProfileScreen> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
-        _showSnackBar('No user is currently logged in.');
+        showErrorSnackBar('No user is currently logged in.');
+        
         return;
       }
 
@@ -78,7 +80,8 @@ class UserProfileScreenState extends State<UserProfileScreen> {
         _populateUserData(userDoc.data() ?? {});
       }
     } catch (e) {
-      _showSnackBar('Failed to fetch user data: $e');
+      showErrorSnackBar('Failed to fetch user data: $e');
+      
     } finally {
       setState(() => _isLoading = false);
     }
@@ -91,6 +94,37 @@ class UserProfileScreenState extends State<UserProfileScreen> {
       _addressController.text = data['address'] ?? '';
       _emailController.text = data['email'] ?? '';
     });
+  }
+   void showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Oh Snap!',
+        message: message,
+        contentType: ContentType.failure,
+      ),
+    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+
+   void showSuccessSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'success!',
+        message: message,
+        contentType: ContentType.success,
+      ),
+    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
   }
 
   // UI Components
@@ -259,7 +293,8 @@ class UserProfileScreenState extends State<UserProfileScreen> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
-        _showSnackBar('No user is currently logged in.');
+        showErrorSnackBar('No user is currently logged in.');
+       
         return;
       }
 
@@ -272,11 +307,12 @@ class UserProfileScreenState extends State<UserProfileScreen> {
         'address': _addressController.text,
         'email': _emailController.text,
       });
-
-      _showSnackBar('Profile updated successfully!');
+      showSuccessSnackBar('Profile updated successfully!');
+      
       Navigator.pushReplacementNamed(context, '/nextScreenRoute');
     } catch (e) {
-      _showSnackBar('Failed to update profile: $e');
+      showErrorSnackBar('Failed to update profile: $e');
+      
     } finally {
       setState(() => _isLoading = false);
     }
@@ -289,7 +325,8 @@ class UserProfileScreenState extends State<UserProfileScreen> {
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
-        _showSnackBar('No user is currently logged in.');
+        showErrorSnackBar('No user is currently logged in.');
+        
         return;
       }
 
@@ -299,13 +336,16 @@ class UserProfileScreenState extends State<UserProfileScreen> {
           .get();
 
       if (!userDoc.exists) {
-        _showSnackBar('User document not found.');
+          showErrorSnackBar('User document not found.');
+      
         return;
       }
 
       final storedPassword = userDoc.data()?['password'];
       if (_currentPasswordController.text != storedPassword) {
-        _showSnackBar('Current password is incorrect.');
+        showErrorSnackBar('Current password is incorrect.');
+       
+        
         return;
       }
 
@@ -316,12 +356,13 @@ class UserProfileScreenState extends State<UserProfileScreen> {
             .update({'password': _newPasswordController.text}),
         user.updatePassword(_newPasswordController.text),
       ]);
-
-      _showSnackBar('Password updated successfully!');
+       showSuccessSnackBar('Password updated successfully!.');
+      
       _currentPasswordController.clear();
       _newPasswordController.clear();
     } catch (e) {
-      _showSnackBar('Failed to update password: $e');
+      showErrorSnackBar('Failed to update password: $e');
+      
     } finally {
       setState(() => _isLoading = false);
     }
@@ -332,15 +373,12 @@ class UserProfileScreenState extends State<UserProfileScreen> {
       await FirebaseAuth.instance.signOut();
       Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
     } catch (e) {
-      _showSnackBar('Failed to log out: $e');
+      showErrorSnackBar('Failed to log out: $e');
+      
     }
   }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
