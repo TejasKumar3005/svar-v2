@@ -40,12 +40,11 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   OverlayEntry? _overlayEntry;
   late UserData userData;
 
-  Artboard? _riveArtboard;
-  StateMachineController? _controller;
-  SMITrigger? _correctTriger;
-  SMITrigger? _incorrectTriger;
-
-  late RiveFile _riveFile;
+  RiveFile? _riveFile;
+StateMachineController? riveController;
+SMITrigger? _correctTrigger;
+SMITrigger? _incorrectTrigger;
+Artboard? _riveArtboard;
 
   @override
   void dispose() {
@@ -66,7 +65,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     _player = AudioPlayer();
 
     leveltracker = 0;
-    _loadRiveFile();
+    
 
     // Initialize userData with uid and context
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -75,48 +74,44 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
 
   int sel = 0;
 
-Future<void> _loadRiveFile() async {
-  try {
-    final bytes = await rootBundle.load('assets/rive/Celebration_animation.riv');
-    _riveFile = RiveFile.import(bytes);
-
-      _controller = StateMachineController.fromArtboard(
-          _riveFile.mainArtboard, 'State Machine 2');
-      print("controller added is ${_controller}");
-
-    if (_controller != null) {
-      _riveFile.mainArtboard.addController(_controller!);
-      
-      // Print all state machines in the artboard
-      print("\nAll State Machines in artboard:");
-      for (var stateMachine in _riveFile.mainArtboard.stateMachines) {
-        print("State Machine: ${stateMachine.name}");
-      }
-        _correctTriger = _controller!.getTriggerInput("correct");
-        _incorrectTriger = _controller!.getTriggerInput("incorrect");
-      }
-
-    setState(() {
-      _riveArtboard = _riveFile.mainArtboard;
-    });
-
-  } catch (e) {
-    print('Error loading Rive file: $e');
+void _onRiveInit(Artboard artboard) async {
+  final controller = StateMachineController.fromArtboard(artboard, 'State Machine 2');
+  
+  if (controller != null) {
+    artboard.addController(controller);
+    riveController = controller;
+    
+    // Print all state machines for debugging
+    print("\nAll State Machines in artboard:");
+    for (var stateMachine in artboard.stateMachines) {
+      print("State Machine: ${stateMachine.name}");
+    }
+    
+    // Get the triggers
+    _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
+    _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
+    
+    print("Controller added: $controller");
   }
 }
 
- void _triggerAnimation(bool isCorrect) {
-    print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
-    
-    if (isCorrect) {
-        print("Firing correct trigger");
-        _correctTriger?.fire();
-        print("Correct trigger fired");
-    } else {
-        _incorrectTriger?.fire();
-        print("Incorrect trigger fired");
+void _triggerAnimation(bool isCorrect) {
+  print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
+  
+  if (isCorrect) {
+    if (_correctTrigger != null) {
+      print("Firing correct trigger");
+      _correctTrigger!.fire();
+      print("Correct trigger fired");
+    }
+  } else {
+    if (_incorrectTrigger != null) {
+      _incorrectTrigger!.fire();
+      print("Incorrect trigger fired");
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -174,10 +169,11 @@ Future<void> _loadRiveFile() async {
                                         : SizedBox(
                                             height: 300,
                                             width: 350,
-                                            child: RiveAnimation.direct(
-                                              _riveFile,
-                                              fit: BoxFit.contain,
-                                            ),
+                                            child: RiveAnimation.asset(
+  'assets/rive/Celebration_animation.riv',
+  onInit: _onRiveInit,
+  fit: BoxFit.contain,
+),
                                           ),
                                   ),
                                   Positioned(
