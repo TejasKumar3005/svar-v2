@@ -14,6 +14,7 @@ import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
+import 'package:rive/rive.dart';
 
 class ExerciseIdentification extends StatefulWidget {
   const ExerciseIdentification({Key? key})
