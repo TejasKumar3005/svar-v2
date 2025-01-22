@@ -57,6 +57,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   bool isRecordingComplete = false;
   List<dynamic> result = [];
   List<dynamic> intermediateResults = [];
+  bool _isVadListening = false;
 
   // Session tracking variables
   int currentSessionCount = 0;
@@ -80,8 +81,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       }
     });
   }
-
-  
 
   // Modify speakHindiWithoutRecording method
   Future<void> speakHindiWithoutRecording(String text) async {
@@ -127,119 +126,117 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     });
 
     return Scaffold(
-        body: Container(
-          width: size.width,
-          height: size.height,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(ImageConstant.imgGroup7),
-              fit: BoxFit.cover,
-            ),
+      body: Container(
+        width: size.width,
+        height: size.height,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(ImageConstant.imgGroup7),
+            fit: BoxFit.cover,
           ),
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  DisciAppBar(context),
-                ],
-              ),
-              // Rive animation - larger and positioned at bottom left
-              Positioned(
-                left: 0,
-                bottom: size.height * 0,
-                child: SizedBox(
-                  width: size.width,
-                  height: size.height,
-                  child: rive.RiveAnimation.asset(
-                    'assets/rive/5_stepping_stone.riv',
-                    onInit: _onRiveInit,
-                    fit: BoxFit.contain,
-                  ),
+        ),
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                DisciAppBar(context),
+              ],
+            ),
+            // Rive animation - larger and positioned at bottom left
+            Positioned(
+              left: 0,
+              bottom: size.height * 0,
+              child: SizedBox(
+                width: size.width,
+                height: size.height,
+                child: rive.RiveAnimation.asset(
+                  'assets/rive/5_stepping_stone.riv',
+                  onInit: _onRiveInit,
+                  fit: BoxFit.contain,
                 ),
               ),
-              // Hindi character - centered and larger
-              if (result.isEmpty)
-                Positioned(
-                  left: size.width * 0.4,
-                  top: size.height * 0.35,
-                  child: GestureDetector(
-                    onTap: () async {
-                      await speakHindi(widget.character);
-                    },
-                    child: Container(
-                      width:
-                          isSmallScreen ? size.width * 0.3 : size.width * 0.2,
-                      height:
-                          isSmallScreen ? size.width * 0.3 : size.width * 0.2,
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        child: Text(
-                          widget.character,
-                          style: TextStyle(
-                            height: 1,
-                            fontSize: isSmallScreen ? 60 : 80,
-                          ),
+            ),
+            // Hindi character - centered and larger
+            if (result.isEmpty)
+              Positioned(
+                left: size.width * 0.4,
+                top: size.height * 0.35,
+                child: GestureDetector(
+                  onTap: () async {
+                    await speakHindi(widget.character);
+                  },
+                  child: Container(
+                    width: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
+                    height: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(
+                        widget.character,
+                        style: TextStyle(
+                          height: 1,
+                          fontSize: isSmallScreen ? 60 : 80,
                         ),
                       ),
                     ),
                   ),
                 ),
+              ),
+            Positioned(
+              right: size.width * 0.02,
+              bottom: size.height * 0.08,
+              child: SizedBox(
+                height: isSmallScreen ? 50 : 70,
+                width: isSmallScreen ? 50 : 70,
+                child: CustomButton(
+                  type: ButtonType.Tip,
+                  onPressed: () {
+                    Navigator.pushNamed(context, AppRoutes.tipBoxVideoScreen);
+                  },
+                ),
+              ),
+            ),
+            if (result.isNotEmpty)
+              pronunciationResultWidget(result, context, widget.character),
+            if (isRecordingSegment)
               Positioned(
-                right: size.width * 0.02,
-                bottom: size.height * 0.08,
-                child: SizedBox(
-                  height: isSmallScreen ? 50 : 70,
-                  width: isSmallScreen ? 50 : 70,
-                  child: CustomButton(
-                    type: ButtonType.Tip,
-                    onPressed: () {
-                      Navigator.pushNamed(context, AppRoutes.tipBoxVideoScreen);
-                    },
+                right: size.width * 0.2,
+                bottom: size.height * 0.15,
+                child: Container(
+                  padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.mic,
+                        color: Colors.red,
+                        size: isSmallScreen ? 20 : 24,
+                      ),
+                      SizedBox(width: isSmallScreen ? 6 : 8),
+                      Text(
+                        "Recording ${currentSessionCount + 1}/5",
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 14 : 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              if (result.isNotEmpty)
-                pronunciationResultWidget(result, context, widget.character),
-              if (isRecordingSegment)
-                Positioned(
-                  right: size.width * 0.2,
-                  bottom: size.height * 0.15,
-                  child: Container(
-                    padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.mic,
-                          color: Colors.red,
-                          size: isSmallScreen ? 20 : 24,
-                        ),
-                        SizedBox(width: isSmallScreen ? 6 : 8),
-                        Text(
-                          "Recording ${currentSessionCount + 1}/5",
-                          style: TextStyle(
-                            fontSize: isSmallScreen ? 14 : 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-            ],
-          ),
+          ],
         ),
+      ),
     );
   }
 
@@ -263,30 +260,41 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   void _setupVadHandler() {
 
-   _vadHandler.onSpeechEnd.listen((List<double> samples) async {
-  if (currentSessionCount >= TOTAL_SESSIONS) return;
-  
-  debugPrint('Speech ended for session ${currentSessionCount + 1}');
-  setState(() {
-    isRecordingSegment = false;
-  });
+      // On speech End
+    _vadHandler.onSpeechEnd.listen((List<double> samples) async {
+      if (currentSessionCount >= TOTAL_SESSIONS) return;
 
-  try {
-    await processCurrentRecording(samples);
-    currentSessionCount++;
-    _triggerNextAnimation();
-
-    if (currentSessionCount >= TOTAL_SESSIONS) {
-      await stopRecording();
+      debugPrint('Speech ended for session ${currentSessionCount + 1}');
       setState(() {
-        isRecordingComplete = true;
-        loading = false;
+        isRecordingSegment = false;
       });
-      if (intermediateResults.isNotEmpty) {
-        processResults(intermediateResults);
-      } else {
-        throw Exception("No valid recordings processed");
 
+      try {
+        await processCurrentRecording(samples);
+        currentSessionCount++;
+        _triggerNextAnimation();
+
+        if (currentSessionCount >= TOTAL_SESSIONS) {
+          setState(() {
+            isRecordingComplete = true;
+            loading = false;
+          });
+          if (intermediateResults.isNotEmpty) {
+            processResults(intermediateResults);
+          } else {
+            throw Exception("No valid recordings processed");
+          }
+        }
+      } catch (e) {
+        print("Error in speech end handler: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error processing recording: $e")));
+      }
+    });
+
+
+
+    // On Speech Start
     _vadHandler.onSpeechStart.listen((_) {
       print('Speech detected.');
       setState(() {
@@ -295,16 +303,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
             .add('Speech detected - Session ${currentSessionCount + 1}');
       });
     });
-      }
-    }
-  } catch (e) {
-    print("Error in speech end handler: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Error processing recording: $e"))
-    );
-  }
-});
 
+
+
+    // On speech misfire
     _vadHandler.onVADMisfire.listen((_) {
       print('VAD misfire detected.');
       setState(() {
@@ -312,6 +314,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       });
     });
 
+
+    // On Error
     _vadHandler.onError.listen((String message) {
       print('Error: $message');
       setState(() {
@@ -320,6 +324,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         receivedEvents.add('Error: $message');
       });
     });
+
+
   }
 
   Future<void> initializeApp() async {
@@ -332,7 +338,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
           const SnackBar(content: Text("Microphone permission required")));
     }
   }
-
 
   Future<void> initTTS() async {
     if (kIsWeb) {
@@ -442,7 +447,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   Future<void> startRecording() async {
     try {
-
       _vadHandler.startListening(
         frameSamples: 1536,
         preSpeechPadFrames: kIsWeb ? 12 : 6,
@@ -461,11 +465,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
-
-  Future<void> createWavFile(List<double> samples, String path) async {
-    final wavFile = await File(path).create();
-    final wavWriter = ByteData(44 + (samples.length * 2));
-  }
   Future<void> processAllRecordings() async {
     try {
       List<String> wavPaths = [];
@@ -481,8 +480,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
       print("=== Sending ${wavPaths.length} recordings to API ===");
       List<dynamic> results = await Future.wait(
-          wavPaths.map((path) => sendWavFile(path, widget.character))
-          );
+          wavPaths.map((path) => sendWavFile(path, widget.character)));
 
       print("=== API Responses ===");
       results.asMap().forEach((i, result) => print("Session $i: $result"));
@@ -528,7 +526,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         print("API response result: ${jsonResponse['result']}");
         return jsonResponse['result'];
       } else {
-      print("API error response: $body");
+        print("API error response: $body");
         throw Exception("API Error ${response.statusCode}: $body");
       }
     } catch (e) {
@@ -536,6 +534,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       rethrow;
     }
   }
+
   Future<void> createWavFile(List<double> samples, String path) async {
     final wavData = float32ToWav(samples);
     final file = File(path);
@@ -583,50 +582,49 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
+  // void processResults(List<dynamic> results) {
+  //   print("Raw API results:");
+  //   results.forEach((r) => print(r.toString()));
 
-  void processResults(List<dynamic> results) {
-    print("Raw API results:");
-    results.forEach((r) => print(r.toString()));
+  //   Map<String, List<String>> combinedResults = {};
 
-    Map<String, List<String>> combinedResults = {};
+  //   // Combine all results
+  //   for (var result in results) {
+  //     for (var item in result) {
+  //       String key = item.keys.first;
+  //       String value = item.values.first;
+  //       combinedResults.putIfAbsent(key, () => []).add(value);
+  //     }
+  //   }
 
-    // Combine all results
-    for (var result in results) {
-      for (var item in result) {
-        String key = item.keys.first;
-        String value = item.values.first;
-        combinedResults.putIfAbsent(key, () => []).add(value);
-      }
-    }
+  //   // Calculate final results
+  //   List<Map<String, String>> finalResults = [];
+  //   combinedResults.forEach((key, values) {
+  //     String finalValue = calculateFinalValue(values);
+  //     finalResults.add({key: finalValue});
+  //   });
 
-    // Calculate final results
-    List<Map<String, String>> finalResults = [];
-    combinedResults.forEach((key, values) {
-      String finalValue = calculateFinalValue(values);
-      finalResults.add({key: finalValue});
-    });
+  //   setState(() {
+  //     result = finalResults;
+  //     loading = false;
+  //   });
 
-    setState(() {
-      result = finalResults;
-      loading = false;
-    });
+  //   // Update exercise data
+  //   var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+  //   data_pro.incrementLevel();
 
-    // Update exercise data
-    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    data_pro.incrementLevel();
+  //   UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
+  //     eid: widget.eid,
+  //     date: widget.date,
+  //     performance: {
+  //       "result": result,
+  //       "word": widget.character,
+  //     },
+  //   );
 
-    UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
-      eid: widget.eid,
-      date: widget.date,
-      performance: {
-        "result": result,
-        "word": widget.character,
-      },
-    );
-
-    print("Final processed results:");
-    finalResults.forEach((r) => print(r.toString()));
-  }
+  //   print("Final processed results:");
+  //   finalResults.forEach((r) => print(r.toString()));
+  // }
 
   String calculateFinalValue(List<String> values) {
     int correctCount = values.where((v) => v.contains("correct")).length;
