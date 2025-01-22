@@ -37,14 +37,15 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   late int leveltracker;
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
-  OverlayEntry? _overlayEntry;
+
   late UserData userData;
 
-  // Rive variables
-  rive.StateMachineController? riveController;
-  rive.SMITrigger? _correctTrigger;
-  rive.SMITrigger? _incorrectTrigger;
-  rive.RiveAnimationController? controller;
+
+  StateMachineController? riveController;
+  SMITrigger? _correctTrigger;
+  SMITrigger? _incorrectTrigger;
+  Artboard? _riveArtboard;
+
 
   @override
   void dispose() {
@@ -70,34 +71,48 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     userData = UserData(uid: uid, buildContext: context);
   }
 
-  void _onRiveInit(rive.Artboard artboard) {
-    final controller = rive.StateMachineController.fromArtboard(
-      artboard,
-      'State Machine 2'
-    );
-    
+
+  int sel = 0;
+
+  void _onRiveInit(Artboard artboard) async {
+    final controller =
+        StateMachineController.fromArtboard(artboard, 'State Machine 2');
+
     if (controller != null) {
       artboard.addController(controller);
       riveController = controller;
-      _correctTrigger = controller.findInput<bool>('correct') as rive.SMITrigger;
-      _incorrectTrigger = controller.findInput<bool>('incorrect') as rive.SMITrigger;
-    } else {
-      debugPrint('Controller initialization failed');
+
+      // Print all state machines for debugging
+      print("\nAll State Machines in artboard:");
+      for (var stateMachine in artboard.stateMachines) {
+        print("State Machine: ${stateMachine.name}");
+      }
+
+      // Get the triggers
+      _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
+      _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
+
+      print("Controller added: $controller");
+
     }
   }
 
   void _triggerAnimation(bool isCorrect) {
+
+    print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
+
     if (isCorrect) {
       if (_correctTrigger != null) {
+        print("Firing correct trigger");
         _correctTrigger!.fire();
-      } else {
-        debugPrint('Correct trigger not initialized');
+        print("Correct trigger fired");
+
       }
     } else {
       if (_incorrectTrigger != null) {
         _incorrectTrigger!.fire();
-      } else {
-        debugPrint('Incorrect trigger not initialized');
+        print("Incorrect trigger fired");
+
       }
     }
   }
@@ -150,15 +165,18 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                   Positioned(
                                     bottom: -55.h,
                                     left: 16.h,
-                                    child: SizedBox(
-                                      height: 300,
-                                      width: 350,
-                                      child: rive.RiveAnimation.asset(
-                                        'assets/rive/Celebration_animation.riv',
-                                        onInit: _onRiveInit,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
+                                    child: _riveArtboard == null
+                                        ? const Center(
+                                            child: CircularProgressIndicator())
+                                        : SizedBox(
+                                            height: 300,
+                                            width: 350,
+                                            child: RiveAnimation.asset(
+                                              'assets/rive/Celebration_animation.riv',
+                                              onInit: _onRiveInit,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
                                   ),
                                   // Tip button
                                   Positioned(
@@ -276,7 +294,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     // Adjust the flex value based on your layout needs
                                     child: OptionWidget(
                                       triggerAnimation: (value) {
-                                        _triggerAnimation(value);  
+                                        _triggerAnimation(value);
                                       },
                                       child: AudioWidget(
                                         audioLinks: [

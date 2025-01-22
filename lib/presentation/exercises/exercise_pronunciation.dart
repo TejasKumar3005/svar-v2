@@ -52,10 +52,11 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   FlutterTts flutterTts = FlutterTts();
   bool isSpeaking = false;
   bool loading = false;
-  List<Map<String, String>> result = [];
+
   OverlayEntry? _overlayEntry;
-  bool isRecordingEnabled = true;
-  bool _isVadListening = false;
+  bool isRecordingComplete = false;
+  List<dynamic> result = [];
+  List<dynamic> intermediateResults = [];
 
   // Session tracking variables
   int currentSessionCount = 0;
@@ -261,6 +262,31 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   }
 
   void _setupVadHandler() {
+
+   _vadHandler.onSpeechEnd.listen((List<double> samples) async {
+  if (currentSessionCount >= TOTAL_SESSIONS) return;
+  
+  debugPrint('Speech ended for session ${currentSessionCount + 1}');
+  setState(() {
+    isRecordingSegment = false;
+  });
+
+  try {
+    await processCurrentRecording(samples);
+    currentSessionCount++;
+    _triggerNextAnimation();
+
+    if (currentSessionCount >= TOTAL_SESSIONS) {
+      await stopRecording();
+      setState(() {
+        isRecordingComplete = true;
+        loading = false;
+      });
+      if (intermediateResults.isNotEmpty) {
+        processResults(intermediateResults);
+      } else {
+        throw Exception("No valid recordings processed");
+
     _vadHandler.onSpeechStart.listen((_) {
       print('Speech detected.');
       setState(() {
@@ -269,28 +295,15 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
             .add('Speech detected - Session ${currentSessionCount + 1}');
       });
     });
-
-    _vadHandler.onSpeechEnd.listen((List<double> samples) async {
-      if (!isRecordingEnabled) return;
-
-      print('Speech ended for session ${currentSessionCount + 1}');
-      setState(() {
-        isRecordingSegment = false;
-      });
-
-      audioSessions.add(List<double>.from(samples));
-      currentSessionCount++;
-      _triggerNextAnimation();
-
-      if (currentSessionCount >= TOTAL_SESSIONS) {
-        setState(() {
-          loading = true;
-          isRecordingEnabled = false; // Stop further recordings
-        });
-        _vadHandler.dispose();
-        await processAllRecordings();
       }
-    });
+    }
+  } catch (e) {
+    print("Error in speech end handler: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error processing recording: $e"))
+    );
+  }
+});
 
     _vadHandler.onVADMisfire.listen((_) {
       print('VAD misfire detected.');
@@ -355,6 +368,78 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     return statuses[Permission.microphone]!.isGranted;
   }
 
+  Future<void> processCurrentRecording(List<double> samples) async {
+    setState(() => loading = true);
+
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final tempPath =
+          '${tempDir.path}/recorded_audio_${currentSessionCount}.wav';
+
+      await createWavFile(samples, tempPath);
+
+      // Send to API and validate result
+      dynamic apiResult = await sendWavFile(tempPath, widget.character);
+      if (apiResult != null) {
+        intermediateResults.add(apiResult);
+        debugPrint('Processed recording ${currentSessionCount + 1}/5');
+      } else {
+        debugPrint(
+            'Invalid result from API for recording ${currentSessionCount + 1}');
+      }
+    } catch (e) {
+      debugPrint("Error processing recording ${currentSessionCount + 1}: $e");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              "Error processing recording ${currentSessionCount + 1}: $e")));
+    }
+
+    setState(() => loading = false);
+  }
+
+  void processResults(List<dynamic> allResults) {
+    Map<String, List<String>> combinedResults = {};
+
+    // Process each result from API
+    for (var apiResult in allResults) {
+      if (apiResult is List) {
+        // API returns a list of results
+        for (var item in apiResult) {
+          if (item is Map<String, dynamic>) {
+            String key = item.keys.first;
+            String value = item.values.first.toString();
+            combinedResults.putIfAbsent(key, () => []).add(value);
+          }
+        }
+      }
+    }
+
+    // Calculate final results
+    List<Map<String, String>> finalResults = [];
+    combinedResults.forEach((key, values) {
+      String finalValue = calculateFinalValue(values);
+      finalResults.add({key: finalValue});
+    });
+
+    setState(() {
+      result = finalResults;
+      loading = false;
+    });
+
+    // Update exercise data
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    data_pro.incrementLevel();
+
+    UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
+      eid: widget.eid,
+      date: widget.date,
+      performance: {
+        "result": finalResults, // Use finalResults instead of result
+        "word": widget.character,
+      },
+    );
+  }
+
   Future<void> startRecording() async {
     try {
 
@@ -376,6 +461,11 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
+
+  Future<void> createWavFile(List<double> samples, String path) async {
+    final wavFile = await File(path).create();
+    final wavWriter = ByteData(44 + (samples.length * 2));
+  }
   Future<void> processAllRecordings() async {
     try {
       List<String> wavPaths = [];
@@ -574,7 +664,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   }
 
   Widget pronunciationResultWidget(
-      List<Map<String, String>> result, BuildContext context, String txt) {
+      List<dynamic> result, BuildContext context, String txt) {
     double width_screen = MediaQuery.of(context).size.width;
     return Container(
       margin: EdgeInsets.fromLTRB(width_screen * 0.4, 16.0, 16.0, 16.0),
