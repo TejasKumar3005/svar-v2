@@ -19,6 +19,7 @@ import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/routes/app_routes.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:vad/vad.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 // import 'dart:html' as html;
 
 class ExercisePronunciation extends StatefulWidget {
@@ -118,7 +119,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (loading && _overlayEntry == null) {
         _overlayEntry = createOverlayEntry(context);
-        Overlay.of(context)?.insert(_overlayEntry!);
+        Overlay.of(context).insert(_overlayEntry!);
       } else if (!loading && _overlayEntry != null) {
         _overlayEntry?.remove();
         _overlayEntry = null;
@@ -240,6 +241,22 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     );
   }
 
+  void showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Oh Snap!',
+        message: message,
+        contentType: ContentType.failure,
+      ),
+    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+
   void _onRiveInit(rive.Artboard artboard) {
     final controller =
         rive.StateMachineController.fromArtboard(artboard, 'State Machine 1');
@@ -259,8 +276,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   }
 
   void _setupVadHandler() {
-
-      // On speech End
+    // On speech End
     _vadHandler.onSpeechEnd.listen((List<double> samples) async {
       if (currentSessionCount >= TOTAL_SESSIONS) return;
 
@@ -287,12 +303,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         }
       } catch (e) {
         print("Error in speech end handler: $e");
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error processing recording: $e")));
+        showErrorSnackBar("Error processing recording: $e");
       }
     });
-
-
 
     // On Speech Start
     _vadHandler.onSpeechStart.listen((_) {
@@ -304,8 +317,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       });
     });
 
-
-
     // On speech misfire
     _vadHandler.onVADMisfire.listen((_) {
       print('VAD misfire detected.');
@@ -313,7 +324,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         receivedEvents.add('VAD misfire detected.');
       });
     });
-
 
     // On Error
     _vadHandler.onError.listen((String message) {
@@ -324,8 +334,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         receivedEvents.add('Error: $message');
       });
     });
-
-
   }
 
   Future<void> initializeApp() async {
@@ -334,8 +342,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     if (hasPermission) {
       await startRecording();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Microphone permission required")));
+      showErrorSnackBar("Microphone permission required");
     }
   }
 
@@ -394,9 +401,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       }
     } catch (e) {
       debugPrint("Error processing recording ${currentSessionCount + 1}: $e");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-              "Error processing recording ${currentSessionCount + 1}: $e")));
+      showErrorSnackBar(
+          "Error processing recording ${currentSessionCount + 1}: $e");
     }
 
     setState(() => loading = false);
@@ -459,9 +465,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       _isVadListening = true;
     } catch (e) {
       print("Error starting recording: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error starting recording: $e")),
-      );
+      showErrorSnackBar("Error starting recording: $e");
     }
   }
 
@@ -655,9 +659,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     } catch (e) {
       print("Error speaking: $e");
       setState(() => isSpeaking = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error in text to speech: $e')),
-      );
+      showErrorSnackBar("Error in text to speech: $e");
     }
   }
 
@@ -800,7 +802,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         left: 0,
         right: 0,
         bottom: 0,
-        child: Loading(),
+        child: CircularProgressIndicator(),
       ),
     );
   }
@@ -817,16 +819,4 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   }
 }
 
-class Loading extends StatelessWidget {
-  const Loading({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black.withOpacity(0.5),
-      child: const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-  }
-}

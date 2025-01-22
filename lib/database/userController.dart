@@ -7,6 +7,7 @@ import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class UserData {
   final String? uid;
@@ -21,6 +22,22 @@ class UserData {
 
   final CollectionReference exercisesCollection =
       FirebaseFirestore.instance.collection("Auditory");
+
+       void showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Oh Snap!',
+        message: message,
+        contentType: ContentType.failure,
+      ),
+    );
+    ScaffoldMessenger.of(buildContext!)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
 
   Future<Map<String, dynamic>> AssignedExercises(
       Map<String, dynamic> exercises) async {
@@ -53,10 +70,7 @@ class UserData {
       }
       return finaldata;
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return {};
     } catch (e) {
       return {};
@@ -212,10 +226,7 @@ class UserData {
       }
       return finaldata;
     } catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return [];
     }
   }
@@ -239,10 +250,7 @@ class UserData {
         return {};
       }
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return {};
     } catch (e) {
       return {};
@@ -258,10 +266,7 @@ class UserData {
     try {
       await userCollection.doc(uid).set(user.toJson(), SetOptions(merge: true));
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
     }
   }
 
@@ -277,10 +282,7 @@ class UserData {
       Provider.of<UserDataProvider>(buildContext!, listen: false)
           .setParentalTips(tempKeys);
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
     }
   }
 
@@ -301,10 +303,7 @@ class UserData {
         Provider.of<UserDataProvider>(buildContext!, listen: false)
             .setTherapyCenters(tempKeys);
       } on FirebaseException catch (e) {
-        ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Colors.red,
-        ));
+       showErrorSnackBar(e.toString());
       }
     }
   }
@@ -317,10 +316,7 @@ class UserData {
       });
       return true;
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return false;
     }
   }
@@ -331,10 +327,7 @@ class UserData {
       await userCollection.doc(uid).update({"score": score});
       return true;
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return false;
     }
   }
@@ -357,10 +350,7 @@ class UserData {
       }
       return true;
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return false;
     }
   }
@@ -602,10 +592,7 @@ Future<void> incrementLevelCount(String auditoryType, int level) async {
                         true)); // Use merge to ensure only the activities field is added
           }
         } on FirebaseException catch (e) {
-          ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-          ));
+          showErrorSnackBar(e.toString());
         }
       }
 
@@ -633,10 +620,7 @@ Future<void> incrementLevelCount(String auditoryType, int level) async {
                     true)); // Use merge to ensure only the activities field is added
       }
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
     }
   }
 }

@@ -11,6 +11,7 @@ import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart'
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:video_player/video_player.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class VideoCamScreen extends StatefulWidget {
   const VideoCamScreen({super.key});
@@ -54,6 +55,8 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     }
   }
 
+  
+
   Future<void> _initializeCamera() async {
     // Obtain a list of available cameras on the device.
     final cameras = await availableCameras();
@@ -73,12 +76,9 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     });
     
   } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Error: ${e.toString()}'),
-      ),
-    );
+    showErrorSnackBar(" Error: ${e.toString()}");
   }
+ 
     
   }
 
@@ -98,6 +98,21 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     _requestCameraPermission();
     // initiliaseVideo();
   });
+  }
+    void showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Oh Snap!',
+        message: message,
+        contentType: ContentType.failure,
+      ),
+    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
   }
 
 

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
@@ -18,6 +19,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
 import 'package:svar_new/widgets/loading.dart';
 import 'package:video_player/video_player.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class ExercisesSpeakingPhoneme extends StatefulWidget {
   final List<Map<String, dynamic>> text;
@@ -115,7 +117,7 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
             children: [
               Column(
                 children: [
-                  _buildAppBar(context),
+                  DisciAppBar(context),
                 ],
               ),
               _buildText(),
@@ -133,23 +135,23 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomButton(
-            type: ButtonType.Back,
-            onPressed: () {
-              NavigatorService.goBack();
-            },
-          ),
-          Spacer(),
-        ],
+   void showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Oh Snap!',
+        message: message,
+        contentType: ContentType.failure,
       ),
     );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
   }
+
+ 
 
   Widget _buildText() {
     return Positioned(
@@ -310,8 +312,8 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
         });
         return Future.value(0.0);
       } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Something went wrong")));
+        showErrorSnackBar("Something went wrong");
+        
         throw Exception(
             "Failed to send .wav file. Status code: ${response.statusCode}");
       }
@@ -344,8 +346,7 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
 
         return data['result'];
       } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Something went wrong")));
+        showErrorSnackBar("Something went wrong");
         throw Exception(
             "Failed to send .wav file. Status code: ${response.statusCode}");
       }
@@ -508,16 +509,6 @@ Widget pronunciationResultWidget(
   );
 }
 
-Widget _buildDifficultyLevel(String label, bool isSelected) {
-  return Text(
-    label,
-    style: TextStyle(
-      fontSize: 14.0,
-      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-      color: isSelected ? Colors.orange : Colors.red,
-    ),
-  );
-}
 
 String selectRandomWord(dynamic hindiWords) {
   Random random = Random();

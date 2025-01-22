@@ -4,17 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ExerciseProvider extends ChangeNotifier {
-  // Properties
   int currentExerciseIndex = 0;
   SMINumber? currentLevelInput;
   List<Map<String, dynamic>> todaysExercises = [];
   String completedTillExercise = '';
 
-  // Firebase instances
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Exercise Management Functions
   Future<void> setTodaysExercises(List<dynamic> data) async {
     try {
       String? uid = _auth.currentUser?.uid;
@@ -23,12 +20,8 @@ class ExerciseProvider extends ChangeNotifier {
         return;
       }
 
-      // Fetch user's completed exercise status
       await _fetchCompletedExercise(uid);
-
-      // Process and filter exercises
       _processExercises(data);
-
       notifyListeners();
     } catch (e) {
       print("❌ Error setting exercises: $e");
@@ -37,32 +30,36 @@ class ExerciseProvider extends ChangeNotifier {
   }
 
   Future<void> _fetchCompletedExercise(String uid) async {
-    DocumentSnapshot userDoc =
-        await _firestore.collection('patients').doc(uid).get();
-
-    completedTillExercise =
-        (userDoc.data() as Map<String, dynamic>)['completedTillExercise'] ?? '';
+    DocumentSnapshot userDoc = await _firestore.collection('patients').doc(uid).get();
+    completedTillExercise = (userDoc.data() as Map<String, dynamic>)['completedTillExercise'] ?? '';
     print("📍 Last completed exercise: $completedTillExercise");
   }
 
   void _processExercises(List<dynamic> data) {
     print("\n=== Processing Exercises ===");
-
+    
     // Filter exercises by date range
     todaysExercises = data
         .where((exercise) {
           final date = exercise['date']?.toString();
           final isInRange = date != null && _isDateInRange(date);
-          if (isInRange)
-            print("Including exercise: ${exercise['eid']} | Date: $date");
+          if (isInRange) print("Including exercise: ${exercise['eid']} | Date: $date");
           return isInRange;
         })
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
 
-    // Sort exercises by date
-    todaysExercises.sort((a, b) => a['date'].compareTo(b['date']));
+    // Sort exercises chronologically
+    todaysExercises.sort((a, b) => DateTime.parse(a['date']).compareTo(DateTime.parse(b['date'])));
 
+    // Organize exercises into sets of 5
+    List<Map<String, dynamic>> organizedExercises = [];
+    for (int i = 0; i < todaysExercises.length; i += 5) {
+      int endIndex = i + 5 > todaysExercises.length ? todaysExercises.length : i + 5;
+      organizedExercises.addAll(todaysExercises.sublist(i, endIndex));
+    }
+    
+    todaysExercises = organizedExercises;
     _updateCurrentExerciseIndex();
 
     print("Total exercises in range: ${todaysExercises.length}");
@@ -81,7 +78,6 @@ class ExerciseProvider extends ChangeNotifier {
     }
   }
 
-  // Level Management Functions
   void incrementLevel() {
     print("\n=== Increment Level Attempt ===");
     if (!_validateExerciseIndex()) return;
@@ -89,6 +85,11 @@ class ExerciseProvider extends ChangeNotifier {
     String currentExerciseId = todaysExercises[currentExerciseIndex]['eid'];
     if (currentExerciseId != completedTillExercise) {
       print("❌ Exercise mismatch - cannot progress");
+      return;
+    }
+
+    if (currentExerciseIndex + 1 >= todaysExercises.length) {
+      print("❌ No more exercises available");
       return;
     }
 
@@ -107,28 +108,23 @@ class ExerciseProvider extends ChangeNotifier {
   void _handleExerciseProgression() {
     int startExerciseIndex = (currentExerciseIndex ~/ 5) * 5;
     int endExerciseIndex = startExerciseIndex + 4;
+    endExerciseIndex = endExerciseIndex >= todaysExercises.length ? todaysExercises.length - 1 : endExerciseIndex;
 
-    // Update completed exercise
-    if (currentExerciseIndex + 1 < todaysExercises.length) {
-      String nextExerciseId = todaysExercises[currentExerciseIndex + 1]['eid'];
-      completedTillExercise = nextExerciseId;
-      updateCompletedExercise(completedTillExercise);
-    }
+    String nextExerciseId = todaysExercises[currentExerciseIndex + 1]['eid'];
+    completedTillExercise = nextExerciseId;
+    updateCompletedExercise(completedTillExercise);
 
-    // Handle set completion
     if (currentExerciseIndex == endExerciseIndex) {
       _completeExerciseSet();
       return;
     }
 
-    // Normal progression
     _progressToNextExercise();
   }
 
   void _completeExerciseSet() {
     print("this is the end of the set");
     currentExerciseIndex++;
-    print("currentExerciseIndex: $currentExerciseIndex");
     if (currentLevelInput != null) {
       currentLevelInput!.change(6);
       Future.delayed(const Duration(seconds: 4), () {
@@ -141,12 +137,11 @@ class ExerciseProvider extends ChangeNotifier {
   void _progressToNextExercise() {
     currentExerciseIndex++;
     if (currentLevelInput != null) {
-      currentLevelInput!.change(currentExerciseIndex.toDouble() + 1);
+      currentLevelInput!.change((currentExerciseIndex % 5) + 1);
     }
     notifyListeners();
   }
 
-  // Firebase Operations
   Future<void> updateCompletedExercise(String newCompletedId) async {
     try {
       String? uid = _auth.currentUser?.uid;
@@ -163,7 +158,6 @@ class ExerciseProvider extends ChangeNotifier {
     }
   }
 
-  // Utility Functions
   bool _isDateInRange(String dateStr) {
     try {
       final today = DateTime.now();
@@ -176,7 +170,6 @@ class ExerciseProvider extends ChangeNotifier {
     }
   }
 
-  // Animation Control Functions
   void initializeSMINumber(SMINumber smi) {
     currentLevelInput = smi;
     notifyListeners();
@@ -189,7 +182,6 @@ class ExerciseProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Index Management Functions
   void setCurrentExerciseIndex(int idx) {
     int maxIndex = getCurrentMaxIndex();
     if (idx <= maxIndex && idx >= 0) {

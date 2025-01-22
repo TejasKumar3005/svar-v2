@@ -458,9 +458,22 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     // Check if the requested level exists in today's exercises
     if (data_pro.todaysExercises.length - 1 <
         startExerciseIndex + targetLevel - 1) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("No exercises found for today"),
-      ));
+      final snackBar = SnackBar(
+        /// need to set following properties for best effect of awesome_snackbar_content
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        content: AwesomeSnackbarContent(
+          title: 'On Snap!',
+          message: 'No exercises found today',
+
+          /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+          contentType: ContentType.failure,
+        ),
+      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
       return;
     }
 

@@ -12,6 +12,7 @@ import 'package:svar_new/presentation/login/login_provider.dart';
 import 'package:svar_new/presentation/register/provider/register_provider.dart';
 
 import '../core/app_export.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class AuthConroller {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -29,12 +30,9 @@ class AuthConroller {
     try {
       var provider;
       if (login) {
-        provider =
-            Provider.of<LoginProvider>(context!, listen: false);
+        provider = Provider.of<LoginProvider>(context!, listen: false);
       } else {
-        provider = Provider.of<LoginProvider>(
-            context!,
-            listen: false);
+        provider = Provider.of<LoginProvider>(context!, listen: false);
       }
 
       await firebaseAuth.verifyPhoneNumber(
@@ -43,38 +41,95 @@ class AuthConroller {
           verificationCompleted: (AuthCredential authCredential) async {},
           verificationFailed: (FirebaseAuthException authexception) {
             provider.changeOtpSent(false);
-            ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-              content: Text(authexception.message.toString()),
-              backgroundColor: Colors.red,
-            ));
+            final snackBar = SnackBar(
+              elevation: 0,
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.transparent,
+              content: AwesomeSnackbarContent(
+                title: 'Oh Snap!',
+                message: authexception.message.toString(),
+                contentType: ContentType.failure,
+              ),
+            );
+            ScaffoldMessenger.of(context!)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(snackBar);
           },
           codeSent: (String verificationId, int? resendingtoken) {
             print(verificationId + "-------vid");
             provider.setOtpId(verificationId);
             rtoken = resendingtoken;
             provider.changeOtpSent(true);
-            ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-              content: Text("code sent to " + phone),
-              backgroundColor: Colors.green,
-            ));
+            final snackBar = SnackBar(
+              elevation: 0,
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: Colors.transparent,
+              content: AwesomeSnackbarContent(
+                title: 'Success!',
+                message: "Code sent to $phone",
+                contentType: ContentType.success,
+              ),
+            );
+            ScaffoldMessenger.of(context!)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(snackBar);
           },
           codeAutoRetrievalTimeout: (String verificationId) {});
 
       return true;
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      final snackBar = SnackBar(
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        content: AwesomeSnackbarContent(
+          title: 'Error!',
+          message: e.toString(),
+          contentType: ContentType.failure,
+        ),
+      );
+      ScaffoldMessenger.of(context!)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
       return false;
     }
   }
 
+  void showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Oh Snap!',
+        message: message,
+        contentType: ContentType.failure,
+      ),
+    );
+    ScaffoldMessenger.of(context!)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+
+  void showSuccessSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Success!',
+        message: message,
+        contentType: ContentType.success,
+      ),
+    );
+    ScaffoldMessenger.of(context!)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+
   Future<bool> registerWithPhone(String sms, UserModel model) async {
     try {
-      var provider = Provider.of<RegisterProvider>(
-          context!,
-          listen: false);
+      var provider = Provider.of<RegisterProvider>(context!, listen: false);
       var otpId = provider.otpId;
       if (otpId == "") {
         print("optId is null");
@@ -97,28 +152,20 @@ class AuthConroller {
         return false;
       }
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar("An error occurred: ${e.toString()}");
 
       return false;
     } catch (e) {
       // Handle any other exceptions
       print("Exception: $e");
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text("An error occurred: $e"),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar("An error occurred: $e");
       return false;
     }
   }
 
   Future<bool> loginWithPhone(String sms, UserModel model) async {
     try {
-      var provider = Provider.of<LoginProvider>(
-          context!,
-          listen: false);
+      var provider = Provider.of<LoginProvider>(context!, listen: false);
       var otpId = provider.otpId;
       if (otpId == "") {
         print("optId is null");
@@ -141,24 +188,19 @@ class AuthConroller {
         return false;
       }
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar("An error occurred: $e");
 
       return false;
     } catch (e) {
       // Handle any other exceptions
       print("Exception: $e");
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text("An error occurred: $e"),
-        backgroundColor: Colors.red,
-      ));
+       showErrorSnackBar("An error occurred: $e");
       return false;
     }
   }
 
-  Future<bool> registeruserWithEmail(UserModel model,String therapyCenterId) async {
+  Future<bool> registeruserWithEmail(
+      UserModel model, String therapyCenterId) async {
     try {
       UserCredential userCredential =
           (await firebaseAuth.createUserWithEmailAndPassword(
@@ -193,52 +235,13 @@ class AuthConroller {
         default:
           errorMessage = "Something went wrong.";
       }
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text(errorMessage),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(errorMessage);
       return false;
     } catch (e) {
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return false;
     }
   }
-
-  // Future UpdategoogleSignUp(UserModel model, String uid) async {
-  //   try {
-  //     if (currentPostion != null) {
-  //       await UserData(uid: uid, buildContext: context!).saveUserData(model);
-
-  //       return true;
-  //     } else {
-  //       getCurrentPosition(context!).then((value) async {
-  //         if (value) {
-  //           await UserData(uid: uid, buildContext: context!)
-  //               .saveUserData(model);
-
-  //           return true;
-  //         }
-  //       });
-  //     }
-  //   } on FirebaseAuthException catch (e) {
-  //     return e.message;
-  //   } catch (e) {
-  //     return e.toString();
-  //   }
-  // }
-
-  // Future updateUserData(
-  //     String uid, String name, String mobile, String gender) async {
-  //   await UserData(uid: uid, buildContext: context!).updateUserInfo({
-  //     "name": name,
-  //     "mobile": mobile,
-  //     "gender": gender,
-  //     "location": [currentPostion!.latitude, currentPostion!.longitude],
-  //   });
-  // }
 
   Future<bool> login(String email, String password) async {
     try {
@@ -268,18 +271,12 @@ class AuthConroller {
           errorMessage = "Something went wrong!";
       }
 
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text(errorMessage),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(errorMessage);
       return false;
     } catch (e) {
       // Handle any other exceptions
       print("Exception: $e");
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text("An error occurred: $e"),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar("An error occurred: $e");
       return false;
     }
   }
@@ -318,173 +315,30 @@ class AuthConroller {
       print('Tester added successfully');
       return true;
     } else {
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text("Something went wrong"),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar("Something went wrong");
       print('Failed to add tester: ${response.statusCode} ${response.body}');
       return false;
     }
   }
 
-  // Future googleSignIn() async {
-  //   try {
-  //     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-  //     if (googleUser == null) {
-  //       return false;
-  //     }
-  //     final GoogleSignInAuthentication? authentication =
-  //         await googleUser.authentication;
-
-  //     if (authentication == null) {
-  //       return false;
-  //     }
-
-  //     final credential = GoogleAuthProvider.credential(
-  //         accessToken: authentication.accessToken,
-  //         idToken: authentication.idToken);
-
-  //     if (credential == null) {
-  //       return false;
-  //     }
-
-  //     UserCredential userCredential =
-  //         await FirebaseAuth.instance.signInWithCredential(credential);
-
-  //     final CollectionReference userCollection =
-  //         FirebaseFirestore.instance.collection("users");
-
-  //     // check if user already exists in database
-  //     try {
-  //       DocumentSnapshot documentSnapshot =
-  //           await userCollection.doc(userCredential.user!.uid).get();
-  //       if (documentSnapshot.exists) {
-  //         // user already exists
-  //         await UserData(uid: userCredential.user!.uid, buildContext: context!)
-  //             .getUserData();
-  //         return true;
-  //       }
-
-  //       UserModel userModel = UserModel(
-  //           p_name: userCredential.user!.displayName!,
-  //           name: "",
-  //           email: userCredential.user!.email!,
-  //           password: "",
-  //           uid: userCredential.user!.uid!,
-  //           imageUrl: userCredential.user!.photoURL == null
-  //               ? ""
-  //               : userCredential.user!.photoURL!,
-  //           age: "",
-  //           timeStamp: DateTime.now().microsecondsSinceEpoch.toString(),
-  //           gender: 0,
-  //           location: [],
-  //           access_token: credential.accessToken.toString(),
-  //           subscription_status: "NO",
-  //           mobile: "",
-  //           // gift_purchase_history: [],
-  //           // gameStats: GameStatsModel(
-  //           //     gifts: [],
-  //           //     progressScore: 0.0,
-  //           //     badges_earned: [],
-  //           //     levels_on: [],
-  //           //     exercises: [],
-  //           //     current_level: 0)
-  //               );
-  //       // UserDatabase(uid: userCredential.user!.uid!).saveUserData(userModel);
-  //       // UserDatabase(uid: userCredential.user!.uid!).getUserData();
-  //       return userModel;
-  //     } on FirebaseException catch (e) {
-  //       // retry login
-  //     }
-  //   } on FirebaseAuthException catch (e) {
-  //     print("Firebase Exception in logging in");
-  //     print(e.message);
-  //     return false;
-  //   } catch (e) {
-  //     print("error in logging in other than firebase error");
-  //     print(e.toString());
-  //     return false;
-  //   }
-  // }
-
-  // Future<bool> handleLocationPermission(BuildContext context) async {
-  //   bool serviceEnabled;
-  //   LocationPermission permission;
-
-  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  //   if (!serviceEnabled) {
-  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //       content: const Text(
-  //           'Location services are disabled. Please enable the services'),
-  //       duration: const Duration(seconds: 2),
-  //       action: SnackBarAction(
-  //         label: "OK",
-  //         onPressed: () {
-  //           AppSettings.openAppSettings(type: AppSettingsType.location);
-  //         },
-  //         textColor: Colors.white,
-  //       ),
-  //     ));
-  //     return false;
-  //   }
-  //   permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied) {
-  //     permission = await Geolocator.requestPermission();
-  //     if (permission == LocationPermission.denied) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(content: Text('Location permissions are denied')));
-  //       return false;
-  //     }
-  //   }
-  //   if (permission == LocationPermission.deniedForever) {
-  //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-  //         content: Text(
-  //             'Location permissions are permanently denied, we cannot request permissions.')));
-  //     return false;
-  //   }
-  //   return true;
-  // }
-
-  // Future<bool> getCurrentPosition(BuildContext context) async {
-  //   final hasPermission = await handleLocationPermission(context);
-
-  //   if (!hasPermission) return false;
-  //   await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-  //       .then((Position position) {
-  //     // setCurrPos(position);
-  //     return true;
-  //   }).catchError((e) {
-  //     return false;
-  //   });
-  //   return false;
-  // }
-
   Future<bool> resendOtp(String phone) async {
     try {
       if (rtoken != null) {
-        var provider = Provider.of<RegisterProvider>(
-            context!,
-            listen: false);
+        var provider = Provider.of<RegisterProvider>(context!, listen: false);
         await firebaseAuth.verifyPhoneNumber(
             phoneNumber: phone,
             timeout: Duration(seconds: 120),
             verificationCompleted: (AuthCredential authCredential) async {},
             verificationFailed: (FirebaseAuthException authexception) {
               provider.changeOtpSent(false);
-              ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-                content: Text(authexception.message.toString()),
-                backgroundColor: Colors.red,
-              ));
+              showErrorSnackBar(authexception.message.toString());
             },
             forceResendingToken: rtoken,
             codeSent: (String verificationId, int? resendingtoken) {
               optId = verificationId;
               rtoken = resendingtoken;
               provider.changeOtpSent(true);
-              ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-                content: Text("code sent to " + phone),
-                backgroundColor: Colors.green,
-              ));
+              showSuccessSnackBar("Code sent to $phone");
             },
             codeAutoRetrievalTimeout: (String verificationId) {});
 
@@ -492,10 +346,7 @@ class AuthConroller {
       }
       return false;
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return false;
     }
   }
