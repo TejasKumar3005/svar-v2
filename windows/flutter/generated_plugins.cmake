@@ -11,10 +11,12 @@ list(APPEND FLUTTER_PLUGIN_LIST
   firebase_storage
   flutter_tts
   permission_handler_windows
+  record_windows
   rive_common
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  onnxruntime
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

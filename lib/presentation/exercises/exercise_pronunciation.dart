@@ -2,24 +2,24 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/material.dart';
-import 'package:vad/vad.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, debugPrint;
-import 'package:flutter_tts/flutter_tts.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, print;
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:rive/rive.dart' as rive;
+import 'package:svar_new/core/utils/image_constant.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
-import 'package:svar_new/widgets/custom_button.dart';
-import 'package:svar_new/core/utils/image_constant.dart';
 import 'package:svar_new/routes/app_routes.dart';
-import 'dart:html' as html;
+import 'package:svar_new/widgets/custom_button.dart';
+import 'package:vad/vad.dart';
+// import 'dart:html' as html;
 
 class ExercisePronunciation extends StatefulWidget {
   final String character;
@@ -43,10 +43,10 @@ class ExercisePronunciation extends StatefulWidget {
 
 class ExercisePronunciationState extends State<ExercisePronunciation> {
   final _vadHandler = VadHandler.create(isDebug: true);
-  late FlutterSoundRecorder _micRecorder;
-  StreamController<Uint8List>? _recordingDataController;
-  StreamSubscription? _recordingDataSubscription;
-  List<double> currentAudioBuffer = [];
+  // late FlutterSoundRecorder _micRecorder;
+  // StreamController<Uint8List>? _recordingDataController;
+  // StreamSubscription? _recordingDataSubscription;
+  // List<double> currentAudioBuffer = [];
   bool isRecordingSegment = false;
   final List<String> receivedEvents = [];
   FlutterTts flutterTts = FlutterTts();
@@ -73,6 +73,174 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     super.initState();
     _setupVadHandler();
     initializeApp();
+
+    Future.delayed(Duration(milliseconds: 500), () {
+      if (mounted) {
+        speakHindiWithoutRecording(widget.character);
+      }
+    });
+  }
+
+  
+
+  // Modify speakHindiWithoutRecording method
+  Future<void> speakHindiWithoutRecording(String text) async {
+    if (text.isEmpty) return;
+
+    // Temporarily pause VAD
+    final wasListening = _isVadListening;
+    if (wasListening) {
+      _vadHandler.stopListening();
+      _isVadListening = false;
+    }
+
+    try {
+      setState(() => isSpeaking = true);
+      await flutterTts.speak(text);
+      await Future.delayed(
+          Duration(milliseconds: 1500)); // Wait for speech to complete
+    } catch (e) {
+      print("Error speaking: $e");
+    } finally {
+      setState(() => isSpeaking = false);
+      // Resume VAD if it was listening before
+      if (wasListening && mounted) {
+        _vadHandler.startListening();
+        _isVadListening = true;
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width < 600;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (loading && _overlayEntry == null) {
+        _overlayEntry = createOverlayEntry(context);
+        Overlay.of(context)?.insert(_overlayEntry!);
+      } else if (!loading && _overlayEntry != null) {
+        _overlayEntry?.remove();
+        _overlayEntry = null;
+      }
+    });
+
+    return Scaffold(
+        body: Container(
+          width: size.width,
+          height: size.height,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(ImageConstant.imgGroup7),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  DisciAppBar(context),
+                ],
+              ),
+              // Rive animation - larger and positioned at bottom left
+              Positioned(
+                left: 0,
+                bottom: size.height * 0,
+                child: SizedBox(
+                  width: size.width,
+                  height: size.height,
+                  child: rive.RiveAnimation.asset(
+                    'assets/rive/5_stepping_stone.riv',
+                    onInit: _onRiveInit,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              // Hindi character - centered and larger
+              if (result.isEmpty)
+                Positioned(
+                  left: size.width * 0.4,
+                  top: size.height * 0.35,
+                  child: GestureDetector(
+                    onTap: () async {
+                      await speakHindi(widget.character);
+                    },
+                    child: Container(
+                      width:
+                          isSmallScreen ? size.width * 0.3 : size.width * 0.2,
+                      height:
+                          isSmallScreen ? size.width * 0.3 : size.width * 0.2,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: Text(
+                          widget.character,
+                          style: TextStyle(
+                            height: 1,
+                            fontSize: isSmallScreen ? 60 : 80,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              Positioned(
+                right: size.width * 0.02,
+                bottom: size.height * 0.08,
+                child: SizedBox(
+                  height: isSmallScreen ? 50 : 70,
+                  width: isSmallScreen ? 50 : 70,
+                  child: CustomButton(
+                    type: ButtonType.Tip,
+                    onPressed: () {
+                      Navigator.pushNamed(context, AppRoutes.tipBoxVideoScreen);
+                    },
+                  ),
+                ),
+              ),
+              if (result.isNotEmpty)
+                pronunciationResultWidget(result, context, widget.character),
+              if (isRecordingSegment)
+                Positioned(
+                  right: size.width * 0.2,
+                  bottom: size.height * 0.15,
+                  child: Container(
+                    padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.mic,
+                          color: Colors.red,
+                          size: isSmallScreen ? 20 : 24,
+                        ),
+                        SizedBox(width: isSmallScreen ? 6 : 8),
+                        Text(
+                          "Recording ${currentSessionCount + 1}/5",
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 14 : 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+    );
   }
 
   void _onRiveInit(rive.Artboard artboard) {
@@ -94,6 +262,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   }
 
   void _setupVadHandler() {
+
    _vadHandler.onSpeechEnd.listen((List<double> samples) async {
   if (currentSessionCount >= TOTAL_SESSIONS) return;
   
@@ -117,6 +286,15 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         processResults(intermediateResults);
       } else {
         throw Exception("No valid recordings processed");
+
+    _vadHandler.onSpeechStart.listen((_) {
+      print('Speech detected.');
+      setState(() {
+        isRecordingSegment = true;
+        receivedEvents
+            .add('Speech detected - Session ${currentSessionCount + 1}');
+      });
+    });
       }
     }
   } catch (e) {
@@ -146,8 +324,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   Future<void> initializeApp() async {
     await initTTS();
-    await initVAD();
-
     bool hasPermission = await requestPermissions();
     if (hasPermission) {
       await startRecording();
@@ -157,12 +333,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
-  Future<void> initVAD() async {
-    _micRecorder = FlutterSoundRecorder();
-    if (!kIsWeb) {
-      await _micRecorder.openRecorder();
-    }
-  }
 
   Future<void> initTTS() async {
     if (kIsWeb) {
@@ -186,30 +356,16 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
     flutterTts.setErrorHandler((message) {
       setState(() => isSpeaking = false);
-      debugPrint("TTS Error: $message");
+      print("TTS Error: $message");
     });
   }
 
   Future<bool> requestPermissions() async {
-    if (kIsWeb) {
-      try {
-        final stream = await html.window.navigator.mediaDevices!
-            .getUserMedia({'audio': true});
-        stream.getTracks().forEach((track) => track.stop());
-        return true;
-      } catch (e) {
-        debugPrint('Error getting web permissions: $e');
-        return false;
-      }
-    } else {
-      Map<Permission, PermissionStatus> statuses = await [
-        Permission.microphone,
-        Permission.storage,
-      ].request();
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.microphone,
+    ].request();
 
-      return statuses[Permission.microphone]!.isGranted &&
-          statuses[Permission.storage]!.isGranted;
-    }
+    return statuses[Permission.microphone]!.isGranted;
   }
 
   Future<void> processCurrentRecording(List<double> samples) async {
@@ -286,82 +442,190 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   Future<void> startRecording() async {
     try {
-      _recordingDataController = StreamController<Uint8List>();
-
-      await _micRecorder.startRecorder(
-        toStream: _recordingDataController!.sink,
-        codec: Codec.pcm16,
-        numChannels: 1,
-        sampleRate: 16000,
-      );
 
       _vadHandler.startListening(
         frameSamples: 1536,
-        preSpeechPadFrames: kIsWeb ? 10 : 5,
-        redemptionFrames: kIsWeb ? 8 : 4,
+        preSpeechPadFrames: kIsWeb ? 12 : 6,
+        redemptionFrames: kIsWeb ? 10 : 5,
         minSpeechFrames: 3,
-        positiveSpeechThreshold: 0.5,
+        positiveSpeechThreshold: 0.7,
         negativeSpeechThreshold: 0.35,
         submitUserSpeechOnPause: true,
       );
+      _isVadListening = true;
     } catch (e) {
-      debugPrint("Error starting recording: $e");
+      print("Error starting recording: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error starting recording: $e")),
       );
     }
   }
 
+
   Future<void> createWavFile(List<double> samples, String path) async {
     final wavFile = await File(path).create();
     final wavWriter = ByteData(44 + (samples.length * 2));
+  }
+  Future<void> processAllRecordings() async {
+    try {
+      List<String> wavPaths = [];
+      final tempDir = await getTemporaryDirectory();
 
-    // Write WAV header
-    wavWriter.setUint32(0, 0x46464952);
-    wavWriter.setUint32(4, 36 + (samples.length * 2), Endian.little);
-    wavWriter.setUint32(8, 0x45564157);
-    wavWriter.setUint32(12, 0x20746D66);
-    wavWriter.setUint32(16, 16, Endian.little);
-    wavWriter.setUint16(20, 1, Endian.little);
-    wavWriter.setUint16(22, 1, Endian.little);
-    wavWriter.setUint32(24, 16000, Endian.little);
-    wavWriter.setUint32(28, 32000, Endian.little);
-    wavWriter.setUint16(32, 2, Endian.little);
-    wavWriter.setUint16(34, 16, Endian.little);
-    wavWriter.setUint32(36, 0x61746164);
-    wavWriter.setUint32(40, samples.length * 2, Endian.little);
+      print("=== Creating WAV files ===");
+      for (int i = 0; i < audioSessions.length; i++) {
+        final tempPath = '${tempDir.path}/recorded_audio_$i.wav';
+        await createWavFile(audioSessions[i], tempPath);
+        wavPaths.add(tempPath);
+        print("Created WAV file $i at: $tempPath");
+      }
 
-    // Write samples
-    for (var i = 0; i < samples.length; i++) {
-      final intSample = (samples[i] * 32767).round().clamp(-32768, 32767);
-      wavWriter.setInt16(44 + (i * 2), intSample, Endian.little);
+      print("=== Sending ${wavPaths.length} recordings to API ===");
+      List<dynamic> results = await Future.wait(
+          wavPaths.map((path) => sendWavFile(path, widget.character))
+          );
+
+      print("=== API Responses ===");
+      results.asMap().forEach((i, result) => print("Session $i: $result"));
+
+      processResults(results);
+    } catch (e) {
+      print("Error processing recordings: $e");
+      setState(() => loading = false);
     }
-
-    await wavFile.writeAsBytes(wavWriter.buffer.asUint8List());
   }
 
+// Modified sendWavFile function
   Future<dynamic> sendWavFile(String wavFile, String word) async {
-    var uri = Uri.parse("https://gameapi.svar.in/process_aduio_sent");
+    try {
+      var uri = Uri.parse("https://gameapi.svar.in/process_aduio_sent");
+      print("Sending API request to: ${uri.toString()}");
+      print("Word parameter: '$word'");
+      print("WAV file path: $wavFile");
 
-    http.MultipartRequest request = http.MultipartRequest('POST', uri);
-    request.fields['text'] = word;
+      http.MultipartRequest request = http.MultipartRequest('POST', uri);
+      request.fields['text'] = word;
 
-    if (kIsWeb) {
-      List<int> wavBytes = await File(wavFile).readAsBytes();
-      request.files.add(http.MultipartFile.fromBytes('wav_file', wavBytes,
-          filename: 'audio.wav'));
-    } else {
-      request.files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
-    }
+      if (kIsWeb) {
+        List<int> wavBytes = await File(wavFile).readAsBytes();
+        print("Web audio bytes length: ${wavBytes.length}");
+        request.files.add(http.MultipartFile.fromBytes('wav_file', wavBytes,
+            filename: 'audio.wav'));
+      } else {
+        print("File exists: ${File(wavFile).existsSync()}");
+        print("File size: ${File(wavFile).lengthSync()} bytes");
+        request.files
+            .add(await http.MultipartFile.fromPath('wav_file', wavFile));
+      }
 
-    var response = await request.send();
-    if (response.statusCode == 200) {
+      var response = await request.send();
+      print("Received response status: ${response.statusCode}");
+
       String body = await response.stream.bytesToString();
-      return json.decode(body)['result'];
-    } else {
-      throw Exception(
-          "Failed to send audio file. Status code: ${response.statusCode}");
+      print("Response body: $body");
+
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(body);
+        print("API response result: ${jsonResponse['result']}");
+        return jsonResponse['result'];
+      } else {
+      print("API error response: $body");
+        throw Exception("API Error ${response.statusCode}: $body");
+      }
+    } catch (e) {
+      print("Error in sendWavFile: $e");
+      rethrow;
     }
+  }
+  Future<void> createWavFile(List<double> samples, String path) async {
+    final wavData = float32ToWav(samples);
+    final file = File(path);
+    await file.writeAsBytes(wavData);
+  }
+
+  static Uint8List float32ToWav(List<double> float32Array) {
+    const int sampleRate = 16000;
+    const int byteRate = sampleRate * 2; // 16-bit = 2 bytes per sample
+    final int totalAudioLen = float32Array.length * 2;
+    final int totalDataLen = totalAudioLen + 36;
+
+    final ByteData buffer = ByteData(44 + totalAudioLen);
+
+    // Write WAV header
+    _writeString(buffer, 0, 'RIFF');
+    buffer.setInt32(4, totalDataLen, Endian.little);
+    _writeString(buffer, 8, 'WAVE');
+    _writeString(buffer, 12, 'fmt ');
+    buffer.setInt32(16, 16, Endian.little);
+    buffer.setInt16(20, 1, Endian.little);
+    buffer.setInt16(22, 1, Endian.little);
+    buffer.setInt32(24, sampleRate, Endian.little);
+    buffer.setInt32(28, byteRate, Endian.little);
+    buffer.setInt16(32, 2, Endian.little);
+    buffer.setInt16(34, 16, Endian.little);
+    _writeString(buffer, 36, 'data');
+    buffer.setInt32(40, totalAudioLen, Endian.little);
+
+    // Convert and write audio data
+    int offset = 44;
+    for (double sample in float32Array) {
+      sample = sample.clamp(-1.0, 1.0);
+      final int pcm = (sample < 0 ? sample * 0x8000 : sample * 0x7FFF).toInt();
+      buffer.setInt16(offset, pcm, Endian.little);
+      offset += 2;
+    }
+
+    return buffer.buffer.asUint8List();
+  }
+
+  static void _writeString(ByteData view, int offset, String string) {
+    for (int i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.codeUnitAt(i));
+    }
+  }
+
+
+  void processResults(List<dynamic> results) {
+    print("Raw API results:");
+    results.forEach((r) => print(r.toString()));
+
+    Map<String, List<String>> combinedResults = {};
+
+    // Combine all results
+    for (var result in results) {
+      for (var item in result) {
+        String key = item.keys.first;
+        String value = item.values.first;
+        combinedResults.putIfAbsent(key, () => []).add(value);
+      }
+    }
+
+    // Calculate final results
+    List<Map<String, String>> finalResults = [];
+    combinedResults.forEach((key, values) {
+      String finalValue = calculateFinalValue(values);
+      finalResults.add({key: finalValue});
+    });
+
+    setState(() {
+      result = finalResults;
+      loading = false;
+    });
+
+    // Update exercise data
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    data_pro.incrementLevel();
+
+    UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
+      eid: widget.eid,
+      date: widget.date,
+      performance: {
+        "result": result,
+        "word": widget.character,
+      },
+    );
+
+    print("Final processed results:");
+    finalResults.forEach((r) => print(r.toString()));
   }
 
   String calculateFinalValue(List<String> values) {
@@ -391,7 +655,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       setState(() => isSpeaking = true);
       await flutterTts.speak(text);
     } catch (e) {
-      debugPrint("Error speaking: $e");
+      print("Error speaking: $e");
       setState(() => isSpeaking = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error in text to speech: $e')),
@@ -545,164 +809,13 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   @override
   void dispose() {
-    stopRecording();
+    if (_isVadListening) {
+      _vadHandler.stopListening();
+    }
     _vadHandler.dispose();
     flutterTts.stop();
     riveController?.dispose();
     super.dispose();
-  }
-
-  Future<void> stopRecording() async {
-    try {
-      _vadHandler.stopListening();
-      await _micRecorder.stopRecorder();
-      if (!kIsWeb) {
-        await _micRecorder.closeRecorder();
-      }
-      await _recordingDataSubscription?.cancel();
-      await _recordingDataController?.close();
-    } catch (e) {
-      debugPrint("Error stopping recording: $e");
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (loading && _overlayEntry == null) {
-        _overlayEntry = createOverlayEntry(context);
-        Overlay.of(context)?.insert(_overlayEntry!);
-      } else if (!loading && _overlayEntry != null) {
-        _overlayEntry?.remove();
-        _overlayEntry = null;
-      }
-    });
-
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(ImageConstant.imgGroup7),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  DisciAppBar(context),
-                ],
-              ),
-              // Add Rive animation in center
-              Positioned(
-                left: MediaQuery.of(context).size.width * 0.5 - 150,
-                top: MediaQuery.of(context).size.height * 0.3,
-                child: SizedBox(
-                  width: 300,
-                  height: 300,
-                  child: rive.RiveAnimation.asset(
-                    'assets/rive/5_stepping_stone.riv',
-                    onInit: _onRiveInit,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 80,
-                bottom: 100,
-                child: result.isEmpty
-                    ? GestureDetector(
-                        onTap: () async {
-                          await speakHindi(widget.character);
-                        },
-                        child: Container(
-                          width: 120,
-                          height: 120,
-                          child: FittedBox(
-                            fit: BoxFit.contain,
-                            child: Text(
-                              widget.character,
-                              style: const TextStyle(height: 1),
-                            ),
-                          ),
-                        ),
-                      )
-                    : Container(),
-              ),
-              Positioned(
-                right: result.isEmpty ? 80 : null,
-                left: result.isNotEmpty ? 80 : null,
-                bottom: 0,
-                child: SizedBox(
-                  height: 200,
-                  width: 150,
-                  child: Image.asset(
-                    ImageConstant.imgProtaganist1,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 10,
-                bottom: 50,
-                child: SizedBox(
-                  height: 70,
-                  width: 70,
-                  child: CustomButton(
-                    type: ButtonType.Tip,
-                    onPressed: () {
-                      Navigator.pushNamed(context, AppRoutes.tipBoxVideoScreen);
-                    },
-                  ),
-                ),
-              ),
-              if (result.isNotEmpty)
-                pronunciationResultWidget(result, context, widget.character),
-              if (isRecordingSegment)
-                Positioned(
-                  right: 150,
-                  bottom: 100,
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.mic,
-                          color: Colors.red,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Recording ${currentSessionCount + 1}/5",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
 

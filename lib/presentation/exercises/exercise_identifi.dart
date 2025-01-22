@@ -1,7 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
-import 'package:rive/rive.dart';
+import 'package:rive/rive.dart' as rive;
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/identification_screen/audioToImage.dart';
 import 'package:flutter/material.dart';
@@ -40,10 +40,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
 
   late UserData userData;
 
+
   StateMachineController? riveController;
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
   Artboard? _riveArtboard;
+
 
   @override
   void dispose() {
@@ -62,13 +64,13 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     ]);
 
     _player = AudioPlayer();
-
     leveltracker = 0;
 
     // Initialize userData with uid and context
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     userData = UserData(uid: uid, buildContext: context);
   }
+
 
   int sel = 0;
 
@@ -91,10 +93,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
       _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
 
       print("Controller added: $controller");
+
     }
   }
 
   void _triggerAnimation(bool isCorrect) {
+
     print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
 
     if (isCorrect) {
@@ -102,11 +106,13 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
         print("Firing correct trigger");
         _correctTrigger!.fire();
         print("Correct trigger fired");
+
       }
     } else {
       if (_incorrectTrigger != null) {
         _incorrectTrigger!.fire();
         print("Incorrect trigger fired");
+
       }
     }
   }
@@ -117,7 +123,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
-
     String params = obj[2] as String;
 
     return type != "AudioToImage"
@@ -136,7 +141,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                           fit: BoxFit.cover,
                         ),
                       ),
-                      // Main content
                       Container(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height,
@@ -157,6 +161,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     dtcontainer,
                                     params,
                                   ),
+                                  // Rive animation positioned at bottom left
                                   Positioned(
                                     bottom: -55.h,
                                     left: 16.h,
@@ -173,12 +178,13 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                             ),
                                           ),
                                   ),
+                                  // Tip button
                                   Positioned(
                                     bottom: 0,
                                     right: 0,
                                     child: GestureDetector(
                                       onTap: () {
-                                        // Define what happens when the button is tapped
+                                        // Add tip button functionality
                                       },
                                       child: CustomImageView(
                                         imagePath: ImageConstant.imgTipbtn,
@@ -203,6 +209,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
             params: params,
           );
   }
+
 
   /// Section Widget
   Widget _buildOptionGRP(BuildContext context, IdentificationProvider provider,
