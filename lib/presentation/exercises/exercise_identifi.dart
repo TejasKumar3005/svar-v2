@@ -88,8 +88,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
       for (var stateMachine in artboard.stateMachines) {
         print("State Machine: ${stateMachine.name}");
       }
-
-      // Get the triggers
       _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
       _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
 
@@ -107,13 +105,11 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
         print("Firing correct trigger");
         _correctTrigger!.fire();
         print("Correct trigger fired");
-
       }
     } else {
       if (_incorrectTrigger != null) {
         _incorrectTrigger!.fire();
         print("Incorrect trigger fired");
-
       }
     }
   }
@@ -164,11 +160,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                   ),
                                   // Rive animation positioned at bottom left
                                   Positioned(
-                                    bottom: -55.h,
+                                    bottom: 55.h,
                                     left: 16.h,
-                                    child: _riveArtboard == null
-                                        ? const Center(
-                                            child: CircularProgressIndicator())
+                                    child
                                         : SizedBox(
                                             height: 300,
                                             width: 350,

@@ -15,6 +15,7 @@ import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/presentation/exercises/exercises_speaking_phoneme.dart';
 import 'package:svar_new/presentation/speaking_phoneme/speaking_phoneme.dart';
 import 'package:svar_new/widgets/rive_preloader.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class ExercisesScreen extends StatefulWidget {
   const ExercisesScreen({super.key});
@@ -443,36 +444,50 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     }
   }
 
-void tapHandle(RiveEvent event) {
-  var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-  int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
-  int currentExerciseIndex = data_pro.currentExerciseIndex;
-  int currentLevel = currentExerciseIndex - startExerciseIndex + 1;
-  
-  // Extract level number from event name
-  int targetLevel = int.parse(event.name.split(' ')[1]);
-  
-  print("startExerciseIndex: $startExerciseIndex");
+  void tapHandle(RiveEvent event) {
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
+    int currentExerciseIndex = data_pro.currentExerciseIndex;
+    int currentLevel = currentExerciseIndex - startExerciseIndex + 1;
 
-  // Check if the requested level exists in today's exercises
-  if (data_pro.todaysExercises.length - 1 < startExerciseIndex + targetLevel - 1) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text("No exercises found for today"),
-    ));
-    return;
+    // Extract level number from event name
+    int targetLevel = int.parse(event.name.split(' ')[1]);
+
+    print("startExerciseIndex: $startExerciseIndex");
+
+    // Check if the requested level exists in today's exercises
+    if (data_pro.todaysExercises.length - 1 <
+        startExerciseIndex + targetLevel - 1) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("No exercises found for today"),
+      ));
+      return;
+    }
+
+    // Check if trying to access a future level
+    if (targetLevel > currentLevel) {
+      final snackBar = SnackBar(
+        /// need to set following properties for best effect of awesome_snackbar_content
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        content: AwesomeSnackbarContent(
+          title: 'On Snap!',
+          message: 'PLease complete the previous levels',
+
+          /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+          contentType: ContentType.failure,
+        ),
+      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
+      return;
+    }
+
+    // If all checks pass, handle the level
+    _handleLevelType(startExerciseIndex + targetLevel - 1, "notcompleted");
   }
-
-  // Check if trying to access a future level
-  if (targetLevel > currentLevel) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text("Please complete the previous levels"),
-    ));
-    return;
-  }
-
-  // If all checks pass, handle the level
-  _handleLevelType(startExerciseIndex + targetLevel - 1, "notcompleted");
-}
 
   String formatDate(String date) {
     try {
