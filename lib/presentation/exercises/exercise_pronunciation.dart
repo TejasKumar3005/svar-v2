@@ -140,9 +140,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
           children: [
             Column(
               children: [
-                DisciAppBar(context),
+               
               ],
             ),
+             DisciAppBar(context),
             // Rive animation - larger and positioned at bottom left
             Positioned(
               left: 0,

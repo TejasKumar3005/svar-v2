@@ -30,71 +30,55 @@ class ExerciseProvider extends ChangeNotifier {
   }
 
   Future<void> _fetchCompletedExercise(String uid) async {
-    DocumentSnapshot userDoc = await _firestore.collection('patients').doc(uid).get();
-    completedTillExercise = (userDoc.data() as Map<String, dynamic>)['completedTillExercise'] ?? '';
+    DocumentSnapshot userDoc =
+        await _firestore.collection('patients').doc(uid).get();
+    completedTillExercise =
+        (userDoc.data() as Map<String, dynamic>)['completedTillExercise'] ?? '';
     print("📍 Last completed exercise: $completedTillExercise");
   }
 
   void _processExercises(List<dynamic> data) {
     print("\n=== Processing Exercises ===");
-    
+
     // Filter exercises by date range
     todaysExercises = data
         .where((exercise) {
           final date = exercise['date']?.toString();
           final isInRange = date != null && _isDateInRange(date);
-          if (isInRange) print("Including exercise: ${exercise['eid']} | Date: $date");
+          if (isInRange)
+            print("Including exercise: ${exercise['eid']} | Date: $date");
           return isInRange;
         })
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
 
     // Sort exercises chronologically
-    todaysExercises.sort((a, b) => DateTime.parse(a['date']).compareTo(DateTime.parse(b['date'])));
+    todaysExercises.sort((a, b) =>
+        DateTime.parse(a['date']).compareTo(DateTime.parse(b['date'])));
 
-    // Organize exercises into sets of 5
-    List<Map<String, dynamic>> organizedExercises = [];
-    for (int i = 0; i < todaysExercises.length; i += 5) {
-      int endIndex = i + 5 > todaysExercises.length ? todaysExercises.length : i + 5;
-      organizedExercises.addAll(todaysExercises.sublist(i, endIndex));
-    }
-    
-    todaysExercises = organizedExercises;
-    _updateCurrentExerciseIndex();
+    // Find first incomplete exercise
+    currentExerciseIndex = todaysExercises
+        .indexWhere((exercise) => exercise['completedAt'] == null);
+    if (currentExerciseIndex == -1) currentExerciseIndex = 0;
+    print("Found first incomplete exercise at index: $currentExerciseIndex");
 
     print("Total exercises in range: ${todaysExercises.length}");
     print("Current index: $currentExerciseIndex");
   }
 
-  void _updateCurrentExerciseIndex() {
-    if (completedTillExercise.isEmpty) return;
-
-    for (int i = 0; i < todaysExercises.length; i++) {
-      if (todaysExercises[i]['eid'] == completedTillExercise) {
-        currentExerciseIndex = i;
-        print("✅ Current exercise index: $i");
-        break;
-      }
+  bool _isDateInRange(String dateStr) {
+    try {
+      final today = DateTime.now();
+      final date = DateTime.parse(dateStr);
+      final difference = today.difference(date).inDays;
+      final isInRange = difference >= -3 && difference <= 3;
+      print(
+          "Date check: $dateStr, difference: $difference days, in range: $isInRange");
+      return isInRange;
+    } catch (e) {
+      print("❌ Error parsing date '$dateStr': $e");
+      return false;
     }
-  }
-
-  void incrementLevel() {
-    print("\n=== Increment Level Attempt ===");
-    if (!_validateExerciseIndex()) return;
-
-    String currentExerciseId = todaysExercises[currentExerciseIndex]['eid'];
-    if (currentExerciseId != completedTillExercise) {
-      print("❌ Exercise mismatch - cannot progress");
-      return;
-    }
-
-    if (currentExerciseIndex + 1 >= todaysExercises.length) {
-      print("❌ No more exercises available");
-      return;
-    }
-
-    _handleExerciseProgression();
-    print("============================\n");
   }
 
   bool _validateExerciseIndex() {
@@ -105,14 +89,25 @@ class ExerciseProvider extends ChangeNotifier {
     return true;
   }
 
+  void incrementLevel() {
+    print("\n=== Increment Level Attempt ===");
+    if (!_validateExerciseIndex()) return;
+
+    if (currentExerciseIndex + 1 >= todaysExercises.length) {
+      print("❌ No more exercises available");
+      return;
+    }
+
+    _handleExerciseProgression();
+    print("============================\n");
+  }
+
   void _handleExerciseProgression() {
     int startExerciseIndex = (currentExerciseIndex ~/ 5) * 5;
     int endExerciseIndex = startExerciseIndex + 4;
-    endExerciseIndex = endExerciseIndex >= todaysExercises.length ? todaysExercises.length - 1 : endExerciseIndex;
-
-    String nextExerciseId = todaysExercises[currentExerciseIndex + 1]['eid'];
-    completedTillExercise = nextExerciseId;
-    updateCompletedExercise(completedTillExercise);
+    endExerciseIndex = endExerciseIndex >= todaysExercises.length
+        ? todaysExercises.length - 1
+        : endExerciseIndex;
 
     if (currentExerciseIndex == endExerciseIndex) {
       _completeExerciseSet();
@@ -155,18 +150,6 @@ class ExerciseProvider extends ChangeNotifier {
       print("✅ Updated completedTillExercise: $newCompletedId");
     } catch (e) {
       print("❌ Error updating completedTillExercise: $e");
-    }
-  }
-
-  bool _isDateInRange(String dateStr) {
-    try {
-      final today = DateTime.now();
-      final date = DateTime.parse(dateStr);
-      final difference = today.difference(date).inDays;
-      return difference >= -3 && difference <= 3;
-    } catch (e) {
-      print("❌ Error parsing date '$dateStr': $e");
-      return false;
     }
   }
 

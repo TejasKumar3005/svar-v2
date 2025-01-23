@@ -1,6 +1,8 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/main.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+
 // For checking internet connectivity
 abstract class NetworkInfoI {
   Future<bool> isConnected();
@@ -47,20 +49,27 @@ class NetworkInfo implements NetworkInfoI {
       connectivity.onConnectivityChanged;
 }
 
-
-
-
-
 void showConnectivitySnackBar(bool isConnected) {
-  final message = isConnected ? "Connected to the Internet" : "No Internet Connection";
-  final color = isConnected ? Colors.green : Colors.red;
-
-  globalMessengerKey.currentState?.showSnackBar(
-    SnackBar(
-      content: Text(message),
-      backgroundColor: color,
-      
-      duration: Duration(seconds: 2),
+  final snackBar = SnackBar(
+    elevation: 0,
+    behavior: SnackBarBehavior.floating,
+    backgroundColor: Colors.transparent,
+    duration: const Duration(seconds: 3),
+    content: AwesomeSnackbarContent(
+      title: isConnected ? 'Connected' : 'No Internet',
+      message: isConnected
+          ? 'Your device is now connected to the internet'
+          : 'Please check your internet connection',
+      contentType: isConnected ? ContentType.success : ContentType.failure,
+      // Optional custom colors if you want to override the default ones
+      color: isConnected ? const Color(0xFF2ECC71) : const Color(0xFFE74C3C),
+      // Customize icons
+      inMaterialBanner: true,
     ),
   );
+
+  // If you're using a GlobalKey<ScaffoldMessengerState>
+  globalMessengerKey.currentState
+    ?..hideCurrentSnackBar()
+    ..showSnackBar(snackBar);
 }

@@ -159,7 +159,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
       ;
 
-      if (data == null || data.isEmpty) {
+      if ( data.isEmpty) {
         return;
       }
 
@@ -205,7 +205,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         print(data);
         // Handle other types
         final Object dtcontainer = retrieveObject(type, data);
-
+        print("dtcontainer: $dtcontainer");
         List<dynamic> argumentsList = [
           type,
           dtcontainer,
@@ -215,7 +215,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
-
+        
         NavigatorService.pushNamed(AppRoutes.exerciseDetection,
             arguments: argumentsList);
       }
@@ -452,6 +452,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
     // Extract level number from event name
     int targetLevel = int.parse(event.name.split(' ')[1]);
+    print("targetLevel: $targetLevel");   
 
     print("startExerciseIndex: $startExerciseIndex");
 
@@ -535,9 +536,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   void _onRiveInit(Artboard artboard) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int exerciseCount = data_pro.todaysExercises.length;
+    print("Total exercises to do : ${data_pro.todaysExercises.length}");    
     int startExerciseIndex =
         (data_pro.currentExerciseIndex ~/ 5) * 5; // Calculate starting index
     int endExerciseIndex = startExerciseIndex + 4;
+    print("startExerciseIndex: $startExerciseIndex");
+    print("endExerciseIndex: $endExerciseIndex");
     if (endExerciseIndex > exerciseCount) {
       endExerciseIndex = exerciseCount - 1;
     }
@@ -555,9 +559,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         for (int i = 0; i < 5; i++) {
           int actualIndex = startExerciseIndex +
-              i; // Calculate the actual index in todaysExercises
-          if (actualIndex >= endExerciseIndex)
-            break; // Stop if we've processed all available exercises
+              i; 
+            print("actualIndex: $actualIndex");
+          // Stop if we've processed all available exercises
 
           String subtypeKey = "level${i + 1}";
           TextValueRun? textRun_subtype = artboard.textRun(subtypeKey);
