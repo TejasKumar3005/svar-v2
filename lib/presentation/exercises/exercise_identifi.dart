@@ -364,7 +364,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       OptionWidget(
-                                        triggerAnimation: (value) {},
+                                        triggerAnimation: (value) { _triggerAnimation(value);},
                                         child: TextContainer(
                                           text:
                                               dtcontainer.getTextList()[index],
@@ -445,7 +445,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                             flex:
                                 2, // Adjust the flex value for the OptionWidget
                             child: OptionWidget(
-                              triggerAnimation: (value) {},
+                              triggerAnimation: (value) { _triggerAnimation(value);},
                               child: ImageWidget(
                                 imagePath: dtcontainer.getImageUrlList()[index],
                               ),
