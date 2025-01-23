@@ -160,12 +160,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                   ),
                                   // Rive animation positioned at bottom left
                                   Positioned(
-                                    bottom: 55.h,
+                                    bottom: 0.h,
                                     left: 16.h,
                                     child
                                         : SizedBox(
-                                            height: 300,
-                                            width: 350,
+                                            height: MediaQuery.of(context).size.height,
+                                            width: MediaQuery.of(context).size.width,
                                             child: RiveAnimation.asset(
                                               'assets/rive/Celebration_animation.riv',
                                               onInit: _onRiveInit,
