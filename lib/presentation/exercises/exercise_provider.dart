@@ -90,17 +90,23 @@ class ExerciseProvider extends ChangeNotifier {
   }
 
   void incrementLevel() {
-    print("\n=== Increment Level Attempt ===");
-    if (!_validateExerciseIndex()) return;
+ print("\n=== Increment Level Attempt ===");
+ if (!_validateExerciseIndex()) return;
 
-    if (currentExerciseIndex + 1 >= todaysExercises.length) {
-      print("❌ No more exercises available");
-      return;
-    }
+ // Check if current exercise is already completed
+ if (todaysExercises[currentExerciseIndex]['completedAt'] != null) {
+   print("❌ Exercise already completed");
+   return;
+ }
 
-    _handleExerciseProgression();
-    print("============================\n");
-  }
+ if (currentExerciseIndex + 1 >= todaysExercises.length) {
+   print("❌ No more exercises available"); 
+   return;
+ }
+
+ _handleExerciseProgression();
+ print("============================\n");
+}
 
   void _handleExerciseProgression() {
     int startExerciseIndex = (currentExerciseIndex ~/ 5) * 5;

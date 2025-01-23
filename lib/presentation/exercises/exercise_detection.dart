@@ -50,7 +50,7 @@ class _DetectionState extends State<ExerciseDetection> {
  StateMachineController? riveController;
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
-  Artboard? _riveArtboard;
+
 
   @override
   void initState() {
@@ -226,11 +226,9 @@ void _onRiveInit(Artboard artboard) async {
                     children: [
                       Center(child: detectionQuiz(context, type)),
                       Positioned(
-                                    bottom: -55.h,
+                                    bottom: 0.h,
                                     left: 16.h,
-                                    child: _riveArtboard == null
-                                        ? const Center(
-                                            child: CircularProgressIndicator())
+                                    child
                                         : SizedBox(
                                             height: 300,
                                             width: 350,
@@ -359,8 +357,8 @@ void _onRiveInit(Artboard artboard) async {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
-                  triggerAnimation: (bool value) {
-                    
+                  triggerAnimation: ( value) {
+                     _triggerAnimation(value);
                   },
                   child: OptionButton(
                     type: ButtonType.Video1,
@@ -400,7 +398,7 @@ void _onRiveInit(Artboard artboard) async {
                     0.40, // Dynamically set width
                 child: OptionWidget(
                   triggerAnimation: (value){
-
+ _triggerAnimation(value);
                   },
                   child: OptionButton(
                     type: ButtonType.Video2,
@@ -459,6 +457,10 @@ class HalfMutedWidget extends StatefulWidget {
 class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   final GlobalKey<AudioWidgetState> _childKey = GlobalKey<AudioWidgetState>();
   Timer? _volumeTimer;
+   StateMachineController? riveController;
+  SMITrigger? _correctTrigger;
+  SMITrigger? _incorrectTrigger;
+
 
   @override
   void initState() {
@@ -467,6 +469,44 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startVolumeControl();
     });
+  }
+  void _onRiveInit(Artboard artboard) async {
+    final controller =
+        StateMachineController.fromArtboard(artboard, 'State Machine 2');
+
+    if (controller != null) {
+      artboard.addController(controller);
+      riveController = controller;
+
+      // Print all state machines for debugging
+      print("\nAll State Machines in artboard:");
+      for (var stateMachine in artboard.stateMachines) {
+        print("State Machine: ${stateMachine.name}");
+      }
+
+      // Get the triggers
+      _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
+      _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
+
+      print("Controller added: $controller");
+    }
+  }
+
+  void _triggerAnimation(bool isCorrect) {
+    print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
+
+    if (isCorrect) {
+      if (_correctTrigger != null) {
+        print("Firing correct trigger");
+        _correctTrigger!.fire();
+        print("Correct trigger fired");
+      }
+    } else {
+      if (_incorrectTrigger != null) {
+        _incorrectTrigger!.fire();
+        print("Incorrect trigger fired");
+      }
+    }
   }
 
   void _startVolumeControl() {
@@ -507,9 +547,23 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
         SizedBox(
           height: 20.v,
         ),
+        Positioned(
+                                    bottom: 0.h,
+                                    left: 16.h,
+                                    child:
+                                         SizedBox(
+                                            height: 300,
+                                            width: 350,
+                                            child: RiveAnimation.asset(
+                                              'assets/rive/Celebration_animation.riv',
+                                              onInit: _onRiveInit,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                  ),
         OptionWidget(
           triggerAnimation: (value){
-
+ _triggerAnimation(value);
           },
           child: OptionButton(
             type: ButtonType.Stop,

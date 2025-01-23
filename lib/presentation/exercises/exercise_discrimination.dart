@@ -23,7 +23,7 @@ import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:svar_new/database/userController.dart';
-
+import 'package:rive/rive.dart';
 class ExerciseDiscrimination extends StatefulWidget {
   const ExerciseDiscrimination({
     Key? key,
@@ -43,7 +43,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
   int selectedOption = -1;
   List<double> samples = [];
   OverlayEntry? _overlayEntry;
-
+   StateMachineController? riveController;
+  SMITrigger? _correctTrigger;
+  SMITrigger? _incorrectTrigger;
   bool isPlaying = false;
 
   int currentIndex = 0;
@@ -54,6 +56,45 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
     setState(() {
       currentProgress = _childKey.currentState!.progress;
     });
+  }
+
+  void _onRiveInit(Artboard artboard) async {
+    final controller =
+        StateMachineController.fromArtboard(artboard, 'State Machine 2');
+
+    if (controller != null) {
+      artboard.addController(controller);
+      riveController = controller;
+
+      // Print all state machines for debugging
+      print("\nAll State Machines in artboard:");
+      for (var stateMachine in artboard.stateMachines) {
+        print("State Machine: ${stateMachine.name}");
+      }
+
+      // Get the triggers
+      _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
+      _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
+
+      print("Controller added: $controller");
+    }
+  }
+
+  void _triggerAnimation(bool isCorrect) {
+    print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
+
+    if (isCorrect) {
+      if (_correctTrigger != null) {
+        print("Firing correct trigger");
+        _correctTrigger!.fire();
+        print("Correct trigger fired");
+      }
+    } else {
+      if (_incorrectTrigger != null) {
+        _incorrectTrigger!.fire();
+        print("Incorrect trigger fired");
+      }
+    }
   }
 
   @override
@@ -136,6 +177,20 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               height: 20.v,
             ),
             discriminationOptions(type, data, dtcontainer),
+            Positioned(
+                                    bottom: 0.h,
+                                    left: 16.h,
+                                    child:
+                                         SizedBox(
+                                            height: 300,
+                                            width: 350,
+                                            child: RiveAnimation.asset(
+                                              'assets/rive/Celebration_animation.riv',
+                                              onInit: _onRiveInit,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                  ),
           ],
         ),
       ),
@@ -178,7 +233,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
             Expanded(
               child: OptionWidget(
                   triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
                 child: ImageWidget(imagePath: "assets/images/female.png"),
                 isCorrect: () {
@@ -209,7 +264,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
             Expanded(
               child: OptionWidget(
                   triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
                 child: ImageWidget(imagePath: "assets/images/male.png"),
                 isCorrect: () {
@@ -243,48 +298,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
     );
   }
 
-  Widget Artboard(String image) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.v),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(0xFFDCFBFF),
-            Color(0xFFDBEBEC),
-            Color(0xFFCEEAE7),
-            Color(0xFFC1E2DE),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(
-          color: Colors.white,
-          width: 5,
-        ),
-      ),
-      child: Stack(
-        children: [
-          CustomImageView(
-            width: 100,
-            height: 100,
-            fit: BoxFit.contain,
-            imagePath: image,
-          ),
-          Positioned(
-            top: 0,
-            left: 0,
-            child: CustomImageView(
-              width: 40,
-              height: 40,
-              fit: BoxFit.contain,
-              imagePath: "assets/images/shine.png",
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  
 
   Widget DiffHalfW(DiffHalf diffHalf, dynamic dtcontainer) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
@@ -300,7 +314,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
         ),
         OptionWidget(
             triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
             child: OptionButton(type: ButtonType.Change, onPressed: () {}),
             isCorrect: () {
@@ -371,7 +385,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
           children: [
             OptionWidget(
                 triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
               child: OptionButton(type: ButtonType.Same, onPressed: () {}),
               isCorrect: () {
@@ -403,7 +417,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
             ),
             OptionWidget(
                 triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
               child: OptionButton(
                   type: ButtonType.Diff,
@@ -456,7 +470,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               children: [
                 OptionWidget(
                     triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -491,7 +505,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 ),
                 OptionWidget(
                     triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -539,7 +553,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               children: [
                 OptionWidget(
                     triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -574,7 +588,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 ),
                 OptionWidget(
                     triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -615,7 +629,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               children: [
                 OptionWidget(
                   triggerAnimation: (value){
-
+ _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -663,7 +677,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               children: [
                 OptionWidget(
                     triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -698,7 +712,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 ),
                 OptionWidget(
                     triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -739,7 +753,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               children: [
                 OptionWidget(
                     triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -774,7 +788,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 ),
                 OptionWidget(
                     triggerAnimation: (value){
-                    
+                     _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
