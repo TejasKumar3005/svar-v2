@@ -41,12 +41,10 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
 
   late UserData userData;
 
-
   StateMachineController? riveController;
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
   Artboard? _riveArtboard;
-
 
   @override
   void dispose() {
@@ -72,7 +70,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     userData = UserData(uid: uid, buildContext: context);
   }
 
-
   int sel = 0;
 
   void _onRiveInit(Artboard artboard) async {
@@ -92,12 +89,10 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
       _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
 
       print("Controller added: $controller");
-
     }
   }
 
   void _triggerAnimation(bool isCorrect) {
-
     print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
 
     if (isCorrect) {
@@ -159,19 +154,22 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     params,
                                   ),
                                   // Rive animation positioned at bottom left
-                                  Positioned(
-                                    bottom: 0.h,
-                                    left: 16.h,
-                                    child
-                                        : SizedBox(
-                                            height: MediaQuery.of(context).size.height,
-                                            width: MediaQuery.of(context).size.width,
-                                            child: RiveAnimation.asset(
-                                              'assets/rive/Celebration_animation.riv',
-                                              onInit: _onRiveInit,
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
+                                  IgnorePointer(
+                                    child: Positioned(
+                                      bottom: 0.h,
+                                      left: 0.h,
+                                      child: SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        child: RiveAnimation.asset(
+                                          'assets/rive/Celebration_animation.riv',
+                                          onInit: _onRiveInit,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                   // Tip button
                                   Positioned(
@@ -204,7 +202,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
             params: params,
           );
   }
-
 
   /// Section Widget
   Widget _buildOptionGRP(BuildContext context, IdentificationProvider provider,
@@ -364,7 +361,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       OptionWidget(
-                                        triggerAnimation: (value) { _triggerAnimation(value);},
+                                        triggerAnimation: (value) {
+                                          _triggerAnimation(value);
+                                        },
                                         child: TextContainer(
                                           text:
                                               dtcontainer.getTextList()[index],
@@ -445,7 +444,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                             flex:
                                 2, // Adjust the flex value for the OptionWidget
                             child: OptionWidget(
-                              triggerAnimation: (value) { _triggerAnimation(value);},
+                              triggerAnimation: (value) {
+                                _triggerAnimation(value);
+                              },
                               child: ImageWidget(
                                 imagePath: dtcontainer.getImageUrlList()[index],
                               ),
