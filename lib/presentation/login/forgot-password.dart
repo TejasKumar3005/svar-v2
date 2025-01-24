@@ -133,7 +133,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                     if (value == null || value == "") {
                       return "Please enter $name";
                     }
-                    return value;
+                   
                   },
                 ),
               ),

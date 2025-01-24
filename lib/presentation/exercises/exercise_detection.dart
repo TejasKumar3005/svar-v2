@@ -492,6 +492,9 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
         print("Firing correct trigger");
         _correctTrigger!.fire();
         print("Correct trigger fired");
+         Future.delayed(const Duration(seconds: 5), () {
+          Navigator.pop(context);
+        });
       }
     } else {
       if (_incorrectTrigger != null) {
@@ -550,6 +553,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                 'assets/rive/Celebration_animation.riv',
                 onInit: _onRiveInit,
                 fit: BoxFit.contain,
+                alignment: Alignment.centerLeft,
               ),
             ),
           ),

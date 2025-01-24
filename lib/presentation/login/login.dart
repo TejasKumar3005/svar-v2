@@ -289,7 +289,7 @@ class LoginScreenState extends State<LoginScreen> {
                     if (value == null || value == "") {
                       return "Please enter $name";
                     }
-                    return value;
+                    
                   },
                 ),
               ),

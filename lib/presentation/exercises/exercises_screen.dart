@@ -470,25 +470,25 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     }
 
     // Check if trying to access a future level
-    if (targetLevel > currentLevel) {
-      final snackBar = SnackBar(
-        /// need to set following properties for best effect of awesome_snackbar_content
-        elevation: 0,
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.transparent,
-        content: AwesomeSnackbarContent(
-          title: 'On Snap!',
-          message: 'PLease complete the previous levels',
+    // if (targetLevel > currentLevel) {
+    //   final snackBar = SnackBar(
+    //     /// need to set following properties for best effect of awesome_snackbar_content
+    //     elevation: 0,
+    //     behavior: SnackBarBehavior.floating,
+    //     backgroundColor: Colors.transparent,
+    //     content: AwesomeSnackbarContent(
+    //       title: 'On Snap!',
+    //       message: 'PLease complete the previous levels',
 
-          /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
-          contentType: ContentType.failure,
-        ),
-      );
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(snackBar);
-      return;
-    }
+    //       /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+    //       contentType: ContentType.failure,
+    //     ),
+    //   );
+    //   ScaffoldMessenger.of(context)
+    //     ..hideCurrentSnackBar()
+    //     ..showSnackBar(snackBar);
+    //   return;
+    // }
 
     // If all checks pass, handle the level
     _handleLevelType(startExerciseIndex + targetLevel - 1, "notcompleted");
