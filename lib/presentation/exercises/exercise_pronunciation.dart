@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_sound/flutter_sound.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:flutter/foundation.dart' show kIsWeb, print;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -44,10 +43,6 @@ class ExercisePronunciation extends StatefulWidget {
 
 class ExercisePronunciationState extends State<ExercisePronunciation> {
   final _vadHandler = VadHandler.create(isDebug: true);
-  // late FlutterSoundRecorder _micRecorder;
-  // StreamController<Uint8List>? _recordingDataController;
-  // StreamSubscription? _recordingDataSubscription;
-  // List<double> currentAudioBuffer = [];
   bool isRecordingSegment = false;
   final List<String> receivedEvents = [];
   FlutterTts flutterTts = FlutterTts();
@@ -139,25 +134,25 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         child: Stack(
           children: [
             Column(
-              children: [
-               
-              ],
+              children: [],
             ),
-             DisciAppBar(context),
-            // Rive animation - larger and positioned at bottom left
-            Positioned(
-              left: 0,
-              bottom: size.height * 0,
-              child: SizedBox(
-                width: size.width,
-                height: size.height,
-                child: rive.RiveAnimation.asset(
-                  'assets/rive/5_stepping_stone.riv',
-                  onInit: _onRiveInit,
-                  fit: BoxFit.contain,
+            DisciAppBar(context),
+            IgnorePointer(
+              child: Positioned(
+                left: 0,
+                bottom: size.height * 0,
+                child: SizedBox(
+                  width: size.width,
+                  height: size.height,
+                  child: rive.RiveAnimation.asset(
+                    'assets/rive/5_stepping_stone.riv',
+                    onInit: _onRiveInit,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),
+
             // Hindi character - centered and larger
             if (result.isEmpty)
               Positioned(
@@ -470,32 +465,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
-  Future<void> processAllRecordings() async {
-    try {
-      List<String> wavPaths = [];
-      final tempDir = await getTemporaryDirectory();
-
-      print("=== Creating WAV files ===");
-      for (int i = 0; i < audioSessions.length; i++) {
-        final tempPath = '${tempDir.path}/recorded_audio_$i.wav';
-        await createWavFile(audioSessions[i], tempPath);
-        wavPaths.add(tempPath);
-        print("Created WAV file $i at: $tempPath");
-      }
-
-      print("=== Sending ${wavPaths.length} recordings to API ===");
-      List<dynamic> results = await Future.wait(
-          wavPaths.map((path) => sendWavFile(path, widget.character)));
-
-      print("=== API Responses ===");
-      results.asMap().forEach((i, result) => print("Session $i: $result"));
-
-      processResults(results);
-    } catch (e) {
-      print("Error processing recordings: $e");
-      setState(() => loading = false);
-    }
-  }
 
 // Modified sendWavFile function
   Future<dynamic> sendWavFile(String wavFile, String word) async {
@@ -586,50 +555,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       view.setUint8(offset + i, string.codeUnitAt(i));
     }
   }
-
-  // void processResults(List<dynamic> results) {
-  //   print("Raw API results:");
-  //   results.forEach((r) => print(r.toString()));
-
-  //   Map<String, List<String>> combinedResults = {};
-
-  //   // Combine all results
-  //   for (var result in results) {
-  //     for (var item in result) {
-  //       String key = item.keys.first;
-  //       String value = item.values.first;
-  //       combinedResults.putIfAbsent(key, () => []).add(value);
-  //     }
-  //   }
-
-  //   // Calculate final results
-  //   List<Map<String, String>> finalResults = [];
-  //   combinedResults.forEach((key, values) {
-  //     String finalValue = calculateFinalValue(values);
-  //     finalResults.add({key: finalValue});
-  //   });
-
-  //   setState(() {
-  //     result = finalResults;
-  //     loading = false;
-  //   });
-
-  //   // Update exercise data
-  //   var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-  //   data_pro.incrementLevel();
-
-  //   UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
-  //     eid: widget.eid,
-  //     date: widget.date,
-  //     performance: {
-  //       "result": result,
-  //       "word": widget.character,
-  //     },
-  //   );
-
-  //   print("Final processed results:");
-  //   finalResults.forEach((r) => print(r.toString()));
-  // }
 
   String calculateFinalValue(List<String> values) {
     int correctCount = values.where((v) => v.contains("correct")).length;
@@ -819,5 +744,3 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     super.dispose();
   }
 }
-
-

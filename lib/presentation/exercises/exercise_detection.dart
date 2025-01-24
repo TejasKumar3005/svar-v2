@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
@@ -13,7 +10,6 @@ import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
-import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ExerciseDetection extends StatefulWidget {
@@ -47,10 +43,9 @@ class _DetectionState extends State<ExerciseDetection> {
   double currentProgress = 0.0;
   double totalDuration = 0.0;
 
- StateMachineController? riveController;
+  StateMachineController? riveController;
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
-
 
   @override
   void initState() {
@@ -71,8 +66,7 @@ class _DetectionState extends State<ExerciseDetection> {
     });
   }
 
-  
-void _onRiveInit(Artboard artboard) async {
+  void _onRiveInit(Artboard artboard) async {
     final controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 2');
 
@@ -220,28 +214,29 @@ void _onRiveInit(Artboard artboard) async {
               height: 26.v,
             ),
             Expanded(
-                  // Important: Wrap the quiz in an Expanded
-                  child: Stack(
-                    // Added Stack to hold the Rive animation
-                    children: [
-                      Center(child: detectionQuiz(context, type)),
-                      Positioned(
-                                    bottom: 0.h,
-                                    left: 16.h,
-                                    child
-                                        : SizedBox(
-                                            height: 300,
-                                            width: 350,
-                                            child: RiveAnimation.asset(
-                                              'assets/rive/Celebration_animation.riv',
-                                              onInit: _onRiveInit,
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                  ),
-                    ],
+              // Important: Wrap the quiz in an Expanded
+              child: Stack(
+                // Added Stack to hold the Rive animation
+                children: [
+                  Center(child: detectionQuiz(context, type)),
+                  IgnorePointer(
+                    child: Positioned(
+                      bottom: 0.h,
+                      left: 0.h,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        child: RiveAnimation.asset(
+                          'assets/rive/Celebration_animation.riv',
+                          onInit: _onRiveInit,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -271,7 +266,6 @@ void _onRiveInit(Artboard artboard) async {
   Widget MutedUnmuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     level = obj[4] as int;
-    dynamic dtcontainer = obj[1] as dynamic;
     return Column(
       children: [
         Container(
@@ -357,8 +351,8 @@ void _onRiveInit(Artboard artboard) async {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
-                  triggerAnimation: ( value) {
-                     _triggerAnimation(value);
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: OptionButton(
                     type: ButtonType.Video1,
@@ -368,23 +362,24 @@ void _onRiveInit(Artboard artboard) async {
                   ),
                   isCorrect: () {
                     var condition = (obj[1] as dynamic).getMuted() == 1;
-                    
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                       if (condition) {data_pro.incrementLevel();}
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(
-                              isCompleted: condition,
-                              performance: {
-                                "time": DateTime.now().toString(),
-                                "result": condition,
-                              },
-                              date: obj[5],
-                              eid: obj[4])
-                          .then((value) => null);
-                    
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                    if (condition) {
+                      data_pro.incrementLevel();
+                    }
+                    UserData(
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(
+                            isCompleted: condition,
+                            performance: {
+                              "time": DateTime.now().toString(),
+                              "result": condition,
+                            },
+                            date: obj[5],
+                            eid: obj[4])
+                        .then((value) => null);
 
                     return condition;
                   },
@@ -397,8 +392,8 @@ void _onRiveInit(Artboard artboard) async {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
-                  triggerAnimation: (value){
- _triggerAnimation(value);
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: OptionButton(
                     type: ButtonType.Video2,
@@ -407,25 +402,25 @@ void _onRiveInit(Artboard artboard) async {
                     },
                   ),
                   isCorrect: () {
-
                     var condition = (obj[1] as dynamic).getMuted() == 0;
-                    
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                       if (condition) {data_pro.incrementLevel();}
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(
-                              isCompleted: condition,
-                              performance: {
-                                "time": DateTime.now().toString(),
-                                "result": condition,
-                              },
-                              date: obj[5],
-                              eid: obj[4])
-                          .then((value) => null);
-                    
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                    if (condition) {
+                      data_pro.incrementLevel();
+                    }
+                    UserData(
+                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                    )
+                        .updateExerciseData(
+                            isCompleted: condition,
+                            performance: {
+                              "time": DateTime.now().toString(),
+                              "result": condition,
+                            },
+                            date: obj[5],
+                            eid: obj[4])
+                        .then((value) => null);
 
                     return condition;
                   },
@@ -439,9 +434,6 @@ void _onRiveInit(Artboard artboard) async {
   }
 }
 
-///
-/// New StatefulWidget: HalfMutedWidget
-///
 class HalfMutedWidget extends StatefulWidget {
   final List<String> audioLinks;
 
@@ -457,10 +449,9 @@ class HalfMutedWidget extends StatefulWidget {
 class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   final GlobalKey<AudioWidgetState> _childKey = GlobalKey<AudioWidgetState>();
   Timer? _volumeTimer;
-   StateMachineController? riveController;
+  StateMachineController? riveController;
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
-
 
   @override
   void initState() {
@@ -470,6 +461,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
       _startVolumeControl();
     });
   }
+
   void _onRiveInit(Artboard artboard) async {
     final controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 2');
@@ -547,23 +539,24 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
         SizedBox(
           height: 20.v,
         ),
-        Positioned(
-                                    bottom: 0.h,
-                                    left: 16.h,
-                                    child:
-                                         SizedBox(
-                                            height: 300,
-                                            width: 350,
-                                            child: RiveAnimation.asset(
-                                              'assets/rive/Celebration_animation.riv',
-                                              onInit: _onRiveInit,
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                  ),
+        IgnorePointer(
+          child: Positioned(
+            bottom: 0.h,
+            left: 0.h,
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: RiveAnimation.asset(
+                'assets/rive/Celebration_animation.riv',
+                onInit: _onRiveInit,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        ),
         OptionWidget(
-          triggerAnimation: (value){
- _triggerAnimation(value);
+          triggerAnimation: (value) {
+            _triggerAnimation(value);
           },
           child: OptionButton(
             type: ButtonType.Stop,
@@ -582,8 +575,6 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
               return false;
             }
 
-            double audioLength = total_length[
-                0]; // Since there's only one length, take the first element
             double ans =
                 0.5; // Since you're muting the first half, the threshold is 0.5
 
@@ -603,13 +594,17 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
             }
             UserData(
               uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-            ).updateExerciseData(
-              isCompleted: condition,
-              performance: {
-              "time": DateTime.now().toString(),
-              "result": condition,
-              "timeDiff": (currentProgress - ans).abs()
-            }, date: obj[5], eid: obj[4]).then((value) => null);
+            )
+                .updateExerciseData(
+                    isCompleted: condition,
+                    performance: {
+                      "time": DateTime.now().toString(),
+                      "result": condition,
+                      "timeDiff": (currentProgress - ans).abs()
+                    },
+                    date: obj[5],
+                    eid: obj[4])
+                .then((value) => null);
 
             return condition;
           },

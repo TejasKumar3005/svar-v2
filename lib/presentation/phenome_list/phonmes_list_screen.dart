@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_provider.dart';
 import 'package:svar_new/widgets/grid_item_model.dart';
 import 'package:svar_new/widgets/grid_item_widget.dart';
-import 'package:svar_new/widgets/custom_button.dart';
 
 class PhonmesListScreen extends StatefulWidget {
   const PhonmesListScreen({Key? key}) : super(key: key);
@@ -105,26 +103,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        CustomButton(
-          type: ButtonType.Back,
-          onPressed: () {
-              PlayBgm().playMusic('Back_Btn.mp3',"mp3",false);
-            Navigator.pop(context);
-          },
-        ),
-        // CustomButton(
-        //   type: ButtonType.Menu,
-        //   onPressed: () {
-        //     Navigator.pop(context);
-        //   },
-        // ),
-      ],
-    );
-  }
+ 
 
   Widget _buildGrid(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -152,7 +131,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                   child: GestureDetector(
                     onTap: () {
                       PhonmesListModel()
-                          .onTapCharacter(context, model.character!);
+                          .onTapCharacter(context, model.character);
                           
                       Navigator.pushNamed(context,(index>7 && index<16)? AppRoutes.videoCamScreen:AppRoutes.lingLearningScreen,
                           arguments: model.character);

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:svar_new/widgets/custom_button.dart';
-import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'dart:async';
 import 'package:chiclet/chiclet.dart';

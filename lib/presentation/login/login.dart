@@ -7,7 +7,6 @@ import 'package:svar_new/presentation/login/forgot-password.dart';
 import 'package:svar_new/presentation/login/login-methods.dart';
 import 'package:svar_new/presentation/login/login_provider.dart';
 import 'package:svar_new/widgets/loading.dart';
-import 'package:rive/rive.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 
@@ -64,7 +63,7 @@ class LoginScreenState extends State<LoginScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (provider.loading && _overlayEntry == null) {
         _overlayEntry = createOverlayEntry(context);
-        Overlay.of(context)?.insert(_overlayEntry!);
+        Overlay.of(context).insert(_overlayEntry!);
       } else if (!provider.loading && _overlayEntry != null) {
         _overlayEntry?.remove();
         _overlayEntry = null;
@@ -290,6 +289,7 @@ class LoginScreenState extends State<LoginScreen> {
                     if (value == null || value == "") {
                       return "Please enter $name";
                     }
+                    return value;
                   },
                 ),
               ),

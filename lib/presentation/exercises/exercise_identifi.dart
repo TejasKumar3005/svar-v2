@@ -1,19 +1,17 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
-import 'package:rive/rive.dart' as rive;
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
-import 'package:svar_new/presentation/identification_screen/audioToImage.dart';
+import 'package:svar_new/presentation/exercises/audioToImage.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/presentation/identification_screen/provider/identification_provider.dart';
+import 'package:svar_new/presentation/exercises/identification_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 import 'package:rive/rive.dart';
 
 class ExerciseIdentification extends StatefulWidget {
@@ -44,7 +42,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   StateMachineController? riveController;
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
-  Artboard? _riveArtboard;
 
   @override
   void dispose() {
@@ -259,7 +256,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
       dynamic dtcontainer, String params) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     dynamic dtcontainer = obj[1] as dynamic;
-    int level = obj[3] as int;
     switch (quizType) {
       case "ImageToAudio":
         return dtcontainer.getAudioList().length <= 4

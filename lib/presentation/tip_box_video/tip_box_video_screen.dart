@@ -2,7 +2,6 @@
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
-import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:chewie/chewie.dart';
@@ -64,16 +63,7 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
     super.dispose();
   }
 
-  void _togglePlayPause() {
-    setState(() {
-      if (_videoPlayerController.value.isPlaying) {
-        _videoPlayerController.pause();
-      } else {
-        _videoPlayerController.play();
-      }
-      _showPlayButton = false;
-    });
-  }
+
 
   void _onTap() {
     setState(() {
@@ -83,8 +73,7 @@ class TipBoxVideoScreenState extends State<TipBoxVideoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var userprovider = context.watch<UserDataProvider>();
-    var levelprovider = context.watch<LingLearningProvider>();
+
 
     return SafeArea(
       child: Scaffold(

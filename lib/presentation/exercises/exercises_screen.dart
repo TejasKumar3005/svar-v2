@@ -1,19 +1,16 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
-// import 'package:svar_new/data/models/levelManagementModel/audio.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/exercises/exercise_pronunciation.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/presentation/exercises/exercises_speaking_phoneme.dart';
-import 'package:svar_new/presentation/speaking_phoneme/speaking_phoneme.dart';
 import 'package:svar_new/widgets/rive_preloader.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
@@ -35,8 +32,6 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   ScrollController _scrollController = ScrollController();
   StateMachineController? _controller;
   late Future<RiveFile?> _riveFileFuture;
-  final GlobalKey _key = GlobalKey();
-  Artboard? _riveArtboard;
   var train;
   double? _previousTrainX;
 
@@ -55,10 +50,6 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //  Provider.of<ExerciseProvider>(context, listen: false).fetchAndOrganizeExercises();
-
-    // print(provider.todaysExercises);
-
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
@@ -98,7 +89,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         },
       ),
     );
-    ;
+    
   }
 
   void _handleLevelType(int startExerciseIndex, String params) async {
@@ -231,7 +222,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
       ;
 
-      if (data == null || data.isEmpty) {
+      if (data.isEmpty) {
         return;
       }
 
@@ -301,7 +292,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
       ;
 
-      if (data == null || data.isEmpty) {
+      if ( data.isEmpty) {
         return;
       }
 

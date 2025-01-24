@@ -37,7 +37,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
     if (kIsWeb) {
       // For web, use the network URL directly
-      _videoPlayerController = VideoPlayerController.network(widget.videoUrl);
+      _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
     } else {
       // For non-web platforms, use the cached file
       final cachedFile = await cachingManager.getCachedFile(widget.videoUrl);

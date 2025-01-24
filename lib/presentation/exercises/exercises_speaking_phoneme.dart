@@ -96,7 +96,7 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (loading && _overlayEntry == null) {
         _overlayEntry = createOverlayEntry(context);
-        Overlay.of(context)?.insert(_overlayEntry!);
+        Overlay.of(context).insert(_overlayEntry!);
       } else if (!loading && _overlayEntry != null) {
         _overlayEntry?.remove();
         _overlayEntry = null;
@@ -440,7 +440,6 @@ Widget pronunciationResultWidget(
                 // Accessing the first entry of each map in the list
                 String key = result[index].entries.first.key;
                 String value = result[index].entries.first.value;
-
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: Row(

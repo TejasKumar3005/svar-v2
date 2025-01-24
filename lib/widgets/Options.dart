@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/identification_screen/celebration_overlay.dart';
-import 'package:svar_new/widgets/text_option.dart';
-import 'package:svar_new/widgets/image_option.dart';
-import 'package:svar_new/widgets/audio_widget.dart';
-import 'package:svar_new/widgets/custom_button.dart';
 import 'package:audioplayers/audioplayers.dart'; // Make sure to add this dependency
 
 class OptionWidget extends StatefulWidget {
@@ -53,7 +49,6 @@ class _OptionWidgetState extends State<OptionWidget> {
     await _playAudio(isCorrectResult);
 
     if (isCorrectResult) {
-    
       _overlayEntry = celebrationOverlay(context, () {
         _overlayEntry?.remove();
       });
