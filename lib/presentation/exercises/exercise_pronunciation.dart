@@ -435,7 +435,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
     // Update exercise data
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    
+        //  data_pro.incrementLevel()
 
     UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
       eid: widget.eid,

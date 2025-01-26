@@ -2,40 +2,60 @@ import 'package:flutter/material.dart';
 
 class LoginProvider extends ChangeNotifier {
   TextEditingController emailController = TextEditingController();
-
   TextEditingController passController = TextEditingController();
+  
   bool loading = false;
   bool otpsent = false;
   bool sending = false;
   String otpId = "";
   bool dialog = false;
+  bool _disposed = false;
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) {
+      super.notifyListeners();
+    }
+  }
+
   void changeOtpSending(bool value) {
-    sending = value;
-    notifyListeners();
+    if (!_disposed) {
+      sending = value;
+      notifyListeners();
+    }
   }
 
   void changeDialogState(bool d) {
-    dialog = d;
-    notifyListeners();
+    if (!_disposed) {
+      dialog = d;
+      notifyListeners();
+    }
   }
 
   void setOtpId(String vid) {
-    otpId = vid;
-    notifyListeners();
+    if (!_disposed) {
+      otpId = vid;
+      notifyListeners();
+    }
   }
 
   void changeOtpSent(bool value) {
-    otpsent = value;
-    notifyListeners();
+    if (!_disposed) {
+      otpsent = value;
+      notifyListeners();
+    }
   }
 
   void changeState() {
-    loading = !loading;
-    notifyListeners();
+    if (!_disposed) {
+      loading = !loading;
+      notifyListeners();
+    }
   }
 
   @override
   void dispose() {
+    _disposed = true;
     emailController.dispose();
     passController.dispose();
     super.dispose();
