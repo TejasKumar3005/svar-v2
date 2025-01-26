@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class LoginProvider extends ChangeNotifier {
   TextEditingController emailController = TextEditingController();
 
@@ -35,12 +34,10 @@ class LoginProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-
   @override
   void dispose() {
-    super.dispose();
     emailController.dispose();
     passController.dispose();
+    super.dispose();
   }
 }

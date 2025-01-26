@@ -217,12 +217,7 @@ class UserData {
           Provider.of<UserDataProvider>(buildContext!, listen: false);
 
       data_pro.setTodaysExercises(finaldata);
-      for (int i = 0; i < finaldata.length; i++) {
-        if (finaldata[i]["eid"] ==
-            user_pro.userModel.exercises["completedTillExercise"]) {
-          data_pro.setCurrentExerciseIndex(i);
-        }
-      }
+      
       return finaldata;
     } catch (e) {
       showErrorSnackBar(e.toString());

@@ -96,6 +96,9 @@ class _DetectionState extends State<ExerciseDetection> {
         print("Firing correct trigger");
         _correctTrigger!.fire();
         print("Correct trigger fired");
+        Future.delayed(const Duration(seconds: 5), () {
+          Navigator.pop(context);
+        });
       }
     } else {
       if (_incorrectTrigger != null) {
@@ -266,6 +269,10 @@ class _DetectionState extends State<ExerciseDetection> {
   Widget MutedUnmuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     level = obj[4] as int;
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int startExerciseIndex = obj[3] as int; 
+    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+    ;
     return Column(
       children: [
         Container(
@@ -366,7 +373,15 @@ class _DetectionState extends State<ExerciseDetection> {
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
                     if (condition) {
-                      data_pro.incrementLevel();
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              eid: data["eid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
                     }
                     UserData(
                       uid: FirebaseAuth.instance.currentUser?.uid ?? '',
@@ -407,7 +422,15 @@ class _DetectionState extends State<ExerciseDetection> {
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
                     if (condition) {
-                      data_pro.incrementLevel();
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              eid: data["eid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
                     }
                     UserData(
                       uid: FirebaseAuth.instance.currentUser?.uid ?? '',
@@ -492,7 +515,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
         print("Firing correct trigger");
         _correctTrigger!.fire();
         print("Correct trigger fired");
-         Future.delayed(const Duration(seconds: 5), () {
+        Future.delayed(const Duration(seconds: 5), () {
           Navigator.pop(context);
         });
       }
@@ -528,6 +551,10 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   @override
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int startExerciseIndex = obj[3] as int; 
+    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+    ;
     return Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -579,8 +606,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
               return false;
             }
 
-            double ans =
-                0.5; // Since you're muting the first half, the threshold is 0.5
+            double ans = 0.5;
 
             double currentProgress = _childKey.currentState!.progress;
             print("Current progress is $currentProgress");
@@ -594,7 +620,15 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
             var data_pro =
                 Provider.of<ExerciseProvider>(context, listen: false);
             if (condition) {
-              data_pro.incrementLevel();
+              data_pro.incrementLevel(startExerciseIndex);
+              if (data["completedAt"] == null) {
+                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                    .updateExerciseData(
+                      eid: data["eid"],
+                      date: data["date"],
+                    )
+                    .then((value) => print("Exercise data updated"));
+              }
             }
             UserData(
               uid: FirebaseAuth.instance.currentUser?.uid ?? '',

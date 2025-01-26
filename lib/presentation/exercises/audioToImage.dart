@@ -137,7 +137,6 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                           Container(
                             width: MediaQuery.of(context).size.width * 0.7,
                             height: 80.v,
-                            
                             child: Center(
                               child: GestureDetector(
                                 child: OptionWidget(
@@ -198,7 +197,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                           ],
                                         );
                                       },
-                                    ),
+                                   ),
                                 ],
                               ),
                             ),

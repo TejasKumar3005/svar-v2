@@ -177,7 +177,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                data_pro.incrementLevel();
+                data_pro.incrementLevel(startExerciseIndex);
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
@@ -248,7 +248,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                data_pro.incrementLevel();
+                data_pro.incrementLevel(startExerciseIndex);
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
@@ -322,7 +322,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                data_pro.incrementLevel();
+                data_pro.incrementLevel(startExerciseIndex);
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
@@ -348,7 +348,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           params,
           startExerciseIndex,
           data["eid"],
-          data["date"]
+          data["date"],
+          data
         ];
         debugPrint("Arguments list is: $argumentsList");
         await Future.delayed(Duration.zero);
@@ -385,7 +386,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             builder: (context) => ExerciseVideo(
               videoUrl: data["video"],
               onVideoComplete: () {
-                data_pro.incrementLevel();
+                data_pro.incrementLevel(startExerciseIndex);
 
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
@@ -439,7 +440,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
     int currentExerciseIndex = data_pro.currentExerciseIndex;
-    int currentLevel = currentExerciseIndex - startExerciseIndex + 1;
+    
 
     // Extract level number from event name
     int targetLevel = int.parse(event.name.split(' ')[1]);

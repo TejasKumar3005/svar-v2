@@ -6,7 +6,7 @@ class ExerciseProvider extends ChangeNotifier {
   int currentExerciseIndex = 0;
   SMINumber? currentLevelInput;
   List<Map<String, dynamic>> todaysExercises = [];
-  String completedTillExercise = '';
+ 
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -24,8 +24,6 @@ class ExerciseProvider extends ChangeNotifier {
       debugPrint(e.toString());
     }
   }
-
-
 
   void _processExercises(List<dynamic> data) {
     print("\n=== Processing Exercises ===");
@@ -79,12 +77,12 @@ class ExerciseProvider extends ChangeNotifier {
     return true;
   }
 
-  void incrementLevel() {
+  void incrementLevel(int currentLevel) {
     print("\n=== Increment Level Attempt ===");
     if (!_validateExerciseIndex()) return;
 
     // Check if current exercise is already completed
-    if (todaysExercises[currentExerciseIndex]['completedAt'] != null) {
+    if (currentExerciseIndex>currentLevel) {
       print("❌ Exercise already completed");
       return;
     }
@@ -93,7 +91,6 @@ class ExerciseProvider extends ChangeNotifier {
       print("❌ No more exercises available");
       return;
     }
-
     _handleExerciseProgression();
     print("============================\n");
   }
@@ -146,22 +143,4 @@ class ExerciseProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCurrentExerciseIndex(int idx) {
-    int maxIndex = getCurrentMaxIndex();
-    if (idx <= maxIndex && idx >= 0) {
-      currentExerciseIndex = idx;
-      notifyListeners();
-    }
-  }
-
-  int getCurrentMaxIndex() {
-    if (completedTillExercise.isEmpty) return 0;
-
-    for (int i = 0; i < todaysExercises.length; i++) {
-      if (todaysExercises[i]['eid'] == completedTillExercise) {
-        return i;
-      }
-    }
-    return 0;
-  }
 }

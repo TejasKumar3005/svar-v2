@@ -332,8 +332,8 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
           result = ((data["result"] * 100.0).toInt()).toString();
           loading = false;
         });
-        var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
-          data_pro.incrementLevel();
+        
+          
           UserData(uid: 
               FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
                 eid: widget.eid,

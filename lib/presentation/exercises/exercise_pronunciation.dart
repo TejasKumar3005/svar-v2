@@ -435,7 +435,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
     // Update exercise data
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    data_pro.incrementLevel();
+    
 
     UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
       eid: widget.eid,
@@ -572,7 +572,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   Future<void> speakHindi(String text) async {
     if (text.isEmpty) return;
-
     if (isSpeaking) {
       await flutterTts.stop();
       setState(() => isSpeaking = false);
@@ -688,7 +687,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
               onPressed: () {
                 var data_pro =
                     Provider.of<ExerciseProvider>(context, listen: false);
-                data_pro.incrementLevel();
+                
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
