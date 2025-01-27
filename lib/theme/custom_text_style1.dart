@@ -8,11 +8,7 @@ fontFamily: 'Nunito',
 );
 }
 
-TextStyle get jokerman {
-return copyWith(
-fontFamily: 'Jokerman',
-);
-}
+
 }
 
 /// A collection of pre-defined text styles for customizing text appearance,

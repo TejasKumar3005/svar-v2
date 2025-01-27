@@ -229,11 +229,6 @@ extension on TextStyle {
     );
   }
 
-  TextStyle get jokerman {
-    return copyWith(
-      fontFamily: 'Jokerman',
-    );
-  }
 
   TextStyle get materialIcons {
     return copyWith(

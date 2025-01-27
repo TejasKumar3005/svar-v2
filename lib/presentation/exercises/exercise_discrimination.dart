@@ -1,29 +1,15 @@
-import 'dart:async';
-import 'dart:io';
-import 'dart:math';
-import 'dart:ui';
 import 'package:flutter/services.dart';
-import 'package:chewie/chewie.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/core/network/cacheManager.dart';
-import 'package:flutter/material.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
-import 'package:svar_new/presentation/identification_screen/celebration_overlay.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
-import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
-import 'package:svar_new/core/utils/playAudio.dart';
 import 'package:svar_new/widgets/Options.dart';
-import 'package:svar_new/widgets/audio_widget.dart';
-import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:svar_new/database/userController.dart';
 import 'package:rive/rive.dart';
+
 class ExerciseDiscrimination extends StatefulWidget {
   const ExerciseDiscrimination({
     Key? key,
@@ -42,8 +28,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
   late UserData userData;
   int selectedOption = -1;
   List<double> samples = [];
-  OverlayEntry? _overlayEntry;
-   StateMachineController? riveController;
+  StateMachineController? riveController;
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
   bool isPlaying = false;
@@ -88,6 +73,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
         print("Firing correct trigger");
         _correctTrigger!.fire();
         print("Correct trigger fired");
+        Future.delayed(const Duration(seconds: 5), () {
+          Navigator.pop(context);
+        });
       }
     } else {
       if (_incorrectTrigger != null) {
@@ -177,20 +165,22 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               height: 20.v,
             ),
             discriminationOptions(type, data, dtcontainer),
-            Positioned(
-                                    bottom: 0.h,
-                                    left: 16.h,
-                                    child:
-                                         SizedBox(
-                                            height: 300,
-                                            width: 350,
-                                            child: RiveAnimation.asset(
-                                              'assets/rive/Celebration_animation.riv',
-                                              onInit: _onRiveInit,
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                  ),
+            IgnorePointer(
+              child: Positioned(
+                bottom: 0.h,
+                left: 0.h,
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: RiveAnimation.asset(
+                    'assets/rive/Celebration_animation.riv',
+                    onInit: _onRiveInit,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.centerLeft,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -215,6 +205,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
   Widget MaleFemaleW(MaleFemale maleFemale, dynamic dtcontainer) {
     // print("MaleFemaleW ${dtcontainer.getVideoUrl()}");
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int startExerciseIndex = obj[3] as int;
+    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+    ;
     print("MaleFemaleW ${dtcontainer}");
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -232,16 +226,24 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
           children: [
             Expanded(
               child: OptionWidget(
-                  triggerAnimation: (value){
-                     _triggerAnimation(value);
-                  },
+                triggerAnimation: (value) {
+                  _triggerAnimation(value);
+                },
                 child: ImageWidget(imagePath: "assets/images/female.png"),
                 isCorrect: () {
                   var condition = maleFemale.getCorrectOutput() == "female";
                   var data_pro =
                       Provider.of<ExerciseProvider>(context, listen: false);
                   if (condition) {
-                    data_pro.incrementLevel();
+                    data_pro.incrementLevel(startExerciseIndex);
+                    if (data["completedAt"] == null) {
+                      UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                          .updateExerciseData(
+                            eid: data["eid"],
+                            date: data["date"],
+                          )
+                          .then((value) => print("Exercise data updated"));
+                    }
                   }
 
                   UserData(
@@ -263,16 +265,24 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
             ),
             Expanded(
               child: OptionWidget(
-                  triggerAnimation: (value){
-                     _triggerAnimation(value);
-                  },
+                triggerAnimation: (value) {
+                  _triggerAnimation(value);
+                },
                 child: ImageWidget(imagePath: "assets/images/male.png"),
                 isCorrect: () {
                   var condition = maleFemale.getCorrectOutput() == "male";
                   var data_pro =
                       Provider.of<ExerciseProvider>(context, listen: false);
                   if (condition) {
-                    data_pro.incrementLevel();
+                    data_pro.incrementLevel(startExerciseIndex);
+                    if (data["completedAt"] == null) {
+                      UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                          .updateExerciseData(
+                            eid: data["eid"],
+                            date: data["date"],
+                          )
+                          .then((value) => print("Exercise data updated"));
+                    }
                   }
 
                   UserData(
@@ -298,10 +308,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
     );
   }
 
-  
-
   Widget DiffHalfW(DiffHalf diffHalf, dynamic dtcontainer) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int startExerciseIndex = obj[3] as int;
+    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+    ;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -313,9 +325,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
           height: 20.v,
         ),
         OptionWidget(
-            triggerAnimation: (value){
-                     _triggerAnimation(value);
-                  },
+            triggerAnimation: (value) {
+              _triggerAnimation(value);
+            },
             child: OptionButton(type: ButtonType.Change, onPressed: () {}),
             isCorrect: () {
               List<double> total_length = _childKey.currentState!.lengths;
@@ -331,7 +343,15 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   Provider.of<ExerciseProvider>(context, listen: false);
 
               if (condition) {
-                data_pro.incrementLevel();
+                data_pro.incrementLevel(startExerciseIndex);
+                if (data["completedAt"] == null) {
+                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                      .updateExerciseData(
+                        eid: data["eid"],
+                        date: data["date"],
+                      )
+                      .then((value) => print("Exercise data updated"));
+                }
               }
               UserData(
                 uid: FirebaseAuth.instance.currentUser?.uid ?? '',
@@ -356,6 +376,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
 
   Widget DiffSoundsW(DiffSounds diffSounds, dynamic dtcontainer) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int startExerciseIndex = obj[3] as int;
+    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+    ;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -384,9 +408,9 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             OptionWidget(
-                triggerAnimation: (value){
-                     _triggerAnimation(value);
-                  },
+              triggerAnimation: (value) {
+                _triggerAnimation(value);
+              },
               child: OptionButton(type: ButtonType.Same, onPressed: () {}),
               isCorrect: () {
                 var condition = diffSounds.getSame();
@@ -394,7 +418,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 var data_pro =
                     Provider.of<ExerciseProvider>(context, listen: false);
                 if (condition) {
-                  data_pro.incrementLevel();
+                  data_pro.incrementLevel(startExerciseIndex);
                 }
                 UserData(
                   uid: FirebaseAuth.instance.currentUser?.uid ?? '',
@@ -416,34 +440,39 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               width: 20.h,
             ),
             OptionWidget(
-                triggerAnimation: (value){
-                     _triggerAnimation(value);
-                  },
-              child: OptionButton(
-                  type: ButtonType.Diff,
-                  onPressed: () {
-                    var provider =
-                        Provider.of<UserDataProvider>(context, listen: false);
-                  }),
+              triggerAnimation: (value) {
+                _triggerAnimation(value);
+              },
+              child: OptionButton(type: ButtonType.Diff, onPressed: () {}),
               isCorrect: () {
                 var condition = diffSounds.getSame();
-                
-                  var data_pro =
-                      Provider.of<ExerciseProvider>(context, listen: false);
-              if (condition) {   data_pro.incrementLevel();}
-                  UserData(
-                    uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                  )
-                      .updateExerciseData(
-                          isCompleted: condition,
-                          performance: {
-                            "time": DateTime.now().toString(),
-                            "result": condition,
-                          },
-                          date: obj[5],
-                          eid: obj[4])
-                      .then((value) => null);
-                
+
+                var data_pro =
+                    Provider.of<ExerciseProvider>(context, listen: false);
+                if (condition) {
+                  data_pro.incrementLevel(startExerciseIndex);
+                  if (data["completedAt"] == null) {
+                    UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                        .updateExerciseData(
+                          eid: data["eid"],
+                          date: data["date"],
+                        )
+                        .then((value) => print("Exercise data updated"));
+                  }
+                }
+                UserData(
+                  uid: FirebaseAuth.instance.currentUser?.uid ?? '',
+                )
+                    .updateExerciseData(
+                        isCompleted: condition,
+                        performance: {
+                          "time": DateTime.now().toString(),
+                          "result": condition,
+                        },
+                        date: obj[5],
+                        eid: obj[4])
+                    .then((value) => null);
+
                 return condition;
               },
             ),
@@ -455,6 +484,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
 
   Widget OddOneW(OddOne oddOne, dynamic dtcontainer) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
+    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+    ;
     switch (oddOne.video_url.length) {
       case 2:
         return Column(
@@ -469,8 +502,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
-                    triggerAnimation: (value){
-                     _triggerAnimation(value);
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -483,7 +516,17 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
 
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
-                if (condition)   { data_pro.incrementLevel();}
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              eid: data["eid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
+                    }
                     UserData(
                       uid: FirebaseAuth.instance.currentUser?.uid ?? '',
                     )
@@ -504,8 +547,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   width: 20.h,
                 ),
                 OptionWidget(
-                    triggerAnimation: (value){
-                     _triggerAnimation(value);
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -513,12 +556,22 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     ],
                   ),
                   isCorrect: () {
-                      var condition =
+                    var condition =
                         oddOne.getVideoUrls()[1] == oddOne.getCorrectOutput();
 
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
-                if (condition)   { data_pro.incrementLevel();}
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              eid: data["eid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
+                    }
                     UserData(
                       uid: FirebaseAuth.instance.currentUser?.uid ?? '',
                     )
@@ -552,8 +605,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
-                    triggerAnimation: (value){
-                     _triggerAnimation(value);
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -566,7 +619,17 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
 
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
-                if (condition)   { data_pro.incrementLevel();}
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              eid: data["eid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
+                    }
                     UserData(
                       uid: FirebaseAuth.instance.currentUser?.uid ?? '',
                     )
@@ -587,8 +650,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   width: 20.h,
                 ),
                 OptionWidget(
-                    triggerAnimation: (value){
-                     _triggerAnimation(value);
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -596,12 +659,22 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     ],
                   ),
                   isCorrect: () {
-                      var condition =
+                    var condition =
                         oddOne.getVideoUrls()[1] == oddOne.getCorrectOutput();
 
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
-                if (condition)   { data_pro.incrementLevel();}
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              eid: data["eid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
+                    }
                     UserData(
                       uid: FirebaseAuth.instance.currentUser?.uid ?? '',
                     )
@@ -628,8 +701,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
-                  triggerAnimation: (value){
- _triggerAnimation(value);
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -642,7 +715,17 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
 
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
-                if (condition)   { data_pro.incrementLevel();}
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              eid: data["eid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
+                    }
                     UserData(
                       uid: FirebaseAuth.instance.currentUser?.uid ?? '',
                     )
@@ -676,8 +759,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
-                    triggerAnimation: (value){
-                     _triggerAnimation(value);
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -690,7 +773,17 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
 
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
-                if (condition)   { data_pro.incrementLevel();}
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              eid: data["eid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
+                    }
                     UserData(
                       uid: FirebaseAuth.instance.currentUser?.uid ?? '',
                     )
@@ -711,8 +804,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   width: 20.h,
                 ),
                 OptionWidget(
-                    triggerAnimation: (value){
-                     _triggerAnimation(value);
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -725,7 +818,17 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
 
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
-                if (condition)   { data_pro.incrementLevel();}
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              eid: data["eid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
+                    }
                     UserData(
                       uid: FirebaseAuth.instance.currentUser?.uid ?? '',
                     )
@@ -752,8 +855,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   MainAxisAlignment.center, // Center the row horizontally
               children: [
                 OptionWidget(
-                    triggerAnimation: (value){
-                     _triggerAnimation(value);
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -766,7 +869,17 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
 
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
-                if (condition)   { data_pro.incrementLevel();}
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              eid: data["eid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
+                    }
                     UserData(
                       uid: FirebaseAuth.instance.currentUser?.uid ?? '',
                     )
@@ -787,8 +900,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   width: 20.h,
                 ),
                 OptionWidget(
-                    triggerAnimation: (value){
-                     _triggerAnimation(value);
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: AudioWidget(
                     audioLinks: [
@@ -801,7 +914,17 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
 
                     var data_pro =
                         Provider.of<ExerciseProvider>(context, listen: false);
-                if (condition)   { data_pro.incrementLevel();}
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              eid: data["eid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
+                    }
                     UserData(
                       uid: FirebaseAuth.instance.currentUser?.uid ?? '',
                     )

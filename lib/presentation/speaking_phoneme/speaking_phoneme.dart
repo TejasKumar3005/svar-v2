@@ -87,7 +87,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (loading && _overlayEntry == null) {
         _overlayEntry = createOverlayEntry(context);
-        Overlay.of(context)?.insert(_overlayEntry!);
+        Overlay.of(context).insert(_overlayEntry!);
       } else if (!loading && _overlayEntry != null) {
         _overlayEntry?.remove();
         _overlayEntry = null;
@@ -126,23 +126,6 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomButton(
-            type: ButtonType.Back,
-            onPressed: () {
-              NavigatorService.goBack();
-            },
-          ),
-          Spacer(),
-        ],
-      ),
-    );
-  }
 
   Widget _buildText() {
     return Positioned(
@@ -484,16 +467,7 @@ Widget pronunciationResultWidget(
   );
 }
 
-Widget _buildDifficultyLevel(String label, bool isSelected) {
-  return Text(
-    label,
-    style: TextStyle(
-      fontSize: 14.0,
-      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-      color: isSelected ? Colors.orange : Colors.red,
-    ),
-  );
-}
+
 
 String selectRandomWord(dynamic hindiWords) {
   Random random = Random();

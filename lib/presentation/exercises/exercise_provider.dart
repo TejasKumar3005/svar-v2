@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ExerciseProvider extends ChangeNotifier {
   int currentExerciseIndex = 0;
   SMINumber? currentLevelInput;
   List<Map<String, dynamic>> todaysExercises = [];
-  String completedTillExercise = '';
+ 
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> setTodaysExercises(List<dynamic> data) async {
     try {
@@ -19,22 +17,12 @@ class ExerciseProvider extends ChangeNotifier {
         print("❌ No user logged in");
         return;
       }
-
-      await _fetchCompletedExercise(uid);
       _processExercises(data);
       notifyListeners();
     } catch (e) {
       print("❌ Error setting exercises: $e");
       debugPrint(e.toString());
     }
-  }
-
-  Future<void> _fetchCompletedExercise(String uid) async {
-    DocumentSnapshot userDoc =
-        await _firestore.collection('patients').doc(uid).get();
-    completedTillExercise =
-        (userDoc.data() as Map<String, dynamic>)['completedTillExercise'] ?? '';
-    print("📍 Last completed exercise: $completedTillExercise");
   }
 
   void _processExercises(List<dynamic> data) {
@@ -89,24 +77,23 @@ class ExerciseProvider extends ChangeNotifier {
     return true;
   }
 
-  void incrementLevel() {
- print("\n=== Increment Level Attempt ===");
- if (!_validateExerciseIndex()) return;
+  void incrementLevel(int currentLevel) {
+    print("\n=== Increment Level Attempt ===");
+    if (!_validateExerciseIndex()) return;
 
- // Check if current exercise is already completed
- if (todaysExercises[currentExerciseIndex]['completedAt'] != null) {
-   print("❌ Exercise already completed");
-   return;
- }
+    // Check if current exercise is already completed
+    if (currentExerciseIndex>currentLevel) {
+      print("❌ Exercise already completed");
+      return;
+    }
 
- if (currentExerciseIndex + 1 >= todaysExercises.length) {
-   print("❌ No more exercises available"); 
-   return;
- }
-
- _handleExerciseProgression();
- print("============================\n");
-}
+    if (currentExerciseIndex + 1 >= todaysExercises.length) {
+      print("❌ No more exercises available");
+      return;
+    }
+    _handleExerciseProgression();
+    print("============================\n");
+  }
 
   void _handleExerciseProgression() {
     int startExerciseIndex = (currentExerciseIndex ~/ 5) * 5;
@@ -143,21 +130,6 @@ class ExerciseProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateCompletedExercise(String newCompletedId) async {
-    try {
-      String? uid = _auth.currentUser?.uid;
-      if (uid == null) return;
-
-      await _firestore
-          .collection('patients')
-          .doc(uid)
-          .update({'completedTillExercise': newCompletedId});
-
-      print("✅ Updated completedTillExercise: $newCompletedId");
-    } catch (e) {
-      print("❌ Error updating completedTillExercise: $e");
-    }
-  }
 
   void initializeSMINumber(SMINumber smi) {
     currentLevelInput = smi;
@@ -171,22 +143,4 @@ class ExerciseProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setCurrentExerciseIndex(int idx) {
-    int maxIndex = getCurrentMaxIndex();
-    if (idx <= maxIndex && idx >= 0) {
-      currentExerciseIndex = idx;
-      notifyListeners();
-    }
-  }
-
-  int getCurrentMaxIndex() {
-    if (completedTillExercise.isEmpty) return 0;
-
-    for (int i = 0; i < todaysExercises.length; i++) {
-      if (todaysExercises[i]['eid'] == completedTillExercise) {
-        return i;
-      }
-    }
-    return 0;
-  }
 }

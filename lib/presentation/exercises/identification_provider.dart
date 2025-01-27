@@ -1,14 +1,9 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../../data/models/levelManagementModel/visual.dart';
+import '../../data/models/levelManagementModel/visual.dart';
 
-
-class IdentificationProvider
-    extends ChangeNotifier {
-
-
+class IdentificationProvider extends ChangeNotifier {
   Future<Map<String, dynamic>?> fetchDocument(String docname) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -30,8 +25,6 @@ class IdentificationProvider
       return null;
     }
   }
-
-
 
   int sel = 0;
 

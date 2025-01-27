@@ -1,19 +1,17 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
-import 'package:rive/rive.dart' as rive;
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
-import 'package:svar_new/presentation/identification_screen/audioToImage.dart';
+import 'package:svar_new/presentation/exercises/audioToImage.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/presentation/identification_screen/provider/identification_provider.dart';
+import 'package:svar_new/presentation/exercises/identification_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
 import 'package:rive/rive.dart';
 
 class ExerciseIdentification extends StatefulWidget {
@@ -44,7 +42,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   StateMachineController? riveController;
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
-  Artboard? _riveArtboard;
 
   @override
   void dispose() {
@@ -100,6 +97,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
         print("Firing correct trigger");
         _correctTrigger!.fire();
         print("Correct trigger fired");
+        Future.delayed(const Duration(seconds: 5), () {
+          Navigator.pop(context);
+        });
       }
     } else {
       if (_incorrectTrigger != null) {
@@ -113,6 +113,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   Widget build(BuildContext context) {
     var provider = context.watch<IdentificationProvider>();
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
     String params = obj[2] as String;
@@ -167,6 +168,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                           'assets/rive/Celebration_animation.riv',
                                           onInit: _onRiveInit,
                                           fit: BoxFit.contain,
+                                          alignment: Alignment.centerLeft,
                                         ),
                                       ),
                                     ),
@@ -258,8 +260,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   Widget buildDynamicOptions(String quizType, IdentificationProvider provider,
       dynamic dtcontainer, String params) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int currentExerciseIndex = obj[3] as int; 
+    Map<String, dynamic> data = data_pro.todaysExercises[currentExerciseIndex];
+    ;
     dynamic dtcontainer = obj[1] as dynamic;
-    int level = obj[3] as int;
+
     switch (quizType) {
       case "ImageToAudio":
         return dtcontainer.getAudioList().length <= 4
@@ -303,7 +309,19 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                 context,
                                                 listen: false);
                                         if (isCorrect) {
-                                          data_pro.incrementLevel();
+                                          data_pro.incrementLevel(currentExerciseIndex);
+
+                                          if (data["completedAt"] == null) {
+                                            UserData(
+                                                    uid: FirebaseAuth.instance
+                                                        .currentUser!.uid)
+                                                .updateExerciseData(
+                                                  eid: data["eid"],
+                                                  date: data["date"],
+                                                )
+                                                .then((value) => print(
+                                                    "Exercise data updated"));
+                                          }
                                         }
                                         _triggerAnimation(isCorrect);
                                         UserData(
@@ -378,7 +396,18 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                   context,
                                                   listen: false);
                                           if (isCorrect) {
-                                            data_pro.incrementLevel();
+                                            data_pro.incrementLevel(currentExerciseIndex);
+                                            if (data["completedAt"] == null) {
+                                              UserData(
+                                                      uid: FirebaseAuth.instance
+                                                          .currentUser!.uid)
+                                                  .updateExerciseData(
+                                                    eid: data["eid"],
+                                                    date: data["date"],
+                                                  )
+                                                  .then((value) => print(
+                                                      "Exercise data updated"));
+                                            }
                                           }
                                           UserData(
                                             uid: FirebaseAuth.instance
@@ -459,7 +488,18 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     context,
                                     listen: false);
                                 if (isCorrect) {
-                                  data_pro.incrementLevel();
+                                  data_pro.incrementLevel(currentExerciseIndex);
+                                  if (data["completedAt"] == null) {
+                                    UserData(
+                                            uid: FirebaseAuth
+                                                .instance.currentUser!.uid)
+                                        .updateExerciseData(
+                                          eid: data["eid"],
+                                          date: data["date"],
+                                        )
+                                        .then((value) =>
+                                            print("Exercise data updated"));
+                                  }
                                 }
 
                                 UserData(

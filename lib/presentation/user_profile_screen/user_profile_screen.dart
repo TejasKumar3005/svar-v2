@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -15,7 +14,6 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class UserProfileScreenState extends State<UserProfileScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _profileFormKey = GlobalKey<FormState>();
   final _passwordFormKey = GlobalKey<FormState>();
   

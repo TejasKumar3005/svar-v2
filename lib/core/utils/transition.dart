@@ -71,7 +71,7 @@ class RiveAnimationTransition extends StatefulWidget {
 class _RiveAnimationTransitionState extends State<RiveAnimationTransition> {
   StateMachineController? _stateMachineController;
   // SMITrigger? _trigger; // Example input; adjust based on your state machine
-  bool _isAnimationActive = false;
+
 
   @override
   void dispose() {
@@ -93,9 +93,7 @@ class _RiveAnimationTransitionState extends State<RiveAnimationTransition> {
       // _trigger = _stateMachineController!.findInput<SMITrigger>('TriggerName');
       
       // Activate the animation
-      setState(() {
-        _isAnimationActive = true;
-      });
+     
       
       // Optionally, you can activate a trigger to start the animation
       // _trigger?.fire();
@@ -105,18 +103,7 @@ class _RiveAnimationTransitionState extends State<RiveAnimationTransition> {
     }
   }
 
-  void _handleAnimationCompletion() {
-    // This method can be called based on your state machine's logic
-    // For example, after a certain state is reached
-    Future.delayed(Duration(milliseconds: 1200), () {
-      if (mounted) {
-        setState(() {
-          _isAnimationActive = false;
-          _stateMachineController?.isActive = false; // Deactivate the controller
-        });
-      }
-    });
-  }
+ 
 
   @override
   Widget build(BuildContext context) {

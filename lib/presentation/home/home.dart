@@ -1,18 +1,12 @@
-import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:rive/rive.dart' as rive;
-import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
-import 'package:svar_new/presentation/exercises/exercises_screen.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
-import 'package:svar_new/providers/userDataProvider.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
-import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -28,15 +22,15 @@ class HomeScreen extends StatefulWidget {
   }
 }
 
- 
-
 class HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
-        showQuitDialog(context);
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          showQuitDialog(context);
+        }
       },
       child: SafeArea(
         child: Scaffold(
@@ -65,65 +59,66 @@ class HomeScreenState extends State<HomeScreen> {
                         builder: (context, constraints) {
                           final totalFlex = 3; // 3 + 2
                           final maxHeight = constraints.maxHeight;
-                          
+
                           // Calculate heights based on flex ratio
                           final mainCardHeight = (maxHeight * 3 / totalFlex);
-                          final phonemesCardHeight = (maxHeight * 2 / totalFlex);
-                          
-                          return 
-                          Padding(padding: EdgeInsets.symmetric(horizontal: 40),
-                          child:
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center, // Changed from stretch
-                            
-                            children: [
-                              // Main Exercise Card - Larger
-                              Expanded(
-                                flex: 2,
-                                child: SizedBox(
-                                  height: mainCardHeight,
-                                  child: _buildExerciseCard(
-                                    context,
-                                    "Let's Practice Today's Exercises!",
-                                    ImageConstant.thumbnailPhonemes,
-                                    isPrimary: true,
-                                    () {
-                                      var dataPro = Provider.of<ExerciseProvider>(
-                                          context,
-                                          listen: false);
-                                      if (dataPro.todaysExercises.isNotEmpty) {
-                                        NavigatorService.pushNamed(
-                                            AppRoutes.exercisesScreen);
-                                      } else {
-                                        showErrorSnackBar(
-                                            'No exercises assigned ');
-                                       
-                                      }
-                                    },
+                          final phonemesCardHeight =
+                              (maxHeight * 2 / totalFlex);
+
+                          return Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 40),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment
+                                    .center, // Changed from stretch
+
+                                children: [
+                                  // Main Exercise Card - Larger
+                                  Expanded(
+                                    flex: 2,
+                                    child: SizedBox(
+                                      height: mainCardHeight,
+                                      child: _buildExerciseCard(
+                                        context,
+                                        "Let's Practice Today's Exercises!",
+                                        ImageConstant.thumbnailPhonemes,
+                                        isPrimary: true,
+                                        () {
+                                          var dataPro =
+                                              Provider.of<ExerciseProvider>(
+                                                  context,
+                                                  listen: false);
+                                          if (dataPro
+                                              .todaysExercises.isNotEmpty) {
+                                            NavigatorService.pushNamed(
+                                                AppRoutes.exercisesScreen);
+                                          } else {
+                                            showErrorSnackBar(
+                                                'No exercises assigned ');
+                                          }
+                                        },
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              SizedBox(width: 52),
-                              // Phonemes Card - Smaller
-                              Expanded(
-                                flex: 1,
-                                child: SizedBox(
-                                  height: phonemesCardHeight,
-                                  child: _buildExerciseCard(
-                                    context,
-                                    "Practice Phonemes!",
-                                    ImageConstant.thumbnailBarakhadi,
-                                    isPrimary: false,
-                                    () {
-                                      NavigatorService.pushNamed(
-                                          AppRoutes.phonmesListScreen);
-                                    },
+                                  SizedBox(width: 52),
+                                  // Phonemes Card - Smaller
+                                  Expanded(
+                                    flex: 1,
+                                    child: SizedBox(
+                                      height: phonemesCardHeight,
+                                      child: _buildExerciseCard(
+                                        context,
+                                        "Practice Phonemes!",
+                                        ImageConstant.thumbnailBarakhadi,
+                                        isPrimary: false,
+                                        () {
+                                          NavigatorService.pushNamed(
+                                              AppRoutes.phonmesListScreen);
+                                        },
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ],
-                          )
-                          );
+                                ],
+                              ));
                         },
                       ),
                     ),
@@ -153,108 +148,108 @@ class HomeScreenState extends State<HomeScreen> {
       ..showSnackBar(snackBar);
   }
 
-Widget _buildExerciseCard(
-  BuildContext context,
-  String title,
-  String imagePath,
-  VoidCallback onTap, {
-  bool isPrimary = false,
-}) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: isPrimary ? Colors.purple[200]! : Colors.blue[200]!,
-          width: 4,
+  Widget _buildExerciseCard(
+    BuildContext context,
+    String title,
+    String imagePath,
+    VoidCallback onTap, {
+    bool isPrimary = false,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isPrimary ? Colors.purple[200]! : Colors.blue[200]!,
+            width: 4,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: isPrimary ? 24 : 18,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Comic Sans MS',
-              color: isPrimary
-                  ? Color(0xFF7C3AED) // Purple for main exercise
-                  : Color(0xFF3B82F6), // Blue for phonemes
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: isPrimary ? 24 : 18,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Comic Sans MS',
+                color: isPrimary
+                    ? Color(0xFF7C3AED) // Purple for main exercise
+                    : Color(0xFF3B82F6), // Blue for phonemes
+              ),
             ),
-          ),
-          SizedBox(height: isPrimary ? 12 : 9),
-          
-          Expanded(
-            child:Padding(
-            padding: EdgeInsets.symmetric(horizontal: isPrimary? 22 :0),
-          child: LayoutBuilder(
-              builder: (context, constraints) {
-                // Calculate the available aspect ratio
-                double availableWidth = constraints.maxWidth;
-                double availableHeight = constraints.maxHeight;
-                double availableAspectRatio = availableWidth / availableHeight;
+            SizedBox(height: isPrimary ? 12 : 9),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: isPrimary ? 22 : 0),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Calculate the available aspect ratio
+                    double availableWidth = constraints.maxWidth;
+                    double availableHeight = constraints.maxHeight;
+                    double availableAspectRatio =
+                        availableWidth / availableHeight;
 
-                // Assuming the image's natural aspect ratio is close to 16:9
-                // Adjust this ratio based on your actual image dimensions
-                double targetAspectRatio = 2.0;
+                    // Assuming the image's natural aspect ratio is close to 16:9
+                    // Adjust this ratio based on your actual image dimensions
+                    double targetAspectRatio = 2.0;
 
-                // Calculate padding to maintain equal spacing
-                double horizontalPadding = 0;
-                double verticalPadding = 0;
+                    // Calculate padding to maintain equal spacing
+                    double horizontalPadding = 0;
+                    double verticalPadding = 0;
 
-                if (availableAspectRatio > targetAspectRatio) {
-                  // Available space is wider than needed
-                  double targetWidth = availableHeight * targetAspectRatio;
-                  horizontalPadding = (availableWidth - targetWidth) / 2;
-                  verticalPadding = availableHeight * 0.05; // 10% padding
-                  horizontalPadding = verticalPadding; // Make padding equal
-                } else {
-                  // Available space is taller than needed
-                  double targetHeight = availableWidth / targetAspectRatio;
-                  verticalPadding = (availableHeight - targetHeight) / 2;
-                  horizontalPadding = availableWidth * 0.05; // 10% padding
-                  verticalPadding = horizontalPadding; // Make padding equal
-                }
+                    if (availableAspectRatio > targetAspectRatio) {
+                      // Available space is wider than needed
+                      double targetWidth = availableHeight * targetAspectRatio;
+                      horizontalPadding = (availableWidth - targetWidth) / 2;
+                      verticalPadding = availableHeight * 0.05; // 10% padding
+                      horizontalPadding = verticalPadding; // Make padding equal
+                    } else {
+                      // Available space is taller than needed
+                      double targetHeight = availableWidth / targetAspectRatio;
+                      verticalPadding = (availableHeight - targetHeight) / 2;
+                      horizontalPadding = availableWidth * 0.05; // 10% padding
+                      verticalPadding = horizontalPadding; // Make padding equal
+                    }
 
-                return Container(
-                  decoration: BoxDecoration(
-                    color: isPrimary ? Colors.purple[50] : Colors.blue[50],
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: horizontalPadding,
-                    vertical: verticalPadding,
-                  ),
-                  child: Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        imagePath,
-                        fit: BoxFit.contain,
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: isPrimary ? Colors.purple[50] : Colors.blue[50],
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          )
-        ],
+                      padding: EdgeInsets.symmetric(
+                        horizontal: horizontalPadding,
+                        vertical: verticalPadding,
+                      ),
+                      child: Center(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            imagePath,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            )
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Future<void> handleExercise(MainInteractionProvider provider,
       String exerciseType, BuildContext context) async {
