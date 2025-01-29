@@ -59,7 +59,7 @@ class ExerciseProvider extends ChangeNotifier {
       final today = DateTime.now();
       final date = DateTime.parse(dateStr);
       final difference = today.difference(date).inDays;
-      final isInRange = difference >= -3 && difference <= 3;
+      final isInRange = difference >= -6 && difference <= 6;
       print(
           "Date check: $dateStr, difference: $difference days, in range: $isInRange");
       return isInRange;
@@ -113,9 +113,13 @@ class ExerciseProvider extends ChangeNotifier {
   void _completeExerciseSet() {
     print("this is the end of the set");
     currentExerciseIndex++;
+    print("hello1");
     if (currentLevelInput != null) {
+      print("hello2");
       currentLevelInput!.change(6);
-      Future.delayed(const Duration(seconds: 4), () {
+      print("hello3");  
+      Future.delayed(const Duration(seconds: 8), () {
+        print("hello4");  
         currentLevelInput!.change(1);
       });
     }

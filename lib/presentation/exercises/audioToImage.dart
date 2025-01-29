@@ -8,6 +8,7 @@ import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart';
+import 'package:svar_new/presentation/exercises/exercise_provider.dart';    
 
 class AudiotoimageScreen extends StatefulWidget {
   final dynamic dtcontainer;
@@ -105,6 +106,11 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int currentExerciseIndex = obj[3] as int; 
+    Map<String, dynamic> data = data_pro.todaysExercises[currentExerciseIndex];
+    ;
     return SafeArea(
       child: Scaffold(
         extendBody: true,
@@ -181,6 +187,21 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                                     .getImageUrlList()[index],
                                               ),
                                               isCorrect: () {
+                                                if(widget.dtcontainer.getCorrectOutput() == widget.dtcontainer.getImageUrlList()[index]){
+                                                     data_pro.incrementLevel(currentExerciseIndex);
+
+                                          if (data["completedAt"] == null) {
+                                            UserData(
+                                                    uid: FirebaseAuth.instance
+                                                        .currentUser!.uid)
+                                                .updateExerciseData(
+                                                  eid: data["eid"],
+                                                  date: data["date"],
+                                                )
+                                                .then((value) => print(
+                                                    "Exercise data updated"));
+                                          }
+                                                }
                                                 return widget.dtcontainer
                                                         .getCorrectOutput() ==
                                                     widget.dtcontainer
