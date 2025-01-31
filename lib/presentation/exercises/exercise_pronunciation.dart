@@ -24,10 +24,7 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 class ExercisePronunciation extends StatefulWidget {
   final String character;
 
-
-  const ExercisePronunciation(
-      {Key? key,
-      required this.character})
+  const ExercisePronunciation({Key? key, required this.character})
       : super(key: key);
 
   @override
@@ -37,7 +34,7 @@ class ExercisePronunciation extends StatefulWidget {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = obj[3] as int;
-      Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
     return ExercisePronunciation(character: data["word"]);
   }
 }
@@ -109,9 +106,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   @override
   Widget build(BuildContext context) {
-
-     
-   
     final size = MediaQuery.of(context).size;
     final isSmallScreen = size.width < 600;
 
@@ -455,7 +449,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
     // Calculate final results
     List<Map<String, String>> finalResults = [];
-      combinedResults.forEach((key, values) {
+    combinedResults.forEach((key, values) {
       String finalValue = calculateFinalValue(values);
       finalResults.add({key: finalValue});
     });
@@ -608,10 +602,17 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   Widget pronunciationResultWidget(
       List<dynamic> result, BuildContext context, String txt) {
-     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     int startExerciseIndex = obj[3] as int;
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+    if (data["completedAt"] == null) {
+      print("hello");
+      UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
+        eid: data["eid"],
+        date: data["date"],
+      );
+    }
     double width_screen = MediaQuery.of(context).size.width;
     return Container(
       margin: EdgeInsets.fromLTRB(width_screen * 0.4, 16.0, 16.0, 16.0),
@@ -666,10 +667,15 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                       children: [
                         Icon(
                           Icons.emoji_emotions,
-                          color: value.toLowerCase().contains("excellent") ||
-                                  value.toLowerCase().contains("good")
-                              ? Colors.amber[600]
-                              : Colors.red,
+                          color: value.toLowerCase().split("correct").length -
+                                      1 ==
+                                  5
+                              ? Colors.green[600] // 5 correct - green
+                              : value.toLowerCase().split("correct").length -
+                                          1 >=
+                                      3
+                                  ? Colors.amber[600] // 3 or 4 correct - yellow
+                                  : Colors.red, // Less than 3 correct - red
                           size: 30,
                         ),
                         const SizedBox(width: 15),
@@ -710,13 +716,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                 var data_pro =
                     Provider.of<ExerciseProvider>(context, listen: false);
                 data_pro.incrementLevel(startExerciseIndex);
-                if (data["completedAt"] == null) {
-                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                      .updateExerciseData(
-                    eid: data["eid"],
-                    date: data["date"],
-                  );
-                }
+
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
@@ -787,7 +787,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     riveController?.dispose();
     _overlayEntry?.remove();
     _overlayEntry = null;
-
     super.dispose();
   }
 }
