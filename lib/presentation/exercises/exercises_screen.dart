@@ -28,15 +28,28 @@ extension _TextExtension on Artboard {
   TextValueRun? textRun(String name) => component<TextValueRun>(name);
 }
 
-class _ExercisesScreenState extends State<ExercisesScreen> {
+class _ExercisesScreenState extends State<ExercisesScreen> with TickerProviderStateMixin {
   ScrollController _scrollController = ScrollController();
   StateMachineController? _controller;
   late Future<RiveFile?> _riveFileFuture;
+  late AnimationController _animationController;
   var train;
   double? _previousTrainX;
 
   @override
   void initState() {
+     super.initState();
+
+     _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat();
+
+    _animationController.addListener(() {
+      if (mounted) {
+        _trackTrainPosition();
+      }
+    });
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
@@ -47,6 +60,13 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         .then((_) => RivePreloader().getRiveFile('assets/rive/levels.riv'));
     _trackTrainPosition();
   }
+
+  @override
+void dispose() {
+  // Cancel any active timers
+  
+  super.dispose();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -122,26 +142,55 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           _handleLevel(context, "notcompleted", startExerciseIndex);
           break;
         case 'Pronunciation':
-          await Future.delayed(Duration.zero);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ExercisePronunciation(
-                character: data_pro.todaysExercises[startExerciseIndex]["word"],
-                eid: data_pro.todaysExercises[startExerciseIndex]["eid"],
-                date: data_pro.todaysExercises[startExerciseIndex]["date"],
-              ),
-            ),
-          );
-          break;
-        default:
-          debugPrint("Unexpected exercise type: $exerciseType");
-          break;
+         _handlePronunciation(context, "notcompleted", startExerciseIndex);
       }
     } catch (e) {
       debugPrint("Error in _handleLevelType: $e");
     }
   }
+
+ void _handlePronunciation(BuildContext context, String params, int startExerciseIndex) async {
+  try {
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+
+    if (data.isEmpty) {
+      return;
+    }
+
+    String? type = data["type"]; 
+    if (type == null) {
+      debugPrint("Type is null in the fetched data.");
+      return;
+    }
+
+    debugPrint("Fetched type for Pronunciation: $type");
+    debugPrint("Data is: $data");
+
+    final Object dtcontainer = retrieveObject(type, data);
+
+    List<dynamic> argumentsList = [
+      type,
+      dtcontainer,
+      params,
+      startExerciseIndex,
+      data["eid"],
+      data["date"],
+      data,
+    ];
+    
+    debugPrint("Arguments list is: $argumentsList");
+    
+    await Future.delayed(Duration.zero);
+     NavigatorService.pushNamed(
+      AppRoutes.exercisePronunciation,
+      arguments: argumentsList);
+  
+    
+  } catch (e) {
+    debugPrint("Error in Pronunciation handling: $e");
+  }
+}
 
   void _handleDetection(
       BuildContext context, String params, int startExerciseIndex) async {
@@ -439,7 +488,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   void tapHandle(RiveEvent event) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
-    int currentExerciseIndex = data_pro.currentExerciseIndex;
+   
     
 
     // Extract level number from event name
@@ -595,11 +644,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
 
         if (train != null) {
           print("train position: ${train.x}");
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            Timer.periodic(const Duration(milliseconds: 100), (timer) {
-              _trackTrainPosition();
-            });
-          });
+         
           _previousTrainX = train.x;
         } else {
           debugPrint("Error: 'train' not found!");

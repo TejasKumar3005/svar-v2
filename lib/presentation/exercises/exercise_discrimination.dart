@@ -582,7 +582,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
   Widget OddOneW(OddOne oddOne, dynamic dtcontainer) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
+    int startExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
     Widget buildAudioOption(int index) {

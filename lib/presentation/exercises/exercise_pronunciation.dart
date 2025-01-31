@@ -23,21 +23,22 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class ExercisePronunciation extends StatefulWidget {
   final String character;
-  final String eid;
-  final String date;
+
 
   const ExercisePronunciation(
       {Key? key,
-      required this.character,
-      required this.eid,
-      required this.date})
+      required this.character})
       : super(key: key);
 
   @override
   ExercisePronunciationState createState() => ExercisePronunciationState();
 
   static Widget builder(BuildContext context) {
-    return ExercisePronunciation(character: "", eid: "", date: "");
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int startExerciseIndex = obj[3] as int;
+      Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+    return ExercisePronunciation(character: data["word"]);
   }
 }
 
@@ -108,10 +109,17 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   @override
   Widget build(BuildContext context) {
+
+     
+   
     final size = MediaQuery.of(context).size;
     final isSmallScreen = size.width < 600;
 
+    // And modify your post frame callback:
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Check if the widget is still mounted before manipulating overlay
+      if (!mounted) return;
+
       if (loading && _overlayEntry == null) {
         _overlayEntry = createOverlayEntry(context);
         Overlay.of(context).insert(_overlayEntry!);
@@ -272,7 +280,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   }
 
   void _setupVadHandler() {
-    // On speech End
     _vadHandler.onSpeechEnd.listen((List<double> samples) async {
       if (currentSessionCount >= TOTAL_SESSIONS) return;
 
@@ -281,10 +288,19 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
         isRecordingSegment = false;
       });
 
+      // Stop listening before processing
+      _vadHandler.stopListening();
+      _isVadListening = false;
+
       try {
         await processCurrentRecording(samples);
         currentSessionCount++;
+
+        // Trigger animation first
         _triggerNextAnimation();
+
+        // Wait a moment for animation
+        await Future.delayed(Duration(milliseconds: 500));
 
         if (currentSessionCount >= TOTAL_SESSIONS) {
           setState(() {
@@ -296,10 +312,20 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
           } else {
             throw Exception("No valid recordings processed");
           }
+        } else {
+          // Resume listening only if we haven't completed all sessions
+          _vadHandler.startListening();
+          _isVadListening = true;
         }
       } catch (e) {
         print("Error in speech end handler: $e");
         showErrorSnackBar("Error processing recording: $e");
+
+        // Resume listening on error if we haven't completed all sessions
+        if (currentSessionCount < TOTAL_SESSIONS) {
+          _vadHandler.startListening();
+          _isVadListening = true;
+        }
       }
     });
 
@@ -399,9 +425,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       debugPrint("Error processing recording ${currentSessionCount + 1}: $e");
       showErrorSnackBar(
           "Error processing recording ${currentSessionCount + 1}: $e");
+      throw e; // Propagate error to handle in _setupVadHandler
+    } finally {
+      setState(() => loading = false);
     }
-
-    setState(() => loading = false);
   }
 
   void processResults(List<dynamic> allResults) {
@@ -410,7 +437,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     // Process each result from API
     for (var apiResult in allResults) {
       if (apiResult is List) {
-        // API returns a list of results
         for (var item in apiResult) {
           if (item is Map<String, dynamic>) {
             String key = item.keys.first;
@@ -421,9 +447,15 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       }
     }
 
+    String calculateFinalValue(List<String> values) {
+      int correctCount =
+          values.where((v) => v.toLowerCase().contains("correct")).length;
+      return "$correctCount/5 correct pronunciations"; // Show X out of 5
+    }
+
     // Calculate final results
     List<Map<String, String>> finalResults = [];
-    combinedResults.forEach((key, values) {
+      combinedResults.forEach((key, values) {
       String finalValue = calculateFinalValue(values);
       finalResults.add({key: finalValue});
     });
@@ -432,19 +464,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       result = finalResults;
       loading = false;
     });
-
-    // Update exercise data
-    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-        //  data_pro.incrementLevel()
-
-    UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
-      eid: widget.eid,
-      date: widget.date,
-      performance: {
-        "result": finalResults, // Use finalResults instead of result
-        "word": widget.character,
-      },
-    );
   }
 
   Future<void> startRecording() async {
@@ -464,7 +483,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       showErrorSnackBar("Error starting recording: $e");
     }
   }
-
 
 // Modified sendWavFile function
   Future<dynamic> sendWavFile(String wavFile, String word) async {
@@ -590,6 +608,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   Widget pronunciationResultWidget(
       List<dynamic> result, BuildContext context, String txt) {
+     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    int startExerciseIndex = obj[3] as int;
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
     double width_screen = MediaQuery.of(context).size.width;
     return Container(
       margin: EdgeInsets.fromLTRB(width_screen * 0.4, 16.0, 16.0, 16.0),
@@ -687,7 +709,14 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
               onPressed: () {
                 var data_pro =
                     Provider.of<ExerciseProvider>(context, listen: false);
-                
+                data_pro.incrementLevel(startExerciseIndex);
+                if (data["completedAt"] == null) {
+                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                      .updateExerciseData(
+                    eid: data["eid"],
+                    date: data["date"],
+                  );
+                }
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
@@ -722,12 +751,28 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   OverlayEntry createOverlayEntry(BuildContext context) {
     return OverlayEntry(
-      builder: (context) => const Positioned(
+      builder: (context) => Positioned(
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        child: CircularProgressIndicator(),
+        child: Container(
+          color: Colors.black.withOpacity(0.3), // Semi-transparent background
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const SizedBox(
+                height: 50, // Smaller size
+                width: 50, // Smaller size
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -740,6 +785,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     _vadHandler.dispose();
     flutterTts.stop();
     riveController?.dispose();
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+
     super.dispose();
   }
 }
