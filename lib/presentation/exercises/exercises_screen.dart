@@ -28,7 +28,8 @@ extension _TextExtension on Artboard {
   TextValueRun? textRun(String name) => component<TextValueRun>(name);
 }
 
-class _ExercisesScreenState extends State<ExercisesScreen> with TickerProviderStateMixin {
+class _ExercisesScreenState extends State<ExercisesScreen>
+    with TickerProviderStateMixin {
   ScrollController _scrollController = ScrollController();
   StateMachineController? _controller;
   late Future<RiveFile?> _riveFileFuture;
@@ -38,9 +39,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> with TickerProviderSt
 
   @override
   void initState() {
-     super.initState();
+    super.initState();
 
-     _animationController = AnimationController(
+    _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
     )..repeat();
@@ -62,11 +63,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> with TickerProviderSt
   }
 
   @override
-void dispose() {
-  // Cancel any active timers
-  
-  super.dispose();
-}
+  void dispose() {
+    // Cancel any active timers
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +110,6 @@ void dispose() {
         },
       ),
     );
-    
   }
 
   void _handleLevelType(int startExerciseIndex, String params) async {
@@ -142,55 +142,53 @@ void dispose() {
           _handleLevel(context, "notcompleted", startExerciseIndex);
           break;
         case 'Pronunciation':
-         _handlePronunciation(context, "notcompleted", startExerciseIndex);
+          _handlePronunciation(context, "notcompleted", startExerciseIndex);
       }
     } catch (e) {
       debugPrint("Error in _handleLevelType: $e");
     }
   }
 
- void _handlePronunciation(BuildContext context, String params, int startExerciseIndex) async {
-  try {
-    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+  void _handlePronunciation(
+      BuildContext context, String params, int startExerciseIndex) async {
+    try {
+      var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+      Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
-    if (data.isEmpty) {
-      return;
+      if (data.isEmpty) {
+        return;
+      }
+
+      String? type = data["type"];
+      if (type == null) {
+        debugPrint("Type is null in the fetched data.");
+        return;
+      }
+
+      debugPrint("Fetched type for Pronunciation: $type");
+      debugPrint("Data is: $data");
+
+      final Object dtcontainer = retrieveObject(type, data);
+
+      List<dynamic> argumentsList = [
+        type,
+        dtcontainer,
+        params,
+        startExerciseIndex,
+        data["eid"],
+        data["date"],
+        data,
+      ];
+
+      debugPrint("Arguments list is: $argumentsList");
+
+      await Future.delayed(Duration.zero);
+      NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
+          arguments: argumentsList);
+    } catch (e) {
+      debugPrint("Error in Pronunciation handling: $e");
     }
-
-    String? type = data["type"]; 
-    if (type == null) {
-      debugPrint("Type is null in the fetched data.");
-      return;
-    }
-
-    debugPrint("Fetched type for Pronunciation: $type");
-    debugPrint("Data is: $data");
-
-    final Object dtcontainer = retrieveObject(type, data);
-
-    List<dynamic> argumentsList = [
-      type,
-      dtcontainer,
-      params,
-      startExerciseIndex,
-      data["eid"],
-      data["date"],
-      data,
-    ];
-    
-    debugPrint("Arguments list is: $argumentsList");
-    
-    await Future.delayed(Duration.zero);
-     NavigatorService.pushNamed(
-      AppRoutes.exercisePronunciation,
-      arguments: argumentsList);
-  
-    
-  } catch (e) {
-    debugPrint("Error in Pronunciation handling: $e");
   }
-}
 
   void _handleDetection(
       BuildContext context, String params, int startExerciseIndex) async {
@@ -199,7 +197,7 @@ void dispose() {
       Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
       ;
 
-      if ( data.isEmpty) {
+      if (data.isEmpty) {
         return;
       }
 
@@ -255,7 +253,7 @@ void dispose() {
           data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
-        
+
         NavigatorService.pushNamed(AppRoutes.exerciseDetection,
             arguments: argumentsList);
       }
@@ -341,7 +339,7 @@ void dispose() {
       Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
       ;
 
-      if ( data.isEmpty) {
+      if (data.isEmpty) {
         return;
       }
 
@@ -488,12 +486,10 @@ void dispose() {
   void tapHandle(RiveEvent event) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
-   
-    
 
     // Extract level number from event name
     int targetLevel = int.parse(event.name.split(' ')[1]);
-    print("targetLevel: $targetLevel");   
+    print("targetLevel: $targetLevel");
 
     print("startExerciseIndex: $startExerciseIndex");
 
@@ -577,7 +573,7 @@ void dispose() {
   void _onRiveInit(Artboard artboard) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int exerciseCount = data_pro.todaysExercises.length;
-    print("Total exercises to do : ${data_pro.todaysExercises.length}");    
+    print("Total exercises to do : ${data_pro.todaysExercises.length}");
     int startExerciseIndex =
         (data_pro.currentExerciseIndex ~/ 5) * 5; // Calculate starting index
     int endExerciseIndex = startExerciseIndex + 4;
@@ -599,9 +595,8 @@ void dispose() {
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         for (int i = 0; i < 5; i++) {
-          int actualIndex = startExerciseIndex +
-              i; 
-            print("actualIndex: $actualIndex");
+          int actualIndex = startExerciseIndex + i;
+          print("actualIndex: $actualIndex");
           // Stop if we've processed all available exercises
           if (actualIndex >= exerciseCount) {
             break;
@@ -647,7 +642,7 @@ void dispose() {
 
         if (train != null) {
           print("train position: ${train.x}");
-         
+
           _previousTrainX = train.x;
         } else {
           debugPrint("Error: 'train' not found!");
@@ -659,6 +654,12 @@ void dispose() {
           debugPrint("Error: 'current level' input not found!");
         }
 
+        print("current level: ${data_pro.currentExerciseIndex}");
+        if (data_pro.currentExerciseIndex == 5) {
+          data_pro.changeCurrentLevel(1);
+          _controller!.addEventListener(tapHandle);
+          return;
+        }
         data_pro
             .changeCurrentLevel(data_pro.currentExerciseIndex.toDouble() + 1);
         _controller!.addEventListener(tapHandle);
