@@ -486,7 +486,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
   void tapHandle(RiveEvent event) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
-
+    int currentLevel = data_pro.currentExerciseIndex;
     // Extract level number from event name
     int targetLevel = int.parse(event.name.split(' ')[1]);
     print("targetLevel: $targetLevel");
@@ -516,25 +516,25 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     }
 
     // Check if trying to access a future level
-    // if (targetLevel > currentLevel) {
-    //   final snackBar = SnackBar(
-    //     /// need to set following properties for best effect of awesome_snackbar_content
-    //     elevation: 0,
-    //     behavior: SnackBarBehavior.floating,
-    //     backgroundColor: Colors.transparent,
-    //     content: AwesomeSnackbarContent(
-    //       title: 'On Snap!',
-    //       message: 'PLease complete the previous levels',
+    if (targetLevel > currentLevel) {
+      final snackBar = SnackBar(
+        /// need to set following properties for best effect of awesome_snackbar_content
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        content: AwesomeSnackbarContent(
+          title: 'On Snap!',
+          message: 'PLease complete the previous levels',
 
-    //       /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
-    //       contentType: ContentType.failure,
-    //     ),
-    //   );
-    //   ScaffoldMessenger.of(context)
-    //     ..hideCurrentSnackBar()
-    //     ..showSnackBar(snackBar);
-    //   return;
-    // }
+          /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+          contentType: ContentType.failure,
+        ),
+      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
+      return;
+    }
 
     // If all checks pass, handle the level
     _handleLevelType(startExerciseIndex + targetLevel - 1, "notcompleted");
@@ -665,7 +665,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           return;
         }
         data_pro
-            .changeCurrentLevel(data_pro.currentExerciseIndex.toDouble() + 1);
+            .changeCurrentLevel((data_pro.currentExerciseIndex.toDouble() + 1)%4);
         data_pro.controller!.addEventListener(tapHandle);
       });
     }
