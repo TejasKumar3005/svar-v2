@@ -155,23 +155,29 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     params,
                                   ),
                                   // Rive animation positioned at bottom left
-                                  IgnorePointer(
-                                    child: Positioned(
-                                      bottom: 0.h,
-                                      left: 0.h,
-                                      child: SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        child: RiveAnimation.asset(
-                                          'assets/rive/Celebration_animation.riv',
-                                          onInit: _onRiveInit,
-                                          fit: BoxFit.contain,
-                                          alignment: Alignment.centerLeft,
+                                  Stack(
+                                    children: [
+                                      Positioned(
+                                        bottom: 0.h,
+                                        left: 0.h,
+                                        child: IgnorePointer(
+                                          child: SizedBox(
+                                            height: MediaQuery.of(context)
+                                                .size
+                                                .height,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            child: RiveAnimation.asset(
+                                              'assets/rive/Celebration_animation.riv',
+                                              onInit: _onRiveInit,
+                                              fit: BoxFit.contain,
+                                              alignment: Alignment.centerLeft,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                   // Tip button
                                   Positioned(
@@ -261,7 +267,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
       dynamic dtcontainer, String params) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    int currentExerciseIndex = obj[3] as int; 
+    int currentExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[currentExerciseIndex];
     ;
     dynamic dtcontainer = obj[1] as dynamic;
@@ -309,7 +315,8 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                 context,
                                                 listen: false);
                                         if (isCorrect) {
-                                          data_pro.incrementLevel(currentExerciseIndex);
+                                          data_pro.incrementLevel(
+                                              currentExerciseIndex);
 
                                           if (data["completedAt"] == null) {
                                             UserData(
@@ -396,7 +403,8 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                   context,
                                                   listen: false);
                                           if (isCorrect) {
-                                            data_pro.incrementLevel(currentExerciseIndex);
+                                            data_pro.incrementLevel(
+                                                currentExerciseIndex);
                                             if (data["completedAt"] == null) {
                                               UserData(
                                                       uid: FirebaseAuth.instance

@@ -171,21 +171,25 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                     ),
 
                     // Animation overlay at bottom
-                    IgnorePointer(
-                      child: Positioned(
-                        bottom: 0.h,
-                        left: 0.h,
-                        child: SizedBox(
-                          height: MediaQuery.of(context).size.height,
-                          width: MediaQuery.of(context).size.width,
-                          child: RiveAnimation.asset(
-                            'assets/rive/Celebration_animation.riv',
-                            onInit: _onRiveInit,
-                            fit: BoxFit.contain,
-                            alignment: Alignment.centerLeft,
+                    Stack(
+                      children: [
+                        Positioned(
+                          bottom: 0.h,
+                          left: 0.h,
+                          child: IgnorePointer(
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height,
+                              width: MediaQuery.of(context).size.width,
+                              child: RiveAnimation.asset(
+                                'assets/rive/Celebration_animation.riv',
+                                onInit: _onRiveInit,
+                                fit: BoxFit.contain,
+                                alignment: Alignment.centerLeft,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),

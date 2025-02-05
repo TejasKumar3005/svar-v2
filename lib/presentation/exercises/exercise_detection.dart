@@ -222,20 +222,25 @@ class _DetectionState extends State<ExerciseDetection> {
                 // Added Stack to hold the Rive animation
                 children: [
                   Center(child: detectionQuiz(context, type)),
-                  IgnorePointer(
-                    child: Positioned(
-                      bottom: 0.h,
-                      left: 0.h,
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-                        child: RiveAnimation.asset(
-                          'assets/rive/Celebration_animation.riv',
-                          onInit: _onRiveInit,
-                          fit: BoxFit.contain,
+                  Stack(
+                    children: [
+                      Positioned(
+                        bottom: 0.h,
+                        left: 0.h,
+                        child: IgnorePointer(
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.height,
+                            width: MediaQuery.of(context).size.width,
+                            child: RiveAnimation.asset(
+                              'assets/rive/Celebration_animation.riv',
+                              onInit: _onRiveInit,
+                              fit: BoxFit.contain,
+                              alignment: Alignment.centerLeft,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),
@@ -270,7 +275,7 @@ class _DetectionState extends State<ExerciseDetection> {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     level = obj[4] as int;
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    int startExerciseIndex = obj[3] as int; 
+    int startExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
     ;
     return Column(
@@ -552,7 +557,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    int startExerciseIndex = obj[3] as int; 
+    int startExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
     ;
     return Column(
@@ -569,21 +574,25 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
         SizedBox(
           height: 20.v,
         ),
-        IgnorePointer(
-          child: Positioned(
-            bottom: 0.h,
-            left: 0.h,
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: RiveAnimation.asset(
-                'assets/rive/Celebration_animation.riv',
-                onInit: _onRiveInit,
-                fit: BoxFit.contain,
-                alignment: Alignment.centerLeft,
+        Stack(
+          children: [
+            Positioned(
+              bottom: 0.h,
+              left: 0.h,
+              child: IgnorePointer(
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: RiveAnimation.asset(
+                    'assets/rive/Celebration_animation.riv',
+                    onInit: _onRiveInit,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.centerLeft,
+                  ),
+                ),
               ),
             ),
-          ),
+          ],
         ),
         OptionWidget(
           triggerAnimation: (value) {

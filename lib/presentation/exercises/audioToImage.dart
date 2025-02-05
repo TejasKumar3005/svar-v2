@@ -8,7 +8,7 @@ import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart';
-import 'package:svar_new/presentation/exercises/exercise_provider.dart';    
+import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 
 class AudiotoimageScreen extends StatefulWidget {
   final dynamic dtcontainer;
@@ -108,7 +108,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    int currentExerciseIndex = obj[3] as int; 
+    int currentExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[currentExerciseIndex];
     ;
     return SafeArea(
@@ -187,20 +187,28 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                                     .getImageUrlList()[index],
                                               ),
                                               isCorrect: () {
-                                                if(widget.dtcontainer.getCorrectOutput() == widget.dtcontainer.getImageUrlList()[index]){
-                                                     data_pro.incrementLevel(currentExerciseIndex);
+                                                if (widget.dtcontainer
+                                                        .getCorrectOutput() ==
+                                                    widget.dtcontainer
+                                                            .getImageUrlList()[
+                                                        index]) {
+                                                  data_pro.incrementLevel(
+                                                      currentExerciseIndex);
 
-                                          if (data["completedAt"] == null) {
-                                            UserData(
-                                                    uid: FirebaseAuth.instance
-                                                        .currentUser!.uid)
-                                                .updateExerciseData(
-                                                  eid: data["eid"],
-                                                  date: data["date"],
-                                                )
-                                                .then((value) => print(
-                                                    "Exercise data updated"));
-                                          }
+                                                  if (data["completedAt"] ==
+                                                      null) {
+                                                    UserData(
+                                                            uid: FirebaseAuth
+                                                                .instance
+                                                                .currentUser!
+                                                                .uid)
+                                                        .updateExerciseData(
+                                                          eid: data["eid"],
+                                                          date: data["date"],
+                                                        )
+                                                        .then((value) => print(
+                                                            "Exercise data updated"));
+                                                  }
                                                 }
                                                 return widget.dtcontainer
                                                         .getCorrectOutput() ==
@@ -218,7 +226,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                           ],
                                         );
                                       },
-                                   ),
+                                    ),
                                 ],
                               ),
                             ),
@@ -229,22 +237,26 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                   ),
                 ],
               ),
-              IgnorePointer(
-                child: Positioned(
-                  bottom: 0.h,
-                  left: 0.h,
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    child: RiveAnimation.asset(
-                      'assets/rive/Celebration_animation.riv',
-                      onInit: _onRiveInit,
-                      fit: BoxFit.contain,
-                      alignment: Alignment.centerLeft,
+              Stack(
+                children: [
+                  Positioned(
+                    bottom: 0.h,
+                    left: 0.h,
+                    child: IgnorePointer(
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        child: RiveAnimation.asset(
+                          'assets/rive/Celebration_animation.riv',
+                          onInit: _onRiveInit,
+                          fit: BoxFit.contain,
+                          alignment: Alignment.centerLeft,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
+                ],
+              )
             ],
           ),
         ),

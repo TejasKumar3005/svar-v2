@@ -603,6 +603,9 @@ void dispose() {
               i; 
             print("actualIndex: $actualIndex");
           // Stop if we've processed all available exercises
+          if (actualIndex >= exerciseCount) {
+            break;
+          }
 
           String subtypeKey = "level${i + 1}";
           TextValueRun? textRun_subtype = artboard.textRun(subtypeKey);
