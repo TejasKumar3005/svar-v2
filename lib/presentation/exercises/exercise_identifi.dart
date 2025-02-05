@@ -123,6 +123,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
             ? Container()
             : SafeArea(
                 child: Scaffold(
+                  
                   extendBody: true,
                   extendBodyBehindAppBar: true,
                   backgroundColor: appTheme.gray300,
