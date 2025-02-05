@@ -609,7 +609,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     if (data["completedAt"] == null) {
       print("hello");
       UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
-        eid: data["eid"],
+        euid: data["uid"],
         date: data["date"],
       );
     }

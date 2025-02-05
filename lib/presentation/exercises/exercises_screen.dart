@@ -228,7 +228,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
-                        eid: data["eid"],
+                        euid: data["uid"],
                         date: data["date"],
                       )
                       .then((value) => print("Exercise data updated"));
@@ -299,7 +299,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
-                        eid: data["eid"],
+                        euid: data["uid"],
                         date: data["date"],
                       )
                       .then((value) => print("Exercise data updated"));
@@ -373,7 +373,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
-                        eid: data["eid"],
+                        euid: data["uid"],
                         date: data["date"],
                       )
                       .then((value) => print("Exercise data updated"));
@@ -438,7 +438,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
-                        eid: data["eid"],
+                        euid: data["uid"],
                         date: data["date"],
                       )
                       .then((value) => print("Exercise data updated"));
@@ -457,7 +457,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                   .toList(),
               videoUrl: data["video_url"],
               testSpeech: data["test_speech"],
-              eid: data["eid"],
+              uid: data["uid"],
               date: data["date"],
             ),
           ),
@@ -571,8 +571,10 @@ class _ExercisesScreenState extends State<ExercisesScreen>
   }
 
   void _onRiveInit(Artboard artboard) {
+
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int exerciseCount = data_pro.todaysExercises.length;
+    data_pro.artboard = artboard;
     print("Total exercises to do : ${data_pro.todaysExercises.length}");
     int startExerciseIndex =
         (data_pro.currentExerciseIndex ~/ 5) * 5; // Calculate starting index
@@ -582,12 +584,13 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     if (endExerciseIndex > exerciseCount) {
       endExerciseIndex = exerciseCount - 1;
     }
-    _controller =
+    data_pro.controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
-
-    if (_controller != null) {
-      artboard.addController(_controller!);
-      artboard.forEachComponent((component) {
+    print("Controller: ${data_pro.controller}");  
+    print("Artboard: ${data_pro.artboard}");  
+    if (data_pro.controller != null) {
+      data_pro.artboard!.addController(data_pro.controller!);
+      data_pro.artboard!.forEachComponent((component) {
         if (component is TextValueRun) {
           print(
               "Component: ${component.runtimeType} - Name: ${component.name}");
@@ -597,13 +600,13 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         for (int i = 0; i < 5; i++) {
           int actualIndex = startExerciseIndex + i;
           print("actualIndex: $actualIndex");
-          // Stop if we've processed all available exercises
+         
           if (actualIndex >= exerciseCount) {
             break;
           }
 
           String subtypeKey = "level${i + 1}";
-          TextValueRun? textRun_subtype = artboard.textRun(subtypeKey);
+          TextValueRun? textRun_subtype = data_pro.artboard!.textRun(subtypeKey);
           if (textRun_subtype != null) {
             print(
                 "type ${actualIndex}: ${data_pro.todaysExercises[actualIndex]['type']}");
@@ -614,7 +617,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           }
 
           String descKey = "desc${i + 1}";
-          TextValueRun? textRun_desc = artboard.textRun(descKey);
+          TextValueRun? textRun_desc =data_pro.artboard!.textRun(descKey);
           if (textRun_desc != null) {
             textRun_desc.text =
                 data_pro.todaysExercises[actualIndex]['description'] == null
@@ -625,7 +628,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           }
 
           String typeKey = "type${i + 1}";
-          TextValueRun? textRun_type = artboard.textRun(typeKey);
+          TextValueRun? textRun_type = data_pro.artboard!.textRun(typeKey);
           if (textRun_type != null) {
             String dateStr =
                 data_pro.todaysExercises[actualIndex]['date'] ?? 'No Date';
@@ -638,7 +641,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           }
         }
 
-        train = artboard.component('train');
+        train = data_pro.artboard!.component('train');
 
         if (train != null) {
           print("train position: ${train.x}");
@@ -649,7 +652,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         }
 
         data_pro.initializeSMINumber(
-            _controller?.getNumberInput('current level') as SMINumber);
+            data_pro.controller?.getNumberInput('current level') as SMINumber);
+            
         if (data_pro.currentLevelInput == null) {
           debugPrint("Error: 'current level' input not found!");
         }
@@ -657,13 +661,16 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         print("current level: ${data_pro.currentExerciseIndex}");
         if (data_pro.currentExerciseIndex == 5) {
           data_pro.changeCurrentLevel(1);
-          _controller!.addEventListener(tapHandle);
+          data_pro.controller!.addEventListener(tapHandle);
           return;
         }
         data_pro
             .changeCurrentLevel(data_pro.currentExerciseIndex.toDouble() + 1);
-        _controller!.addEventListener(tapHandle);
+        data_pro.controller!.addEventListener(tapHandle);
       });
+    }
+    else{
+      print("Controller is null");
     }
   }
 

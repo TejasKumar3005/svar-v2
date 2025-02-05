@@ -26,14 +26,14 @@ class ExercisesSpeakingPhoneme extends StatefulWidget {
   final String videoUrl;
   final bool testSpeech;
   final String date;
-  final String eid;
+  final String uid;
   const ExercisesSpeakingPhoneme({
     Key? key,
     required this.text,
     required this.videoUrl,
     required this.testSpeech,
     this.date = '',
-    this.eid = '',
+    this.uid = '',
 
 
   }) : super(key: key);
@@ -336,7 +336,7 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
           
           UserData(uid: 
               FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
-                eid: widget.eid,
+                euid: widget.uid,
                 date: widget.date,
                 performance: {
                   "score":((data["result"] * 100.0).toInt()).toString(),

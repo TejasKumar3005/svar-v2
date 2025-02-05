@@ -324,7 +324,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                     uid: FirebaseAuth.instance
                                                         .currentUser!.uid)
                                                 .updateExerciseData(
-                                                  eid: data["eid"],
+                                                  euid: data["uid"],
                                                   date: data["date"],
                                                 )
                                                 .then((value) => print(
@@ -332,21 +332,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                           }
                                         }
                                         _triggerAnimation(isCorrect);
-                                        UserData(
-                                          uid: FirebaseAuth
-                                                  .instance.currentUser?.uid ??
-                                              '',
-                                        )
-                                            .updateExerciseData(
-                                                isCompleted: isCorrect,
-                                                performance: {
-                                                  "result": isCorrect,
-                                                  "time":
-                                                      DateTime.now().toString(),
-                                                },
-                                                date: obj[5],
-                                                eid: obj[4])
-                                            .then((value) => null);
+                                       
 
                                         return isCorrect;
                                       },
@@ -411,28 +397,14 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                       uid: FirebaseAuth.instance
                                                           .currentUser!.uid)
                                                   .updateExerciseData(
-                                                    eid: data["eid"],
+                                                    euid: data["uid"],
                                                     date: data["date"],
                                                   )
                                                   .then((value) => print(
                                                       "Exercise data updated"));
                                             }
                                           }
-                                          UserData(
-                                            uid: FirebaseAuth.instance
-                                                    .currentUser?.uid ??
-                                                '',
-                                          )
-                                              .updateExerciseData(
-                                                  isCompleted: isCorrect,
-                                                  performance: {
-                                                    "time": DateTime.now()
-                                                        .toString(),
-                                                    "result": "correct",
-                                                  },
-                                                  date: obj[5],
-                                                  eid: obj[4])
-                                              .then((value) => null);
+                                         
 
                                           return isCorrect;
                                         },
@@ -503,7 +475,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                             uid: FirebaseAuth
                                                 .instance.currentUser!.uid)
                                         .updateExerciseData(
-                                          eid: data["eid"],
+                                          euid: data["uid"],
                                           date: data["date"],
                                         )
                                         .then((value) =>
@@ -511,19 +483,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                   }
                                 }
 
-                                UserData(
-                                  uid: FirebaseAuth.instance.currentUser?.uid ??
-                                      '',
-                                )
-                                    .updateExerciseData(
-                                        isCompleted: isCorrect,
-                                        performance: {
-                                          "time": DateTime.now().toString(),
-                                          "result": isCorrect,
-                                        },
-                                        date: obj[5],
-                                        eid: obj[4])
-                                    .then((value) => null);
+                              
 
                                 return isCorrect;
                               },

@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rive/rive.dart';
+
+extension _TextExtension on Artboard {
+  TextValueRun? textRun(String name) => component<TextValueRun>(name);
+}
 
 class ExerciseProvider extends ChangeNotifier {
   int currentExerciseIndex = 0;
   SMINumber? currentLevelInput;
   List<Map<String, dynamic>> todaysExercises = [];
+  StateMachineController? controller;
+  Artboard? artboard;
  
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -82,7 +89,7 @@ class ExerciseProvider extends ChangeNotifier {
     if (!_validateExerciseIndex()) return;
 
     // Check if current exercise is already completed
-    if (currentExerciseIndex>currentLevel) {
+    if (currentExerciseIndex > currentLevel) {
       print("❌ Exercise already completed");
       return;
     }
@@ -113,17 +120,83 @@ class ExerciseProvider extends ChangeNotifier {
   void _completeExerciseSet() {
     print("this is the end of the set");
     currentExerciseIndex++;
-    print("hello1");
-    if (currentLevelInput != null) {
-      print("hello2");
-      currentLevelInput!.change(6);
-      print("hello3");  
-      Future.delayed(const Duration(seconds: 8), () {
-        print("hello4");  
-        currentLevelInput!.change(1);
-      });
+    print("hello2");
+    currentLevelInput!.change(6);
+
+    int exerciseCount = todaysExercises.length;
+    print("Total exercises to do : ${todaysExercises.length}");
+    int startExerciseIndex =
+        (currentExerciseIndex ~/ 5) * 5; // Calculate starting index
+    int endExerciseIndex = startExerciseIndex + 4;
+    print("startExerciseIndex: $startExerciseIndex");
+    print("endExerciseIndex: $endExerciseIndex");
+    if (endExerciseIndex > exerciseCount) {
+      endExerciseIndex = exerciseCount - 1;
     }
-    notifyListeners();
+    controller =
+        StateMachineController.fromArtboard(artboard!, 'State Machine 1');
+
+    if (controller != null) {
+      artboard!.addController(controller!);
+      artboard!.forEachComponent((component) {
+        if (component is TextValueRun) {
+          print(
+              "Component: ${component.runtimeType} - Name: ${component.name}");
+        }
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        for (int i = 0; i < 5; i++) {
+          int actualIndex = startExerciseIndex + i;
+          print("actualIndex: $actualIndex");
+          // Stop if we've processed all available exercises
+          if (actualIndex >= exerciseCount) {
+            break;
+          }
+
+          String subtypeKey = "level${i + 1}";
+          TextValueRun? textRun_subtype = artboard!.textRun(subtypeKey);
+          if (textRun_subtype != null) {
+            print(
+                "type ${actualIndex}: ${todaysExercises[actualIndex]['type']}");
+            textRun_subtype.text = todaysExercises[actualIndex]['type'];
+          } else {
+            debugPrint("Error: '$subtypeKey' text run not found!");
+          }
+
+          String descKey = "desc${i + 1}";
+          TextValueRun? textRun_desc = artboard!.textRun(descKey);
+          if (textRun_desc != null) {
+            textRun_desc.text =
+                todaysExercises[actualIndex]['description'] == null
+                    ? 'No Description'
+                    : todaysExercises[actualIndex]['description'];
+          } else {
+            debugPrint("Error: '$descKey' text run not found!");
+          }
+
+          String typeKey = "type${i + 1}";
+          TextValueRun? textRun_type = artboard!.textRun(typeKey);
+          if (textRun_type != null) {
+            String dateStr = todaysExercises[actualIndex]['date'] ?? 'No Date';
+            if (dateStr != 'No Date') {
+              dateStr = formatDate(dateStr);
+            }
+            textRun_type.text = dateStr;
+          } else {
+            debugPrint("Error: '$typeKey' text run not found!");
+          }
+        }
+      });
+      print("hello1");
+      if (currentLevelInput != null) {
+        print("hello3");
+        Future.delayed(const Duration(seconds: 8), () {
+          print("hello4");
+          currentLevelInput!.change(1);
+        });
+      }
+      notifyListeners();
+    }
   }
 
   void _progressToNextExercise() {
@@ -133,7 +206,6 @@ class ExerciseProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
-
 
   void initializeSMINumber(SMINumber smi) {
     currentLevelInput = smi;
@@ -146,5 +218,34 @@ class ExerciseProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+}
 
+String formatDate(String date) {
+  try {
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+
+    List<String> parts = date.split('-');
+    if (parts.length >= 3) {
+      // parts[0] is year, parts[1] is month, parts[2] is day
+      int day = int.parse(parts[2]);
+      int month = int.parse(parts[1]);
+      return '$day ${months[month - 1]}';
+    }
+    return 'Invalid Date';
+  } catch (e) {
+    return 'Invalid Date';
+  }
 }

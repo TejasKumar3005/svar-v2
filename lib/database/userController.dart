@@ -78,7 +78,7 @@ class UserData {
 
   Future<void> updateExerciseData({
     required String date,
-    required String eid,
+    required String euid,
     bool isCompleted = true,
     Map<String, dynamic>? performance,
   }) async {
@@ -98,7 +98,7 @@ class UserData {
 
           // Find the exercise with the matching eid
           final exerciseIndex = exercisesForDate.indexWhere(
-              (exercise) => exercise is Map && exercise['eid'] == eid);
+              (exercise) => exercise is Map && exercise['uid'] == euid);
 
           if (exerciseIndex != -1) {
             int views = 0;
@@ -126,7 +126,7 @@ class UserData {
               exercisesForDate[exerciseIndex] = exerciseData;
               await userDoc.update({
                 'exercises.$date': exercisesForDate,
-                'completedTillExercise': eid,
+                
                 'completedTillDate': date
               });
             } else {
@@ -142,7 +142,7 @@ class UserData {
 
             print('Exercise data updated successfully!');
           } else {
-            print('Exercise with eid $eid not found for date $date.');
+            print('Exercise with eid $euid not found for date $date.');
           }
         } else {
           print('No exercises found for date $date.');
@@ -213,8 +213,7 @@ class UserData {
 
       var data_pro =
           Provider.of<ExerciseProvider>(buildContext!, listen: false);
-      var user_pro =
-          Provider.of<UserDataProvider>(buildContext!, listen: false);
+     
 
       data_pro.setTodaysExercises(finaldata);
       

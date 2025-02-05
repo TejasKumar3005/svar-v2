@@ -271,22 +271,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                                         uid: FirebaseAuth
                                             .instance.currentUser!.uid)
                                     .updateExerciseData(
-                                  eid: data["eid"],
+                                  euid: data["uid"],
                                   date: data["date"],
                                 );
                               }
                             }
-                            UserData(
-                              uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                            ).updateExerciseData(
-                              isCompleted: condition,
-                              performance: {
-                                "result": condition,
-                                "time": DateTime.now().toString()
-                              },
-                              date: obj[5],
-                              eid: obj[4],
-                            );
+                           
                             return condition;
                           },
                         ),
@@ -312,22 +302,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                                         uid: FirebaseAuth
                                             .instance.currentUser!.uid)
                                     .updateExerciseData(
-                                  eid: data["eid"],
+                                  euid: data["uid"],
                                   date: data["date"],
                                 );
                               }
                             }
-                            UserData(
-                              uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                            ).updateExerciseData(
-                              isCompleted: condition,
-                              performance: {
-                                "result": condition,
-                                "time": DateTime.now().toString()
-                              },
-                              date: obj[5],
-                              eid: obj[4],
-                            );
+                           
                             return condition;
                           },
                         ),
@@ -394,24 +374,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                         if (data["completedAt"] == null) {
                           UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                               .updateExerciseData(
-                            eid: data["eid"],
+                            euid: data["uid"],
                             date: data["date"],
                           );
                         }
                       }
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      ).updateExerciseData(
-                        isCompleted: condition,
-                        performance: {
-                          "time": DateTime.now().toString(),
-                          "result": condition,
-                          "timeDiff":
-                              (_childKey.currentState!.progress - ans).abs()
-                        },
-                        date: obj[5],
-                        eid: obj[4],
-                      );
+                      
                       return condition;
                     },
                   ),
@@ -505,18 +473,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                                 if (condition) {
                                   data_pro.incrementLevel(startExerciseIndex);
                                 }
-                                UserData(
-                                  uid: FirebaseAuth.instance.currentUser?.uid ??
-                                      '',
-                                ).updateExerciseData(
-                                  isCompleted: condition,
-                                  performance: {
-                                    "time": DateTime.now().toString(),
-                                    "result": condition,
-                                  },
-                                  date: obj[5],
-                                  eid: obj[4],
-                                );
+                                
                                 return condition;
                               },
                             ),
@@ -549,23 +506,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                                             uid: FirebaseAuth
                                                 .instance.currentUser!.uid)
                                         .updateExerciseData(
-                                      eid: data["eid"],
+                                      euid: data["uid"],
                                       date: data["date"],
                                     );
                                   }
                                 }
-                                UserData(
-                                  uid: FirebaseAuth.instance.currentUser?.uid ??
-                                      '',
-                                ).updateExerciseData(
-                                  isCompleted: condition,
-                                  performance: {
-                                    "time": DateTime.now().toString(),
-                                    "result": condition,
-                                  },
-                                  date: obj[5],
-                                  eid: obj[4],
-                                );
+                                
                                 return condition;
                               },
                             ),
@@ -612,23 +558,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                   if (data["completedAt"] == null) {
                     UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                         .updateExerciseData(
-                      eid: data["eid"],
+                      euid: data["uid"],
                       date: data["date"],
                     );
                   }
                 }
 
-                UserData(
-                  uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                ).updateExerciseData(
-                  isCompleted: condition,
-                  performance: {
-                    "time": DateTime.now().toString(),
-                    "result": condition,
-                  },
-                  date: obj[5],
-                  eid: obj[4],
-                );
 
                 return condition;
               },

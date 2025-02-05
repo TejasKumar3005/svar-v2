@@ -382,24 +382,13 @@ class _DetectionState extends State<ExerciseDetection> {
                       if (data["completedAt"] == null) {
                         UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                             .updateExerciseData(
-                              eid: data["eid"],
+                              euid: data["uid"],
                               date: data["date"],
                             )
                             .then((value) => print("Exercise data updated"));
                       }
                     }
-                    UserData(
-                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                    )
-                        .updateExerciseData(
-                            isCompleted: condition,
-                            performance: {
-                              "time": DateTime.now().toString(),
-                              "result": condition,
-                            },
-                            date: obj[5],
-                            eid: obj[4])
-                        .then((value) => null);
+                    
 
                     return condition;
                   },
@@ -431,24 +420,13 @@ class _DetectionState extends State<ExerciseDetection> {
                       if (data["completedAt"] == null) {
                         UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                             .updateExerciseData(
-                              eid: data["eid"],
+                              euid: data["uid"],
                               date: data["date"],
                             )
                             .then((value) => print("Exercise data updated"));
                       }
                     }
-                    UserData(
-                      uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                    )
-                        .updateExerciseData(
-                            isCompleted: condition,
-                            performance: {
-                              "time": DateTime.now().toString(),
-                              "result": condition,
-                            },
-                            date: obj[5],
-                            eid: obj[4])
-                        .then((value) => null);
+                   
 
                     return condition;
                   },
@@ -633,25 +611,13 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
               if (data["completedAt"] == null) {
                 UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                     .updateExerciseData(
-                      eid: data["eid"],
+                      euid: data["eid"],
                       date: data["date"],
                     )
                     .then((value) => print("Exercise data updated"));
               }
             }
-            UserData(
-              uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-            )
-                .updateExerciseData(
-                    isCompleted: condition,
-                    performance: {
-                      "time": DateTime.now().toString(),
-                      "result": condition,
-                      "timeDiff": (currentProgress - ans).abs()
-                    },
-                    date: obj[5],
-                    eid: obj[4])
-                .then((value) => null);
+           
 
             return condition;
           },
