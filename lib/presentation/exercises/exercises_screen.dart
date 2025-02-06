@@ -665,7 +665,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           return;
         }
         data_pro
-            .changeCurrentLevel((data_pro.currentExerciseIndex.toDouble() + 1)%5);
+            .changeCurrentLevel((data_pro.currentExerciseIndex.toDouble()%5 + 1));
         data_pro.controller!.addEventListener(tapHandle);
       });
     }
