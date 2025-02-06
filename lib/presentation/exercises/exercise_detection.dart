@@ -512,8 +512,8 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
   void _startVolumeControl() {
     _volumeTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
-      if (_childKey.currentState != null) {
-        double progress = _childKey.currentState!.progress;
+      if (_childKey.currentState != null ) {
+        double progress = _childKey.currentState!.progress.value;
         if (progress < 0.5) {
           // Mute for the first half
           globalAudioPlayer.setVolume(0.0);
@@ -595,7 +595,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
             double ans = 0.5;
 
-            double currentProgress = _childKey.currentState!.progress;
+            double currentProgress = _childKey.currentState!.progress.value;
             print("Current progress is $currentProgress");
 
             const double tolerance = 0.4;

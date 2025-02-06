@@ -39,7 +39,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
 
   void getAudioProgress() {
     setState(() {
-      currentProgress = _childKey.currentState!.progress;
+      currentProgress = _childKey.currentState!.progress.value;
     });
   }
 
@@ -366,8 +366,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                           _childKey.currentState!.lengths;
                       double ans =
                           total_length[0] / (total_length[1] + total_length[0]);
-                      var condition = _childKey.currentState!.progress > ans &&
-                          _childKey.currentState!.progress < ans + 0.4;
+                      var condition = _childKey.currentState!.progress.value > ans &&
+                          _childKey.currentState!.progress.value < ans + 0.4;
 
                       if (condition) {
                         data_pro.incrementLevel(startExerciseIndex);

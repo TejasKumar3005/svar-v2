@@ -5,21 +5,19 @@ import 'package:svar_new/widgets/Options.dart';
 import 'dart:async';
 import 'package:chiclet/chiclet.dart';
 
-// Global audio player to ensure only one instance plays at a time
+// Global audio player (keep this if you need only one instance)
 AudioPlayer globalAudioPlayer = AudioPlayer();
 
 class AudioWidget extends StatefulWidget {
   final List<String> audioLinks;
-  final double progress;
   final Color spectrumColor;
   final bool isGrid;
 
   const AudioWidget({
     Key? key,
     required this.audioLinks,
-    this.progress = 0.0,
     this.spectrumColor = Colors.green,
-    this.isGrid = false, // Add isGrid parameter
+    this.isGrid = false,
   }) : super(key: key);
 
   @override
@@ -29,52 +27,54 @@ class AudioWidget extends StatefulWidget {
 class AudioWidgetState extends State<AudioWidget> {
   StreamSubscription<Duration>? _positionSubscription;
   late AudioPlayer _audioPlayer;
-  late double progress;
   late int currentIndex;
-  late double completed;
   late List<double> lengths;
   late double totalLength;
 
+  // ValueNotifier for progress
+  final ValueNotifier<double> _progress = ValueNotifier<double>(0.0);
+  ValueNotifier<double> get progress => _progress;
   @override
   void initState() {
     super.initState();
     currentIndex = 0;
     _audioPlayer = AudioPlayer();
-    progress = 0.0;
-    completed = 0.0;
     totalLength = 0.0;
     lengths = [];
-    loadAudioLengths();
-
+    _loadAudioLengths(); // Use _ to indicate private method
     _positionSubscription = _audioPlayer.positionStream.listen((position) {
       if (_audioPlayer.duration != null &&
           _audioPlayer.duration!.inSeconds > 0) {
-        setState(() {
-          progress = (completed + position.inSeconds.toDouble()) / totalLength;
-        });
+        _progress.value = _calculateProgress(position);
       }
     });
   }
 
-  Future<void> loadAudioLengths() async {
+  double _calculateProgress(Duration position) {
+    double completedSeconds = 0;
+    for (int i = 0; i < currentIndex; i++) {
+      completedSeconds += lengths[i];
+    }
+    return (completedSeconds + position.inSeconds.toDouble()) / totalLength;
+  }
+
+  Future<void> _loadAudioLengths() async {
     for (int i = 0; i < widget.audioLinks.length; i++) {
-      double length = await getAudioLength(widget.audioLinks[i]);
+      double length = await _getAudioLength(widget.audioLinks[i]);
       lengths.add(length);
       totalLength += length;
     }
   }
 
-  Future<double> getAudioLength(String link) async {
+  Future<double> _getAudioLength(String link) async {
     try {
-      var duration = await _audioPlayer.setUrl(link);
-      if (duration != null) {
-        await _audioPlayer.load();
-        return duration.inSeconds.toDouble();
-      }
+      await _audioPlayer.setUrl(link);
+      var duration = await _audioPlayer.load();
+      return duration?.inSeconds.toDouble() ?? 5.0; // Null check
     } catch (e) {
       print('Error loading audio: $e');
+      return 5.0;
     }
-    return 5.0; // Fallback value
   }
 
   Future<void> playNext() async {
@@ -88,20 +88,16 @@ class AudioWidgetState extends State<AudioWidget> {
       try {
         await _audioPlayer.setUrl(widget.audioLinks[currentIndex]);
         await _audioPlayer.play();
+
         _audioPlayer.playerStateStream.listen((state) {
           if (state.processingState == ProcessingState.completed) {
             if (currentIndex < widget.audioLinks.length - 1) {
-              setState(() {
-                completed += lengths[currentIndex];
-                currentIndex++;
-              });
+              currentIndex++;
               playNext();
             } else {
-              setState(() {
-                currentIndex = 0;
-                progress = 0.0;
-                _audioPlayer.stop();
-              });
+              currentIndex = 0;
+              _progress.value = 0.0; // Reset progress
+              _audioPlayer.stop();
             }
           }
         });
@@ -115,6 +111,7 @@ class AudioWidgetState extends State<AudioWidget> {
   void dispose() {
     _positionSubscription?.cancel();
     _audioPlayer.dispose();
+    _progress.dispose(); // Dispose ValueNotifier
     super.dispose();
   }
 
@@ -125,13 +122,9 @@ class AudioWidgetState extends State<AudioWidget> {
         MediaQuery.of(context).size.width * (widget.isGrid ? 0.4 : 0.9);
 
     return ChicletAnimatedButton(
-      onPressed: () {
-        
-      
-        
-      },
+      onPressed: () {},
       buttonType: ChicletButtonTypes.roundedRectangle,
-      backgroundColor: Color(0xFFF47C37),
+      backgroundColor: const Color(0xFFF47C37),
       height: 50,
       width: containerWidth,
       child: widget.isGrid
@@ -146,15 +139,20 @@ class AudioWidgetState extends State<AudioWidget> {
                 ),
                 const SizedBox(height: 8),
                 Expanded(
-                  child: CustomButton(
-                    type: ButtonType.Spectrum,
-                    onPressed: () {
-                      if (click != null) {
-                        click();
-                      }
+                  child: ValueListenableBuilder<double>(
+                    valueListenable: _progress,
+                    builder: (context, progressValue, child) {
+                      return CustomButton(
+                        type: ButtonType.Spectrum,
+                        onPressed: () {
+                          if (click != null) {
+                            click();
+                          }
+                        },
+                        progress: progressValue, // Use ValueNotifier's value
+                        color: widget.spectrumColor,
+                      );
                     },
-                    progress: progress,
-                    color: widget.spectrumColor,
                   ),
                 ),
               ],
@@ -179,15 +177,20 @@ class AudioWidgetState extends State<AudioWidget> {
                 Expanded(
                   child: GestureDetector(
                     onTap: click,
-                    child: CustomButton(
-                      type: ButtonType.Spectrum,
-                      onPressed: () {
-                        if (click != null) {
-                          click();
-                        }
+                    child: ValueListenableBuilder<double>(
+                      valueListenable: _progress,
+                      builder: (context, progressValue, child) {
+                        return CustomButton(
+                          type: ButtonType.Spectrum,
+                          onPressed: () {
+                            if (click != null) {
+                              click();
+                            }
+                          },
+                          progress: progressValue, // Use ValueNotifier's value
+                          color: widget.spectrumColor,
+                        );
                       },
-                      progress: progress,
-                      color: widget.spectrumColor,
                     ),
                   ),
                 ),
