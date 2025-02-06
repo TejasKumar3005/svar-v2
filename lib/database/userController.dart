@@ -157,13 +157,14 @@ class UserData {
 
   Future<List<dynamic>> getfortnightExercises(
       Map<String, dynamic> exercises) async {
+         var finaldata = [];
     try {
       // Calculate dates
       DateTime today = DateTime.now();
       DateTime startDate = today.subtract(Duration(days: 7));
       DateTime endDate = today.add(Duration(days: 7));
 
-      var finaldata = [];
+     
 
       // Loop through dates (14 days)
       for (var day = startDate;
@@ -220,7 +221,12 @@ class UserData {
       return finaldata;
     } catch (e) {
       showErrorSnackBar(e.toString());
-      return [];
+       var data_pro =
+          Provider.of<ExerciseProvider>(buildContext!, listen: false);
+     
+
+      data_pro.setTodaysExercises(finaldata);
+      return finaldata;
     }
   }
 
