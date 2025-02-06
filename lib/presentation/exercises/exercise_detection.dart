@@ -222,27 +222,27 @@ class _DetectionState extends State<ExerciseDetection> {
                 // Added Stack to hold the Rive animation
                 children: [
                   Center(child: detectionQuiz(context, type)),
-                  if(type == "MutedUnmuted")
-                  Stack(
-                    children: [
-                      Positioned(
-                        bottom: 0.h,
-                        left: 0.h,
-                        child: IgnorePointer(
-                          child: SizedBox(
-                            height: MediaQuery.of(context).size.height,
-                            width: MediaQuery.of(context).size.width,
-                            child: RiveAnimation.asset(
-                              'assets/rive/Celebration_animation.riv',
-                              onInit: _onRiveInit,
-                              fit: BoxFit.contain,
-                              alignment: Alignment.centerLeft,
+                  if (type == "MutedUnmuted")
+                    Stack(
+                      children: [
+                        Positioned(
+                          bottom: 0.h,
+                          left: 0.h,
+                          child: IgnorePointer(
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height,
+                              width: MediaQuery.of(context).size.width,
+                              child: RiveAnimation.asset(
+                                'assets/rive/Celebration_animation.riv',
+                                onInit: _onRiveInit,
+                                fit: BoxFit.contain,
+                                alignment: Alignment.centerLeft,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -274,7 +274,7 @@ class _DetectionState extends State<ExerciseDetection> {
 
   Widget MutedUnmuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-   
+
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
@@ -518,77 +518,96 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
     return SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(height: 40.v),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.h),
-            child: AudioWidget(
-              key: _childKey,
-              audioLinks: widget.audioLinks,
-            ),
-          ),
-          SizedBox(height: 20.v),
-          Expanded(
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  IgnorePointer(
-                    child: RiveAnimation.asset(
-                      'assets/rive/Celebration_animation.riv',
-                      onInit: _onRiveInit,
-                      fit: BoxFit.contain,
-                      alignment: Alignment.centerLeft,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: 20.v),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      child: Container(
+        // Changed to Container
+        // Removed Scaffold
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Stack(
               children: [
-                OptionWidget(
-                  triggerAnimation: _triggerAnimation,
-                  child: OptionButton(
-                    type: ButtonType.Stop,
-                    onPressed: () => globalAudioPlayer.stop(),
-                  ),
-                  isCorrect: () {
-                    if (_childKey.currentState == null) return false;
+                Positioned(
+                  left: 40, // Align to the left
+                  top: 0, // Align to the top (you can adjust this)
+                  bottom: 0, // Align to the bottom (or set a specific height)
+                  width: constraints.maxWidth *
+                      0.7, // Occupy half the width (adjust as needed)
+                  
+    // Add left padding
+    child: IgnorePointer(
+      child: RiveAnimation.asset(
+        'assets/rive/Celebration_animation.riv',
+        onInit: _onRiveInit,
+        fit: BoxFit.cover, 
+      ),
+    ),
+  ),
+                
+                Column(
+                  children: [
+                    SizedBox(height: 40.v),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.h,
+                      ),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: constraints.maxWidth * 0.4,
+                            maxHeight: constraints.maxHeight * 0.3,
+                          ),
+                          child: AudioWidget(
+                            key: _childKey,
+                            audioLinks: widget.audioLinks,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.v),
+                    Expanded(
+                      flex: 5,
+                      child: Center(
+                        child: OptionWidget(
+                          triggerAnimation: _triggerAnimation,
+                          child: OptionButton(
+                            type: ButtonType.Stop,
+                            onPressed: () => globalAudioPlayer.stop(),
+                          ),
+                          isCorrect: () {
+                            if (_childKey.currentState == null) return false;
 
-                    List<double> total_length = _childKey.currentState!.lengths;
-                    if (total_length.isEmpty) return false;
+                            List<double> total_length =
+                                _childKey.currentState!.lengths;
+                            if (total_length.isEmpty) return false;
 
-                    double currentProgress =
-                        _childKey.currentState!.progress.value;
-                    const double tolerance = 0.4;
-                    bool condition = currentProgress > 0.5 &&
-                        currentProgress < 0.5 + tolerance;
+                            double currentProgress =
+                                _childKey.currentState!.progress.value;
+                            const double tolerance = 0.4;
+                            bool condition = currentProgress > 0.5 &&
+                                currentProgress < 0.5 + tolerance;
 
-                    if (condition) {
-                      data_pro.incrementLevel(startExerciseIndex);
-                      if (data["completedAt"] == null) {
-                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                            .updateExerciseData(
-                          euid: data["uid"],
-                          date: data["date"],
-                        );
-                      }
-                    }
-                    return condition;
-                  },
+                            if (condition) {
+                              data_pro.incrementLevel(startExerciseIndex);
+                              if (data["completedAt"] == null) {
+                                UserData(
+                                        uid: FirebaseAuth
+                                            .instance.currentUser!.uid)
+                                    .updateExerciseData(
+                                  euid: data["uid"],
+                                  date: data["date"],
+                                );
+                              }
+                            }
+                            return condition;
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
