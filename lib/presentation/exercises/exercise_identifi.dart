@@ -331,7 +331,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                     "Exercise data updated"));
                                           }
                                         }
-                                        _triggerAnimation(isCorrect);
+                                        
                                        
 
                                         return isCorrect;
