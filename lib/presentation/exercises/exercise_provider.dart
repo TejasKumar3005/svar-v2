@@ -13,7 +13,6 @@ class ExerciseProvider extends ChangeNotifier {
   List<Map<String, dynamic>> todaysExercises = [];
   StateMachineController? controller;
   Artboard? artboard;
- 
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -50,11 +49,22 @@ class ExerciseProvider extends ChangeNotifier {
     // Sort exercises chronologically
     todaysExercises.sort((a, b) =>
         DateTime.parse(a['date']).compareTo(DateTime.parse(b['date'])));
-
-    // Find first incomplete exercise
+    print("Total exercises in range: ${todaysExercises}");
+    print("currentExerciseIndex: $currentExerciseIndex");
     currentExerciseIndex = todaysExercises
         .indexWhere((exercise) => exercise['completedAt'] == null);
-    if (currentExerciseIndex == -1) currentExerciseIndex = 0;
+
+    if (currentExerciseIndex == -1) {
+      // No incomplete exercise found
+      if (todaysExercises.isNotEmpty) {
+        currentExerciseIndex =
+            todaysExercises.length - 1; // Set to the index of the last exercise
+      } else {
+        currentExerciseIndex =
+            -1; // Or handle the case when there are no exercises at all, if needed
+        // For example, you might set it to null or 0 depending on your use case
+      }
+    }
     print("Found first incomplete exercise at index: $currentExerciseIndex");
 
     print("Total exercises in range: ${todaysExercises.length}");
@@ -152,7 +162,6 @@ class ExerciseProvider extends ChangeNotifier {
           if (actualIndex >= exerciseCount) {
             break;
           }
-
           String subtypeKey = "level${i + 1}";
           TextValueRun? textRun_subtype = artboard!.textRun(subtypeKey);
           if (textRun_subtype != null) {

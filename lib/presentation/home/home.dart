@@ -51,7 +51,7 @@ class HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   children: [
                     // Stats Header
-                    AppStatsHeader(per: 40),
+                    // AppStatsHeader(per: 40),
                     SizedBox(height: 24),
                     // Main Content Area - Side by Side Layout with Different Heights
                     Expanded(

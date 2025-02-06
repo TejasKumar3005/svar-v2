@@ -139,20 +139,24 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
               children: [],
             ),
             DisciAppBar(context),
-            IgnorePointer(
-              child: Positioned(
-                left: 0,
-                bottom: size.height * 0,
-                child: SizedBox(
-                  width: size.width,
-                  height: size.height,
-                  child: rive.RiveAnimation.asset(
-                    'assets/rive/5_stepping_stone.riv',
-                    onInit: _onRiveInit,
-                    fit: BoxFit.contain,
+            Stack(
+              children: [
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: IgnorePointer(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: rive.RiveAnimation.asset(
+                        'assets/rive/5_stepping_stone.riv',
+                        onInit: _onRiveInit,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
 
             // Hindi character - centered and larger
