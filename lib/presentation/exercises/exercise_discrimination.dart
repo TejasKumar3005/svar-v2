@@ -246,7 +246,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
                 ),
               ),
 
-              // Options section
+              SizedBox(height: 20),
               Expanded(
                 flex: 5,
                 child: Row(
