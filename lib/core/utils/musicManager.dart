@@ -61,7 +61,7 @@ class _MusicManagerState extends State<MusicManager>
 
   void _handleMusicPlayback() {
     String currentRoute = ModalRoute.of(context)?.settings.name ?? '';
-    debugPrint("Current Route: ");
+    debugPrint("Current Route (in music): ");
     debugPrint(currentRoute + " kjjkkj");
     debugPrint("Screens");
     if (screensWithoutMusic.contains(currentRoute)) {

@@ -222,6 +222,7 @@ class _DetectionState extends State<ExerciseDetection> {
                 // Added Stack to hold the Rive animation
                 children: [
                   Center(child: detectionQuiz(context, type)),
+                  if(type == "MutedUnmuted")
                   Stack(
                     children: [
                       Positioned(
@@ -273,7 +274,7 @@ class _DetectionState extends State<ExerciseDetection> {
 
   Widget MutedUnmuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    level = obj[4] as int;
+   
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
@@ -388,7 +389,6 @@ class _DetectionState extends State<ExerciseDetection> {
                             .then((value) => print("Exercise data updated"));
                       }
                     }
-                    
 
                     return condition;
                   },
@@ -426,7 +426,6 @@ class _DetectionState extends State<ExerciseDetection> {
                             .then((value) => print("Exercise data updated"));
                       }
                     }
-                   
 
                     return condition;
                   },
@@ -462,7 +461,6 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   @override
   void initState() {
     super.initState();
-    // Start the volume control after the first frame is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startVolumeControl();
     });
@@ -475,51 +473,30 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
     if (controller != null) {
       artboard.addController(controller);
       riveController = controller;
-
-      // Print all state machines for debugging
-      print("\nAll State Machines in artboard:");
-      for (var stateMachine in artboard.stateMachines) {
-        print("State Machine: ${stateMachine.name}");
-      }
-
-      // Get the triggers
       _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
       _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
-
-      print("Controller added: $controller");
     }
   }
 
   void _triggerAnimation(bool isCorrect) {
-    print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
-
-    if (isCorrect) {
-      if (_correctTrigger != null) {
-        print("Firing correct trigger");
-        _correctTrigger!.fire();
-        print("Correct trigger fired");
-        Future.delayed(const Duration(seconds: 5), () {
-          Navigator.pop(context);
-        });
-      }
-    } else {
-      if (_incorrectTrigger != null) {
-        _incorrectTrigger!.fire();
-        print("Incorrect trigger fired");
-      }
+    if (isCorrect && _correctTrigger != null) {
+      _correctTrigger!.fire();
+      Future.delayed(const Duration(seconds: 5), () {
+        if (mounted) Navigator.pop(context);
+      });
+    } else if (!isCorrect && _incorrectTrigger != null) {
+      _incorrectTrigger!.fire();
     }
   }
 
   void _startVolumeControl() {
     _volumeTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
-      if (_childKey.currentState != null ) {
-        double progress = _childKey.currentState!.progress.value;
-        if (progress < 0.5) {
-          // Mute for the first half
-          globalAudioPlayer.setVolume(0.0);
-        } else {
-          // Unmute for the second half
-          globalAudioPlayer.setVolume(1.0);
+      if (_childKey.currentState != null && mounted) {
+        try {
+          double progress = _childKey.currentState!.progress.value;
+          globalAudioPlayer.setVolume(progress < 0.5 ? 0.0 : 1.0);
+        } catch (e) {
+          print('Error in volume control: $e');
         }
       }
     });
@@ -527,7 +504,9 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
   @override
   void dispose() {
-    _volumeTimer?.cancel(); // Cancel the timer to prevent memory leaks
+    _volumeTimer?.cancel();
+    riveController?.dispose();
+    globalAudioPlayer.stop();
     super.dispose();
   }
 
@@ -537,92 +516,80 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
-    ;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        SizedBox(
-          height: 40.v,
-        ),
-        AudioWidget(
-          key: _childKey,
-          audioLinks: widget.audioLinks,
-        ),
-        SizedBox(
-          height: 20.v,
-        ),
-        Stack(
-          children: [
-            Positioned(
-              bottom: 0.h,
-              left: 0.h,
-              child: IgnorePointer(
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: RiveAnimation.asset(
-                    'assets/rive/Celebration_animation.riv',
-                    onInit: _onRiveInit,
-                    fit: BoxFit.contain,
-                    alignment: Alignment.centerLeft,
+
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(height: 40.v),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.h),
+            child: AudioWidget(
+              key: _childKey,
+              audioLinks: widget.audioLinks,
+            ),
+          ),
+          SizedBox(height: 20.v),
+          Expanded(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  IgnorePointer(
+                    child: RiveAnimation.asset(
+                      'assets/rive/Celebration_animation.riv',
+                      onInit: _onRiveInit,
+                      fit: BoxFit.contain,
+                      alignment: Alignment.centerLeft,
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-          ],
-        ),
-        OptionWidget(
-          triggerAnimation: (value) {
-            _triggerAnimation(value);
-          },
-          child: OptionButton(
-            type: ButtonType.Stop,
-            onPressed: () {
-              // Stop the audio playback
-              globalAudioPlayer.stop();
-            },
           ),
-          isCorrect: () {
-            if (_childKey.currentState == null) return false;
+          Padding(
+            padding: EdgeInsets.only(bottom: 20.v),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                OptionWidget(
+                  triggerAnimation: _triggerAnimation,
+                  child: OptionButton(
+                    type: ButtonType.Stop,
+                    onPressed: () => globalAudioPlayer.stop(),
+                  ),
+                  isCorrect: () {
+                    if (_childKey.currentState == null) return false;
 
-            List<double> total_length = _childKey.currentState!.lengths;
-            if (total_length.isEmpty) {
-              // Ensure there is at least 1 element in the list (the audio length)
-              print("Error: total_length is empty.");
-              return false;
-            }
+                    List<double> total_length = _childKey.currentState!.lengths;
+                    if (total_length.isEmpty) return false;
 
-            double ans = 0.5;
+                    double currentProgress =
+                        _childKey.currentState!.progress.value;
+                    const double tolerance = 0.4;
+                    bool condition = currentProgress > 0.5 &&
+                        currentProgress < 0.5 + tolerance;
 
-            double currentProgress = _childKey.currentState!.progress.value;
-            print("Current progress is $currentProgress");
-
-            const double tolerance = 0.4;
-            bool condition =
-                currentProgress > ans && currentProgress < ans + tolerance;
-            print("Condition result: $condition");
-
-            // Increment the level if the condition is met
-            var data_pro =
-                Provider.of<ExerciseProvider>(context, listen: false);
-            if (condition) {
-              data_pro.incrementLevel(startExerciseIndex);
-              if (data["completedAt"] == null) {
-                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                    .updateExerciseData(
-                      euid: data["eid"],
-                      date: data["date"],
-                    )
-                    .then((value) => print("Exercise data updated"));
-              }
-            }
-           
-
-            return condition;
-          },
-        ),
-      ],
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                          euid: data["uid"],
+                          date: data["date"],
+                        );
+                      }
+                    }
+                    return condition;
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

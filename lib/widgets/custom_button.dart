@@ -214,7 +214,7 @@ class _CustomButtonState extends State<CustomButton> {
         width = 170;
         height = 80;
 
-        defaultChild = const Icon(Icons.keyboard_return_rounded);
+        defaultChild = const Text("Stop");
         break;
       case ButtonType.Spectrum:
         imagePath = ImageConstant.imgSpectrum;

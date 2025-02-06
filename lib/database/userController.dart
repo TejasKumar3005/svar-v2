@@ -178,7 +178,21 @@ class UserData {
           List<Map<String, dynamic>> updatedData = [];
 
           await Future.wait(data.map((exercise) async {
-            if (exercise["subtype"].toString()!= "Pronunciation" || exercise["subtype"].toString()!= "word") {
+              if(exercise["subtype"].toString()== "custom"){
+                updatedData.add({
+                  ...exercise,
+                  
+                    "description": exercise["description"],
+                    // "level": 2,
+                    // "preview": "",
+                    "type": "video",
+                    "video" : exercise["content_url"]
+                  ,
+                  "exerciseType": "Level",
+                  "date": formattedDate
+                });
+              }
+            else if (exercise["subtype"].toString()!= "Pronunciation" || exercise["subtype"].toString()!= "word") {
               DocumentSnapshot docSnapshot = await exercisesCollection
                   .doc(exercise["type"])
                   .collection(exercise["phoneme"])
@@ -195,7 +209,8 @@ class UserData {
                   "exerciseType": exercise["type"],
                   "date": formattedDate
                 });
-              } else {
+              }
+               else {
                 debugPrint(
                     "Document with id ${exercise['eid']} does not exist.");
               }

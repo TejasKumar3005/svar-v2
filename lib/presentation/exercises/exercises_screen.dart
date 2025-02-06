@@ -253,7 +253,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
-
+        await Future.delayed(Duration.zero);
         NavigatorService.pushNamed(AppRoutes.exerciseDetection,
             arguments: argumentsList);
       }

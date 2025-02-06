@@ -28,7 +28,7 @@ class ScreenTracking extends RouteObserver<PageRoute<dynamic>> {
   void _handleMusicPlayback(PageRoute<dynamic> route) {
     PlayBgm _playBgm = PlayBgm();
     String currentRoute = route.settings.name ?? '';
-    debugPrint("Current Route: ");
+    debugPrint("Current Route (in analytics): ");
     debugPrint(currentRoute);
     debugPrint("Screens");
     if (screensWithoutMusic.contains(currentRoute)) {
