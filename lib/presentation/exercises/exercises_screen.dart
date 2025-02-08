@@ -117,17 +117,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
             top: 0,
             left: 0,
             right: 0,
-            child: DisciAppBar(context, onMenuPressed: () {  // Add onMenuPressed parameter
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return Dialog( // Use Dialog instead of AlertDialog for full screen
-        child: SettingsScreen(),
-        backgroundColor: Colors.transparent, // Make the background transparent
-      );
-    },
-  );
-}),
+            child:DisciAppBar(context), // No need for any callbacks now,
           ),
         ],
       ),

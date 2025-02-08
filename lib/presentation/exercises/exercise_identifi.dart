@@ -145,17 +145,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                         ),
                         child: Column(
                           children: [
-                            DisciAppBar(context, onMenuPressed: () {  // Add onMenuPressed parameter
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return Dialog( // Use Dialog instead of AlertDialog for full screen
-        child: SettingsScreen(),
-        backgroundColor: Colors.transparent, // Make the background transparent
-      );
-    },
-  );
-}),
+                            DisciAppBar(context), // No need for any callbacks now,
                             Expanded(
                               child: Stack(
                                 children: [

@@ -33,15 +33,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black54,
-      body: SafeArea(
-        child: Center(
-          child: Container(
+    return 
+           Container(
             width: MediaQuery.of(context).size.width * 0.6,
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.8,
-            ),
+            // constraints: BoxConstraints(
+            //   maxHeight: MediaQuery.of(context).size.height * 0.8,
+            // ),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -89,7 +86,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
 
-                // Sliders Section - Wrapped in SingleChildScrollView
+               
                 Flexible(
                   child: SingleChildScrollView(
                     padding: EdgeInsets.symmetric(vertical: 16.v, horizontal: 24.h),
@@ -139,9 +136,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
+          // ),
     );
   }
 

@@ -133,17 +133,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                   Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
-                    child:DisciAppBar(context, onMenuPressed: () {  // Add onMenuPressed parameter
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return Dialog( // Use Dialog instead of AlertDialog for full screen
-        child: SettingsScreen(),
-        backgroundColor: Colors.transparent, // Make the background transparent
-      );
-    },
-  );
-}),
+                    child:DisciAppBar(context), // No need for any callbacks now,
                   ),
                   Expanded(
                     child: Padding(
