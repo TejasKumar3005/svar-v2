@@ -192,7 +192,7 @@ class UserData {
                   "date": formattedDate
                 });
               }
-            else if (exercise["subtype"].toString()!= "Pronunciation" || exercise["subtype"].toString()!= "word") {
+            else if (exercise["subtype"].toString()!= "Pronunciation") {
               DocumentSnapshot docSnapshot = await exercisesCollection
                   .doc(exercise["type"])
                   .collection(exercise["phoneme"])
