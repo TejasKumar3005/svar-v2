@@ -13,6 +13,8 @@ import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/presentation/exercises/exercises_speaking_phoneme.dart';
 import 'package:svar_new/widgets/rive_preloader.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:svar_new/presentation/discrimination/appbar.dart';
+import 'package:svar_new/presentation/settings_screen/setting.dart';
 
 class ExercisesScreen extends StatefulWidget {
   const ExercisesScreen({super.key});
@@ -74,40 +76,60 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
-      body: FutureBuilder<RiveFile?>(
-        future: _riveFileFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: CircularProgressIndicator()); // Show loading indicator
-          } else if (snapshot.hasError || snapshot.data == null) {
-            return const Center(
-                child: Text('Error loading Rive file')); // Handle errors
-          } else {
-            final riveFile = snapshot.data!;
+      body: Stack(
+        children: [
+          // Rive animation content (first/bottom layer)
+          Positioned.fill(
+            child: FutureBuilder<RiveFile?>(
+              future: _riveFileFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError || snapshot.data == null) {
+                  return const Center(child: Text('Error loading Rive file'));
+                } else {
+                  final riveFile = snapshot.data!;
 
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              controller: _scrollController,
-              // Use a custom ScrollPhysics for smoother scrolling
-              physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics()),
-              child: AnimatedContainer(
-                duration: const Duration(
-                    milliseconds: 500), // Adjust animation duration as needed
-                curve: Curves.easeInOut, // Customize animation curve
-                width: MediaQuery.of(context).size.height * 13.7176,
-                height: MediaQuery.of(context).size.height,
-                alignment: Alignment.centerLeft,
-                child: RiveAnimation.direct(
-                  riveFile,
-                  fit: BoxFit.contain,
-                  onInit: _onRiveInit,
-                ),
-              ),
-            );
-          }
-        },
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    controller: _scrollController,
+                    physics: const BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics()),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeInOut,
+                      width: MediaQuery.of(context).size.height * 13.7176,
+                      height: MediaQuery.of(context).size.height,
+                      alignment: Alignment.centerLeft,
+                      child: RiveAnimation.direct(
+                        riveFile,
+                        fit: BoxFit.contain,
+                        onInit: _onRiveInit,
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+          // DisciAppBar (last/top layer)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: DisciAppBar(context, onMenuPressed: () {  // Add onMenuPressed parameter
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog( // Use Dialog instead of AlertDialog for full screen
+        child: SettingsScreen(),
+        backgroundColor: Colors.transparent, // Make the background transparent
+      );
+    },
+  );
+}),
+          ),
+        ],
       ),
     );
   }
@@ -486,7 +508,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
   void tapHandle(RiveEvent event) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
-    int currentLevel = data_pro.currentExerciseIndex;
+
     // Extract level number from event name
     int targetLevel = int.parse(event.name.split(' ')[1]);
     print("targetLevel: $targetLevel");
@@ -571,7 +593,6 @@ class _ExercisesScreenState extends State<ExercisesScreen>
   }
 
   void _onRiveInit(Artboard artboard) {
-
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int exerciseCount = data_pro.todaysExercises.length;
     data_pro.artboard = artboard;
@@ -586,8 +607,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     }
     data_pro.controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
-    print("Controller: ${data_pro.controller}");  
-    print("Artboard: ${data_pro.artboard}");  
+    print("Controller: ${data_pro.controller}");
+    print("Artboard: ${data_pro.artboard}");
     if (data_pro.controller != null) {
       data_pro.artboard!.addController(data_pro.controller!);
       data_pro.artboard!.forEachComponent((component) {
@@ -600,13 +621,14 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         for (int i = 0; i < 5; i++) {
           int actualIndex = startExerciseIndex + i;
           print("actualIndex: $actualIndex");
-         
+
           if (actualIndex >= exerciseCount) {
             break;
           }
 
           String subtypeKey = "level${i + 1}";
-          TextValueRun? textRun_subtype = data_pro.artboard!.textRun(subtypeKey);
+          TextValueRun? textRun_subtype =
+              data_pro.artboard!.textRun(subtypeKey);
           if (textRun_subtype != null) {
             print(
                 "type ${actualIndex}: ${data_pro.todaysExercises[actualIndex]['type']}");
@@ -617,7 +639,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           }
 
           String descKey = "desc${i + 1}";
-          TextValueRun? textRun_desc =data_pro.artboard!.textRun(descKey);
+          TextValueRun? textRun_desc = data_pro.artboard!.textRun(descKey);
           if (textRun_desc != null) {
             textRun_desc.text =
                 data_pro.todaysExercises[actualIndex]['description'] == null
@@ -653,7 +675,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
 
         data_pro.initializeSMINumber(
             data_pro.controller?.getNumberInput('current level') as SMINumber);
-            
+
         if (data_pro.currentLevelInput == null) {
           debugPrint("Error: 'current level' input not found!");
         }
@@ -664,12 +686,11 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           data_pro.controller!.addEventListener(tapHandle);
           return;
         }
-        data_pro
-            .changeCurrentLevel((data_pro.currentExerciseIndex.toDouble()%5 + 1));
+        data_pro.changeCurrentLevel(
+            (data_pro.currentExerciseIndex.toDouble() % 5 + 1));
         data_pro.controller!.addEventListener(tapHandle);
       });
-    }
-    else{
+    } else {
       print("Controller is null");
     }
   }

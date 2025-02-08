@@ -19,6 +19,7 @@ import 'package:svar_new/routes/app_routes.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:vad/vad.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:svar_new/presentation/settings_screen/setting.dart';
 // import 'dart:html' as html;
 
 class ExercisePronunciation extends StatefulWidget {
@@ -138,7 +139,17 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
             Column(
               children: [],
             ),
-            DisciAppBar(context),
+            DisciAppBar(context, onMenuPressed: () {  // Add onMenuPressed parameter
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog( // Use Dialog instead of AlertDialog for full screen
+        child: SettingsScreen(),
+        backgroundColor: Colors.transparent, // Make the background transparent
+      );
+    },
+  );
+}),
             Stack(
               children: [
                 Positioned(

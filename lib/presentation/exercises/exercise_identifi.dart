@@ -13,6 +13,7 @@ import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart';
+import 'package:svar_new/presentation/settings_screen/setting.dart';
 
 class ExerciseIdentification extends StatefulWidget {
   const ExerciseIdentification({Key? key})
@@ -144,7 +145,17 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                         ),
                         child: Column(
                           children: [
-                            DisciAppBar(context),
+                            DisciAppBar(context, onMenuPressed: () {  // Add onMenuPressed parameter
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog( // Use Dialog instead of AlertDialog for full screen
+        child: SettingsScreen(),
+        backgroundColor: Colors.transparent, // Make the background transparent
+      );
+    },
+  );
+}),
                             Expanded(
                               child: Stack(
                                 children: [

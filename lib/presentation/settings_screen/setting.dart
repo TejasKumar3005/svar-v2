@@ -34,115 +34,110 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black54,
       body: SafeArea(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/images/settings_bg.png"),
-              fit: BoxFit.fill,
+        child: Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.6,
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.8,
             ),
-          ),
-          child: Center(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return Container(
-                  width: constraints.maxWidth * 0.6,
-                  constraints: BoxConstraints(
-                    maxHeight: constraints.maxHeight * 0.9,
-                  ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 12.v),
                   decoration: BoxDecoration(
-                    border: Border.all(color: PrimaryColors().brown200, width: 2),
-                    borderRadius: BorderRadius.circular(20),
+                    color: PrimaryColors().deepOrange70003,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                  child: Row(
                     children: [
-                      // Back Button
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: EdgeInsets.all(8.h),
-                          child: GestureDetector(
-                            onTap: () {
-                              PlayBgm().playMusic('Back_Btn.mp3', "mp3", false);
-                              Navigator.pop(context);
-                            },
-                            child: CustomImageView(
-                              height: 35.adaptSize,
-                              width: 35.adaptSize,
-                              fit: BoxFit.contain,
-                              imagePath: ImageConstant.imgBackBtn,
+                      GestureDetector(
+                        onTap: () {
+                          PlayBgm().playMusic('Back_Btn.mp3', "mp3", false);
+                          Navigator.pop(context);
+                        },
+                        child: CustomImageView(
+                          height: 30.adaptSize,
+                          width: 30.adaptSize,
+                          fit: BoxFit.contain,
+                          imagePath: ImageConstant.imgBackBtn,
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            "Settings",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ),
-                      
-                      // Settings Title
-                      Container(
-                        margin: EdgeInsets.symmetric(vertical: 8.v),
-                        padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 6.v),
-                        decoration: BoxDecoration(
-                          color: PrimaryColors().deepOrange70003,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          "Settings",
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        ),
-                      ),
-
-                      // Sliders Section
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.h),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              buildSliderRow(
-                                'assets/images/svg/mute_btn.svg',
-                                bgmslider,
-                                (value) {
-                                  setState(() => bgmslider = value);
-                                  _playBgm.setVolume(value);
-                                },
-                              ),
-                              buildSliderRow(
-                                'assets/images/svg/musicz_btn.svg',
-                                audioslider,
-                                (value) {
-                                  setState(() => audioslider = value);
-                                },
-                              ),
-                              buildSliderRow(
-                                'assets/images/svg/video_btn.svg',
-                                videoslider,
-                                (value) {
-                                  setState(() => videoslider = value);
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // Bottom Buttons
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 16.v),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            buildButton("Privacy Policy"),
-                            SizedBox(width: 16.h),
-                            buildButton("Credits"),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
-                );
-              },
+                ),
+
+                // Sliders Section - Wrapped in SingleChildScrollView
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(vertical: 16.v, horizontal: 24.h),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        buildSliderRow(
+                          'assets/images/svg/mute_btn.svg',
+                          bgmslider,
+                          (value) {
+                            setState(() => bgmslider = value);
+                            _playBgm.setVolume(value);
+                          },
+                        ),
+                        SizedBox(height: 16.v),
+                        buildSliderRow(
+                          'assets/images/svg/musicz_btn.svg',
+                          audioslider,
+                          (value) {
+                            setState(() => audioslider = value);
+                          },
+                        ),
+                        SizedBox(height: 16.v),
+                        buildSliderRow(
+                          'assets/images/svg/video_btn.svg',
+                          videoslider,
+                          (value) {
+                            setState(() => videoslider = value);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Bottom Buttons
+                Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      buildButton("Privacy Policy"),
+                      SizedBox(width: 16.h),
+                      buildButton("Credits"),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -156,7 +151,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Container(
           width: 32.adaptSize,
           height: 32.adaptSize,
-          margin: EdgeInsets.only(right: 8.h),
+          margin: EdgeInsets.only(right: 16.h),
           child: SvgPicture.asset(
             iconPath,
             fit: BoxFit.contain,
@@ -167,14 +162,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             data: SliderTheme.of(context).copyWith(
               activeTrackColor: PrimaryColors().blue20001,
               inactiveTrackColor: PrimaryColors().teal90001,
-              trackHeight: 16.0,
+              trackHeight: 8.0,
               thumbShape: RoundSliderThumbShape(
-                enabledThumbRadius: 11.0,
-                elevation: 0,
+                enabledThumbRadius: 12.0,
+                elevation: 4,
               ),
               thumbColor: PrimaryColors().orange800,
               overlayColor: Colors.orange.withOpacity(0.2),
-              overlayShape: RoundSliderOverlayShape(overlayRadius: 14.0),
+              overlayShape: RoundSliderOverlayShape(overlayRadius: 20.0),
             ),
             child: Slider(
               value: value,
@@ -189,17 +184,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget buildButton(String text) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.h, vertical: 4.v),
-        decoration: BoxDecoration(
-          color: PrimaryColors().deepOrange70003,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(color: Colors.white, fontSize: 16),
+    return Material(
+      color: PrimaryColors().deepOrange70003,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        onTap: () {},
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 8.v),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
       ),
     );

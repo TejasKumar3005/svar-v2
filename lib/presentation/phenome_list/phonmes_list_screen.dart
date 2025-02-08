@@ -5,6 +5,7 @@ import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_provider.dart';
 import 'package:svar_new/widgets/grid_item_model.dart';
 import 'package:svar_new/widgets/grid_item_widget.dart';
+import 'package:svar_new/presentation/settings_screen/setting.dart';
 
 class PhonmesListScreen extends StatefulWidget {
   const PhonmesListScreen({Key? key}) : super(key: key);
@@ -65,7 +66,17 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                 Expanded(
                   child: Column(
                     children: [
-                    DisciAppBar(context),
+                    DisciAppBar(context, onMenuPressed: () {  // Add onMenuPressed parameter
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog( // Use Dialog instead of AlertDialog for full screen
+        child: SettingsScreen(),
+        backgroundColor: Colors.transparent, // Make the background transparent
+      );
+    },
+  );
+}),
                       SizedBox(height: size.height * 0.02),
                       Container(
                         padding: EdgeInsets.symmetric(

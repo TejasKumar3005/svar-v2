@@ -62,7 +62,8 @@ class CachingManager {
     for (var exercise in exercises) {
       var type = exercise["subtype"];
       if (type == "video") {
-        urls.add(exercise["video_url"]);
+        if (exercise["video"] != null) urls.add(exercise["video"]);
+        if (exercise["video_url"] != null) urls.add(exercise["video_url"]);
       } else if (type == "ImageToAudio") {
         ImageToAudio imageToAudio = ImageToAudio.fromJson(exercise);
         urls.add(imageToAudio.image_url);

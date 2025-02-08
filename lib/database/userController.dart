@@ -22,7 +22,7 @@ class UserData {
   final CollectionReference exercisesCollection =
       FirebaseFirestore.instance.collection("Auditory");
 
-       void showErrorSnackBar(String message) {
+  void showErrorSnackBar(String message) {
     final snackBar = SnackBar(
       elevation: 0,
       behavior: SnackBarBehavior.floating,
@@ -126,7 +126,6 @@ class UserData {
               exercisesForDate[exerciseIndex] = exerciseData;
               await userDoc.update({
                 'exercises.$date': exercisesForDate,
-                
                 'completedTillDate': date
               });
             } else {
@@ -157,14 +156,12 @@ class UserData {
 
   Future<List<dynamic>> getfortnightExercises(
       Map<String, dynamic> exercises) async {
-         var finaldata = [];
+    var finaldata = [];
     try {
       // Calculate dates
       DateTime today = DateTime.now();
       DateTime startDate = today.subtract(Duration(days: 7));
       DateTime endDate = today.add(Duration(days: 7));
-
-     
 
       // Loop through dates (14 days)
       for (var day = startDate;
@@ -178,21 +175,16 @@ class UserData {
           List<Map<String, dynamic>> updatedData = [];
 
           await Future.wait(data.map((exercise) async {
-              if(exercise["subtype"].toString()== "custom"){
-                updatedData.add({
-                  ...exercise,
-                  
-                    "description": exercise["description"],
-                    // "level": 2,
-                    // "preview": "",
-                    "type": "video",
-                    "video" : exercise["content_url"]
-                  ,
-                  "exerciseType": "Level",
-                  "date": formattedDate
-                });
-              }
-            else if (exercise["subtype"].toString()!= "Pronunciation") {
+            if (exercise["subtype"].toString() == "custom") {
+              updatedData.add({
+                "subtype": "video",
+                "description": exercise["description"],
+                "type": "video",
+                "video": exercise["content_url"],
+                "exerciseType": "Level",
+                "date": formattedDate
+              });
+            } else if (exercise["subtype"].toString() != "Pronunciation") {
               DocumentSnapshot docSnapshot = await exercisesCollection
                   .doc(exercise["type"])
                   .collection(exercise["phoneme"])
@@ -209,17 +201,16 @@ class UserData {
                   "exerciseType": exercise["type"],
                   "date": formattedDate
                 });
-              }
-               else {
+              } else {
                 debugPrint(
                     "Document with id ${exercise['eid']} does not exist.");
               }
-            }else{
+            } else {
               updatedData.add({
-                  ...exercise,
-                  "date": formattedDate,
-                  "exerciseType": "Pronunciation",
-                });
+                ...exercise,
+                "date": formattedDate,
+                "exerciseType": "Pronunciation",
+              });
             }
           }).toList());
 
@@ -229,16 +220,14 @@ class UserData {
 
       var data_pro =
           Provider.of<ExerciseProvider>(buildContext!, listen: false);
-     
 
       data_pro.setTodaysExercises(finaldata);
-      
+
       return finaldata;
     } catch (e) {
       showErrorSnackBar(e.toString());
-       var data_pro =
+      var data_pro =
           Provider.of<ExerciseProvider>(buildContext!, listen: false);
-     
 
       data_pro.setTodaysExercises(finaldata);
       return finaldata;
@@ -304,9 +293,7 @@ class UserData {
     await userCollection.doc(uid).set(map);
   }
 
-  Future getTherapyCenters() async {
-    
-  }
+  Future getTherapyCenters() async {}
 
   Future<bool> addPatientToTherapyCenter(
       String therapyCenterId, String patientId) async {
@@ -355,80 +342,77 @@ class UserData {
     }
   }
 
+  Future<int> getCurrentLevel(String auditoryType) async {
+    try {
+      String? uid = FirebaseAuth.instance.currentUser?.uid;
 
-Future<int> getCurrentLevel(String auditoryType) async {
-  try {
-    String? uid = FirebaseAuth.instance.currentUser?.uid;
-    
-    // Get reference to exercises collection
-    CollectionReference exercisesRef = FirebaseFirestore.instance
-        .collection('patients')
-        .doc(uid)
-        .collection('exercises');
+      // Get reference to exercises collection
+      CollectionReference exercisesRef = FirebaseFirestore.instance
+          .collection('patients')
+          .doc(uid)
+          .collection('exercises');
 
-    // Get the completedTillExercise
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('patients')
-        .doc(uid)
-        .get();
-    
-    String completedTillExercise = (userDoc.data() as Map<String, dynamic>)['completedTillExercise'] ?? '';
+      // Get the completedTillExercise
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(uid)
+          .get();
 
-    // Calculate date range (7 days before and after)
-    DateTime today = DateTime.now();
-    DateTime startDate = today.subtract(Duration(days: 7));
-    DateTime endDate = today.add(Duration(days: 7));
+      String completedTillExercise =
+          (userDoc.data() as Map<String, dynamic>)['completedTillExercise'] ??
+              '';
 
-    // Get all exercises within date range
-    QuerySnapshot exerciseDocs = await exercisesRef
-        .where(FieldPath.documentId, 
+      // Calculate date range (7 days before and after)
+      DateTime today = DateTime.now();
+      DateTime startDate = today.subtract(Duration(days: 7));
+      DateTime endDate = today.add(Duration(days: 7));
+
+      // Get all exercises within date range
+      QuerySnapshot exerciseDocs = await exercisesRef
+          .where(FieldPath.documentId,
               isGreaterThanOrEqualTo: startDate.toString().substring(0, 10))
-        .where(FieldPath.documentId, 
+          .where(FieldPath.documentId,
               isLessThanOrEqualTo: endDate.toString().substring(0, 10))
-        .get();
+          .get();
 
-    // Collect all exercise IDs in order
-    List<String> allExerciseIds = [];
-    
-    for (var doc in exerciseDocs.docs) {
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      
-      // Iterate through all numbered fields (levels)
-      for (var field in data.keys) {
-        if (field.toString().contains(RegExp(r'^[0-9]+$'))) {
-          List<dynamic> exercises = data[field] as List<dynamic>;
-          
-          for (var exercise in exercises) {
-            if (exercise['assignedBy'] != null &&
-                exercise['assignedBy']['type'] == 'Level' &&
-                exercise['assignedBy']['subtype'] == auditoryType) {
-              String eid = exercise['assignedBy']['eid'];
-              allExerciseIds.add(eid);
+      // Collect all exercise IDs in order
+      List<String> allExerciseIds = [];
+
+      for (var doc in exerciseDocs.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+        // Iterate through all numbered fields (levels)
+        for (var field in data.keys) {
+          if (field.toString().contains(RegExp(r'^[0-9]+$'))) {
+            List<dynamic> exercises = data[field] as List<dynamic>;
+
+            for (var exercise in exercises) {
+              if (exercise['assignedBy'] != null &&
+                  exercise['assignedBy']['type'] == 'Level' &&
+                  exercise['assignedBy']['subtype'] == auditoryType) {
+                String eid = exercise['assignedBy']['eid'];
+                allExerciseIds.add(eid);
+              }
             }
           }
         }
       }
-    }
 
-    // Sort exercise IDs
-    allExerciseIds.sort();
+      // Sort exercise IDs
+      allExerciseIds.sort();
 
-    // Find position of completedTillExercise
-    int currentLevel = allExerciseIds.indexOf(completedTillExercise) + 1;
-    
-    // If not found, return 0 or handle appropriately
-    if (currentLevel <= 0) {
+      // Find position of completedTillExercise
+      int currentLevel = allExerciseIds.indexOf(completedTillExercise) + 1;
+
+      // If not found, return 0 or handle appropriately
+      if (currentLevel <= 0) {
+        return 0;
+      }
+
+      return currentLevel;
+    } catch (e) {
+      print('Error getting current level: $e');
       return 0;
     }
-
-    return currentLevel;
-
-  } catch (e) {
-    print('Error getting current level: $e');
-    return 0;
   }
-}
-
-
- 
 }

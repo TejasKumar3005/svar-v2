@@ -20,6 +20,7 @@ import 'package:http/http.dart' as http;
 import 'package:svar_new/widgets/loading.dart';
 import 'package:video_player/video_player.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:svar_new/presentation/settings_screen/setting.dart';
 
 class ExercisesSpeakingPhoneme extends StatefulWidget {
   final List<Map<String, dynamic>> text;
@@ -117,7 +118,17 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
             children: [
               Column(
                 children: [
-                  DisciAppBar(context),
+                  DisciAppBar(context, onMenuPressed: () {  // Add onMenuPressed parameter
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog( // Use Dialog instead of AlertDialog for full screen
+        child: SettingsScreen(),
+        backgroundColor: Colors.transparent, // Make the background transparent
+      );
+    },
+  );
+}),
                 ],
               ),
               _buildText(),

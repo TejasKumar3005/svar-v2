@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 
-Widget DisciAppBar(BuildContext context) {
+typedef OnMenuPressedCallback = void Function();
+
+Widget DisciAppBar(BuildContext context, {required OnMenuPressedCallback onMenuPressed}) {
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 10),
     child: Row(
@@ -21,9 +23,8 @@ Widget DisciAppBar(BuildContext context) {
         ),
         CustomButton(
             type: ButtonType.Menu,
-            onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.setting);
-            }),
+            onPressed: onMenuPressed // Now this is correctly referenced
+        ),
       ],
     ),
   );

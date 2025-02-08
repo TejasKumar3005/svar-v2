@@ -9,6 +9,7 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart';
+import 'package:svar_new/presentation/settings_screen/setting.dart';
 
 class ExerciseDiscrimination extends StatefulWidget {
   const ExerciseDiscrimination({
@@ -132,7 +133,17 @@ class _DiscriminationState extends State<ExerciseDiscrimination> {
               // App Bar with padding
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 10.v),
-                child: DisciAppBar(context),
+                child: DisciAppBar(context, onMenuPressed: () {  // Add onMenuPressed parameter
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog( // Use Dialog instead of AlertDialog for full screen
+        child: SettingsScreen(),
+        backgroundColor: Colors.transparent, // Make the background transparent
+      );
+    },
+  );
+}),
               ),
 
               // Title section if needed
