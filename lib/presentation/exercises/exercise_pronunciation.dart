@@ -19,7 +19,7 @@ import 'package:svar_new/routes/app_routes.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:vad/vad.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:svar_new/presentation/settings_screen/setting.dart';
+
 // import 'dart:html' as html;
 
 class ExercisePronunciation extends StatefulWidget {
@@ -81,9 +81,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   Future<void> speakHindiWithoutRecording(String text) async {
     if (text.isEmpty) return;
 
-    // Temporarily pause VAD
-    final wasListening = _isVadListening;
-    if (wasListening) {
+    // Stop VAD before TTS
+    if (_isVadListening) {
       _vadHandler.stopListening();
       _isVadListening = false;
     }
@@ -91,14 +90,14 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     try {
       setState(() => isSpeaking = true);
       await flutterTts.speak(text);
-      await Future.delayed(
-          Duration(milliseconds: 1500)); // Wait for speech to complete
+      // Wait for TTS to complete plus a small buffer
+      await Future.delayed(Duration(milliseconds: 2500));
     } catch (e) {
       print("Error speaking: $e");
     } finally {
       setState(() => isSpeaking = false);
-      // Resume VAD if it was listening before
-      if (wasListening && mounted) {
+      // Only resume VAD after TTS is completely done
+      if (mounted && currentSessionCount < TOTAL_SESSIONS) {
         _vadHandler.startListening();
         _isVadListening = true;
       }
@@ -413,18 +412,37 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
       // Send to API and validate result
       dynamic apiResult = await sendWavFile(tempPath, widget.character);
+
+      if (apiResult != null && apiResult['isValid'] == false) {
+        // Check the boolean
+        // Show message to user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Please try speaking again"),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Reset current session to retry
+        currentSessionCount = currentSessionCount;
+
+        // Resume listening for retry
+        if (mounted && currentSessionCount < TOTAL_SESSIONS) {
+          _vadHandler.startListening();
+          _isVadListening = true;
+        }
+        return;
+      }
+
       if (apiResult != null) {
-        intermediateResults.add(apiResult);
+        intermediateResults.add(apiResult['result']);
         debugPrint('Processed recording ${currentSessionCount + 1}/5');
-      } else {
-        debugPrint(
-            'Invalid result from API for recording ${currentSessionCount + 1}');
       }
     } catch (e) {
       debugPrint("Error processing recording ${currentSessionCount + 1}: $e");
       showErrorSnackBar(
           "Error processing recording ${currentSessionCount + 1}: $e");
-      throw e; // Propagate error to handle in _setupVadHandler
+      throw e;
     } finally {
       setState(() => loading = false);
     }
@@ -534,7 +552,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   static Uint8List float32ToWav(List<double> float32Array) {
     const int sampleRate = 16000;
-    const int byteRate = sampleRate * 2; // 16-bit = 2 bytes per sample
+    const int byteRate = sampleRate * 2;
     final int totalAudioLen = float32Array.length * 2;
     final int totalDataLen = totalAudioLen + 36;
 
@@ -594,7 +612,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       setState(() => isSpeaking = false);
       return;
     }
-
     try {
       setState(() => isSpeaking = true);
       await flutterTts.speak(text);
@@ -672,15 +689,12 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                       children: [
                         Icon(
                           Icons.emoji_emotions,
-                          color: value.toLowerCase().split("correct").length -
-                                      1 ==
-                                  5
-                              ? Colors.green[600] // 5 correct - green
-                              : value.toLowerCase().split("correct").length -
-                                          1 >=
-                                      3
-                                  ? Colors.amber[600] // 3 or 4 correct - yellow
-                                  : Colors.red, // Less than 3 correct - red
+                          color: value.toLowerCase().contains("5/5")
+                              ? Colors.green[600] // All 5 correct
+                              : value.toLowerCase().contains("3/5") ||
+                                      value.toLowerCase().contains("4/5")
+                                  ? Colors.amber[600] // 3 or 4 correct
+                                  : Colors.red, // Less than 3 correct
                           size: 30,
                         ),
                         const SizedBox(width: 15),
