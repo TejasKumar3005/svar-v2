@@ -6,6 +6,7 @@ class NavigatorService {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 static Future<dynamic> pushNamed(String routeName, {dynamic arguments, String? riveFileName}) async {
+    debugPrint('Pushing route: $routeName');
     return navigatorKey.currentState?.push(
       RivePageRoute(
         routeName: routeName,

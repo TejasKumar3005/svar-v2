@@ -11,7 +11,7 @@ class GridItemWidget extends StatelessWidget {
           key: key,
         );
 
-  GridItemModel gridItemModelObj;
+  final GridItemModel gridItemModelObj;
 
   @override
   Widget build(BuildContext context) {

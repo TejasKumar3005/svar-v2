@@ -1,19 +1,19 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
-import 'package:rive/rive.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
-import 'package:svar_new/presentation/identification_screen/audioToImage.dart';
+import 'package:svar_new/presentation/exercises/audioToImage.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/presentation/identification_screen/provider/identification_provider.dart';
+import 'package:svar_new/presentation/exercises/identification_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:svar_new/presentation/phoneme_level_one/level_one.dart';
+import 'package:rive/rive.dart';
+import 'package:svar_new/presentation/settings_screen/setting.dart';
 
 class ExerciseIdentification extends StatefulWidget {
   const ExerciseIdentification({Key? key})
@@ -37,15 +37,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   late int leveltracker;
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
-  OverlayEntry? _overlayEntry;
+
   late UserData userData;
 
-  Artboard? _riveArtboard;
-  StateMachineController? _controller;
-  SMITrigger? _correctTriger;
-  SMITrigger? _incorrectTriger;
-
-  late RiveFile _riveFile;
+  StateMachineController? riveController;
+  SMITrigger? _correctTrigger;
+  SMITrigger? _incorrectTrigger;
 
   @override
   void dispose() {
@@ -64,9 +61,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     ]);
 
     _player = AudioPlayer();
-
     leveltracker = 0;
-    _loadRiveFile();
 
     // Initialize userData with uid and context
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -75,34 +70,43 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
 
   int sel = 0;
 
-  Future<void> _loadRiveFile() async {
-    try {
-      final bytes =
-          await rootBundle.load('assets/rive/Celebration_animation.riv');
-      _riveFile = RiveFile.import(bytes);
+  void _onRiveInit(Artboard artboard) async {
+    final controller =
+        StateMachineController.fromArtboard(artboard, 'State Machine 2');
 
-      _controller = StateMachineController.fromArtboard(
-          _riveFile.mainArtboard, 'State Machine 1');
+    if (controller != null) {
+      artboard.addController(controller);
+      riveController = controller;
 
-      if (_controller != null) {
-        _riveFile.mainArtboard.addController(_controller!);
-        _correctTriger = _controller!.getTriggerInput("correct");
-        _incorrectTriger = _controller!.getTriggerInput("incorrect");
+      // Print all state machines for debugging
+      print("\nAll State Machines in artboard:");
+      for (var stateMachine in artboard.stateMachines) {
+        print("State Machine: ${stateMachine.name}");
       }
+      _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
+      _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
 
-      setState(() {
-        _riveArtboard = _riveFile.mainArtboard; // Extract the Artboard
-      });
-    } catch (e) {
-      print('Error loading Rive file: $e');
+      print("Controller added: $controller");
     }
   }
 
   void _triggerAnimation(bool isCorrect) {
+    print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
+
     if (isCorrect) {
-      _correctTriger?.fire();
+      if (_correctTrigger != null) {
+        print("Firing correct trigger");
+        _correctTrigger!.fire();
+        print("Correct trigger fired");
+        Future.delayed(const Duration(seconds: 5), () {
+          Navigator.pop(context);
+        });
+      }
     } else {
-      _incorrectTriger?.fire();
+      if (_incorrectTrigger != null) {
+        _incorrectTrigger!.fire();
+        print("Incorrect trigger fired");
+      }
     }
   }
 
@@ -110,9 +114,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   Widget build(BuildContext context) {
     var provider = context.watch<IdentificationProvider>();
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
-
     String params = obj[2] as String;
 
     return type != "AudioToImage"
@@ -120,6 +124,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
             ? Container()
             : SafeArea(
                 child: Scaffold(
+                  
                   extendBody: true,
                   extendBodyBehindAppBar: true,
                   backgroundColor: appTheme.gray300,
@@ -127,12 +132,10 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                     children: [
                       Positioned.fill(
                         child: SvgPicture.asset(
-                          ImageConstant
-                              .imgAuditorybg, // Replace with your SVG path
+                          ImageConstant.imgAuditorybg,
                           fit: BoxFit.cover,
                         ),
                       ),
-                      // Main content
                       Container(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height,
@@ -142,7 +145,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                         ),
                         child: Column(
                           children: [
-                            DisciAppBar(context),
+                            DisciAppBar(context), // No need for any callbacks now,
                             Expanded(
                               child: Stack(
                                 children: [
@@ -153,27 +156,38 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     dtcontainer,
                                     params,
                                   ),
-                                  Positioned(
-                                    bottom: -55.h,
-                                    left: 16.h,
-                                    child: _riveArtboard == null
-                                        ? const Center(
-                                            child: CircularProgressIndicator())
-                                        : SizedBox(
-                                            height: 300,
-                                            width: 350,
-                                            child: RiveAnimation.direct(
-                                              _riveFile,
+                                  // Rive animation positioned at bottom left
+                                  Stack(
+                                    children: [
+                                      Positioned(
+                                        bottom: 0.h,
+                                        left: 0.h,
+                                        child: IgnorePointer(
+                                          child: SizedBox(
+                                            height: MediaQuery.of(context)
+                                                .size
+                                                .height,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            child: RiveAnimation.asset(
+                                              'assets/rive/Celebration_animation.riv',
+                                              onInit: _onRiveInit,
                                               fit: BoxFit.contain,
+                                              alignment: Alignment.centerLeft,
                                             ),
                                           ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                  // Tip button
                                   Positioned(
                                     bottom: 0,
                                     right: 0,
                                     child: GestureDetector(
                                       onTap: () {
-                                        // Define what happens when the button is tapped
+                                        // Add tip button functionality
                                       },
                                       child: CustomImageView(
                                         imagePath: ImageConstant.imgTipbtn,
@@ -254,8 +268,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   Widget buildDynamicOptions(String quizType, IdentificationProvider provider,
       dynamic dtcontainer, String params) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int currentExerciseIndex = obj[3] as int;
+    Map<String, dynamic> data = data_pro.todaysExercises[currentExerciseIndex];
+    ;
     dynamic dtcontainer = obj[1] as dynamic;
-    int level = obj[3] as int;
+
     switch (quizType) {
       case "ImageToAudio":
         return dtcontainer.getAudioList().length <= 4
@@ -281,7 +299,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                   Expanded(
                                     // Adjust the flex value based on your layout needs
                                     child: OptionWidget(
-                                      triggerAnimation: (value) {},
+                                      triggerAnimation: (value) {
+                                        _triggerAnimation(value);
+                                      },
                                       child: AudioWidget(
                                         audioLinks: [
                                           dtcontainer.getAudioList()[index],
@@ -297,23 +317,23 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                 context,
                                                 listen: false);
                                         if (isCorrect) {
-                                          data_pro.incrementLevel();
+                                          data_pro.incrementLevel(
+                                              currentExerciseIndex);
+
+                                          if (data["completedAt"] == null) {
+                                            UserData(
+                                                    uid: FirebaseAuth.instance
+                                                        .currentUser!.uid)
+                                                .updateExerciseData(
+                                                  euid: data["uid"],
+                                                  date: data["date"],
+                                                )
+                                                .then((value) => print(
+                                                    "Exercise data updated"));
+                                          }
                                         }
-                                        UserData(
-                                          uid: FirebaseAuth
-                                                  .instance.currentUser?.uid ??
-                                              '',
-                                        )
-                                            .updateExerciseData(
-                                                isCompleted: isCorrect,
-                                                performance: {
-                                                  "result": isCorrect,
-                                                  "time":
-                                                      DateTime.now().toString(),
-                                                },
-                                                date: obj[5],
-                                                eid: obj[4])
-                                            .then((value) => null);
+                                        
+                                       
 
                                         return isCorrect;
                                       },
@@ -354,7 +374,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       OptionWidget(
-                                        triggerAnimation: (value) {},
+                                        triggerAnimation: (value) {
+                                          _triggerAnimation(value);
+                                        },
                                         child: TextContainer(
                                           text:
                                               dtcontainer.getTextList()[index],
@@ -369,23 +391,21 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                   context,
                                                   listen: false);
                                           if (isCorrect) {
-                                            data_pro.incrementLevel();
+                                            data_pro.incrementLevel(
+                                                currentExerciseIndex);
+                                            if (data["completedAt"] == null) {
+                                              UserData(
+                                                      uid: FirebaseAuth.instance
+                                                          .currentUser!.uid)
+                                                  .updateExerciseData(
+                                                    euid: data["uid"],
+                                                    date: data["date"],
+                                                  )
+                                                  .then((value) => print(
+                                                      "Exercise data updated"));
+                                            }
                                           }
-                                          UserData(
-                                            uid: FirebaseAuth.instance
-                                                    .currentUser?.uid ??
-                                                '',
-                                          )
-                                              .updateExerciseData(
-                                                  isCompleted: isCorrect,
-                                                  performance: {
-                                                    "time": DateTime.now()
-                                                        .toString(),
-                                                    "result": "correct",
-                                                  },
-                                                  date: obj[5],
-                                                  eid: obj[4])
-                                              .then((value) => null);
+                                         
 
                                           return isCorrect;
                                         },
@@ -435,7 +455,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                             flex:
                                 2, // Adjust the flex value for the OptionWidget
                             child: OptionWidget(
-                              triggerAnimation: (value) {},
+                              triggerAnimation: (value) {
+                                _triggerAnimation(value);
+                              },
                               child: ImageWidget(
                                 imagePath: dtcontainer.getImageUrlList()[index],
                               ),
@@ -448,22 +470,21 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     context,
                                     listen: false);
                                 if (isCorrect) {
-                                  data_pro.incrementLevel();
+                                  data_pro.incrementLevel(currentExerciseIndex);
+                                  if (data["completedAt"] == null) {
+                                    UserData(
+                                            uid: FirebaseAuth
+                                                .instance.currentUser!.uid)
+                                        .updateExerciseData(
+                                          euid: data["uid"],
+                                          date: data["date"],
+                                        )
+                                        .then((value) =>
+                                            print("Exercise data updated"));
+                                  }
                                 }
 
-                                UserData(
-                                  uid: FirebaseAuth.instance.currentUser?.uid ??
-                                      '',
-                                )
-                                    .updateExerciseData(
-                                        isCompleted: isCorrect,
-                                        performance: {
-                                          "time": DateTime.now().toString(),
-                                          "result": isCorrect,
-                                        },
-                                        date: obj[5],
-                                        eid: obj[4])
-                                    .then((value) => null);
+                              
 
                                 return isCorrect;
                               },

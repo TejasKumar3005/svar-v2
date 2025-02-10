@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,6 +9,7 @@ class SettingsScreen extends StatefulWidget {
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
+  
   static Widget builder(BuildContext context) {
     return SettingsScreen();
   }
@@ -21,277 +21,182 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double videoslider = 0.5;
 
   final PlayBgm _playBgm = PlayBgm();
+  
   @override
   void initState() {
-      SystemChrome.setPreferredOrientations([
+    SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      body: SafeArea(child: Container(
-          width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
+    return 
+           Container(
+            width: MediaQuery.of(context).size.width * 0.6,
+            // constraints: BoxConstraints(
+            //   maxHeight: MediaQuery.of(context).size.height * 0.8,
+            // ),
             decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage("assets/images/settings_bg.png"), fit: BoxFit.fill),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
             ),
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.all(20),
-                
-                width: MediaQuery.of(context).size.width * 0.6,
-                decoration: BoxDecoration(
-                  border: Border.all(color: PrimaryColors().brown200, width: 2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 1.h),
-                            child: GestureDetector(
-                              onTap: () {
-                                PlayBgm()
-                                    .playMusic('Back_Btn.mp3', "mp3", false);
-                                Navigator.pop(context);
-                              },
-                              child: CustomImageView(
-                                height: 38.adaptSize,
-                                width: 38.adaptSize,
-                                fit: BoxFit.contain,
-                                imagePath: ImageConstant.imgBackBtn,
-                              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 12.v),
+                  decoration: BoxDecoration(
+                    color: PrimaryColors().deepOrange70003,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          PlayBgm().playMusic('Back_Btn.mp3', "mp3", false);
+                          Navigator.pop(context);
+                        },
+                        child: CustomImageView(
+                          height: 30.adaptSize,
+                          width: 30.adaptSize,
+                          fit: BoxFit.contain,
+                          imagePath: ImageConstant.imgBackBtn,
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            "Settings",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ],
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+
+               
+                Flexible(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(vertical: 16.v, horizontal: 24.h),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        buildSliderRow(
+                          'assets/images/svg/mute_btn.svg',
+                          bgmslider,
+                          (value) {
+                            setState(() => bgmslider = value);
+                            _playBgm.setVolume(value);
+                          },
+                        ),
+                        SizedBox(height: 16.v),
+                        buildSliderRow(
+                          'assets/images/svg/musicz_btn.svg',
+                          audioslider,
+                          (value) {
+                            setState(() => audioslider = value);
+                          },
+                        ),
+                        SizedBox(height: 16.v),
+                        buildSliderRow(
+                          'assets/images/svg/video_btn.svg',
+                          videoslider,
+                          (value) {
+                            setState(() => videoslider = value);
+                          },
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 20),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 30.h,vertical: 8),
-                      decoration: BoxDecoration(
-                      color: PrimaryColors().deepOrange70003,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text("Settings",style: TextStyle(color: Colors.white,fontSize:20),),
-                    ),
-                    SizedBox(height: 20,)
-                    ,
-                  
-                    Row(  
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      
-      children: [
-        // Music Icon
-        GestureDetector(
-          onTap: () {
-            if(bgmslider==0.0){
-                _playBgm.setVolume(0.5);
-                setState(() {
-                  bgmslider = 0.5;
-                });
-            }else{
-              _playBgm.setVolume(0.0);
-              setState(() {
-                bgmslider = 0.0;
-              });
-            }
-          },
-          child: Container(
-            width: 40,
-            height: 40,
-            child: SvgPicture.asset(
-              'assets/images/svg/mute_btn.svg', // Path to your SVG asset
-              width: 40,
-              height: 40,
+                  ),
+                ),
+
+                // Bottom Buttons
+                Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      buildButton("Privacy Policy"),
+                      SizedBox(width: 16.h),
+                      buildButton("Credits"),
+                    ],
+                  ),
+                ),
+              ],
             ),
+          // ),
+    );
+  }
+
+  Widget buildSliderRow(String iconPath, double value, Function(double) onChanged) {
+    return Row(
+      children: [
+        Container(
+          width: 32.adaptSize,
+          height: 32.adaptSize,
+          margin: EdgeInsets.only(right: 16.h),
+          child: SvgPicture.asset(
+            iconPath,
+            fit: BoxFit.contain,
           ),
         ),
-        SizedBox(width: 8), // Add spacing between the icon and the slider
-
-        // Slider
-        Container(
-          height: 40,
-          
-          width: MediaQuery.of(context).size.width * 0.36, // Adjust this value to control the width of the slider
-          child: Center(
-            child: SliderTheme(
+        Expanded(
+          child: SliderTheme(
             data: SliderTheme.of(context).copyWith(
-              activeTrackColor: PrimaryColors().blue20001, // Green part of the slider
-              inactiveTrackColor: PrimaryColors().teal90001, // Light blue part of the slider
-              trackHeight: 20.0,
+              activeTrackColor: PrimaryColors().blue20001,
+              inactiveTrackColor: PrimaryColors().teal90001,
+              trackHeight: 8.0,
               thumbShape: RoundSliderThumbShape(
-                enabledThumbRadius: 13.0, // Radius of the orange circle
-                elevation: 0, // No elevation
+                enabledThumbRadius: 12.0,
+                elevation: 4,
               ),
               thumbColor: PrimaryColors().orange800,
-               // Orange circle
-              overlayColor: Colors.orange.withOpacity(0.2), // Overlay color when dragging
-              overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
+              overlayColor: Colors.orange.withOpacity(0.2),
+              overlayShape: RoundSliderOverlayShape(overlayRadius: 20.0),
             ),
             child: Slider(
-              value: bgmslider,
-              onChanged: (value) {
-                setState(() {
-                  bgmslider = value;
-                });
-                _playBgm.setVolume(value);
-              },
-              min:0.0,
+              value: value,
+              onChanged: onChanged,
+              min: 0.0,
               max: 1.0,
             ),
           ),
-          ),
         ),
       ],
-    ),
-      SizedBox(height: 10,),
-                    Row(  
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      
-      children: [
-        // Music Icon
-        Container(
-          width: 40,
-          height: 40,
-          child: SvgPicture.asset(
-            'assets/images/svg/musicz_btn.svg', // Path to your SVG asset
-            width: 40,
-            height: 40,
-          ),
-        ),
-        SizedBox(width: 8), // Add spacing between the icon and the slider
+    );
+  }
 
-        // Slider
-        Container(
-          height: 40,
-          
-          width: MediaQuery.of(context).size.width * 0.36, // Adjust this value to control the width of the slider
-          child: Center(
-            child: SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              
-              activeTrackColor: PrimaryColors().blue20001, // Green part of the slider
-              inactiveTrackColor: PrimaryColors().teal90001, // Light blue part of the slider
-              trackHeight: 20.0,
-              thumbShape: RoundSliderThumbShape(
-                enabledThumbRadius: 13.0, // Radius of the orange circle
-                elevation: 0, // No elevation
-              ),
-              thumbColor: PrimaryColors().orange800,
-               // Orange circle
-              overlayColor: Colors.orange.withOpacity(0.2), // Overlay color when dragging
-              overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
+  Widget buildButton(String text) {
+    return Material(
+      color: PrimaryColors().deepOrange70003,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        onTap: () {},
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 8.v),
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
-            child: Slider(
-              value: audioslider,
-              onChanged: (value) {
-                
-              },
-            ),
-          ),
           ),
         ),
-      ],
-    ),
-    SizedBox(height: 10,),
-                    Row(  
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      
-      children: [
-        // Music Icon
-        Container(
-          width: 40,
-          height: 40,
-          child: SvgPicture.asset(
-            'assets/images/svg/video_btn.svg', // Path to your SVG asset
-            width: 40,
-            height: 40,
-          ),
-        ),
-        SizedBox(width: 8), // Add spacing between the icon and the slider
-
-        // Slider
-        Container(
-          height: 40,
-          
-          width: MediaQuery.of(context).size.width * 0.36, // Adjust this value to control the width of the slider
-          child: Center(
-            child: SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              activeTrackColor: PrimaryColors().blue20001, // Green part of the slider
-              inactiveTrackColor: PrimaryColors().teal90001, // Light blue part of the slider
-              trackHeight: 20.0,
-              thumbShape: RoundSliderThumbShape(
-                enabledThumbRadius: 13.0, // Radius of the orange circle
-                elevation: 0, // No elevation
-              ),
-              thumbColor: PrimaryColors().orange800,
-               // Orange circle
-              overlayColor: Colors.orange.withOpacity(0.2), // Overlay color when dragging
-              overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
-            ),
-            child: Slider(
-              value: videoslider,
-              onChanged: (value) {
-                
-              },
-            ),
-          ),
-          ),
-        ),
-      ],
-    ),
-    
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-                    
-                    Card(
-                      child: Container(
-                      margin: EdgeInsets.all(3.h),
-                        decoration: BoxDecoration(
-                          color: PrimaryColors().deepOrange70003,
-                          borderRadius: BorderRadius.circular(10),
-                      
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal:15.h,vertical:5.v),
-                        child: Text("Privacy Policy",style: TextStyle(color: Colors.white,fontSize: 18),),
-                      ),
-                    ),
-                    SizedBox(width: 20,),
-                    Card(
-                      child: Container(
-                      margin: EdgeInsets.all(3.h),
-                        decoration: BoxDecoration(
-                          color: PrimaryColors().deepOrange70003,
-                          borderRadius: BorderRadius.circular(10),
-                      
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: 15.h,vertical:5.v),
-                        child: Text("Credits",style: TextStyle(color: Colors.white,fontSize: 18),),
-                      ),
-                    )
-                  ],)
-                  ],
-                  
-                ),
-              ),
-            ),
-      )),
-
+      ),
     );
   }
 }

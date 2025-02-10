@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/core/app_export.dart'; // Make sure this import is correct
-import 'package:svar_new/core/utils/playBgm.dart'; // Make sure this import is correct
+// Make sure this import is correct
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart'; // Make sure this import is correct
 import 'package:svar_new/widgets/custom_button.dart'; // Make sure this import is correct
 import 'package:rive/rive.dart';
@@ -19,7 +19,6 @@ class LoginSignUpScreen extends StatefulWidget {
 }
 
 class LoginSignUpScreenState extends State<LoginSignUpScreen> {
-  final PlayBgm _playBgm = PlayBgm(); // Make sure PlayBgm is implemented
   late VideoPlayerController _videoController;
   bool _isVideoInitialized = false; // Track video initialization
 
@@ -63,8 +62,10 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
-        showQuitDialog(context); // Make sure showQuitDialog is defined
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          showQuitDialog(context);
+        }
       },
       child: SafeArea(
         child: Scaffold(
@@ -103,7 +104,8 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
                       width: screenWidth * 0.8,
                       height: screenHeight * 0.15,
                       fit: BoxFit.contain,
-                      imagePath: ImageConstant.imgSvaLogo, // Make sure this is correct
+                      imagePath:
+                          ImageConstant.imgSvaLogo, // Make sure this is correct
                     ),
                     SizedBox(height: screenHeight * 0.05),
                     Flexible(

@@ -16,6 +16,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
 import 'package:svar_new/widgets/loading.dart';
 import 'package:video_player/video_player.dart';
+import 'package:svar_new/presentation/settings_screen/setting.dart';
 
 class SpeakingPhonemeScreen extends StatefulWidget {
   final List<Map<String, dynamic>> text;
@@ -87,7 +88,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (loading && _overlayEntry == null) {
         _overlayEntry = createOverlayEntry(context);
-        Overlay.of(context)?.insert(_overlayEntry!);
+        Overlay.of(context).insert(_overlayEntry!);
       } else if (!loading && _overlayEntry != null) {
         _overlayEntry?.remove();
         _overlayEntry = null;
@@ -108,7 +109,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
             children: [
               Column(
                 children: [
-                  DisciAppBar(context),
+                DisciAppBar(context), // No need for any callbacks now,
                 ],
               ),
               _buildText(),
@@ -126,23 +127,6 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomButton(
-            type: ButtonType.Back,
-            onPressed: () {
-              NavigatorService.goBack();
-            },
-          ),
-          Spacer(),
-        ],
-      ),
-    );
-  }
 
   Widget _buildText() {
     return Positioned(
@@ -484,16 +468,7 @@ Widget pronunciationResultWidget(
   );
 }
 
-Widget _buildDifficultyLevel(String label, bool isSelected) {
-  return Text(
-    label,
-    style: TextStyle(
-      fontSize: 14.0,
-      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-      color: isSelected ? Colors.orange : Colors.red,
-    ),
-  );
-}
+
 
 String selectRandomWord(dynamic hindiWords) {
   Random random = Random();

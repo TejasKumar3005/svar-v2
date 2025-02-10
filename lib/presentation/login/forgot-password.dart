@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class ForgotPasswordDialog extends StatefulWidget {
   @override
@@ -10,14 +11,28 @@ class ForgotPasswordDialog extends StatefulWidget {
 class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   final TextEditingController _emailController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+   void showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'password sent!',
+        message: message,
+        contentType: ContentType.success,
+      ),
+    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
 
   Future<void> _sendResetEmail() async {
     if (_emailController.text.isNotEmpty) {
       try {
         await _auth.sendPasswordResetEmail(email: _emailController.text.trim());
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Password reset email sent')),
-        );
+     showErrorSnackBar('Password reset email sent');
+       
         Navigator.of(context).pop(); // Close the dialog after successful email sent
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -25,9 +40,8 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
         );
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter an email address')),
-      );
+      showErrorSnackBar('Please enter an email address');
+     
     }
   }
 
@@ -119,6 +133,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                     if (value == null || value == "") {
                       return "Please enter $name";
                     }
+                   
                   },
                 ),
               ),

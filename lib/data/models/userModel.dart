@@ -1,5 +1,4 @@
 import 'package:svar_new/data/models/gift.dart';
-import 'package:svar_new/widgets/custom_level_map/level_map.dart';
 
 class LevelMap {
   int detection;
@@ -177,7 +176,7 @@ class UserModel {
       "address": this.address,
       "therapist": this.therapist,
       "batch": this.batch,
-      "levelMap": this.levelMap!.toJson(),
+      "levelMap": this.levelMap.toJson(),
       "activities": this.activities.map((e) => e.toJson()).toList(),
       "exercises": this.exercises,
       // "gift_purchase_history": list_gifts,

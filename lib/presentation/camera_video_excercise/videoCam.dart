@@ -11,6 +11,7 @@ import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart'
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
 import 'package:svar_new/widgets/auditoryAppbar.dart';
 import 'package:video_player/video_player.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class VideoCamScreen extends StatefulWidget {
   const VideoCamScreen({super.key});
@@ -26,8 +27,6 @@ class VideoCamScreen extends StatefulWidget {
 class _VideoCamScreenState extends State<VideoCamScreen>
     with WidgetsBindingObserver {
   late CameraController _controller;
-  bool _isCameraReady = false;
-  late Future<void> _initializeControllerFuture;
   bool isCameraReady = false;
   bool isVideoReady = false;
 
@@ -54,6 +53,8 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     }
   }
 
+  
+
   Future<void> _initializeCamera() async {
     // Obtain a list of available cameras on the device.
     final cameras = await availableCameras();
@@ -73,12 +74,9 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     });
     
   } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Error: ${e.toString()}'),
-      ),
-    );
+    showErrorSnackBar(" Error: ${e.toString()}");
   }
+ 
     
   }
 
@@ -98,6 +96,21 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     _requestCameraPermission();
     // initiliaseVideo();
   });
+  }
+    void showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Oh Snap!',
+        message: message,
+        contentType: ContentType.failure,
+      ),
+    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
   }
 
 
@@ -144,7 +157,7 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     if (state == AppLifecycleState.inactive) {
       // _controller.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      if (_controller != null && !_controller.value.isInitialized) {
+      if ( !_controller.value.isInitialized) {
       _initializeCamera().then((_) {
         // Ensure the camera is locked to the desired orientation
         _controller.lockCaptureOrientation(DeviceOrientation.landscapeRight);
@@ -223,27 +236,4 @@ class _VideoCamScreenState extends State<VideoCamScreen>
     ));
   }
 
-  Future<void> _initializeCameraController(
-      CameraDescription cameraDescription) async {
-    final CameraController cameraController = CameraController(
-      cameraDescription,
-      kIsWeb ? ResolutionPreset.max : ResolutionPreset.medium,
-      enableAudio: false,
-      imageFormatGroup: ImageFormatGroup.jpeg,
-    );
-      cameraController.lockCaptureOrientation(DeviceOrientation.landscapeLeft);
-    _controller = cameraController;
-
-    // If the controller is updated then update the UI.
-    cameraController.addListener(() {
-      if (mounted) {
-        setState(() {});
-      }
-      if (cameraController.value.hasError) {}
-    });
-
-    if (mounted) {
-      setState(() {});
-    }
-  }
 }

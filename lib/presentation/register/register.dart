@@ -5,7 +5,6 @@ import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/core/utils/validation_functions.dart';
 import 'package:svar_new/database/userController.dart';
-import 'package:svar_new/localization/app_localization.dart';
 import 'package:svar_new/presentation/register/methods.dart';
 import 'package:svar_new/presentation/register/provider/register_provider.dart';
 

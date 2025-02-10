@@ -1,20 +1,20 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
-// import 'package:svar_new/data/models/levelManagementModel/audio.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/exercises/exercise_pronunciation.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/presentation/exercises/exercises_speaking_phoneme.dart';
-import 'package:svar_new/presentation/speaking_phoneme/speaking_phoneme.dart';
 import 'package:svar_new/widgets/rive_preloader.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:svar_new/presentation/discrimination/appbar.dart';
+import 'package:svar_new/presentation/settings_screen/setting.dart';
 
 class ExercisesScreen extends StatefulWidget {
   const ExercisesScreen({super.key});
@@ -30,17 +30,29 @@ extension _TextExtension on Artboard {
   TextValueRun? textRun(String name) => component<TextValueRun>(name);
 }
 
-class _ExercisesScreenState extends State<ExercisesScreen> {
+class _ExercisesScreenState extends State<ExercisesScreen>
+    with TickerProviderStateMixin {
   ScrollController _scrollController = ScrollController();
   StateMachineController? _controller;
   late Future<RiveFile?> _riveFileFuture;
-  final GlobalKey _key = GlobalKey();
-  Artboard? _riveArtboard;
+  late AnimationController _animationController;
   var train;
   double? _previousTrainX;
 
   @override
   void initState() {
+    super.initState();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat();
+
+    _animationController.addListener(() {
+      if (mounted) {
+        _trackTrainPosition();
+      }
+    });
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
@@ -53,50 +65,61 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   }
 
   @override
+  void dispose() {
+    // Cancel any active timers
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var provider = context.watch<ExerciseProvider>();
-    print("provider.todaysExercises");
-    print(provider.todaysExercises);
+    return Scaffold(
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          // Rive animation content (first/bottom layer)
+          Positioned.fill(
+            child: FutureBuilder<RiveFile?>(
+              future: _riveFileFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError || snapshot.data == null) {
+                  return const Center(child: Text('Error loading Rive file'));
+                } else {
+                  final riveFile = snapshot.data!;
 
-    return SafeArea(
-      child: Scaffold(
-        extendBody: true,
-        extendBodyBehindAppBar: true,
-        body: FutureBuilder<RiveFile?>(
-          future: _riveFileFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                  child: CircularProgressIndicator()); // Show loading indicator
-            } else if (snapshot.hasError || snapshot.data == null) {
-              return const Center(
-                  child: Text('Error loading Rive file')); // Handle errors
-            } else {
-              final riveFile = snapshot.data!;
-
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                controller: _scrollController,
-                // Use a custom ScrollPhysics for smoother scrolling
-                physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
-                child: AnimatedContainer(
-                  duration: const Duration(
-                      milliseconds: 500), // Adjust animation duration as needed
-                  curve: Curves.easeInOut, // Customize animation curve
-                  width: MediaQuery.of(context).size.height * 13.7176,
-                  height: MediaQuery.of(context).size.height,
-                  alignment: Alignment.centerLeft,
-                  child: RiveAnimation.direct(
-                    riveFile,
-                    fit: BoxFit.contain,
-                    onInit: _onRiveInit,
-                  ),
-                ),
-              );
-            }
-          },
-        ),
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    controller: _scrollController,
+                    physics: const BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics()),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeInOut,
+                      width: MediaQuery.of(context).size.height * 13.7176,
+                      height: MediaQuery.of(context).size.height,
+                      alignment: Alignment.centerLeft,
+                      child: RiveAnimation.direct(
+                        riveFile,
+                        fit: BoxFit.contain,
+                        onInit: _onRiveInit,
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+          // DisciAppBar (last/top layer)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child:DisciAppBar(context), // No need for any callbacks now,
+          ),
+        ],
       ),
     );
   }
@@ -131,24 +154,51 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           _handleLevel(context, "notcompleted", startExerciseIndex);
           break;
         case 'Pronunciation':
-          await Future.delayed(Duration.zero);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ExercisePronunciation(
-                character: data_pro.todaysExercises[startExerciseIndex]["word"],
-                eid: data_pro.todaysExercises[startExerciseIndex]["eid"],
-                date: data_pro.todaysExercises[startExerciseIndex]["date"],
-              ),
-            ),
-          );
-          break;
-        default:
-          debugPrint("Unexpected exercise type: $exerciseType");
-          break;
+          _handlePronunciation(context, "notcompleted", startExerciseIndex);
       }
     } catch (e) {
       debugPrint("Error in _handleLevelType: $e");
+    }
+  }
+
+  void _handlePronunciation(
+      BuildContext context, String params, int startExerciseIndex) async {
+    try {
+      var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+      Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+
+      if (data.isEmpty) {
+        return;
+      }
+
+      String? type = data["type"];
+      if (type == null) {
+        debugPrint("Type is null in the fetched data.");
+        return;
+      }
+
+      debugPrint("Fetched type for Pronunciation: $type");
+      debugPrint("Data is: $data");
+
+      final Object dtcontainer = retrieveObject(type, data);
+
+      List<dynamic> argumentsList = [
+        type,
+        dtcontainer,
+        params,
+        startExerciseIndex,
+        data["eid"],
+        data["date"],
+        data,
+      ];
+
+      debugPrint("Arguments list is: $argumentsList");
+
+      await Future.delayed(Duration.zero);
+      NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
+          arguments: argumentsList);
+    } catch (e) {
+      debugPrint("Error in Pronunciation handling: $e");
     }
   }
 
@@ -159,7 +209,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
       ;
 
-      if (data == null || data.isEmpty) {
+      if (data.isEmpty) {
         return;
       }
 
@@ -186,11 +236,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                data_pro.incrementLevel();
+                data_pro.incrementLevel(startExerciseIndex);
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
-                        eid: data["eid"],
+                        euid: data["uid"],
                         date: data["date"],
                       )
                       .then((value) => print("Exercise data updated"));
@@ -205,7 +255,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         print(data);
         // Handle other types
         final Object dtcontainer = retrieveObject(type, data);
-
+        print("dtcontainer: $dtcontainer");
         List<dynamic> argumentsList = [
           type,
           dtcontainer,
@@ -215,7 +265,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");
-
+        await Future.delayed(Duration.zero);
         NavigatorService.pushNamed(AppRoutes.exerciseDetection,
             arguments: argumentsList);
       }
@@ -231,7 +281,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
       ;
 
-      if (data == null || data.isEmpty) {
+      if (data.isEmpty) {
         return;
       }
 
@@ -257,11 +307,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                data_pro.incrementLevel();
+                data_pro.incrementLevel(startExerciseIndex);
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
-                        eid: data["eid"],
+                        euid: data["uid"],
                         date: data["date"],
                       )
                       .then((value) => print("Exercise data updated"));
@@ -301,7 +351,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
       ;
 
-      if (data == null || data.isEmpty) {
+      if (data.isEmpty) {
         return;
       }
 
@@ -331,11 +381,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                data_pro.incrementLevel();
+                data_pro.incrementLevel(startExerciseIndex);
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
-                        eid: data["eid"],
+                        euid: data["uid"],
                         date: data["date"],
                       )
                       .then((value) => print("Exercise data updated"));
@@ -357,7 +407,8 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           params,
           startExerciseIndex,
           data["eid"],
-          data["date"]
+          data["date"],
+          data
         ];
         debugPrint("Arguments list is: $argumentsList");
         await Future.delayed(Duration.zero);
@@ -394,12 +445,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             builder: (context) => ExerciseVideo(
               videoUrl: data["video"],
               onVideoComplete: () {
-                data_pro.incrementLevel();
+                data_pro.incrementLevel(startExerciseIndex);
 
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
-                        eid: data["eid"],
+                        euid: data["uid"],
                         date: data["date"],
                       )
                       .then((value) => print("Exercise data updated"));
@@ -418,7 +469,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                   .toList(),
               videoUrl: data["video_url"],
               testSpeech: data["test_speech"],
-              eid: data["eid"],
+              uid: data["uid"],
               date: data["date"],
             ),
           ),
@@ -447,110 +498,127 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   void tapHandle(RiveEvent event) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = (data_pro.currentExerciseIndex ~/ 5) * 5;
-    int currentExerciseIndex = data_pro.currentExerciseIndex;
-    print("startExerciseIndex: $startExerciseIndex");
-    if (event.name == "level 1") {
-      if(data_pro.todaysExercises.length-1 < startExerciseIndex){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("No exercises found for today"),
-        ));
-        return;
-      }
 
-      if (startExerciseIndex - currentExerciseIndex >= 2) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Please complete the previous levels"),
-        ));
-        return;
+    // Extract level number from event name
+    int targetLevel = int.parse(event.name.split(' ')[1]);
+    print("targetLevel: $targetLevel");
+
+    print("startExerciseIndex: $startExerciseIndex");
+
+    // Check if the requested level exists in today's exercises
+    if (data_pro.todaysExercises.length - 1 <
+        startExerciseIndex + targetLevel - 1) {
+      final snackBar = SnackBar(
+        /// need to set following properties for best effect of awesome_snackbar_content
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        content: AwesomeSnackbarContent(
+          title: 'On Snap!',
+          message: 'No exercises found today',
+
+          /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+          contentType: ContentType.failure,
+        ),
+      );
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
+      return;
+    }
+
+    // // Check if trying to access a future level
+    // if (targetLevel > currentLevel) {
+    //   final snackBar = SnackBar(
+    //     /// need to set following properties for best effect of awesome_snackbar_content
+    //     elevation: 0,
+    //     behavior: SnackBarBehavior.floating,
+    //     backgroundColor: Colors.transparent,
+    //     content: AwesomeSnackbarContent(
+    //       title: 'On Snap!',
+    //       message: 'PLease complete the previous levels',
+
+    //       /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
+    //       contentType: ContentType.failure,
+    //     ),
+    //   );
+    //   ScaffoldMessenger.of(context)
+    //     ..hideCurrentSnackBar()
+    //     ..showSnackBar(snackBar);
+    //   return;
+    // }
+
+    // If all checks pass, handle the level
+    _handleLevelType(startExerciseIndex + targetLevel - 1, "notcompleted");
+  }
+
+  String formatDate(String date) {
+    try {
+      final months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ];
+
+      List<String> parts = date.split('-');
+      if (parts.length >= 3) {
+        // parts[0] is year, parts[1] is month, parts[2] is day
+        int day = int.parse(parts[2]);
+        int month = int.parse(parts[1]);
+        return '$day ${months[month - 1]}';
       }
-      _handleLevelType(startExerciseIndex, "notcompleted");
-    } else if (event.name == "level 2") {
-      
-      if(data_pro.todaysExercises.length-1 < startExerciseIndex+1){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("No exercises found for today"),
-        ));
-        return;
-      }
-      if (startExerciseIndex - currentExerciseIndex >= 3) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Please complete the previous levels"),
-        ));
-        return;
-      }
-      _handleLevelType(startExerciseIndex + 1, "notcompleted");
-    } else if (event.name == "level 3") {
-        if(data_pro.todaysExercises.length-1 < startExerciseIndex+2){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("No exercises found for today"),
-        ));
-        return;
-      }
-        if (startExerciseIndex - currentExerciseIndex >= 4) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Please complete the previous levels"),
-        ));
-        return;
-      }
-      _handleLevelType(startExerciseIndex + 2, "notcompleted");
-    } else if (event.name == "level 4") {
-        if(data_pro.todaysExercises.length-1 < startExerciseIndex+3){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("No exercises found for today"),
-        ));
-        return;
-      }
-        if (startExerciseIndex - currentExerciseIndex >= 5) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Please complete the previous levels"),
-        ));
-        return;
-      }
-      _handleLevelType(startExerciseIndex + 3, "notcompleted");
-    } else if (event.name == "level 5") {
-        if(data_pro.todaysExercises.length-1 < startExerciseIndex+4){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("No exercises found for today"),
-        ));
-        return;
-      }
-        if (startExerciseIndex - currentExerciseIndex >= 6) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Please complete the previous levels"),
-        ));
-        return;
-      }
-      _handleLevelType(startExerciseIndex + 4, "notcompleted");
+      return 'Invalid Date';
+    } catch (e) {
+      return 'Invalid Date';
     }
   }
 
   void _onRiveInit(Artboard artboard) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int exerciseCount = data_pro.todaysExercises.length;
+    data_pro.artboard = artboard;
+    print("Total exercises to do : ${data_pro.todaysExercises.length}");
     int startExerciseIndex =
         (data_pro.currentExerciseIndex ~/ 5) * 5; // Calculate starting index
     int endExerciseIndex = startExerciseIndex + 4;
+    print("startExerciseIndex: $startExerciseIndex");
+    print("endExerciseIndex: $endExerciseIndex");
     if (endExerciseIndex > exerciseCount) {
-      endExerciseIndex = exerciseCount-1;
+      endExerciseIndex = exerciseCount - 1;
     }
-    _controller =
+    data_pro.controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 1');
-
-    if (_controller != null) {
-      artboard.addController(_controller!);
-artboard.forEachComponent((component) {
-  if (component is TextValueRun)
-    {  print("Component: ${component.runtimeType} - Name: ${component.name}");}
-    });
+    print("Controller: ${data_pro.controller}");
+    print("Artboard: ${data_pro.artboard}");
+    if (data_pro.controller != null) {
+      data_pro.artboard!.addController(data_pro.controller!);
+      data_pro.artboard!.forEachComponent((component) {
+        if (component is TextValueRun) {
+          print(
+              "Component: ${component.runtimeType} - Name: ${component.name}");
+        }
+      });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         for (int i = 0; i < 5; i++) {
-          int actualIndex = startExerciseIndex +
-              i; // Calculate the actual index in todaysExercises
-          if (actualIndex >= endExerciseIndex)
-            break; // Stop if we've processed all available exercises
+          int actualIndex = startExerciseIndex + i;
+          print("actualIndex: $actualIndex");
+
+          if (actualIndex >= exerciseCount) {
+            break;
+          }
 
           String subtypeKey = "level${i + 1}";
-          TextValueRun? textRun_subtype = artboard.textRun(subtypeKey);
+          TextValueRun? textRun_subtype =
+              data_pro.artboard!.textRun(subtypeKey);
           if (textRun_subtype != null) {
             print(
                 "type ${actualIndex}: ${data_pro.todaysExercises[actualIndex]['type']}");
@@ -561,7 +629,7 @@ artboard.forEachComponent((component) {
           }
 
           String descKey = "desc${i + 1}";
-          TextValueRun? textRun_desc = artboard.textRun(descKey);
+          TextValueRun? textRun_desc = data_pro.artboard!.textRun(descKey);
           if (textRun_desc != null) {
             textRun_desc.text =
                 data_pro.todaysExercises[actualIndex]['description'] == null
@@ -572,40 +640,48 @@ artboard.forEachComponent((component) {
           }
 
           String typeKey = "type${i + 1}";
-          TextValueRun? textRun_type = artboard.textRun(typeKey);
+          TextValueRun? textRun_type = data_pro.artboard!.textRun(typeKey);
           if (textRun_type != null) {
-            textRun_type.text = data_pro.todaysExercises[actualIndex]
-                    ['exerciseType'] ??
-                "Exercise Type";
+            String dateStr =
+                data_pro.todaysExercises[actualIndex]['date'] ?? 'No Date';
+            if (dateStr != 'No Date') {
+              dateStr = formatDate(dateStr);
+            }
+            textRun_type.text = dateStr;
           } else {
             debugPrint("Error: '$typeKey' text run not found!");
           }
         }
 
-        train = artboard.component('train');
+        train = data_pro.artboard!.component('train');
 
         if (train != null) {
           print("train position: ${train.x}");
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            Timer.periodic(const Duration(milliseconds: 100), (timer) {
-              _trackTrainPosition();
-            });
-          });
+
           _previousTrainX = train.x;
         } else {
           debugPrint("Error: 'train' not found!");
         }
 
-        data_pro.initiliaseSMINumber(
-            _controller?.getNumberInput('current level') as SMINumber);
+        data_pro.initializeSMINumber(
+            data_pro.controller?.getNumberInput('current level') as SMINumber);
+
         if (data_pro.currentLevelInput == null) {
           debugPrint("Error: 'current level' input not found!");
         }
 
-        data_pro
-            .changeCurrentLevel(data_pro.currentExerciseIndex.toDouble() + 1);
-        _controller!.addEventListener(tapHandle);
+        print("current level: ${data_pro.currentExerciseIndex}");
+        if (data_pro.currentExerciseIndex == 5) {
+          data_pro.changeCurrentLevel(1);
+          data_pro.controller!.addEventListener(tapHandle);
+          return;
+        }
+        data_pro.changeCurrentLevel(
+            (data_pro.currentExerciseIndex.toDouble() % 5 + 1));
+        data_pro.controller!.addEventListener(tapHandle);
       });
+    } else {
+      print("Controller is null");
     }
   }
 

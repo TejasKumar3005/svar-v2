@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:svar_new/presentation/identification_screen/celebration_overlay.dart';
-import 'package:svar_new/widgets/text_option.dart';
-import 'package:svar_new/widgets/image_option.dart';
-import 'package:svar_new/widgets/audio_widget.dart';
-import 'package:svar_new/widgets/custom_button.dart';
+// import 'package:svar_new/presentation/identification_screen/celebration_overlay.dart';
+import 'package:audioplayers/audioplayers.dart'; // Make sure to add this dependency
 
 class OptionWidget extends StatefulWidget {
   final Widget child;
@@ -23,11 +20,33 @@ class OptionWidget extends StatefulWidget {
 
 class _OptionWidgetState extends State<OptionWidget> {
   bool _isGlowing = false;
-  OverlayEntry? _overlayEntry;
+  // OverlayEntry? _overlayEntry;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
-  void click() {
+  Future<void> _playAudio(bool isCorrect) async {
+    try {
+      if (isCorrect) {
+        await _audioPlayer.play(AssetSource('assets/audio/correct_answer.mp3'));
+      } else {
+        await _audioPlayer.play(AssetSource('assets/audio/wrong_answer.mp3'));
+      }
+    } catch (e) {
+      debugPrint('Error playing audio: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  void click() async {
     bool isCorrectResult = widget.isCorrect();
     widget.triggerAnimation(isCorrectResult); // Trigger animation
+
+    // Play the appropriate audio
+    await _playAudio(isCorrectResult);
 
     if (isCorrectResult) {
       // _overlayEntry = celebrationOverlay(context, () {
@@ -39,9 +58,11 @@ class _OptionWidgetState extends State<OptionWidget> {
         _isGlowing = true;
       });
       Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _isGlowing = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isGlowing = false;
+          });
+        }
       });
     }
   }

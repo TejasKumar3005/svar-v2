@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
@@ -13,8 +10,8 @@ import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
-import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:svar_new/presentation/settings_screen/setting.dart';
 
 class ExerciseDetection extends StatefulWidget {
   const ExerciseDetection({
@@ -47,12 +44,9 @@ class _DetectionState extends State<ExerciseDetection> {
   double currentProgress = 0.0;
   double totalDuration = 0.0;
 
-  Artboard? _riveArtboard;
-  StateMachineController? _controller;
-  SMITrigger? _correctTriger;
-  SMITrigger? _incorrectTriger;
-
-  late RiveFile _riveFile;
+  StateMachineController? riveController;
+  SMITrigger? _correctTrigger;
+  SMITrigger? _incorrectTrigger;
 
   @override
   void initState() {
@@ -73,34 +67,45 @@ class _DetectionState extends State<ExerciseDetection> {
     });
   }
 
-  Future<void> _loadRiveFile() async {
-    try {
-      final bytes =
-          await rootBundle.load('assets/rive/Celebration_animation.riv');
-      _riveFile = RiveFile.import(bytes);
+  void _onRiveInit(Artboard artboard) async {
+    final controller =
+        StateMachineController.fromArtboard(artboard, 'State Machine 2');
 
-      _controller = StateMachineController.fromArtboard(
-          _riveFile.mainArtboard, 'State Machine 1');
+    if (controller != null) {
+      artboard.addController(controller);
+      riveController = controller;
 
-      if (_controller != null) {
-        _riveFile.mainArtboard.addController(_controller!);
-        _correctTriger = _controller!.getTriggerInput("correct");
-        _incorrectTriger = _controller!.getTriggerInput("incorrect");
+      // Print all state machines for debugging
+      print("\nAll State Machines in artboard:");
+      for (var stateMachine in artboard.stateMachines) {
+        print("State Machine: ${stateMachine.name}");
       }
 
-      setState(() {
-        _riveArtboard = _riveFile.mainArtboard; // Extract the Artboard
-      });
-    } catch (e) {
-      print('Error loading Rive file: $e');
+      // Get the triggers
+      _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
+      _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
+
+      print("Controller added: $controller");
     }
   }
 
   void _triggerAnimation(bool isCorrect) {
+    print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
+
     if (isCorrect) {
-      _correctTriger?.fire();
+      if (_correctTrigger != null) {
+        print("Firing correct trigger");
+        _correctTrigger!.fire();
+        print("Correct trigger fired");
+        Future.delayed(const Duration(seconds: 5), () {
+          Navigator.pop(context);
+        });
+      }
     } else {
-      _incorrectTriger?.fire();
+      if (_incorrectTrigger != null) {
+        _incorrectTrigger!.fire();
+        print("Incorrect trigger fired");
+      }
     }
   }
 
@@ -208,34 +213,40 @@ class _DetectionState extends State<ExerciseDetection> {
         ),
         child: Column(
           children: [
-            DisciAppBar(context),
+            DisciAppBar(context), // No need for any callbacks now,
             SizedBox(
               height: 26.v,
             ),
             Expanded(
-                  // Important: Wrap the quiz in an Expanded
-                  child: Stack(
-                    // Added Stack to hold the Rive animation
-                    children: [
-                      Center(child: detectionQuiz(context, type)),
-                      Positioned(
-                                    bottom: -55.h,
-                                    left: 16.h,
-                                    child: _riveArtboard == null
-                                        ? const Center(
-                                            child: CircularProgressIndicator())
-                                        : SizedBox(
-                                            height: 300,
-                                            width: 350,
-                                            child: RiveAnimation.direct(
-                                              _riveFile,
-                                              fit: BoxFit.contain,
-                                            ),
-                                          ),
-                                  ),
-                    ],
-                  ),
-                ),
+              // Important: Wrap the quiz in an Expanded
+              child: Stack(
+                // Added Stack to hold the Rive animation
+                children: [
+                  Center(child: detectionQuiz(context, type)),
+                  if (type == "MutedUnmuted")
+                    Stack(
+                      children: [
+                        Positioned(
+                          bottom: 0.h,
+                          left: 0.h,
+                          child: IgnorePointer(
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height,
+                              width: MediaQuery.of(context).size.width,
+                              child: RiveAnimation.asset(
+                                'assets/rive/Celebration_animation.riv',
+                                onInit: _onRiveInit,
+                                fit: BoxFit.contain,
+                                alignment: Alignment.centerLeft,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -264,8 +275,11 @@ class _DetectionState extends State<ExerciseDetection> {
 
   Widget MutedUnmuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    level = obj[4] as int;
-    dynamic dtcontainer = obj[1] as dynamic;
+
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int startExerciseIndex = obj[3] as int;
+    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+    ;
     return Column(
       children: [
         Container(
@@ -351,8 +365,8 @@ class _DetectionState extends State<ExerciseDetection> {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
-                  triggerAnimation: (bool value) {
-                    
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: OptionButton(
                     type: ButtonType.Video1,
@@ -362,23 +376,20 @@ class _DetectionState extends State<ExerciseDetection> {
                   ),
                   isCorrect: () {
                     var condition = (obj[1] as dynamic).getMuted() == 1;
-                    
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                       if (condition) {data_pro.incrementLevel();}
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(
-                              isCompleted: condition,
-                              performance: {
-                                "time": DateTime.now().toString(),
-                                "result": condition,
-                              },
-                              date: obj[5],
-                              eid: obj[4])
-                          .then((value) => null);
-                    
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              euid: data["uid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
+                    }
 
                     return condition;
                   },
@@ -391,8 +402,8 @@ class _DetectionState extends State<ExerciseDetection> {
                 width: MediaQuery.of(context).size.width *
                     0.40, // Dynamically set width
                 child: OptionWidget(
-                  triggerAnimation: (value){
-
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
                   },
                   child: OptionButton(
                     type: ButtonType.Video2,
@@ -401,25 +412,21 @@ class _DetectionState extends State<ExerciseDetection> {
                     },
                   ),
                   isCorrect: () {
-
                     var condition = (obj[1] as dynamic).getMuted() == 0;
-                    
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                       if (condition) {data_pro.incrementLevel();}
-                      UserData(
-                        uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-                      )
-                          .updateExerciseData(
-                              isCompleted: condition,
-                              performance: {
-                                "time": DateTime.now().toString(),
-                                "result": condition,
-                              },
-                              date: obj[5],
-                              eid: obj[4])
-                          .then((value) => null);
-                    
+
+                    var data_pro =
+                        Provider.of<ExerciseProvider>(context, listen: false);
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              euid: data["uid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
+                    }
 
                     return condition;
                   },
@@ -433,9 +440,6 @@ class _DetectionState extends State<ExerciseDetection> {
   }
 }
 
-///
-/// New StatefulWidget: HalfMutedWidget
-///
 class HalfMutedWidget extends StatefulWidget {
   final List<String> audioLinks;
 
@@ -451,26 +455,49 @@ class HalfMutedWidget extends StatefulWidget {
 class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   final GlobalKey<AudioWidgetState> _childKey = GlobalKey<AudioWidgetState>();
   Timer? _volumeTimer;
+  StateMachineController? riveController;
+  SMITrigger? _correctTrigger;
+  SMITrigger? _incorrectTrigger;
 
   @override
   void initState() {
     super.initState();
-    // Start the volume control after the first frame is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startVolumeControl();
     });
   }
 
+  void _onRiveInit(Artboard artboard) async {
+    final controller =
+        StateMachineController.fromArtboard(artboard, 'State Machine 2');
+
+    if (controller != null) {
+      artboard.addController(controller);
+      riveController = controller;
+      _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
+      _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
+    }
+  }
+
+  void _triggerAnimation(bool isCorrect) {
+    if (isCorrect && _correctTrigger != null) {
+      _correctTrigger!.fire();
+      Future.delayed(const Duration(seconds: 5), () {
+        if (mounted) Navigator.pop(context);
+      });
+    } else if (!isCorrect && _incorrectTrigger != null) {
+      _incorrectTrigger!.fire();
+    }
+  }
+
   void _startVolumeControl() {
     _volumeTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
-      if (_childKey.currentState != null) {
-        double progress = _childKey.currentState!.progress;
-        if (progress < 0.5) {
-          // Mute for the first half
-          globalAudioPlayer.setVolume(0.0);
-        } else {
-          // Unmute for the second half
-          globalAudioPlayer.setVolume(1.0);
+      if (_childKey.currentState != null && mounted) {
+        try {
+          double progress = _childKey.currentState!.progress.value;
+          globalAudioPlayer.setVolume(progress < 0.5 ? 0.0 : 1.0);
+        } catch (e) {
+          print('Error in volume control: $e');
         }
       }
     });
@@ -478,81 +505,111 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
   @override
   void dispose() {
-    _volumeTimer?.cancel(); // Cancel the timer to prevent memory leaks
+    _volumeTimer?.cancel();
+    riveController?.dispose();
+    globalAudioPlayer.stop();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        SizedBox(
-          height: 40.v,
-        ),
-        AudioWidget(
-          key: _childKey,
-          audioLinks: widget.audioLinks,
-        ),
-        SizedBox(
-          height: 20.v,
-        ),
-        OptionWidget(
-          triggerAnimation: (value){
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int startExerciseIndex = obj[3] as int;
+    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
+    return SafeArea(
+      child: Container(
+        // Changed to Container
+        // Removed Scaffold
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Stack(
+              children: [
+                Positioned(
+                  left: 40, // Align to the left
+                  top: 0, // Align to the top (you can adjust this)
+                  bottom: 0, // Align to the bottom (or set a specific height)
+                  width: constraints.maxWidth *
+                      0.7, // Occupy half the width (adjust as needed)
+                  
+    // Add left padding
+    child: IgnorePointer(
+      child: RiveAnimation.asset(
+        'assets/rive/Celebration_animation.riv',
+        onInit: _onRiveInit,
+        fit: BoxFit.cover, 
+      ),
+    ),
+  ),
+                
+                Column(
+                  children: [
+                    SizedBox(height: 40.v),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.h,
+                      ),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: constraints.maxWidth * 0.4,
+                            maxHeight: constraints.maxHeight * 0.3,
+                          ),
+                          child: AudioWidget(
+                            key: _childKey,
+                            audioLinks: widget.audioLinks,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.v),
+                    Expanded(
+                      flex: 5,
+                      child: Center(
+                        child: OptionWidget(
+                          triggerAnimation: _triggerAnimation,
+                          child: OptionButton(
+                            type: ButtonType.Stop,
+                            onPressed: () => globalAudioPlayer.stop(),
+                          ),
+                          isCorrect: () {
+                            if (_childKey.currentState == null) return false;
+
+                            List<double> total_length =
+                                _childKey.currentState!.lengths;
+                            if (total_length.isEmpty) return false;
+
+                            double currentProgress =
+                                _childKey.currentState!.progress.value;
+                            const double tolerance = 0.4;
+                            bool condition = currentProgress > 0.5 &&
+                                currentProgress < 0.5 + tolerance;
+
+                            if (condition) {
+                              data_pro.incrementLevel(startExerciseIndex);
+                              if (data["completedAt"] == null) {
+                                UserData(
+                                        uid: FirebaseAuth
+                                            .instance.currentUser!.uid)
+                                    .updateExerciseData(
+                                  euid: data["uid"],
+                                  date: data["date"],
+                                );
+                              }
+                            }
+                            return condition;
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
           },
-          child: OptionButton(
-            type: ButtonType.Stop,
-            onPressed: () {
-              // Stop the audio playback
-              globalAudioPlayer.stop();
-            },
-          ),
-          isCorrect: () {
-            if (_childKey.currentState == null) return false;
-
-            List<double> total_length = _childKey.currentState!.lengths;
-            if (total_length.isEmpty) {
-              // Ensure there is at least 1 element in the list (the audio length)
-              print("Error: total_length is empty.");
-              return false;
-            }
-
-            double audioLength = total_length[
-                0]; // Since there's only one length, take the first element
-            double ans =
-                0.5; // Since you're muting the first half, the threshold is 0.5
-
-            double currentProgress = _childKey.currentState!.progress;
-            print("Current progress is $currentProgress");
-
-            const double tolerance = 0.4;
-            bool condition =
-                currentProgress > ans && currentProgress < ans + tolerance;
-            print("Condition result: $condition");
-
-            // Increment the level if the condition is met
-            var data_pro =
-                Provider.of<ExerciseProvider>(context, listen: false);
-            if (condition) {
-              data_pro.incrementLevel();
-            }
-            UserData(
-              uid: FirebaseAuth.instance.currentUser?.uid ?? '',
-            ).updateExerciseData(
-              isCompleted: condition,
-              performance: {
-              "time": DateTime.now().toString(),
-              "result": condition,
-              "timeDiff": (currentProgress - ans).abs()
-            }, date: obj[5], eid: obj[4]).then((value) => null);
-
-            return condition;
-          },
         ),
-      ],
+      ),
     );
   }
 }

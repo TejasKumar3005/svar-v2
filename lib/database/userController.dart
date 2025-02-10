@@ -6,7 +6,7 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/userModel.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/providers/userDataProvider.dart';
-import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 
 class UserData {
   final String? uid;
@@ -22,6 +22,22 @@ class UserData {
 
   final CollectionReference exercisesCollection =
       FirebaseFirestore.instance.collection("Auditory");
+
+  void showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Oh Snap!',
+        message: message,
+        contentType: ContentType.failure,
+      ),
+    );
+    ScaffoldMessenger.of(buildContext!)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
 
   Future<Map<String, dynamic>> AssignedExercises(
       Map<String, dynamic> exercises) async {
@@ -54,10 +70,7 @@ class UserData {
       }
       return finaldata;
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return {};
     } catch (e) {
       return {};
@@ -66,7 +79,7 @@ class UserData {
 
   Future<void> updateExerciseData({
     required String date,
-    required String eid,
+    required String euid,
     bool isCompleted = true,
     Map<String, dynamic>? performance,
   }) async {
@@ -86,7 +99,7 @@ class UserData {
 
           // Find the exercise with the matching eid
           final exerciseIndex = exercisesForDate.indexWhere(
-              (exercise) => exercise is Map && exercise['eid'] == eid);
+              (exercise) => exercise is Map && exercise['uid'] == euid);
 
           if (exerciseIndex != -1) {
             int views = 0;
@@ -114,7 +127,6 @@ class UserData {
               exercisesForDate[exerciseIndex] = exerciseData;
               await userDoc.update({
                 'exercises.$date': exercisesForDate,
-                'completedTillExercise': eid,
                 'completedTillDate': date
               });
             } else {
@@ -130,7 +142,7 @@ class UserData {
 
             print('Exercise data updated successfully!');
           } else {
-            print('Exercise with eid $eid not found for date $date.');
+            print('Exercise with eid $euid not found for date $date.');
           }
         } else {
           print('No exercises found for date $date.');
@@ -145,13 +157,12 @@ class UserData {
 
   Future<List<dynamic>> getfortnightExercises(
       Map<String, dynamic> exercises) async {
+    var finaldata = [];
     try {
       // Calculate dates
       DateTime today = DateTime.now();
       DateTime startDate = today.subtract(Duration(days: 7));
       DateTime endDate = today.add(Duration(days: 7));
-
-      var finaldata = [];
 
       // Loop through dates (14 days)
       for (var day = startDate;
@@ -165,7 +176,16 @@ class UserData {
           List<Map<String, dynamic>> updatedData = [];
 
           await Future.wait(data.map((exercise) async {
-            if (!exercise["eid"].toString().startsWith("Word") && !exercise["eid"].toString().startsWith("Custom")) {
+            if (exercise["subtype"].toString() == "custom") {
+              updatedData.add({
+                "subtype": "video",
+                "description": exercise["description"],
+                "type": "video",
+                "video": exercise["content_url"],
+                "exerciseType": "Level",
+                "date": formattedDate
+              });
+            } else if (exercise["subtype"].toString() != "Pronunciation") {
               DocumentSnapshot docSnapshot = await exercisesCollection
                   .doc(exercise["type"])
                   .collection(exercise["phoneme"])
@@ -186,12 +206,12 @@ class UserData {
                 debugPrint(
                     "Document with id ${exercise['eid']} does not exist.");
               }
-            }else{
+            } else {
               updatedData.add({
-                  ...exercise,
-                  "date": formattedDate,
-                  "exerciseType":exercise["type"],
-                });
+                ...exercise,
+                "date": formattedDate,
+                "exerciseType": "Pronunciation",
+              });
             }
           }).toList());
 
@@ -201,23 +221,17 @@ class UserData {
 
       var data_pro =
           Provider.of<ExerciseProvider>(buildContext!, listen: false);
-      var user_pro =
-          Provider.of<UserDataProvider>(buildContext!, listen: false);
 
       data_pro.setTodaysExercises(finaldata);
-      for (int i = 0; i < finaldata.length; i++) {
-        if (finaldata[i]["eid"] ==
-            user_pro.userModel.exercises["completedTillExercise"]) {
-          data_pro.setCurrentExerciseIndex(i);
-        }
-      }
+
       return finaldata;
     } catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
-      return [];
+      showErrorSnackBar(e.toString());
+      var data_pro =
+          Provider.of<ExerciseProvider>(buildContext!, listen: false);
+
+      data_pro.setTodaysExercises(finaldata);
+      return finaldata;
     }
   }
 
@@ -240,10 +254,7 @@ class UserData {
         return {};
       }
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return {};
     } catch (e) {
       return {};
@@ -259,10 +270,7 @@ class UserData {
     try {
       await userCollection.doc(uid).set(user.toJson(), SetOptions(merge: true));
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
     }
   }
 
@@ -278,10 +286,7 @@ class UserData {
       Provider.of<UserDataProvider>(buildContext!, listen: false)
           .setParentalTips(tempKeys);
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
     }
   }
 
@@ -289,26 +294,7 @@ class UserData {
     await userCollection.doc(uid).set(map);
   }
 
-  Future getTherapyCenters() async {
-    Future getTherapyCenters() async {
-      try {
-        QuerySnapshot querySnapshot = await therapyCenterCollection.get();
-
-        // Create a map of document IDs and their corresponding data
-        List<dynamic> tempKeys = [];
-        querySnapshot.docs.forEach((doc) {
-          tempKeys.add(doc.data());
-        });
-        Provider.of<UserDataProvider>(buildContext!, listen: false)
-            .setTherapyCenters(tempKeys);
-      } on FirebaseException catch (e) {
-        ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Colors.red,
-        ));
-      }
-    }
-  }
+  Future getTherapyCenters() async {}
 
   Future<bool> addPatientToTherapyCenter(
       String therapyCenterId, String patientId) async {
@@ -318,10 +304,7 @@ class UserData {
       });
       return true;
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return false;
     }
   }
@@ -332,10 +315,7 @@ class UserData {
       await userCollection.doc(uid).update({"score": score});
       return true;
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return false;
     }
   }
@@ -359,195 +339,82 @@ class UserData {
       }
       return true;
     } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      showErrorSnackBar(e.toString());
       return false;
     }
   }
 
-  Future<Map<String, dynamic>?> fetchData(String docName, int level) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-    // Reference the document inside the 'Auditory' collection
-    DocumentSnapshot doc =
-        await firestore.collection("Auditory").doc(docName).get();
-
-    // Check if the document exists
-    if (!doc.exists) {
-      debugPrint(
-          "Document $docName does not exist in the Auditory collection.");
-      return null;
-    }
-    // Check if the document exists
-    if (!doc.exists) {
-      debugPrint(
-          "Document $docName does not exist in the Auditory collection.");
-      return null;
-    }
-
+  Future<int> getCurrentLevel(String auditoryType) async {
     try {
-      // Proceed only if the document exists
-      Map<String, dynamic>? data = doc.get("data") as Map<String, dynamic>?;
-
-      if (data == null) {
-        debugPrint("The 'data' field is null or not in the correct format.");
-        return null;
-      }
-      if (data == null) {
-        debugPrint("The 'data' field is null or not in the correct format.");
-        return null;
-      }
-
-      String finder = "Level$level";
-
-      // Check if the key exists and is a list
-      if (data.containsKey(finder) && data[finder] is List) {
-        List<dynamic> receivedData = data[finder] as List<dynamic>;
-
-        // Ensure the list is not empty and contains a map
-        if (receivedData.isNotEmpty &&
-            receivedData[0] is Map<String, dynamic>) {
-          Map<String, dynamic> levelInfo =
-              receivedData[0] as Map<String, dynamic>;
-          return levelInfo;
-        } else {
-          debugPrint(
-              "No data found for the level or data is not in the correct format.");
-          return null;
-        }
-      }
-      // Check if the key exists and is a list
-    } catch (e) {
-      debugPrint("Error fetching data: $e");
-      return null;
-    }
-  }
-
-  Future<void> incrementLevelCount(String auditoryType, int level) async {
-    try {
-      var provider2 = Provider.of<RiveProvider>(buildContext!, listen: false);
       String? uid = FirebaseAuth.instance.currentUser?.uid;
-      DocumentReference userRef =
-          FirebaseFirestore.instance.collection('patients').doc(uid);
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        DocumentSnapshot snapshot = await transaction.get(userRef);
-        var provider =
-            Provider.of<UserDataProvider>(buildContext!, listen: false);
 
-        if (snapshot.exists) {
-          Map<String, dynamic> levels =
-              (snapshot.data() as Map<String, dynamic>?)?['levelMap'];
-          int currentLevelCount = levels[auditoryType];
-          print("1");
-          if (currentLevelCount <= level) {
-            // Add the condition to only increment if currentLevelCount <= level
-            int newLevelCount = currentLevelCount + 1;
-            levels[auditoryType] = newLevelCount;
-            print("2");
-            transaction.update(userRef, {'levelMap': levels});
-            await addActivity(
-              "Level  $newLevelCount completed",
-              DateTime.now().toString().substring(0, 10),
-              DateTime.now().toString().substring(11, 16),
-              uid!,
-            );
-            print("3");
-            var data = provider.userModel;
-            print("4");
-            data.levelMap = LevelMap.fromJson(levels);
-            print("5");
-            provider.setUser(data);
-            print("6");
-            print("newLevelCount: $newLevelCount");
-            provider2.changeCurrentLevel(newLevelCount.toDouble());
-          } else {
-            print(
-                'Current level is already higher than or equal to the provided level.');
+      // Get reference to exercises collection
+      CollectionReference exercisesRef = FirebaseFirestore.instance
+          .collection('patients')
+          .doc(uid)
+          .collection('exercises');
+
+      // Get the completedTillExercise
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(uid)
+          .get();
+
+      String completedTillExercise =
+          (userDoc.data() as Map<String, dynamic>)['completedTillExercise'] ??
+              '';
+
+      // Calculate date range (7 days before and after)
+      DateTime today = DateTime.now();
+      DateTime startDate = today.subtract(Duration(days: 7));
+      DateTime endDate = today.add(Duration(days: 7));
+
+      // Get all exercises within date range
+      QuerySnapshot exerciseDocs = await exercisesRef
+          .where(FieldPath.documentId,
+              isGreaterThanOrEqualTo: startDate.toString().substring(0, 10))
+          .where(FieldPath.documentId,
+              isLessThanOrEqualTo: endDate.toString().substring(0, 10))
+          .get();
+
+      // Collect all exercise IDs in order
+      List<String> allExerciseIds = [];
+
+      for (var doc in exerciseDocs.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+        // Iterate through all numbered fields (levels)
+        for (var field in data.keys) {
+          if (field.toString().contains(RegExp(r'^[0-9]+$'))) {
+            List<dynamic> exercises = data[field] as List<dynamic>;
+
+            for (var exercise in exercises) {
+              if (exercise['assignedBy'] != null &&
+                  exercise['assignedBy']['type'] == 'Level' &&
+                  exercise['assignedBy']['subtype'] == auditoryType) {
+                String eid = exercise['assignedBy']['eid'];
+                allExerciseIds.add(eid);
+              }
+            }
           }
-        } else {
-          throw Exception('User not found!');
         }
-      });
+      }
 
-      print('levelCount incremented successfully!');
+      // Sort exercise IDs
+      allExerciseIds.sort();
+
+      // Find position of completedTillExercise
+      int currentLevel = allExerciseIds.indexOf(completedTillExercise) + 1;
+
+      // If not found, return 0 or handle appropriately
+      if (currentLevel <= 0) {
+        return 0;
+      }
+
+      return currentLevel;
     } catch (e) {
-      print('Error incrementing levelCount: $e');
-    }
-  }
-
-  Future<void> addActivity(
-      String activity, String date, String time, String uid) async {
-    try {
-      // Get the document snapshot
-      DocumentSnapshot docSnapshot = await userCollection.doc(uid).get();
-
-      Future<void> addActivity(
-          String activity, String date, String time, String uid) async {
-        try {
-          // Get the document snapshot
-          DocumentSnapshot docSnapshot = await userCollection.doc(uid).get();
-
-          // Check if the 'activities' field exists
-          if (docSnapshot.exists &&
-              docSnapshot.data() != null &&
-              (docSnapshot.data() as Map<String, dynamic>)
-                  .containsKey('activities')) {
-            // If activities field exists, add the new activity to the array
-            await userCollection.doc(uid).update({
-              "activities": FieldValue.arrayUnion([
-                {"activity": activity, "date": date, "time": time}
-              ])
-            });
-          } else {
-            // If activities field doesn't exist, create the field and add the activity
-            await userCollection.doc(uid).set(
-                {
-                  "activities": [
-                    {"activity": activity, "date": date, "time": time}
-                  ]
-                },
-                SetOptions(
-                    merge:
-                        true)); // Use merge to ensure only the activities field is added
-          }
-        } on FirebaseException catch (e) {
-          ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-          ));
-        }
-      }
-
-      // Check if the 'activities' field exists
-      if (docSnapshot.exists &&
-          docSnapshot.data() != null &&
-          (docSnapshot.data() as Map<String, dynamic>)
-              .containsKey('activities')) {
-        // If activities field exists, add the new activity to the array
-        await userCollection.doc(uid).update({
-          "activities": FieldValue.arrayUnion([
-            {"activity": activity, "date": date, "time": time}
-          ])
-        });
-      } else {
-        // If activities field doesn't exist, create the field and add the activity
-        await userCollection.doc(uid).set(
-            {
-              "activities": [
-                {"activity": activity, "date": date, "time": time}
-              ]
-            },
-            SetOptions(
-                merge:
-                    true)); // Use merge to ensure only the activities field is added
-      }
-    } on FirebaseException catch (e) {
-      ScaffoldMessenger.of(buildContext!).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: Colors.red,
-      ));
+      print('Error getting current level: $e');
+      return 0;
     }
   }
 }

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/ling_learning/ling_learning_provider.dart';
 import 'package:svar_new/presentation/phenome_list/phonmes_list_model.dart';
@@ -18,20 +19,22 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
 import 'package:svar_new/widgets/loading.dart';
 import 'package:video_player/video_player.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:svar_new/presentation/settings_screen/setting.dart';
 
 class ExercisesSpeakingPhoneme extends StatefulWidget {
   final List<Map<String, dynamic>> text;
   final String videoUrl;
   final bool testSpeech;
   final String date;
-  final String eid;
+  final String uid;
   const ExercisesSpeakingPhoneme({
     Key? key,
     required this.text,
     required this.videoUrl,
     required this.testSpeech,
     this.date = '',
-    this.eid = '',
+    this.uid = '',
 
 
   }) : super(key: key);
@@ -94,7 +97,7 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (loading && _overlayEntry == null) {
         _overlayEntry = createOverlayEntry(context);
-        Overlay.of(context)?.insert(_overlayEntry!);
+        Overlay.of(context).insert(_overlayEntry!);
       } else if (!loading && _overlayEntry != null) {
         _overlayEntry?.remove();
         _overlayEntry = null;
@@ -115,7 +118,7 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
             children: [
               Column(
                 children: [
-                  _buildAppBar(context),
+                DisciAppBar(context), // No need for any callbacks now,
                 ],
               ),
               _buildText(),
@@ -133,23 +136,23 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CustomButton(
-            type: ButtonType.Back,
-            onPressed: () {
-              NavigatorService.goBack();
-            },
-          ),
-          Spacer(),
-        ],
+   void showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'Oh Snap!',
+        message: message,
+        contentType: ContentType.failure,
       ),
     );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
   }
+
+ 
 
   Widget _buildText() {
     return Positioned(
@@ -310,8 +313,8 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
         });
         return Future.value(0.0);
       } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Something went wrong")));
+        showErrorSnackBar("Something went wrong");
+        
         throw Exception(
             "Failed to send .wav file. Status code: ${response.statusCode}");
       }
@@ -330,11 +333,11 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
           result = ((data["result"] * 100.0).toInt()).toString();
           loading = false;
         });
-        var data_pro=Provider.of<ExerciseProvider>(context,listen: false);
-          data_pro.incrementLevel();
+        
+          
           UserData(uid: 
               FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
-                eid: widget.eid,
+                euid: widget.uid,
                 date: widget.date,
                 performance: {
                   "score":((data["result"] * 100.0).toInt()).toString(),
@@ -344,8 +347,7 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
 
         return data['result'];
       } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Something went wrong")));
+        showErrorSnackBar("Something went wrong");
         throw Exception(
             "Failed to send .wav file. Status code: ${response.statusCode}");
       }
@@ -439,7 +441,6 @@ Widget pronunciationResultWidget(
                 // Accessing the first entry of each map in the list
                 String key = result[index].entries.first.key;
                 String value = result[index].entries.first.value;
-
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: Row(
@@ -508,16 +509,6 @@ Widget pronunciationResultWidget(
   );
 }
 
-Widget _buildDifficultyLevel(String label, bool isSelected) {
-  return Text(
-    label,
-    style: TextStyle(
-      fontSize: 14.0,
-      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-      color: isSelected ? Colors.orange : Colors.red,
-    ),
-  );
-}
 
 String selectRandomWord(dynamic hindiWords) {
   Random random = Random();

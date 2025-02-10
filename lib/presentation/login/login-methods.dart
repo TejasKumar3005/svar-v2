@@ -1,50 +1,63 @@
 import 'package:flutter/cupertino.dart';
 import 'package:svar_new/database/authentication.dart';
 import 'package:svar_new/presentation/login/login_provider.dart';
-
-
 import '../../core/app_export.dart';
 
 class LoginFormMethods {
-  BuildContext context;
-    late  AuthConroller ctrler;
-  LoginFormMethods({required this.context}){
-      ctrler = AuthConroller(context: this.context);
+  final BuildContext context;
+  late AuthConroller ctrler;
+
+  LoginFormMethods({required this.context}) {
+    ctrler = AuthConroller(context: this.context);
   }
 
-  void login() {
+  Future<void> login() async {
+    if (!context.mounted) return;
+    
+    final provider = Provider.of<LoginProvider>(context, listen: false);
+    try {
+      provider.changeState();  // Start loading
 
-    var provider =
-        Provider.of<LoginProvider>(context, listen: false);
-    provider.changeState();
-    ctrler
-        .login(provider.emailController.text.trim().toString(),provider.passController.text.trim().toString())
-        .then((value) => {
-              if (value)
-                {
-                  provider.changeState(),
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      AppRoutes.loadingScreen, (route) => false)
-                }else{
-                  provider.changeState()
-                }
-            });
+      final bool success = await ctrler.login(
+        provider.emailController.text.trim(),
+        provider.passController.text.trim(),
+      );
+
+      if (!context.mounted) return;
+
+      provider.changeState();  // Stop loading
+
+      if (success) {
+        await Navigator.of(context).pushNamedAndRemoveUntil(
+          AppRoutes.loadingScreen,
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        provider.changeState();  // Ensure loading is stopped on error
+        // You might want to show an error message here
+      }
+    }
   }
 
-    void sendOtp() {
+  Future<void> sendOtp() async {
+    if (!context.mounted) return;
 
-    var provider = Provider.of<LoginProvider>(
-        context,
-        listen: false);
-    provider.changeOtpSending(true);
-  
-    ctrler
-        .phoneVerification("+44 7444 555666",true)
-        .then((value) => {
-          
-           provider.changeOtpSending(false),
-          
-          
-           });
+    final provider = Provider.of<LoginProvider>(context, listen: false);
+    try {
+      provider.changeOtpSending(true);
+
+      await ctrler.phoneVerification("+44 7444 555666", true);
+
+      if (context.mounted) {
+        provider.changeOtpSending(false);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        provider.changeOtpSending(false);
+        // You might want to show an error message here
+      }
+    }
   }
 }

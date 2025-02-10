@@ -172,14 +172,14 @@ class _CustomButtonState extends State<CustomButton> {
         width = 170;
         height = 80;
 
-        defaultChild = const Icon(Icons.change_circle);
+        defaultChild = const Text("Stop");
         break;
       case ButtonType.Diff:
         imagePath = ImageConstant.imgDiffbtn;
         width = 170;
         height = 80;
 
-        defaultChild = const Icon(Icons.difference);
+        defaultChild = const Text("Diff");
         break;
       case ButtonType.Tip2:
         imagePath = ImageConstant.imgTipbtn;
@@ -193,7 +193,7 @@ class _CustomButtonState extends State<CustomButton> {
         width = 170;
         height = 80;
 
-        defaultChild = const Icon(Icons.keyboard_return_rounded);
+        defaultChild = const Text("Same");
         break;
       case ButtonType.Video1:
         imagePath = ImageConstant.imgVideo1btn;
@@ -214,7 +214,7 @@ class _CustomButtonState extends State<CustomButton> {
         width = 170;
         height = 80;
 
-        defaultChild = const Icon(Icons.keyboard_return_rounded);
+        defaultChild = const Text("Stop");
         break;
       case ButtonType.Spectrum:
         imagePath = ImageConstant.imgSpectrum;

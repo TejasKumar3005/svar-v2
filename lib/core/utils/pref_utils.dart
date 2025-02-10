@@ -27,10 +27,15 @@ class PrefUtils {
   }
 
   String getThemeData() {
-    try {
-      return _sharedPreferences!.getString('themeData')!;
-    } catch (e) {
+    String? themeData = _sharedPreferences!.getString('themeData');
+    if (themeData == null) {
       return 'primary';
+    } else {
+      try {
+      return themeData;
+      } catch (e) {
+      return 'primary';
+      }
     }
   }
 }

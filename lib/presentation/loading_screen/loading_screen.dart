@@ -1,14 +1,12 @@
-
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
+
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
-import 'package:svar_new/core/utils/playBgm.dart';
+
 import 'package:svar_new/database/userController.dart';
 import 'package:flutter/material.dart';
-import 'package:svar_new/presentation/exercises/exercise_provider.dart';
+
 import 'package:svar_new/providers/userDataProvider.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -35,8 +33,6 @@ class LoadingScreenState extends State<LoadingScreen>
       DeviceOrientation.landscapeRight,
     ]);
   }
-
-
 
   void getUserData(BuildContext context) async {
     try {
