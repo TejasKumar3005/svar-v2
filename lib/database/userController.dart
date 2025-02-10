@@ -11,6 +11,7 @@ import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.d
 class UserData {
   final String? uid;
   BuildContext? buildContext;
+
   UserData({this.uid, this.buildContext});
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection("patients");
@@ -164,7 +165,7 @@ class UserData {
           List<Map<String, dynamic>> updatedData = [];
 
           await Future.wait(data.map((exercise) async {
-            if (!exercise["eid"].toString().startsWith("Word")) {
+            if (!exercise["eid"].toString().startsWith("Word") && !exercise["eid"].toString().startsWith("Custom")) {
               DocumentSnapshot docSnapshot = await exercisesCollection
                   .doc(exercise["type"])
                   .collection(exercise["phoneme"])
@@ -189,7 +190,7 @@ class UserData {
               updatedData.add({
                   ...exercise,
                   "date": formattedDate,
-                  "exerciseType": "Pronunciation",
+                  "exerciseType":exercise["type"],
                 });
             }
           }).toList());
@@ -338,6 +339,7 @@ class UserData {
       return false;
     }
   }
+  
 
   Future<bool> getUserData() async {
     try {
