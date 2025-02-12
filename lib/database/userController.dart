@@ -186,26 +186,11 @@ class UserData {
                 "date": formattedDate
               });
             } else if (exercise["subtype"].toString() != "Pronunciation") {
-              DocumentSnapshot docSnapshot = await exercisesCollection
-                  .doc(exercise["type"])
-                  .collection(exercise["phoneme"])
-                  .doc(exercise['eid'])
-                  .get();
-
-              if (docSnapshot.exists) {
-                Map<String, dynamic> exerciseData =
-                    docSnapshot.data() as Map<String, dynamic>;
-
-                updatedData.add({
-                  ...exercise,
-                  ...exerciseData,
-                  "exerciseType": exercise["type"],
-                  "date": formattedDate
-                });
-              } else {
-                debugPrint(
-                    "Document with id ${exercise['eid']} does not exist.");
-              }
+              updatedData.add({
+                ...exercise,
+                "exerciseType": exercise["subtype"],
+                "date": formattedDate
+              });
             } else {
               updatedData.add({
                 ...exercise,
@@ -319,7 +304,6 @@ class UserData {
       return false;
     }
   }
-  
 
   Future<bool> getUserData() async {
     try {

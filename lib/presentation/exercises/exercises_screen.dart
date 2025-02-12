@@ -155,6 +155,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           break;
         case 'Pronunciation':
           _handlePronunciation(context, "notcompleted", startExerciseIndex);
+          break;
       }
     } catch (e) {
       debugPrint("Error in _handleLevelType: $e");
