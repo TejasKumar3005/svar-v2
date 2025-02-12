@@ -200,14 +200,14 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                 ),
               ),
             Positioned(
-              left: size.width * 0.71, // Center position
+              left: size.width * 0.73, // Center position
               top: size.height * 0.25,  // Below the word
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // TTS Button
                   Container(
-                    margin: EdgeInsets.only(right: 20),
+                    margin: EdgeInsets.only(right: 16),
                     child: Column(
                       children: [
                         ElevatedButton(
@@ -366,23 +366,23 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                 ),
               ),
 
-              Positioned(
-      right: 10,
-      bottom: 30,
-      child: Container(
-        height: 70,
-        width: 100,
-        child: CustomButton(
-          type: ButtonType.Tip,
-          onPressed: () {
-            Navigator.pushNamed(
-              context,
-              AppRoutes.tipBoxVideoScreen,
-            );
-          },
-        ),
-      ),
-    )
+    //           Positioned(
+    //   right: 10,
+    //   bottom: 30,
+    //   child: Container(
+    //     height: 70,
+    //     width: 100,
+    //     child: CustomButton(
+    //       type: ButtonType.Tip,
+    //       onPressed: () {
+    //         Navigator.pushNamed(
+    //           context,
+    //           AppRoutes.tipBoxVideoScreen,
+    //         );
+    //       },
+    //     ),
+    //   ),
+    // )
           ],
         ),
       ),
