@@ -68,6 +68,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   int correctAttempts = 0;
   static const int REQUIRED_CORRECT_ATTEMPTS = 5;
 
+  String? lastRecordingPath;
+  bool isPlayingRecording = false;
+  final AudioPlayer _recordingPlayer = AudioPlayer();
+
   @override
   void initState() {
     super.initState();
@@ -81,7 +85,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
           'No internet connection. Please check your connection and try again.');
       return;
     }
-    
+
     _setupVadHandler(); // Setup VAD (it won't start automatically)
     initializeApp();
 
@@ -116,6 +120,47 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     } finally {
       setState(() => isSpeaking = false);
       // Don't automatically restart VAD - let user control it
+    }
+  }
+
+  Future<void> playLastRecording() async {
+    if (lastRecordingPath == null) return;
+
+    // Stop other audio sources
+    await flutterTts.stop();
+    await _audioPlayer.stop();
+
+    if (_isVadListening) {
+      _vadHandler.stopListening();
+      setState(() => _isVadListening = false);
+    }
+
+    if (isPlayingRecording) {
+      // Stop playback
+      await _recordingPlayer.stop();
+      setState(() => isPlayingRecording = false);
+    } else {
+      // Start playback
+      setState(() => isPlayingRecording = true);
+
+      try {
+        if (kIsWeb) {
+          // Handle web playback
+          await _recordingPlayer.play(DeviceFileSource(lastRecordingPath!));
+        } else {
+          // Handle mobile playback
+          await _recordingPlayer.play(DeviceFileSource(lastRecordingPath!));
+        }
+
+        // Listen for playback completion
+        _recordingPlayer.onPlayerComplete.listen((_) {
+          setState(() => isPlayingRecording = false);
+        });
+      } catch (e) {
+        print("Error playing recording: $e");
+        setState(() => isPlayingRecording = false);
+        showErrorSnackBar("Error playing recording");
+      }
     }
   }
 
@@ -174,7 +219,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
               ],
             ),
 
-            // Hindi character - centered and larger
+            // Main character display
             if (result.isEmpty)
               Positioned(
                 left: size.width * 0.3,
@@ -199,9 +244,50 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                   ),
                 ),
               ),
+
+            // Separate last recording button
+            if (result.isEmpty && lastRecordingPath != null)
+              Positioned(
+                left: size.width * 0.10, // Moved more to the left
+                top: size.height * 0.35,  // Same vertical alignment as main character
+                child: Container(
+                  margin: EdgeInsets.only(right: 16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          await playLastRecording();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(20),
+                          backgroundColor: Colors.blue[700],
+                          elevation: 4,
+                        ),
+                        child: Icon(
+                          isPlayingRecording ? Icons.stop : Icons.play_arrow,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Play Recording",
+                        style: TextStyle(
+                          color: Colors.purple[700],
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
             Positioned(
               left: size.width * 0.73, // Center position
-              top: size.height * 0.25,  // Below the word
+              top: size.height * 0.25, // Below the word
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -250,12 +336,13 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                           onPressed: () async {
                             print("VAD button pressed");
                             if (isSpeaking) {
-                              print("Cannot start recording while TTS is speaking");
+                              print(
+                                  "Cannot start recording while TTS is speaking");
                               showErrorSnackBar(
                                   "Please wait for the audio to finish playing");
                               return;
                             }
-                            
+
                             setState(() {
                               if (_isVadListening) {
                                 print("Stopping VAD");
@@ -292,8 +379,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                         ),
                         const SizedBox(height: 8),
                         Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
                             color: _isVadListening
                                 ? Colors.red[50]
@@ -366,23 +453,23 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                 ),
               ),
 
-    //           Positioned(
-    //   right: 10,
-    //   bottom: 30,
-    //   child: Container(
-    //     height: 70,
-    //     width: 100,
-    //     child: CustomButton(
-    //       type: ButtonType.Tip,
-    //       onPressed: () {
-    //         Navigator.pushNamed(
-    //           context,
-    //           AppRoutes.tipBoxVideoScreen,
-    //         );
-    //       },
-    //     ),
-    //   ),
-    // )
+            //           Positioned(
+            //   right: 10,
+            //   bottom: 30,
+            //   child: Container(
+            //     height: 70,
+            //     width: 100,
+            //     child: CustomButton(
+            //       type: ButtonType.Tip,
+            //       onPressed: () {
+            //         Navigator.pushNamed(
+            //           context,
+            //           AppRoutes.tipBoxVideoScreen,
+            //         );
+            //       },
+            //     ),
+            //   ),
+            // )
           ],
         ),
       ),
@@ -553,20 +640,40 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
           '${tempDir.path}/recorded_audio_${intermediateResults.length}.wav';
       await createWavFile(samples, tempPath);
 
-      dynamic apiResult = await sendWavFile(tempPath, widget.character);
+      setState(() {
+        lastRecordingPath = tempPath;
+      });
+
+      // Get the exercise data to access the correct phoneme
+      var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+      int startExerciseIndex = obj[3] as int;
+      var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+      Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+
+      // Extract the correct phoneme from data
+      String correctPhoneme = data["phoneme"] ?? "";
+
+      // Extract just the first Hindi word if there are multiple parts
+      String targetWord = correctPhoneme.split(" ")[0];
+
+      dynamic apiResult = await sendWavFile(tempPath, targetWord);
       print("API Response: $apiResult");
 
       if (apiResult != null) {
         intermediateResults.add(apiResult is List ? apiResult : [apiResult]);
-        
+
         List<dynamic> results = apiResult is List ? apiResult : [apiResult];
         for (var item in results) {
           if (item is Map) {
-            String resultText = item.values.first.toString();
-            if (resultText.toLowerCase().contains('correctly')) {
+            String resultText = item.values.first.toString().toLowerCase();
+            // Check if the pronunciation matches the correct phoneme
+            bool isCorrectPronunciation =
+                resultText.contains('correctly') && correctPhoneme.isNotEmpty;
+
+            if (isCorrectPronunciation) {
               correctAttempts++;
               _triggerNextAnimation();
-              
+
               if (correctAttempts >= REQUIRED_CORRECT_ATTEMPTS) {
                 setState(() {
                   isRecordingComplete = true;
@@ -579,12 +686,12 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
             }
           }
         }
+
+        // Play wrong answer sound if pronunciation is incorrect
+        await _audioPlayer.play(AssetSource('assets/audio/wrong_answer.mp3'));
+        await Future.delayed(Duration(milliseconds: 1000));
       }
-
-      await _audioPlayer.play(AssetSource('assets/audio/wrong_answer.mp3'));
-      await Future.delayed(Duration(milliseconds: 1000));
       return false;
-
     } catch (e) {
       print("Error in processCurrentRecording: $e");
       showErrorSnackBar("Error processing recording: $e");
@@ -611,9 +718,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
     List<Map<String, String>> finalResults = [];
     combinedResults.forEach((key, values) {
-      int correctCount = values
-          .where((v) => v.toLowerCase().contains("correct"))
-          .length;
+      int correctCount =
+          values.where((v) => v.toLowerCase().contains("correct")).length;
       finalResults
           .add({key: "$correctCount/${values.length} attempts correct"});
     });
@@ -657,8 +763,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     int offset = 44;
     for (double sample in float32Array) {
       sample = sample.clamp(-1.0, 1.0);
-      final int pcm =
-          (sample < 0 ? sample * 0x8000 : sample * 0x7FFF).toInt();
+      final int pcm = (sample < 0 ? sample * 0x8000 : sample * 0x7FFF).toInt();
       buffer.setInt16(offset, pcm, Endian.little);
       offset += 2;
     }
@@ -746,7 +851,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                   var attemptResult = intermediateResults[attemptIndex];
                   bool isCorrect = false;
                   String feedback = "";
-                  
+
                   if (attemptResult is List && attemptResult.isNotEmpty) {
                     var firstResult = attemptResult[0];
                     if (firstResult is Map) {
@@ -762,9 +867,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                       color: isCorrect ? Colors.green[50] : Colors.red[50],
                       borderRadius: BorderRadius.circular(12.0),
                       border: Border.all(
-                        color: isCorrect
-                            ? Colors.green[200]!
-                            : Colors.red[200]!,
+                        color:
+                            isCorrect ? Colors.green[200]! : Colors.red[200]!,
                         width: 1,
                       ),
                     ),
@@ -822,12 +926,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                           ),
                         ),
                         Icon(
-                          isCorrect
-                              ? Icons.check_circle
-                              : Icons.error,
-                          color: isCorrect
-                              ? Colors.green[400]
-                              : Colors.red[400],
+                          isCorrect ? Icons.check_circle : Icons.error,
+                          color:
+                              isCorrect ? Colors.green[400] : Colors.red[400],
                         ),
                       ],
                     ),
@@ -895,6 +996,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
   @override
   void dispose() {
+    _recordingPlayer.dispose();
     if (_isVadListening) {
       _vadHandler.stopListening();
     }
@@ -916,47 +1018,44 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   }
 }
 
-
-
 // Modified sendWavFile function
-  Future<dynamic> sendWavFile(String wavFile, String word) async {
-    try {
-      var uri = Uri.parse("https://gameapi.svar.in/process_aduio_sent");
-      print("Sending API request to: ${uri.toString()}");
-      print("Word parameter: '$word'");
-      print("WAV file path: $wavFile");
+Future<dynamic> sendWavFile(String wavFile, String word) async {
+  try {
+    var uri = Uri.parse("https://gameapi.svar.in/process_aduio_sent");
+    print("Sending API request to: ${uri.toString()}");
+    print("Word parameter: '$word'");
+    print("WAV file path: $wavFile");
 
-      http.MultipartRequest request = http.MultipartRequest('POST', uri);
-      request.fields['text'] = word;
+    http.MultipartRequest request = http.MultipartRequest('POST', uri);
+    request.fields['text'] = word;
 
-      if (kIsWeb) {
-        List<int> wavBytes = await File(wavFile).readAsBytes();
-        print("Web audio bytes length: ${wavBytes.length}");
-        request.files.add(http.MultipartFile.fromBytes('wav_file', wavBytes,
-            filename: 'audio.wav'));
-      } else {
-        print("File exists: ${File(wavFile).existsSync()}");
-        print("File size: ${File(wavFile).lengthSync()} bytes");
-        request.files
-            .add(await http.MultipartFile.fromPath('wav_file', wavFile));
-      }
-
-      var response = await request.send();
-      print("Received response status: ${response.statusCode}");
-
-      String body = await response.stream.bytesToString();
-      print("Response body: $body");
-
-      if (response.statusCode == 200) {
-        var jsonResponse = json.decode(body);
-        print("API response result: ${jsonResponse['result']}");
-        return jsonResponse['result'];
-      } else {
-        print("API error response: $body");
-        throw Exception("API Error ${response.statusCode}: $body");
-      }
-    } catch (e) {
-      print("Error in sendWavFile: $e");
-      rethrow;
+    if (kIsWeb) {
+      List<int> wavBytes = await File(wavFile).readAsBytes();
+      print("Web audio bytes length: ${wavBytes.length}");
+      request.files.add(http.MultipartFile.fromBytes('wav_file', wavBytes,
+          filename: 'audio.wav'));
+    } else {
+      print("File exists: ${File(wavFile).existsSync()}");
+      print("File size: ${File(wavFile).lengthSync()} bytes");
+      request.files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
     }
+
+    var response = await request.send();
+    print("Received response status: ${response.statusCode}");
+
+    String body = await response.stream.bytesToString();
+    print("Response body: $body");
+
+    if (response.statusCode == 200) {
+      var jsonResponse = json.decode(body);
+      print("API response result: ${jsonResponse['result']}");
+      return jsonResponse['result'];
+    } else {
+      print("API error response: $body");
+      throw Exception("API Error ${response.statusCode}: $body");
+    }
+  } catch (e) {
+    print("Error in sendWavFile: $e");
+    rethrow;
   }
+}
