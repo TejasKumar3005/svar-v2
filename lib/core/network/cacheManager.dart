@@ -17,9 +17,6 @@ class CachingManager {
   static Future<void> cacheFilesInIsolate(List<dynamic> exercises) async {
     List<String> urls = [];
     urls= urlsFromExercises(exercises);
-
-    
-
     preloadFiles(urls);
 
   }
@@ -60,7 +57,7 @@ class CachingManager {
   static List<String> urlsFromExercises(List<dynamic> exercises)  {
     List<String> urls = [];
     for (var exercise in exercises) {
-      var type = exercise["subtype"];
+      var type = exercise["type"];
       if (type == "video") {
         if (exercise["video"] != null) urls.add(exercise["video"]);
         if (exercise["video_url"] != null) urls.add(exercise["video_url"]);
