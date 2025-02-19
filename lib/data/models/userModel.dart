@@ -131,7 +131,7 @@ class UserModel {
       score: json['score'] ?? 0,
       coins: json['coins'] ?? 0,
       address: json['address'] ?? "",
-      therapist: json['therapist'] ?? [],
+      therapist: json['therapists'] ?? [],
       batch: json['batch'] ?? "",
       activities: json['activities'] != null
           ? (json['activities'] as List)
