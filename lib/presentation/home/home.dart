@@ -7,6 +7,7 @@ import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:svar_new/widgets/game_stats_header.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -51,7 +52,7 @@ class HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   children: [
                     // Stats Header
-                    // AppStatsHeader(per: 40),
+                    AppStatsHeader(per: 40),
                     SizedBox(height: 24),
                     // Main Content Area - Side by Side Layout with Different Heights
                     Expanded(
