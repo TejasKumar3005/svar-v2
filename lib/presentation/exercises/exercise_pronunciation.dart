@@ -164,118 +164,163 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final isSmallScreen = size.width < 600;
+ @override
+Widget build(BuildContext context) {
+  final size = MediaQuery.of(context).size;
+  final isSmallScreen = size.width < 600;
 
-    // And modify your post frame callback:
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Check if the widget is still mounted before manipulating overlay
-      if (!mounted) return;
+  // And modify your post frame callback:
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    // Check if the widget is still mounted before manipulating overlay
+    if (!mounted) return;
 
-      if (loading && _overlayEntry == null) {
-        _overlayEntry = createOverlayEntry(context);
-        Overlay.of(context).insert(_overlayEntry!);
-      } else if (!loading && _overlayEntry != null) {
-        _overlayEntry?.remove();
-        _overlayEntry = null;
-      }
-    });
+    if (loading && _overlayEntry == null) {
+      _overlayEntry = createOverlayEntry(context);
+      Overlay.of(context).insert(_overlayEntry!);
+    } else if (!loading && _overlayEntry != null) {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+    }
+  });
 
-    return Scaffold(
-      body: Container(
-        width: size.width,
-        height: size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(ImageConstant.imgGroup7),
-            fit: BoxFit.cover,
-          ),
+  return Scaffold(
+    body: Container(
+      width: size.width,
+      height: size.height,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(ImageConstant.imgGroup7),
+          fit: BoxFit.cover,
         ),
-        child: Stack(
-          children: [
-            Column(
-              children: [],
-            ),
-            DisciAppBar(context), // No need for any callbacks now,
-            Stack(
-              children: [
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  child: IgnorePointer(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
-                      child: rive.RiveAnimation.asset(
-                        'assets/rive/5_stepping_stone.riv',
-                        onInit: _onRiveInit,
-                        fit: BoxFit.contain,
-                      ),
+      ),
+      child: Stack(
+        children: [
+          Column(
+            children: [],
+          ),
+          DisciAppBar(context), // No need for any callbacks now,
+          Stack(
+            children: [
+              Positioned(
+                bottom: 0,
+                left: 0,
+                child: IgnorePointer(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    child: rive.RiveAnimation.asset(
+                      'assets/rive/5_stepping_stone.riv',
+                      onInit: _onRiveInit,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
 
-            // Main character display
-            if (result.isEmpty)
-              Positioned(
-                left: size.width * 0.3,
-                top: size.height * 0.3,
-                child: GestureDetector(
-                  onTap: () async {
-                    await speakHindi(widget.character);
-                  },
-                  child: Container(
-                    width: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
-                    height: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: Text(
-                        widget.character,
-                        style: TextStyle(
-                          height: 1,
-                          fontSize: isSmallScreen ? 60 : 80,
-                        ),
+          // Main character display
+          if (result.isEmpty)
+            Positioned(
+              left: size.width * 0.3,
+              top: size.height * 0.3,
+              child: GestureDetector(
+                onTap: () async {
+                  await speakHindi(widget.character);
+                },
+                child: Container(
+                  width: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
+                  height: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Text(
+                      widget.character,
+                      style: TextStyle(
+                        height: 1,
+                        fontSize: isSmallScreen ? 60 : 80,
                       ),
                     ),
                   ),
                 ),
               ),
+            ),
 
-            // Separate last recording button
-            if (result.isEmpty && lastRecordingPath != null)
-              Positioned(
-                left: size.width * 0.10, // Moved more to the left
-                top: size.height * 0.35,  // Same vertical alignment as main character
-                child: Container(
-                  margin: EdgeInsets.only(right: 16),
+          // Separate last recording button
+          if (result.isEmpty && lastRecordingPath != null)
+            Positioned(
+              left: size.width * 0.10, // Moved more to the left
+              top: size.height * 0.35,  // Same vertical alignment as main character
+              child: Container(
+                margin: EdgeInsets.only(right: 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        await playLastRecording();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(20),
+                        backgroundColor: Colors.blue[700],
+                        elevation: 4,
+                      ),
+                      child: Icon(
+                        isPlayingRecording ? Icons.stop : Icons.play_arrow,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Play Recording",
+                      style: TextStyle(
+                        color: Colors.purple[700],
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Action buttons - MODIFIED FOR BETTER ALIGNMENT
+          Positioned(
+            right: size.width * 0.1, // Positioned to the right side
+            top: size.height * 0.35, // Aligned with the main character
+            child: Row(  // Changed to Row to place buttons side by side
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // TTS Button
+                Container(
+                  margin: EdgeInsets.only(right: 24), // Added more spacing between buttons
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       ElevatedButton(
                         onPressed: () async {
-                          await playLastRecording();
+                          print("TTS button pressed");
+                          if (_isVadListening) {
+                            print("Stopping VAD for TTS");
+                            _vadHandler.stopListening();
+                            _isVadListening = false;
+                          }
+                          await speakHindiWithoutRecording(widget.character);
                         },
                         style: ElevatedButton.styleFrom(
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(20),
-                          backgroundColor: Colors.blue[700],
+                          backgroundColor: Colors.blue[600],
                           elevation: 4,
                         ),
-                        child: Icon(
-                          isPlayingRecording ? Icons.stop : Icons.play_arrow,
-                          color: Colors.white,
-                          size: 28,
-                        ),
+                        child: const Icon(Icons.volume_up,
+                            color: Colors.white, size: 28),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "Play Recording",
+                        "Listen Again",
                         style: TextStyle(
-                          color: Colors.purple[700],
+                          color: Colors.blue[700],
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                         ),
@@ -283,198 +328,137 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
                     ],
                   ),
                 ),
-              ),
 
-            Positioned(
-              left: size.width * 0.73, // Center position
-              top: size.height * 0.25, // Below the word
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // TTS Button
-                  Container(
-                    margin: EdgeInsets.only(right: 16),
-                    child: Column(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () async {
-                            print("TTS button pressed");
+                // VAD Button
+                Container(
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          print("VAD button pressed");
+                          if (isSpeaking) {
+                            print(
+                                "Cannot start recording while TTS is speaking");
+                            showErrorSnackBar(
+                                "Please wait for the audio to finish playing");
+                            return;
+                          }
+
+                          setState(() {
                             if (_isVadListening) {
-                              print("Stopping VAD for TTS");
+                              print("Stopping VAD");
                               _vadHandler.stopListening();
                               _isVadListening = false;
+                            } else {
+                              print("Starting VAD");
+                              _vadHandler.startListening(
+                                frameSamples: 1536,
+                                preSpeechPadFrames: kIsWeb ? 12 : 6,
+                                redemptionFrames: kIsWeb ? 10 : 5,
+                                minSpeechFrames: 3,
+                                positiveSpeechThreshold: 0.7,
+                                negativeSpeechThreshold: 0.35,
+                                submitUserSpeechOnPause: true,
+                              );
+                              _isVadListening = true;
                             }
-                            await speakHindiWithoutRecording(widget.character);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(20),
-                            backgroundColor: Colors.blue[600],
-                            elevation: 4,
-                          ),
-                          child: const Icon(Icons.volume_up,
-                              color: Colors.white, size: 28),
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(20),
+                          backgroundColor: _isVadListening
+                              ? Colors.red[600]
+                              : Colors.green[600],
+                          elevation: 4,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Listen Again",
+                        child: Icon(
+                          _isVadListening ? Icons.mic : Icons.mic_none,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: _isVadListening
+                              ? Colors.red[50]
+                              : Colors.green[50],
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: _isVadListening
+                                ? Colors.red[200]!
+                                : Colors.green[200]!,
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          _isVadListening
+                              ? "Listening..."
+                              : "Ready to Record",
                           style: TextStyle(
-                            color: Colors.blue[700],
+                            color: _isVadListening
+                                ? Colors.red[700]
+                                : Colors.green[700],
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // VAD Button
-                  Container(
-                    child: Column(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () async {
-                            print("VAD button pressed");
-                            if (isSpeaking) {
-                              print(
-                                  "Cannot start recording while TTS is speaking");
-                              showErrorSnackBar(
-                                  "Please wait for the audio to finish playing");
-                              return;
-                            }
-
-                            setState(() {
-                              if (_isVadListening) {
-                                print("Stopping VAD");
-                                _vadHandler.stopListening();
-                                _isVadListening = false;
-                              } else {
-                                print("Starting VAD");
-                                _vadHandler.startListening(
-                                  frameSamples: 1536,
-                                  preSpeechPadFrames: kIsWeb ? 12 : 6,
-                                  redemptionFrames: kIsWeb ? 10 : 5,
-                                  minSpeechFrames: 3,
-                                  positiveSpeechThreshold: 0.7,
-                                  negativeSpeechThreshold: 0.35,
-                                  submitUserSpeechOnPause: true,
-                                );
-                                _isVadListening = true;
-                              }
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(20),
-                            backgroundColor: _isVadListening
-                                ? Colors.red[600]
-                                : Colors.green[600],
-                            elevation: 4,
-                          ),
-                          child: Icon(
-                            _isVadListening ? Icons.mic : Icons.mic_none,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: _isVadListening
-                                ? Colors.red[50]
-                                : Colors.green[50],
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: _isVadListening
-                                  ? Colors.red[200]!
-                                  : Colors.green[200]!,
-                              width: 1,
-                            ),
-                          ),
-                          child: Text(
-                            _isVadListening
-                                ? "Listening..."
-                                : "Ready to Record",
-                            style: TextStyle(
-                              color: _isVadListening
-                                  ? Colors.red[700]
-                                  : Colors.green[700],
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (result.isNotEmpty)
-              pronunciationResultWidget(result, context, widget.character),
-            if (isRecordingSegment)
-              Positioned(
-                right: size.width * 0.2,
-                bottom: size.height * 0.15,
-                child: Container(
-                  padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.mic,
-                        color: Colors.red,
-                        size: isSmallScreen ? 20 : 24,
-                      ),
-                      SizedBox(width: isSmallScreen ? 6 : 8),
-                      // Show the current attempt number (totalAttempts starts at 0)
-                      Text(
-                        "Recording attempt ${totalAttempts + 1}",
-                        style: TextStyle(
-                          fontSize: isSmallScreen ? 14 : 16,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
                 ),
+              ],
+            ),
+          ),
+          
+          if (result.isNotEmpty)
+            pronunciationResultWidget(result, context, widget.character),
+          if (isRecordingSegment)
+            Positioned(
+              right: size.width * 0.2,
+              bottom: size.height * 0.15,
+              child: Container(
+                padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.mic,
+                      color: Colors.red,
+                      size: isSmallScreen ? 20 : 24,
+                    ),
+                    SizedBox(width: isSmallScreen ? 6 : 8),
+                    // Show the current attempt number (totalAttempts starts at 0)
+                    Text(
+                      "Recording attempt ${totalAttempts + 1}",
+                      style: TextStyle(
+                        fontSize: isSmallScreen ? 14 : 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-
-            //           Positioned(
-            //   right: 10,
-            //   bottom: 30,
-            //   child: Container(
-            //     height: 70,
-            //     width: 100,
-            //     child: CustomButton(
-            //       type: ButtonType.Tip,
-            //       onPressed: () {
-            //         Navigator.pushNamed(
-            //           context,
-            //           AppRoutes.tipBoxVideoScreen,
-            //         );
-            //       },
-            //     ),
-            //   ),
-            // )
-          ],
-        ),
+            ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   void showErrorSnackBar(String message) {
     final snackBar = SnackBar(
