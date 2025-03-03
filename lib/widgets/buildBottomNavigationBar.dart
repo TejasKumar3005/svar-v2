@@ -1,7 +1,8 @@
 // lib/widgets/custom_bottom_navigation_bar.dart
 
 import 'package:flutter/material.dart';
-import '../routes/app_routes.dart'; // Import your app routes
+import 'package:svar_new/presentation/user_profile_screen/user_profile_screen.dart'; // Import your ProfilePage
+import 'package:svar_new/presentation/home/home.dart'; // Import your HomePage
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -54,15 +55,16 @@ class CustomBottomNavigationBar extends StatelessWidget {
           onIndexChanged(index);
           
           // Handle navigation based on the selected tab
-          if (index == 4) {
+          if (index == 4 && currentIndex != 4) {
             // Navigate to Profile screen when Profile tab is clicked
-            Navigator.of(context).pushNamed(AppRoutes.userProfileScreen);
-          } else if (index == 0) {
-            // If Today tab is clicked and we're not already on the home screen
-            if (currentIndex != 0) {
-              // Navigate back to this screen (Home/Today screen)
-              Navigator.of(context).pushNamed(AppRoutes.home);
-            }
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const ProfilePage()),
+            );
+          } else if (index == 0 && currentIndex != 0) {
+            // Navigate to HomePage when Today tab is clicked
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
           }
           // Add navigation for other tabs as needed
         },
