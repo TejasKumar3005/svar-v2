@@ -1,32 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:googleapis/dfareporting/v3_5.dart';
-import 'package:svar_new/core/app_export.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:flutter/material.dart';
-
-class UserProfileScreen extends StatefulWidget {
-  const UserProfileScreen({Key? key}) : super(key: key);
-
-  @override
-  State<UserProfileScreen> createState() => UserProfileScreenState();
-  
-  static Widget builder(BuildContext context) => UserProfileScreen();
-}
-
-class UserProfileScreenState extends State<UserProfileScreen> {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: Implement build method
-    return Container();
-  }
-}
-
-//lass UserProfileScreenState extends State<UserProfileScreen>
-
-
-
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -813,7 +785,7 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-   Widget _buildBottomNavigationBar() {
+  Widget _buildBottomNavigationBar() {
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -826,19 +798,6 @@ class _ProfilePageState extends State<ProfilePage>
           setState(() {
             _currentIndex = index;
           });
-          
-          // Handle navigation based on the selected tab
-          if (index == 4) {
-            // Navigate to Profile screen when Profile tab is clicked
-            Navigator.of(context).pushNamed(AppRoutes.userProfileScreen);
-          } else if (index == 0) {
-            // If Today tab is clicked and we're not already on the home screen
-            if (_currentIndex != 0) {
-              // Navigate back to this screen (Home/Today screen)
-               Navigator.of(context).pushNamed(AppRoutes.home);
-            }
-          }
-          // Add navigation for other tabs as needed
         },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.teal,

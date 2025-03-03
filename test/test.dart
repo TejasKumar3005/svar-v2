@@ -1,38 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:svar_new/core/app_export.dart';
-import 'package:rive/rive.dart' as rive;
-import 'package:svar_new/presentation/exercises/exercise_provider.dart';
-import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
-import 'package:svar_new/widgets/game_stats_header.dart';
-import 'provider/main_interaction_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:svar_new/widgets/game_stats_header.dart';
-import 'package:svar_new/presentation/user_profile_screen/user_profile_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
-
-  @override
-  HomeScreenState createState() => HomeScreenState();
-
-  static Widget builder(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MainInteractionProvider(),
-      child: HomeScreen(),
-    );
-  }
+void main() {
+  runApp(const MyApp());
 }
 
-// HomeScreenState   State<HomeScreen> 
-
-
-class HomeScreenState extends State<HomeScreen> {
-  // Remove the constant constructor as it's not needed in a State class
-  // State objects are created by the framework, not directly instantiated
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -1213,19 +1188,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           setState(() {
             _currentIndex = index;
           });
-          
-          // Handle navigation based on the selected tab
-          if (index == 4) {
-            // Navigate to Profile screen when Profile tab is clicked
-            Navigator.of(context).pushNamed(AppRoutes.userProfileScreen);
-          } else if (index == 0) {
-            // If Today tab is clicked and we're not already on the home screen
-            if (_currentIndex != 0) {
-              // Navigate back to this screen (Home/Today screen)
-               Navigator.of(context).pushNamed(AppRoutes.home);
-            }
-          }
-          // Add navigation for other tabs as needed
         },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.teal,
