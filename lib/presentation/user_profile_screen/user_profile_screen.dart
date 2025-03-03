@@ -5,13 +5,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
+import 'package:svar_new/widgets/buildBottomNavigationBar.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
 
   @override
   State<UserProfileScreen> createState() => UserProfileScreenState();
-  
+
   static Widget builder(BuildContext context) => UserProfileScreen();
 }
 
@@ -25,9 +26,6 @@ class UserProfileScreenState extends State<UserProfileScreen> {
 
 //lass UserProfileScreenState extends State<UserProfileScreen>
 
-
-
-
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -37,8 +35,18 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
+  int _currentIndex = 4; // Default to Today tab
+
+  // This function handles index changes from the bottom navigation bar
+  void _onIndexChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    // Note: The navigation logic is handled inside the CustomBottomNavigationBar
+  }
+
   late TabController _tabController;
-  int _currentIndex = 4; // Profile tab selected
+
   bool _isPersonalDetailsSelected = true;
 
   @override
@@ -88,7 +96,10 @@ class _ProfilePageState extends State<ProfilePage>
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        currentIndex: _currentIndex,
+        onIndexChanged: _onIndexChanged,
+      ),
     );
   }
 
@@ -813,7 +824,7 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-   Widget _buildBottomNavigationBar() {
+  Widget _buildBottomNavigationBar() {
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -826,7 +837,7 @@ class _ProfilePageState extends State<ProfilePage>
           setState(() {
             _currentIndex = index;
           });
-          
+
           // Handle navigation based on the selected tab
           if (index == 4) {
             // Navigate to Profile screen when Profile tab is clicked
@@ -835,7 +846,7 @@ class _ProfilePageState extends State<ProfilePage>
             // If Today tab is clicked and we're not already on the home screen
             if (_currentIndex != 0) {
               // Navigate back to this screen (Home/Today screen)
-               Navigator.of(context).pushNamed(AppRoutes.home);
+              Navigator.of(context).pushNamed(AppRoutes.home);
             }
           }
           // Add navigation for other tabs as needed
@@ -868,7 +879,7 @@ class _ProfilePageState extends State<ProfilePage>
       ),
     );
   }
-  
+
   Widget _buildBadgeIcon(IconData icon, bool hasUpdate) {
     return Stack(
       children: [

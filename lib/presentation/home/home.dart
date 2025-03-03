@@ -12,6 +12,7 @@ import 'package:svar_new/presentation/user_profile_screen/user_profile_screen.da
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
+import 'package:svar_new/widgets/buildBottomNavigationBar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -68,8 +69,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+   int _currentIndex = 0; // Default to Today tab
+
+  // This function handles index changes from the bottom navigation bar
+  void _onIndexChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    // Note: The navigation logic is handled inside the CustomBottomNavigationBar
+  }
   late TabController _tabController;
-  int _currentIndex = 0;
+
   String _childName = "Noah";
   int _streakDays = 4;
   String _motivationalMessage = "Keep up the great work!";
@@ -157,20 +167,18 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               _buildHeader(),
               _buildSearchBar(),
               _buildStreakSection(),
-              // _buildABAInfoCard(),
-              // _buildPaginationDots(),
-              // _buildTabBar(),
               _buildTodaysExercises(),
               _buildUpcomingSessions(),
               _buildProgressSnapshot(),
-              // _buildAssessmentsSection(),
-              // _buildExpertsSection(),
               SizedBox(height: 20),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+     bottomNavigationBar: CustomBottomNavigationBar(
+        currentIndex: _currentIndex,
+        onIndexChanged: _onIndexChanged,
+      ),
     );
   }
 

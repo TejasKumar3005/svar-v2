@@ -1,70 +1,42 @@
+// lib/widgets/custom_bottom_navigation_bar.dart
+
 import 'package:flutter/material.dart';
-import '../routes/app_routes.dart';
-import 'package:flutter/services.dart';
+import '../routes/app_routes.dart'; // Import your app routes
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onIndexChanged;
-  final BuildContext context;
 
   const CustomBottomNavigationBar({
     Key? key,
     required this.currentIndex,
     required this.onIndexChanged,
-    required this.context,
   }) : super(key: key);
 
-  // Helper method to build badge icons
+  // Badge icon builder
   Widget _buildBadgeIcon(IconData icon, bool hasBadge) {
-    if (!hasBadge) {
-      return Icon(icon);
-    }
-    
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         Icon(icon),
-        Positioned(
-          right: 0,
-          top: 0,
-          child: Container(
-            padding: EdgeInsets.all(1),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            constraints: BoxConstraints(
-              minWidth: 12,
-              minHeight: 12,
-            ),
-            child: Text(
-              '',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 8,
+        if (hasBadge)
+          Positioned(
+            top: -4,
+            right: -4,
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
               ),
-              textAlign: TextAlign.center,
+              constraints: const BoxConstraints(
+                minWidth: 10,
+                minHeight: 10,
+              ),
             ),
           ),
-        ),
       ],
     );
-  }
-
-  void _handleNavigation(int index) {
-    onIndexChanged(index);
-    
-    // Handle navigation based on the selected tab
-    if (index == 4) {
-      // Navigate to Profile screen when Profile tab is clicked
-      Navigator.of(context).pushNamed(AppRoutes.userProfileScreen);
-    } else if (index == 0) {
-      // If Today tab is clicked and we're not already on the home screen
-      if (currentIndex != 0) {
-        // Navigate back to this screen (Home/Today screen)
-        Navigator.of(context).pushNamed(AppRoutes.home);
-      }
-    }
-    // Add navigation for other tabs as needed
   }
 
   @override
@@ -77,7 +49,23 @@ class CustomBottomNavigationBar extends StatelessWidget {
       ),
       child: BottomNavigationBar(
         currentIndex: currentIndex,
-        onTap: _handleNavigation,
+        onTap: (index) {
+          // Update the current index in the parent
+          onIndexChanged(index);
+          
+          // Handle navigation based on the selected tab
+          if (index == 4) {
+            // Navigate to Profile screen when Profile tab is clicked
+            Navigator.of(context).pushNamed(AppRoutes.userProfileScreen);
+          } else if (index == 0) {
+            // If Today tab is clicked and we're not already on the home screen
+            if (currentIndex != 0) {
+              // Navigate back to this screen (Home/Today screen)
+              Navigator.of(context).pushNamed(AppRoutes.home);
+            }
+          }
+          // Add navigation for other tabs as needed
+        },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.teal,
         unselectedItemColor: Colors.grey,
