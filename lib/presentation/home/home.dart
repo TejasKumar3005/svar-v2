@@ -9,10 +9,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'package:svar_new/presentation/user_profile_screen/user_profile_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:svar_new/widgets/buildBottomNavigationBar.dart';
+import 'package:svar_new/presentation/home/provider/streak_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -30,7 +31,7 @@ class HomeScreen extends StatefulWidget {
 
 // HomeScreenState   State<HomeScreen> 
 
-
+  
 class HomeScreenState extends State<HomeScreen> {
   // Remove the constant constructor as it's not needed in a State class
   // State objects are created by the framework, not directly instantiated
@@ -80,22 +81,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
   late TabController _tabController;
 
-  String _childName = "Noah";
-  int _streakDays = 4;
-  String _motivationalMessage = "Keep up the great work!";
-  List<String> _motivationalMessages = [
-    "Keep up the great work!",
-    "You're making amazing progress!",
-    "Way to go! You're doing awesome!",
-    "Look at you shine today!",
-    "Your hard work is paying off!",
-  ];
-  
-  // List of weekdays for streak view
-  final List<String> _weekdays = ["M", "T", "W", "T", "F", "S", "S"];
-  // Completed days (0-indexed, 0=Monday)
-  final List<int> _completedDays = [0, 1, 2, 3]; // 4 days streak
-  
   // Exercise data
   final List<Map<String, dynamic>> _exercises = [
     {
@@ -142,11 +127,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    
+    _tabController = TabController(length: 3, vsync: this);
+
     // Set a random motivational message
-    final random = math.Random();
-    _motivationalMessage = _motivationalMessages[random.nextInt(_motivationalMessages.length)];
+  
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Initialize streak provider data
+      Provider.of<StreakProvider>(context, listen: false).initializeStreakData();
+    });
   }
   
   @override
@@ -165,7 +153,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(),
-              _buildSearchBar(),
               _buildStreakSection(),
               _buildTodaysExercises(),
               _buildUpcomingSessions(),
@@ -182,278 +169,198 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'Good Evening',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        '👋',
-                        style: TextStyle(fontSize: 22),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'How are you feeling today?',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.blueGrey,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Text(
-                        "$_childName's streak: $_streakDays days!",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.teal,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(Icons.local_fire_department, color: Colors.orange),
-                    ],
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    _motivationalMessage,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                ],
-              ),
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.teal.shade100,
-                child: Text(
-                  _childName[0],
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal.shade800,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+Widget _buildHeader() {
+  return Consumer<StreakProvider>(
+    builder: (context, streakProvider, child) {
+      // Get greeting based on time of day
+      final hour = DateTime.now().hour;
+      String greeting = 'Good Evening';
+      if (hour < 12) {
+        greeting = 'Good Morning';
+      } else if (hour < 17) {
+        greeting = 'Good Afternoon';
+      }
+      
+      // Get motivational message based on streak count
+      String motivationalMessage = 'Keep going with your exercises!';
+      if (streakProvider.streakCount >= 7) {
+        motivationalMessage = 'Amazing consistency! You\'re making great progress!';
+      } else if (streakProvider.streakCount >= 3) {
+        motivationalMessage = 'You\'re building a great habit! Keep it up!';
+      } else if (streakProvider.streakCount >= 1) {
+        motivationalMessage = 'Great start! Let\'s keep the momentum going!';
+      }
 
-  Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.search, color: Colors.grey),
-            SizedBox(width: 8),
-            Expanded(
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  border: InputBorder.none,
-                  hintStyle: TextStyle(color: Colors.grey.shade600),
-                ),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.language,
-                color: Colors.teal,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStreakSection() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Your Weekly Streak',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(7, (index) {
-              bool isCompleted = _completedDays.contains(index);
-              bool isToday = index == 4; // Assuming Thursday is today
-              
-              return Column(
-                children: [
-                  Text(
-                    _weekdays[index],
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  AnimatedContainer(
-                    duration: Duration(milliseconds: 300),
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isCompleted 
-                          ? Colors.green 
-                          : isToday 
-                              ? Colors.purple
-                              : Colors.transparent,
-                      border: Border.all(
-                        color: isCompleted || isToday
-                            ? Colors.transparent
-                            : Colors.grey.shade400,
-                        width: 2,
-                      ),
-                    ),
-                    child: Center(
-                      child: isCompleted
-                          ? Icon(Icons.check, color: Colors.white, size: 20)
-                          : isToday
-                              ? Icon(Icons.play_arrow, color: Colors.white, size: 20)
-                              : null,
-                    ),
-                  ),
-                ],
-              );
-            }),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildABAInfoCard() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Color(0xFFA05B53),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'A is for... Applied Behavior Analysis',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'We provide evidence-based therapy',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(width: 8),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(Icons.lightbulb, color: Colors.amber),
-                Icon(Icons.book, color: Colors.amber),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          greeting,
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          '👋',
+                          style: TextStyle(fontSize: 22),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'How are you feeling today?',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.blueGrey,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Text(
+                          "${streakProvider.patientName}'s streak: ${streakProvider.streakCount} days!",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.teal,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.local_fire_department, color: Colors.orange),
+                      ],
+                    ),
+                    SizedBox(height: 6),
+                    Text(
+                      motivationalMessage,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
         ),
-      ),
-    );
-  }
+      );
+    },
+  );
+}
 
-  Widget _buildPaginationDots() {
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [1, 2, 3, 4, 5].map((i) {
-          return Container(
-            margin: EdgeInsets.symmetric(horizontal: 4),
-            height: 8,
-            width: 8,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: i == 3 ? Colors.teal : Colors.grey.withOpacity(0.5),
+ Widget _buildStreakSection() {
+  return Consumer<StreakProvider>(
+    builder: (context, streakProvider, child) {
+      // If the data is still loading, show a loading indicator
+      if (streakProvider.isLoading) {
+        return Center(child: CircularProgressIndicator());
+      }
+
+      // Get the weekday names
+      final _weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+      
+      // Get today's weekday (0 = Monday, 6 = Sunday)
+      final today = DateTime.now().weekday - 1;
+      
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Your Weekly Streak',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Icon(Icons.local_fire_department, color: Colors.orange),
+                    SizedBox(width: 4),
+                    Text(
+                      '${streakProvider.streakCount} days',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildTabBar() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16.0),
-      child: Column(
-        children: [
-          TabBar(
-            controller: _tabController,
-            labelColor: Colors.teal,
-            unselectedLabelColor: Colors.black,
-            indicatorColor: Colors.teal,
-            tabs: [
-              Tab(text: 'Assessments'),
-              Tab(text: 'Therapy Sessions'),
-            ],
-          ),
-          Divider(height: 1, thickness: 1),
-        ],
-      ),
-    );
-  }
+            SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(7, (index) {
+                // Get completion status from the provider
+                bool isCompleted = streakProvider.weeklyStreak[index] ?? false;
+                bool isToday = index == today;
+                
+                return Column(
+                  children: [
+                    Text(
+                      _weekdays[index],
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isCompleted 
+                            ? Colors.green 
+                            : isToday 
+                                ? Colors.purple
+                                : Colors.transparent,
+                        border: Border.all(
+                          color: isCompleted || isToday
+                              ? Colors.transparent
+                              : Colors.grey.shade400,
+                          width: 2,
+                        ),
+                      ),
+                      child: Center(
+                        child: isCompleted
+                            ? Icon(Icons.check, color: Colors.white, size: 20)
+                            : isToday
+                                ? Icon(Icons.play_arrow, color: Colors.white, size: 20)
+                                : null,
+                      ),
+                    ),
+                  ],
+                );
+              }),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
 
   Widget _buildTodaysExercises() {
     return Padding(
@@ -840,448 +747,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildAssessmentsSection() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Assessments We Provide',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Row(
-                children: [
-                  Icon(Icons.info_outline, size: 20, color: Colors.black),
-                  SizedBox(width: 8),
-                  Text(
-                    'View All',
-                    style: TextStyle(
-                      color: Colors.teal,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildAssessmentCard(
-                  title: 'Pre-Assessment',
-                  description: 'Conducted by our pediatric neurologist',
-                  iconPath: 'assets/assessment_icon.png',
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: _buildAssessmentCard(
-                  title: 'M-Chat',
-                  description: 'This is for toddlers of 16-30 months',
-                  iconPath: 'assets/mchat_icon.png',
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAssessmentCard({
-    required String title,
-    required String description,
-    required String iconPath,
-  }) {
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 2,
-            offset: Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 80,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Center(
-              child: Icon(Icons.image, size: 40, color: Colors.grey),
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            description,
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExpertsSection() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Our Experts',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Row(
-                children: [
-                  Icon(Icons.info_outline, size: 20, color: Colors.black),
-                  SizedBox(width: 8),
-                  Text(
-                    'View All',
-                    style: TextStyle(
-                      color: Colors.teal,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildExpertCard(
-                  name: 'Dr. Sonam Kothari',
-                  imageUrl: 'assets/doctor_image.png',
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: _buildExpertCard(
-                  name: '',
-                  isPlaceholder: true,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-          _buildPreAssessmentSessionCard(),
-          SizedBox(height: 20),
-          _buildWhatsAppConnectCard(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExpertCard({
-    required String name,
-    String imageUrl = '',
-    bool isPlaceholder = false,
-  }) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 2,
-            offset: Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          isPlaceholder
-              ? Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.medical_services,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                )
-              : Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.redAccent.shade100,
-                  ),
-                  child: Center(
-                    child: Icon(Icons.person, size: 40, color: Colors.white),
-                  ),
-                ),
-          SizedBox(height: 8),
-          if (!isPlaceholder)
-            Text(
-              name,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-              textAlign: TextAlign.center,
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPreAssessmentSessionCard() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Color(0xFFE6F7E9),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          // Flower decorations
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(Icons.spa, color: Colors.redAccent),
-              Icon(Icons.spa, color: Colors.redAccent),
-            ],
-          ),
-          SizedBox(height: 8),
-          // Play button
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.grey.withOpacity(0.3),
-            ),
-            child: Center(
-              child: Icon(
-                Icons.play_arrow,
-                color: Colors.teal,
-                size: 30,
-              ),
-            ),
-          ),
-          SizedBox(height: 12),
-          Text(
-            'Pre-assessment Sessions',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Learn more about the pre-assessment.',
-            style: TextStyle(
-              color: Colors.grey.shade700,
-              fontSize: 14,
-            ),
-          ),
-          SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.access_time, color: Colors.grey, size: 16),
-              SizedBox(width: 4),
-              Text(
-                '2 Mins.',
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontSize: 14,
-                ),
-              ),
-              SizedBox(width: 20),
-              Icon(Icons.nights_stay, color: Colors.grey, size: 16),
-              SizedBox(width: 4),
-              Text(
-                'Exclusive Content',
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontSize: 14,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWhatsAppConnectCard() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Color(0xFF2E3143),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Stay connected on WhatsApp!',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 12),
-          Text(
-            'Connect with other parents from our community to discuss any concerns on WhatsApp',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
-              fontSize: 14,
-            ),
-          ),
-          SizedBox(height: 20),
-          Row(
-            children: [
-              ElevatedButton.icon(
-                onPressed: () {},
-                icon: Icon(Icons.chat, color: Colors.white),
-                label: Text('Count me in'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF25D366),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-              ),
-              Spacer(),
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/whatsapp_icon.png'),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: Colors.grey.shade300, width: 1),
-        ),
-      ),
-      child: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          
-          // Handle navigation based on the selected tab
-          if (index == 4) {
-            // Navigate to Profile screen when Profile tab is clicked
-            Navigator.of(context).pushNamed(AppRoutes.userProfileScreen);
-          } else if (index == 0) {
-            // If Today tab is clicked and we're not already on the home screen
-            if (_currentIndex != 0) {
-              // Navigate back to this screen (Home/Today screen)
-               Navigator.of(context).pushNamed(AppRoutes.home);
-            }
-          }
-          // Add navigation for other tabs as needed
-        },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.teal,
-        unselectedItemColor: Colors.grey,
-        items: [
-          BottomNavigationBarItem(
-            icon: _buildBadgeIcon(Icons.wb_sunny, false),
-            label: 'Today',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildBadgeIcon(Icons.bar_chart, true),
-            label: 'Reports',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildBadgeIcon(Icons.calendar_today, false),
-            label: 'Calendar',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildBadgeIcon(Icons.attach_money, false),
-            label: 'Fees',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildBadgeIcon(Icons.person, false),
-            label: 'Profile',
-          ),
-        ],
-      ),
-    );
-  }
   
-  Widget _buildBadgeIcon(IconData icon, bool hasUpdate) {
-    return Stack(
-      children: [
-        Icon(icon),
-        if (hasUpdate)
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
+
+ 
+
+
 }

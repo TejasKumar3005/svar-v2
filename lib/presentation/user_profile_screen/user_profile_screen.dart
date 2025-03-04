@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:googleapis/dfareporting/v3_5.dart';
-import 'package:svar_new/core/app_export.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:svar_new/widgets/buildBottomNavigationBar.dart';
+import 'package:svar_new/presentation/home/provider/streak_provider.dart';
+import 'package:flutter/services.dart';
+import 'package:svar_new/presentation/home/provider/main_interaction_provider.dart';
+import 'package:svar_new/core/app_export.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
@@ -13,21 +13,78 @@ class UserProfileScreen extends StatefulWidget {
   @override
   State<UserProfileScreen> createState() => UserProfileScreenState();
 
-  static Widget builder(BuildContext context) => UserProfileScreen();
-}
-
-class UserProfileScreenState extends State<UserProfileScreen> {
-  @override
-  Widget build(BuildContext context) {
-    // TODO: Implement build method
-    return Container();
+    static Widget builder(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => MainInteractionProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => StreakProvider(),
+        ),
+      ],
+      child: UserProfileScreen(),
+    );
   }
 }
 
-//lass UserProfileScreenState extends State<UserProfileScreen>
+class UserProfileScreenState extends State<UserProfileScreen> {
+  late String uid;
+  Map<String, dynamic>? userData;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Get current user ID
+    uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Initialize streak provider data
+      Provider.of<StreakProvider>(context, listen: false).initializeStreakData();
+    });
+    
+  }
+
+  Future<void> fetchUserData() async {
+    try {
+      final userDoc = FirebaseFirestore.instance.collection('patients').doc(uid);
+      final docSnapshot = await userDoc.get();
+
+      if (docSnapshot.exists) {
+        setState(() {
+          userData = docSnapshot.data();
+          isLoading = false;
+        });
+      } else {
+        print('User document with ID $uid not found.');
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    } else {
+      return ProfilePage(userData: userData);
+    }
+  }
+}
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  final Map<String, dynamic>? userData;
+  const ProfilePage({Key? key, this.userData}) : super(key: key);
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -36,6 +93,9 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   int _currentIndex = 4; // Default to Today tab
+  late TabController _tabController;
+  bool _isPersonalDetailsSelected = true;
+  int _selectedChildIndex = 0;
 
   // This function handles index changes from the bottom navigation bar
   void _onIndexChanged(int index) {
@@ -45,9 +105,11 @@ class _ProfilePageState extends State<ProfilePage>
     // Note: The navigation logic is handled inside the CustomBottomNavigationBar
   }
 
-  late TabController _tabController;
-
-  bool _isPersonalDetailsSelected = true;
+  void _selectChild(int index) {
+    setState(() {
+      _selectedChildIndex = index;
+    });
+  }
 
   @override
   void initState() {
@@ -66,6 +128,173 @@ class _ProfilePageState extends State<ProfilePage>
     super.dispose();
   }
 
+  // Change password dialog
+  Future<void> _showChangePasswordDialog() async {
+    final TextEditingController currentPasswordController = TextEditingController();
+    final TextEditingController newPasswordController = TextEditingController();
+    final TextEditingController confirmPasswordController = TextEditingController();
+    bool isLoading = false;
+    String errorMessage = '';
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Change Password'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (errorMessage.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.red.shade200),
+                        ),
+                        child: Text(
+                          errorMessage,
+                          style: TextStyle(color: Colors.red.shade800),
+                        ),
+                      ),
+                    TextField(
+                      controller: currentPasswordController,
+                      decoration: const InputDecoration(
+                        labelText: 'Current Password',
+                        border: OutlineInputBorder(),
+                      ),
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: newPasswordController,
+                      decoration: const InputDecoration(
+                        labelText: 'New Password',
+                        border: OutlineInputBorder(),
+                      ),
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: confirmPasswordController,
+                      decoration: const InputDecoration(
+                        labelText: 'Confirm New Password',
+                        border: OutlineInputBorder(),
+                      ),
+                      obscureText: true,
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Cancel'),
+                ),
+                if (isLoading)
+                  const CircularProgressIndicator()
+                else
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Validate inputs
+                      if (currentPasswordController.text.isEmpty ||
+                          newPasswordController.text.isEmpty ||
+                          confirmPasswordController.text.isEmpty) {
+                        setState(() {
+                          errorMessage = 'All fields are required';
+                        });
+                        return;
+                      }
+
+                      if (newPasswordController.text != confirmPasswordController.text) {
+                        setState(() {
+                          errorMessage = 'New passwords do not match';
+                        });
+                        return;
+                      }
+
+                      if (newPasswordController.text.length < 6) {
+                        setState(() {
+                          errorMessage = 'Password must be at least 6 characters';
+                        });
+                        return;
+                      }
+
+                      // Update password
+                      setState(() {
+                        isLoading = true;
+                        errorMessage = '';
+                      });
+
+                      try {
+                        // Get current user
+                        final user = FirebaseAuth.instance.currentUser;
+                        if (user != null) {
+                          // Create a credential with email and current password
+                          final credential = EmailAuthProvider.credential(
+                            email: user.email!,
+                            password: currentPasswordController.text,
+                          );
+
+                          // Re-authenticate user
+                          await user.reauthenticateWithCredential(credential);
+
+                          // Change password in Firebase Auth
+                          await user.updatePassword(newPasswordController.text);
+
+                          // Update password in Firestore
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(user.uid)
+                              .update({
+                            'password': newPasswordController.text,
+                          });
+
+                          Navigator.of(context).pop();
+                          
+                          // Show success message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Password updated successfully'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      } on FirebaseAuthException catch (e) {
+                        setState(() {
+                          isLoading = false;
+                          if (e.code == 'wrong-password') {
+                            errorMessage = 'Current password is incorrect';
+                          } else {
+                            errorMessage = 'Error: ${e.message}';
+                          }
+                        });
+                      } catch (e) {
+                        setState(() {
+                          isLoading = false;
+                          errorMessage = 'An error occurred: $e';
+                        });
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal,
+                    ),
+                    child: const Text('Update'),
+                  ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,12 +303,14 @@ class _ProfilePageState extends State<ProfilePage>
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.teal),
-          onPressed: () {},
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.teal),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings_outlined, color: Colors.teal),
+            icon: const Icon(Icons.settings_outlined, color: Colors.teal),
             onPressed: () {},
           ),
         ],
@@ -104,102 +335,110 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Widget _buildProfileHeader() {
-    return Container(
-      padding: const EdgeInsets.only(bottom: 20.0),
-      child: Column(
-        children: [
-          // Profile background curve
-          Container(
-            height: 120,
-            decoration: BoxDecoration(
-              color: Colors.teal.withOpacity(0.2), // Increased opacity
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(40),
-                bottomRight: Radius.circular(40),
+    return Consumer<StreakProvider>(
+      builder: (context, streakProvider, child) {
+        return Container(
+          padding: const EdgeInsets.only(bottom: 20.0),
+          child: Column(
+            children: [
+              // Profile background curve
+              Container(
+                height: 120,
+                decoration: BoxDecoration(
+                  color: Colors.teal.withOpacity(0.2), // Increased opacity
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(40),
+                    bottomRight: Radius.circular(40),
+                  ),
+                ),
               ),
-            ),
-          ),
-          // Profile image (positioned to overlap the curve)
-          Transform.translate(
-            offset: Offset(0, -60),
-            child: Center(
-              child: Column(
-                children: [
-                  Stack(
-                    alignment: Alignment.bottomRight,
+              // Profile image (positioned to overlap the curve)
+              Transform.translate(
+                offset: const Offset(0, -60),
+                child: Center(
+                  child: Column(
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: Colors.white, width: 2), // White border
-                        ),
-                        child: CircleAvatar(
-                          radius: 55,
-                          backgroundColor: Colors.lightBlue.shade200,
-                          child: Icon(
-                            Icons.person,
-                            size: 70,
-                            color: Colors.lightBlue.shade600,
+                      Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: Colors.white, width: 2), // White border
+                            ),
+                            child: CircleAvatar(
+                              radius: 55,
+                              backgroundColor: Colors.lightBlue.shade200,
+                              backgroundImage: widget.userData?['profileImage'] != null 
+                                  ? NetworkImage(widget.userData!['profileImage']) 
+                                  : null,
+                              child: widget.userData?['profileImage'] == null 
+                                  ? Icon(
+                                    Icons.person,
+                                    size: 70,
+                                    color: Colors.lightBlue.shade600,
+                                  ) 
+                                  : null,
+                            ),
                           ),
+                          Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  blurRadius: 5,
+                                  spreadRadius: 1,
+                                ),
+                              ],
+                            ),
+                            child: const CircleAvatar(
+                              radius: 18,
+                              backgroundColor: Colors.lightBlue,
+                              child: Icon(
+                                Icons.edit,
+                                size: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                       streakProvider.patientName ?? 'No Name',
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
                         ),
                       ),
+                      const SizedBox(height: 8),
                       Container(
-                        padding: const EdgeInsets.all(2),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              blurRadius: 5,
-                              spreadRadius: 1,
-                            ),
-                          ],
+                          color: Colors.teal.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        child: CircleAvatar(
-                          radius: 18,
-                          backgroundColor: Colors.lightBlue,
-                          child: Icon(
-                            Icons.edit,
-                            size: 18,
-                            color: Colors.white,
+                        child: Text(
+                          'Parent Account',
+                          style: TextStyle(
+                            color: Colors.teal.shade700, // Darker teal for readability
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
-                  Text(
-                    'tejas',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.teal.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'Parent Account',
-                      style: TextStyle(
-                        color:
-                            Colors.teal.shade700, // Darker teal for readability
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -210,7 +449,7 @@ class _ProfilePageState extends State<ProfilePage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: EdgeInsets.only(left: 8, bottom: 8),
+            margin: const EdgeInsets.only(left: 8, bottom: 8),
             child: Row(
               children: [
                 Icon(
@@ -218,7 +457,7 @@ class _ProfilePageState extends State<ProfilePage>
                   color: Colors.brown.shade300,
                   size: 20,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
                   'Personal Information',
                   style: TextStyle(
@@ -239,42 +478,40 @@ class _ProfilePageState extends State<ProfilePage>
                   color: Colors.grey.withOpacity(0.08),
                   spreadRadius: 1,
                   blurRadius: 4,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: Column(
               children: [
                 Container(
-                  margin: EdgeInsets.only(top: 4),
-                  decoration: BoxDecoration(
+                  margin: const EdgeInsets.only(top: 4),
+                  decoration: const BoxDecoration(
                     color: Colors.transparent,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                   ),
                   child: TabBar(
                     controller: _tabController,
                     labelColor: Colors.teal,
                     unselectedLabelColor: Colors.black54,
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                    labelStyle: const TextStyle(fontWeight: FontWeight.bold),
                     unselectedLabelStyle:
-                        TextStyle(fontWeight: FontWeight.normal),
+                        const TextStyle(fontWeight: FontWeight.normal),
                     indicator: BoxDecoration(
                       color: Colors.teal
                           .withOpacity(0.1), // Light teal for selected tab
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    tabs: [
+                    tabs: const [
                       Tab(text: 'Personal Details'),
-                      Tab(text: 'Child Details'),
+                      Tab (text: 'Child Details') 
                     ],
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(20),
-                  child: _isPersonalDetailsSelected
-                      ? _buildPersonalDetailsTab()
-                      : _buildChildDetailsTab(),
+                  padding: const EdgeInsets.all(20),
+                  child:  _buildPersonalDetailsTab()
+                    
                 ),
               ],
             ),
@@ -289,7 +526,7 @@ class _ProfilePageState extends State<ProfilePage>
       children: [
         // Name field
         Container(
-          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -298,18 +535,18 @@ class _ProfilePageState extends State<ProfilePage>
           child: Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.teal.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.person_outline,
                   color: Colors.teal, // Unified color
                   size: 22,
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,13 +558,17 @@ class _ProfilePageState extends State<ProfilePage>
                         color: Colors.grey.shade600,
                       ),
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      'tejas',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    const SizedBox(height: 4),
+                    Consumer<StreakProvider>(
+                      builder: (context, streakProvider, child) {
+                        return Text(
+                          streakProvider.patientName ?? 'No Name',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -335,10 +576,10 @@ class _ProfilePageState extends State<ProfilePage>
             ],
           ),
         ),
-        SizedBox(height: 24), // Increased spacing
+        const SizedBox(height: 24), // Increased spacing
         // Email field
         Container(
-          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -347,18 +588,18 @@ class _ProfilePageState extends State<ProfilePage>
           child: Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.teal.withOpacity(0.1), // Unified background
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.email_outlined,
                   color: Colors.teal, // Unified color
                   size: 22,
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,24 +611,28 @@ class _ProfilePageState extends State<ProfilePage>
                         color: Colors.grey.shade600,
                       ),
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      'x@y.com',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    const SizedBox(height: 4),
+                Consumer<StreakProvider>(
+                builder: (context, streakProvider, child) {
+                   return Text(
+                    streakProvider.patientEmail ?? 'No Email',
+                         style: const TextStyle(
+                     fontSize: 16,
+                  fontWeight: FontWeight.w500,
                     ),
+                     );
+                      },
+                         ),
                   ],
                 ),
               ),
             ],
           ),
         ),
-        SizedBox(height: 24), // Increased spacing
+        const SizedBox(height: 24), // Increased spacing
         // Contact field
         Container(
-          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -396,18 +641,18 @@ class _ProfilePageState extends State<ProfilePage>
           child: Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.teal.withOpacity(0.1), // Unified background
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.phone_outlined,
                   color: Colors.teal, // Unified color
                   size: 22,
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -419,9 +664,62 @@ class _ProfilePageState extends State<ProfilePage>
                         color: Colors.grey.shade600,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
+                    Consumer<StreakProvider>(
+                      builder: (context, streakProvider, child) {
+                        return Text(
+                          streakProvider.patientPhone ?? 'No Contact',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24), // Added spacing for password button
+        // Password change button
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.teal.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.lock_outline,
+                  color: Colors.teal,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      '+917357320144',
+                      'Password',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      '••••••••',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -430,289 +728,26 @@ class _ProfilePageState extends State<ProfilePage>
                   ],
                 ),
               ),
+              TextButton(
+                onPressed: _showChangePasswordDialog,
+                child: Text(
+                  'Change',
+                  style: TextStyle(
+                    color: Colors.teal.shade700,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
-        SizedBox(height: 32), // Increased spacing
+       // Increased spacing
         // Edit details button
-        Container(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal, // Changed to teal
-              padding: EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 0,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.edit, size: 18, color: Colors.white), // White icon
-                SizedBox(width: 8),
-                Text(
-                  'Edit Details',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white, // White text
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        
       ],
     );
   }
 
-  Widget _buildChildDetailsTab() {
-    return Column(
-      children: [
-        // Child selector card
-        Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                spreadRadius: 1,
-                blurRadius: 3,
-                offset: Offset(0, 1),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.teal.withOpacity(0.1),
-                    radius: 20,
-                    child: Text(
-                      'S',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.teal,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  Text(
-                    'svar',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.teal.withOpacity(0.1), // Unified background
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.keyboard_arrow_up,
-                  color: Colors.teal, // Unified color
-                  size: 24,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 24), // Increased spacing
-        // Child info cards
-        Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.teal.withOpacity(0.1), // Unified background
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.text_fields,
-                      color: Colors.teal, // Unified color
-                      size: 22,
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Name',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'svar',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Divider(height: 24, thickness: 1, color: Colors.grey.shade200),
-              Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.teal.withOpacity(0.1), // Unified background
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.cake_outlined,
-                      color: Colors.teal, // Unified color
-                      size: 22,
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Date Of Birth',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        '2022-05-2',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Divider(height: 24, thickness: 1, color: Colors.grey.shade200),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.teal
-                              .withOpacity(0.1), // Unified background
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.show_chart,
-                          color: Colors.teal, // Unified color
-                          size: 22,
-                        ),
-                      ),
-                      SizedBox(width: 16),
-                      Text(
-                        'Progress',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Colors.teal.withOpacity(0.1), // Softer teal
-                      elevation: 0,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      'View Insights',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.teal, // Match theme
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 32), // Increased spacing
-        // Child management buttons
-        Row(
-          children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: Icon(Icons.add_circle_outline,
-                    size: 20, color: Colors.white), // White icon
-                label: Text('Add Child',
-                    style: TextStyle(color: Colors.white)), // White text
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal, // Changed to teal
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-              ),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: Icon(Icons.swap_horiz,
-                    size: 20, color: Colors.white), // White icon
-                label: Text('Switch Child',
-                    style: TextStyle(color: Colors.white)), // White text
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal, // Changed to teal
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
 
   Widget _buildSupportSection() {
     return Padding(
@@ -823,102 +858,6 @@ class _ProfilePageState extends State<ProfilePage>
       ),
     );
   }
-
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: Colors.grey.shade300, width: 1),
-        ),
-      ),
-      child: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-
-          // Handle navigation based on the selected tab
-          if (index == 4) {
-            // Navigate to Profile screen when Profile tab is clicked
-            Navigator.of(context).pushNamed(AppRoutes.userProfileScreen);
-          } else if (index == 0) {
-            // If Today tab is clicked and we're not already on the home screen
-            if (_currentIndex != 0) {
-              // Navigate back to this screen (Home/Today screen)
-              Navigator.of(context).pushNamed(AppRoutes.home);
-            }
-          }
-          // Add navigation for other tabs as needed
-        },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.teal,
-        unselectedItemColor: Colors.grey,
-        items: [
-          BottomNavigationBarItem(
-            icon: _buildBadgeIcon(Icons.wb_sunny, false),
-            label: 'Today',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildBadgeIcon(Icons.bar_chart, true),
-            label: 'Reports',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildBadgeIcon(Icons.calendar_today, false),
-            label: 'Calendar',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildBadgeIcon(Icons.attach_money, false),
-            label: 'Fees',
-          ),
-          BottomNavigationBarItem(
-            icon: _buildBadgeIcon(Icons.person, false),
-            label: 'Profile',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBadgeIcon(IconData icon, bool hasUpdate) {
-    return Stack(
-      children: [
-        Icon(icon),
-        if (hasUpdate)
-          Positioned(
-            top: 0,
-            right: 0,
-            child: Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
 }
 
-void main() {
-  runApp(const MyApp());
-}
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Speech Therapy App',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-        fontFamily: 'Nunito',
-      ),
-      home: const ProfilePage(), // Use the ProfilePage here
-    );
-  }
-}

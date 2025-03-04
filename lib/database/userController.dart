@@ -117,11 +117,6 @@ class UserData {
                 exerciseData['performance'] = [performance];
               }
             }
-
-            // Update the exercise data
-
-            // Update the Firestore document
-
             if (exerciseData["completedAt"] == null && isCompleted) {
               exerciseData["completedAt"] = DateTime.now().toString();
               exercisesForDate[exerciseIndex] = exerciseData;
