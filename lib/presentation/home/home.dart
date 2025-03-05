@@ -70,7 +70,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   int _currentIndex = 0; // Default to Today tab
 
   // This function handles index changes from the bottom navigation bar
@@ -99,10 +99,20 @@ class _HomePageState extends State<HomePage>
     {'icon': Icons.favorite, 'color': Colors.redAccent},
   ];
 
+  // Focus node to detect when screen regains focus
+  late FocusNode _focusNode;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    
+    // Register as an observer to detect app lifecycle changes
+    WidgetsBinding.instance.addObserver(this);
+    
+    // Initialize focus node and add listener
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
 
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     // Set a random motivational message
@@ -113,15 +123,49 @@ class _HomePageState extends State<HomePage>
           .initializeStreakData();
     });
   }
+  
+  // This method is called when the focus changes
+  void _onFocusChange() {
+    if (_focusNode.hasFocus) {
+      // Screen has regained focus, refresh data
+      _refreshData();
+    }
+  }
+  
+  // This method is called when the app lifecycle state changes
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // App has come to the foreground, refresh data
+      _refreshData();
+    }
+  }
+  
+  // Method to refresh data when returning to this screen
+  void _refreshData() {
+    // Reset orientation to portrait
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    
+    // Refresh streak data
+    if (mounted) {
+      Provider.of<StreakProvider>(context, listen: false).initializeStreakData();
+    }
+  }
+  
 
   @override
   void dispose() {
     _tabController.dispose();
+    _focusNode.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Request focus when the widget is built
+    FocusScope.of(context).requestFocus(_focusNode);
+    
     return Scaffold(
       backgroundColor: const Color(0xFFF9F2EF),
       body: SafeArea(
