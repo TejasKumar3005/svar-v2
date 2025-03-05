@@ -131,6 +131,8 @@ class _HomePageState extends State<HomePage>
 
   @override
   void initState() {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+     print("HomeScreenState initState called"); 
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     
@@ -140,8 +142,8 @@ class _HomePageState extends State<HomePage>
     // Initialize focus node and add listener
     _focusNode = FocusNode();
     _focusNode.addListener(_onFocusChange);
-
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    
+   
     // Set a random motivational message
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -224,8 +226,12 @@ class _HomePageState extends State<HomePage>
                     ),
                   ),
                   child: ElevatedButton(
-                    onPressed: () {
-                      NavigatorService.pushNamed(AppRoutes.exercisesScreen);
+                     onPressed: () async {
+                      print("hello");
+                       await NavigatorService.pushNamed(AppRoutes.exercisesScreen);
+                        print("/////////////////////////////n"); 
+                       initState();
+                      
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
