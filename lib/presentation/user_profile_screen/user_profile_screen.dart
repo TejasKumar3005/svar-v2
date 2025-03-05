@@ -299,22 +299,7 @@ class _ProfilePageState extends State<ProfilePage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F2EF),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.teal),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.teal),
-            onPressed: () {},
-          ),
-        ],
-      ),
+      
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -409,28 +394,14 @@ class _ProfilePageState extends State<ProfilePage>
                       ),
                       const SizedBox(height: 16),
                       Text(
-                       streakProvider.patientName ?? 'No Name',
+                       streakProvider.patientName ,
                         style: const TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.5,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.teal.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'Parent Account',
-                          style: TextStyle(
-                            color: Colors.teal.shade700, // Darker teal for readability
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
+                      
                     ],
                   ),
                 ),
@@ -510,8 +481,9 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 Container(
                   padding: const EdgeInsets.all(20),
-                  child:  _buildPersonalDetailsTab()
-                    
+                  child: _isPersonalDetailsSelected
+                      ? _buildPersonalDetailsTab()
+                      : _buildChildDetailsTab(),
                 ),
               ],
             ),
@@ -562,7 +534,7 @@ class _ProfilePageState extends State<ProfilePage>
                     Consumer<StreakProvider>(
                       builder: (context, streakProvider, child) {
                         return Text(
-                          streakProvider.patientName ?? 'No Name',
+                          streakProvider.patientName,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -576,7 +548,166 @@ class _ProfilePageState extends State<ProfilePage>
             ],
           ),
         ),
-        const SizedBox(height: 24), // Increased spacing
+        const SizedBox(height: 16),
+        // Father's Name field
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.teal.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.person_outline,
+                  color: Colors.teal,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Father\'s Name',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Consumer<StreakProvider>(
+                      builder: (context, streakProvider, child) {
+                        return Text(
+                          streakProvider.fatherName,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Mother's Name field
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.teal.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.person_outline,
+                  color: Colors.teal,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Mother\'s Name',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Consumer<StreakProvider>(
+                      builder: (context, streakProvider, child) {
+                        return Text(
+                          streakProvider.motherName,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Address field
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.teal.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.home_outlined,
+                  color: Colors.teal,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Address',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Consumer<StreakProvider>(
+                      builder: (context, streakProvider, child) {
+                        return Text(
+                          streakProvider.address,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
         // Email field
         Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -615,7 +746,7 @@ class _ProfilePageState extends State<ProfilePage>
                 Consumer<StreakProvider>(
                 builder: (context, streakProvider, child) {
                    return Text(
-                    streakProvider.patientEmail ?? 'No Email',
+                    streakProvider.patientEmail ,
                          style: const TextStyle(
                      fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -629,7 +760,7 @@ class _ProfilePageState extends State<ProfilePage>
             ],
           ),
         ),
-        const SizedBox(height: 24), // Increased spacing
+        const SizedBox(height: 16), // Increased spacing
         // Contact field
         Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -668,7 +799,7 @@ class _ProfilePageState extends State<ProfilePage>
                     Consumer<StreakProvider>(
                       builder: (context, streakProvider, child) {
                         return Text(
-                          streakProvider.patientPhone ?? 'No Contact',
+                          streakProvider.patientPhone ,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
@@ -682,7 +813,7 @@ class _ProfilePageState extends State<ProfilePage>
             ],
           ),
         ),
-        const SizedBox(height: 24), // Added spacing for password button
+        const SizedBox(height: 16), // Added spacing for password button
         // Password change button
         Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -741,13 +872,122 @@ class _ProfilePageState extends State<ProfilePage>
             ],
           ),
         ),
-       // Increased spacing
-        // Edit details button
-        
       ],
     );
   }
 
+
+  Widget _buildChildDetailsTab() {
+    return Column(
+      children: [
+        // Child Name field
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.teal.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.child_care,
+                  color: Colors.teal,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Child Name',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Consumer<StreakProvider>(
+                      builder: (context, streakProvider, child) {
+                        return Text(
+                          streakProvider.patientName,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Child Age field
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.teal.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.cake,
+                  color: Colors.teal,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Child Age',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Consumer<StreakProvider>(
+                      builder: (context, streakProvider, child) {
+                        return Text(
+                          '${streakProvider.age} years',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildSupportSection() {
     return Padding(

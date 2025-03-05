@@ -9,7 +9,7 @@ class StreakProvider extends ChangeNotifier {
   String _therapistName = "";
   Map<int, bool> _weeklyStreak = {};
   bool _isLoading = true;
-  
+
   // Additional user data fields
   String _patientEmail = "";
   String _patientPhone = "";
@@ -17,6 +17,10 @@ class StreakProvider extends ChangeNotifier {
   String _therapistEmail = "";
   String _therapistPhone = "";
   String _therapistProfileImage = "";
+  String _motherName = "";
+  String _fatherName = "";
+  String _address = "";
+  String _age = "" ; 
 
   // Getters for all properties
   int get streakCount => _streakCount;
@@ -30,12 +34,15 @@ class StreakProvider extends ChangeNotifier {
   String get therapistEmail => _therapistEmail;
   String get therapistPhone => _therapistPhone;
   String get therapistProfileImage => _therapistProfileImage;
-
+  String get motherName => _motherName;
+  String get fatherName => _fatherName;
+  String get address => _address;
+  String get age => _age;  
   // Initialize the streak data
   Future<void> initializeStreakData() async {
     _isLoading = true;
     notifyListeners();
-    
+
     try {
       await _fetchUserData();
       await _calculateStreak();
@@ -60,11 +67,18 @@ class StreakProvider extends ChangeNotifier {
 
       if (userDoc.exists) {
         Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-        _patientName = userData['name'] ?? "";
-        _patientEmail = userData['email'] ?? "";
-        _patientPhone = userData['parentPhone'] ?? "";
-        _patientProfileImage = userData['profileImage'] ?? "";
+        _patientName = userData['name'] ?? "no Name";
+        _patientEmail = userData['email'] ?? " no  Email";
+        _patientPhone = userData['parentPhone'] ?? " no phone number";
+        _patientProfileImage = userData['profileImage'] ?? " no profile image";
         
+        _motherName = userData['mothersName']?? "no name";
+        _fatherName = userData['fathersName']?? "no name";
+        _address = userData['address']?? " no address";
+        _age = userData['age']?? " no age"; 
+
+        print(userData['age']);
+
         // Get therapist information if available
         if (userData['therapist'] != null && userData['therapist'].isNotEmpty) {
           String therapistId = userData['therapist'][0];
@@ -85,7 +99,8 @@ class StreakProvider extends ChangeNotifier {
           .get();
 
       if (therapistDoc.exists) {
-        Map<String, dynamic> therapistData = therapistDoc.data() as Map<String, dynamic>;
+        Map<String, dynamic> therapistData =
+            therapistDoc.data() as Map<String, dynamic>;
         _therapistName = therapistData['name'] ?? "";
         _therapistEmail = therapistData['email'] ?? "";
         _therapistPhone = therapistData['phone'] ?? "";
@@ -110,31 +125,31 @@ class StreakProvider extends ChangeNotifier {
       if (userDoc.exists) {
         Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
         Map<String, dynamic> exercises = userData['exercises'] ?? {};
-        
+
         // Initialize weekly streak map (0 = Monday, 6 = Sunday)
         _weeklyStreak = {};
         for (int i = 0; i < 7; i++) {
           _weeklyStreak[i] = false;
         }
-        
+
         // Get current date and calculate dates for the current week
         DateTime now = DateTime.now();
         DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-        
+
         // Calculate streak count
         int streak = 0;
         DateTime currentDate = now;
         bool streakBroken = false;
-        
+
         // Check up to 30 days back for continuous streak
         for (int i = 0; i < 30 && !streakBroken; i++) {
           String dateKey = DateFormat('yyyy-MM-dd').format(currentDate);
           bool hasCompletedExercise = false;
-          
+
           // Check if there are exercises for this date
           if (exercises.containsKey(dateKey)) {
             List<dynamic> dailyExercises = exercises[dateKey];
-            
+
             // Check if any exercise was completed
             for (var exercise in dailyExercises) {
               if (exercise is Map && exercise['completedAt'] != null) {
@@ -143,16 +158,17 @@ class StreakProvider extends ChangeNotifier {
               }
             }
           }
-          
+
           // Update streak count
           if (hasCompletedExercise || currentDate.isAfter(now)) {
             // Count today and future dates as part of streak
             if (currentDate.difference(now).inDays <= 0) {
               streak++;
             }
-            
+
             // Update weekly streak map for current week
-            int daysSinceStartOfWeek = currentDate.difference(startOfWeek).inDays;
+            int daysSinceStartOfWeek =
+                currentDate.difference(startOfWeek).inDays;
             if (daysSinceStartOfWeek >= 0 && daysSinceStartOfWeek < 7) {
               _weeklyStreak[currentDate.weekday - 1] = hasCompletedExercise;
             }
@@ -160,18 +176,18 @@ class StreakProvider extends ChangeNotifier {
             // Break streak if a day was missed
             streakBroken = true;
           }
-          
+
           // Move to previous day
           currentDate = currentDate.subtract(Duration(days: 1));
         }
-        
+
         _streakCount = streak;
       }
     } catch (e) {
       print('Error calculating streak: $e');
     }
   }
-  
+
   // Get user details as a map
   Map<String, dynamic> getPatientDetails() {
     return {
@@ -179,9 +195,13 @@ class StreakProvider extends ChangeNotifier {
       'email': _patientEmail,
       'phone': _patientPhone,
       'profileImage': _patientProfileImage,
+      'motherName': _motherName,
+      'fatherName': _fatherName,
+      'address': _address,
+      'age': _age,
     };
   }
-  
+
   // Get therapist details as a map
   Map<String, dynamic> getTherapistDetails() {
     return {
@@ -191,7 +211,7 @@ class StreakProvider extends ChangeNotifier {
       'profileImage': _therapistProfileImage,
     };
   }
-  
+
   // Manually update streak (e.g., after exercise completion)
   Future<void> updateStreak() async {
     await _calculateStreak();

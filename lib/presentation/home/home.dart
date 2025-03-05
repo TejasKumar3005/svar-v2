@@ -29,9 +29,8 @@ class HomeScreen extends StatefulWidget {
   }
 }
 
-// HomeScreenState   State<HomeScreen> 
+// HomeScreenState   State<HomeScreen>
 
-  
 class HomeScreenState extends State<HomeScreen> {
   // Remove the constant constructor as it's not needed in a State class
   // State objects are created by the framework, not directly instantiated
@@ -41,13 +40,14 @@ class HomeScreenState extends State<HomeScreen> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ));
-    
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Speech Therapy App',
       theme: ThemeData(
         primarySwatch: Colors.teal,
-        fontFamily: 'Nunito', // Rounded friendly sans-serif font similar to Duolingo
+        fontFamily:
+            'Nunito', // Rounded friendly sans-serif font similar to Duolingo
         textTheme: const TextTheme(
           headlineLarge: TextStyle(fontWeight: FontWeight.w700, fontSize: 24),
           headlineMedium: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
@@ -69,8 +69,9 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
-   int _currentIndex = 0; // Default to Today tab
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  int _currentIndex = 0; // Default to Today tab
 
   // This function handles index changes from the bottom navigation bar
   void _onIndexChanged(int index) {
@@ -79,6 +80,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     });
     // Note: The navigation logic is handled inside the CustomBottomNavigationBar
   }
+
   late TabController _tabController;
 
   // Exercise data
@@ -108,7 +110,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       'progress': 0.7,
     },
   ];
-  
+
   // Upcoming session data
   final Map<String, dynamic> _nextSession = {
     'date': "March 5, 2025",
@@ -116,27 +118,29 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     'therapist': "Dr. Sonam Kothari",
     'location': "Virtual",
   };
-  
+
   // Achievement badges
   final List<Map<String, dynamic>> _achievements = [
     {'icon': Icons.emoji_events, 'color': Colors.amber},
     {'icon': Icons.star, 'color': Colors.purpleAccent},
     {'icon': Icons.favorite, 'color': Colors.redAccent},
   ];
-  
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
 
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     // Set a random motivational message
-  
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Initialize streak provider data
-      Provider.of<StreakProvider>(context, listen: false).initializeStreakData();
+      Provider.of<StreakProvider>(context, listen: false)
+          .initializeStreakData();
     });
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -154,213 +158,280 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             children: [
               _buildHeader(),
               _buildStreakSection(),
-              _buildTodaysExercises(),
+              // _buildTodaysExercises(),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.teal.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Colors.teal.shade400, Colors.teal.shade700],
+                    ),
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      NavigatorService.pushNamed(AppRoutes.exercisesScreen);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      minimumSize: Size(double.infinity, 60),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.bolt,
+                          color: Colors.yellow,
+                          size: 24,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          'Continue Today\'s Exercise',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Icon(
+                          Icons.bolt,
+                          color: Colors.yellow,
+                          size: 24,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               _buildUpcomingSessions(),
               _buildProgressSnapshot(),
+
               SizedBox(height: 20),
             ],
           ),
         ),
       ),
-     bottomNavigationBar: CustomBottomNavigationBar(
+      bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _currentIndex,
         onIndexChanged: _onIndexChanged,
       ),
     );
   }
 
-Widget _buildHeader() {
-  return Consumer<StreakProvider>(
-    builder: (context, streakProvider, child) {
-      // Get greeting based on time of day
-      final hour = DateTime.now().hour;
-      String greeting = 'Good Evening';
-      if (hour < 12) {
-        greeting = 'Good Morning';
-      } else if (hour < 17) {
-        greeting = 'Good Afternoon';
-      }
-      
-      // Get motivational message based on streak count
-      String motivationalMessage = 'Keep going with your exercises!';
-      if (streakProvider.streakCount >= 7) {
-        motivationalMessage = 'Amazing consistency! You\'re making great progress!';
-      } else if (streakProvider.streakCount >= 3) {
-        motivationalMessage = 'You\'re building a great habit! Keep it up!';
-      } else if (streakProvider.streakCount >= 1) {
-        motivationalMessage = 'Great start! Let\'s keep the momentum going!';
-      }
+  Widget _buildHeader() {
+    return Consumer<StreakProvider>(
+      builder: (context, streakProvider, child) {
+        // Get greeting based on time of day
+        final hour = DateTime.now().hour;
+        String greeting = 'Good Evening';
+        if (hour < 12) {
+          greeting = 'Good Morning';
+        } else if (hour < 17) {
+          greeting = 'Good Afternoon';
+        }
 
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          greeting,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+        // Get motivational message based on streak count
+        String motivationalMessage = 'Keep going with your exercises!';
+        if (streakProvider.streakCount >= 7) {
+          motivationalMessage =
+              'Amazing consistency! You\'re making great progress!';
+        } else if (streakProvider.streakCount >= 3) {
+          motivationalMessage = 'You\'re building a great habit! Keep it up!';
+        } else if (streakProvider.streakCount >= 1) {
+          motivationalMessage = 'Great start! Let\'s keep the momentum going!';
+        }
+
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            greeting,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          '👋',
-                          style: TextStyle(fontSize: 22),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'How are you feeling today?',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.blueGrey,
-                      ),
-                    ),
-                    SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Text(
-                          "${streakProvider.patientName}'s streak: ${streakProvider.streakCount} days!",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.teal,
+                          SizedBox(width: 8),
+                          Text(
+                            '👋',
+                            style: TextStyle(fontSize: 22),
                           ),
-                        ),
-                        SizedBox(width: 8),
-                        Icon(Icons.local_fire_department, color: Colors.orange),
-                      ],
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      motivationalMessage,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.grey.shade700,
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
- Widget _buildStreakSection() {
-  return Consumer<StreakProvider>(
-    builder: (context, streakProvider, child) {
-      // If the data is still loading, show a loading indicator
-      if (streakProvider.isLoading) {
-        return Center(child: CircularProgressIndicator());
-      }
-
-      // Get the weekday names
-      final _weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-      
-      // Get today's weekday (0 = Monday, 6 = Sunday)
-      final today = DateTime.now().weekday - 1;
-      
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Your Weekly Streak',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                      SizedBox(height: 8),
+                      Text(
+                        'How are you feeling today?',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.blueGrey,
+                        ),
+                      ),
+                      SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Text(
+                            "${streakProvider.patientName}'s streak: ${streakProvider.streakCount} days!",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.teal,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Icon(Icons.local_fire_department,
+                              color: Colors.orange),
+                        ],
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        motivationalMessage,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.local_fire_department, color: Colors.orange),
-                    SizedBox(width: 4),
-                    Text(
-                      '${streakProvider.streakCount} days',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange,
-                      ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildStreakSection() {
+    return Consumer<StreakProvider>(
+      builder: (context, streakProvider, child) {
+        // If the data is still loading, show a loading indicator
+        if (streakProvider.isLoading) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        // Get the weekday names
+        final _weekdays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
+        // Get today's weekday (0 = Monday, 6 = Sunday)
+        final today = DateTime.now().weekday - 1;
+
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Your Weekly Streak',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(7, (index) {
-                // Get completion status from the provider
-                bool isCompleted = streakProvider.weeklyStreak[index] ?? false;
-                bool isToday = index == today;
-                
-                return Column(
-                  children: [
-                    Text(
-                      _weekdays[index],
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    AnimatedContainer(
-                      duration: Duration(milliseconds: 300),
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: isCompleted 
-                            ? Colors.green 
-                            : isToday 
-                                ? Colors.purple
-                                : Colors.transparent,
-                        border: Border.all(
-                          color: isCompleted || isToday
-                              ? Colors.transparent
-                              : Colors.grey.shade400,
-                          width: 2,
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.local_fire_department, color: Colors.orange),
+                      SizedBox(width: 4),
+                      Text(
+                        '${streakProvider.streakCount} days',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange,
                         ),
                       ),
-                      child: Center(
-                        child: isCompleted
-                            ? Icon(Icons.check, color: Colors.white, size: 20)
-                            : isToday
-                                ? Icon(Icons.play_arrow, color: Colors.white, size: 20)
-                                : null,
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(7, (index) {
+                  // Get completion status from the provider
+                  bool isCompleted =
+                      streakProvider.weeklyStreak[index] ?? false;
+                  bool isToday = index == today;
+
+                  return Column(
+                    children: [
+                      Text(
+                        _weekdays[index],
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey.shade700,
+                        ),
                       ),
-                    ),
-                  ],
-                );
-              }),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
+                      SizedBox(height: 8),
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isCompleted
+                              ? Colors.green
+                              : isToday
+                                  ? Colors.purple
+                                  : Colors.transparent,
+                          border: Border.all(
+                            color: isCompleted || isToday
+                                ? Colors.transparent
+                                : Colors.grey.shade400,
+                            width: 2,
+                          ),
+                        ),
+                        child: Center(
+                          child: isCompleted
+                              ? Icon(Icons.check, color: Colors.white, size: 20)
+                              : isToday
+                                  ? Icon(Icons.play_arrow,
+                                      color: Colors.white, size: 20)
+                                  : null,
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   Widget _buildTodaysExercises() {
     return Padding(
@@ -427,7 +498,8 @@ Widget _buildHeader() {
                               SizedBox(height: 4),
                               Row(
                                 children: [
-                                  Icon(Icons.access_time, size: 14, color: Colors.grey),
+                                  Icon(Icons.access_time,
+                                      size: 14, color: Colors.grey),
                                   SizedBox(width: 4),
                                   Text(
                                     exercise['duration'],
@@ -438,7 +510,8 @@ Widget _buildHeader() {
                                   ),
                                   SizedBox(width: 16),
                                   Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 2),
                                     decoration: BoxDecoration(
                                       color: exercise['priority'] == 'High'
                                           ? Colors.red.shade100
@@ -496,7 +569,8 @@ Widget _buildHeader() {
                               onPressed: () {},
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: exercise['color'],
-                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
@@ -567,7 +641,8 @@ Widget _buildHeader() {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.teal.shade100,
                           borderRadius: BorderRadius.circular(10),
@@ -746,10 +821,4 @@ Widget _buildHeader() {
       ),
     );
   }
-
-  
-
- 
-
-
 }
