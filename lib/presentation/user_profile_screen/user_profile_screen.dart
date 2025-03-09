@@ -95,7 +95,7 @@ class _ProfilePageState extends State<ProfilePage>
   int _currentIndex = 4; // Default to Today tab
   late TabController _tabController;
   bool _isPersonalDetailsSelected = true;
-  int _selectedChildIndex = 0;
+
 
   // This function handles index changes from the bottom navigation bar
   void _onIndexChanged(int index) {
@@ -105,11 +105,7 @@ class _ProfilePageState extends State<ProfilePage>
     // Note: The navigation logic is handled inside the CustomBottomNavigationBar
   }
 
-  void _selectChild(int index) {
-    setState(() {
-      _selectedChildIndex = index;
-    });
-  }
+
 
   @override
   void initState() {

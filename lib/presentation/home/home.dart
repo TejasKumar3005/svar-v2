@@ -203,7 +203,11 @@ class _HomePageState extends State<HomePage>
                       print("hello");
                        await NavigatorService.pushNamed(AppRoutes.exercisesScreen);
                         print("/////////////////////////////n"); 
-                       initState();
+                       // Don't call initState() directly
+                       // Instead, refresh data if the widget is still mounted
+                       if (mounted) {
+                         _refreshData();
+                       }
                       
                     },
                     style: ElevatedButton.styleFrom(

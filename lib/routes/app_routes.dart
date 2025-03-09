@@ -21,6 +21,7 @@ import '../presentation/loading_screen/loading_screen.dart';
 import '../presentation/speaking_phoneme/speaking_phoneme.dart';
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
 import 'package:svar_new/presentation/intro_screen/intro_screen.dart';
+import 'package:svar_new/presentation/exercises/patient_assessment.dart';
 
 class AppRoutes {
   static const String welcomeScreenPotraitScreen =
@@ -73,6 +74,7 @@ class AppRoutes {
   static const String exerciseDetection = '/exercise_detection';
   static const String exercisePronunciation = '/exercise_pronunciation';
   static const String exercisesScreen = '/exercises_screen';
+  static const String patientAssessment ='/assessmentpage';
 
   static Map<String, WidgetBuilder> get routes => {
         welcomeScreenPotraitScreen: WelcomeScreenPotraitScreen.builder,
@@ -84,7 +86,7 @@ class AppRoutes {
         loadingScreen: LoadingScreen.builder,
         welcomeScreen: WelcomeScreen.builder,
         phonemsLevelScreenTwoScreen: PhonemsLevelScreenTwoScreen.builder,
-
+        patientAssessment: PatientAssessmentPage.builder,
         setting: SettingsScreen.builder,
 
         // will have to change the route to learning pathway
@@ -92,6 +94,7 @@ class AppRoutes {
       
         speakingphonemeScreen: SpeakingPhonemeScreen.builder,
         videoCamScreen: VideoCamScreen.builder,
+        
 
         tipBoxVideoScreen: TipBoxVideoScreen.builder,
         appNavigationScreen: AppNavigationScreen.builder,
