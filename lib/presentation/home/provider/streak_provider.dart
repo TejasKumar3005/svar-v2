@@ -58,6 +58,7 @@ class StreakProvider extends ChangeNotifier {
   Future<void> _fetchUserData() async {
     try {
       String? uid = FirebaseAuth.instance.currentUser?.uid;
+      print("uid is $uid");
       if (uid == null) return;
 
       DocumentSnapshot userDoc = await FirebaseFirestore.instance

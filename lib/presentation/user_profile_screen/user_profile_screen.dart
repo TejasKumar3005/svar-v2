@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:svar_new/widgets/buildBottomNavigationBar.dart';
+import 'package:svar_new/presentation/patient_report/buildBottomNavigationBar.dart';
 import 'package:svar_new/presentation/home/provider/streak_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/presentation/home/provider/main_interaction_provider.dart';

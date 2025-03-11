@@ -11,7 +11,7 @@ import 'package:svar_new/widgets/game_stats_header.dart';
 import 'package:svar_new/presentation/user_profile_screen/user_profile_screen.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
-import 'package:svar_new/widgets/buildBottomNavigationBar.dart';
+import 'package:svar_new/presentation/patient_report/buildBottomNavigationBar.dart';
 import 'package:svar_new/presentation/home/provider/streak_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -99,9 +99,6 @@ class _HomePageState extends State<HomePage>
     {'icon': Icons.favorite, 'color': Colors.redAccent},
   ];
 
-  // Focus node to detect when screen regains focus
-  late FocusNode _focusNode;
-
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -112,12 +109,8 @@ class _HomePageState extends State<HomePage>
     // Register as an observer to detect app lifecycle changes
     WidgetsBinding.instance.addObserver(this);
     
-    // Initialize focus node and add listener
-    _focusNode = FocusNode();
-    _focusNode.addListener(_onFocusChange);
     
    
-    // Set a random motivational message
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Initialize streak provider data
@@ -126,47 +119,21 @@ class _HomePageState extends State<HomePage>
     });
   }
   
-  // This method is called when the focus changes
-  void _onFocusChange() {
-    if (_focusNode.hasFocus) {
-      // Screen has regained focus, refresh data
-      _refreshData();
-    }
-  }
+
   
-  // This method is called when the app lifecycle state changes
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // App has come to the foreground, refresh data
-      _refreshData();
-    }
-  }
-  
-  // Method to refresh data when returning to this screen
-  void _refreshData() {
-    // Reset orientation to portrait
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    
-    // Refresh streak data
-    if (mounted) {
-      Provider.of<StreakProvider>(context, listen: false).initializeStreakData();
-    }
-  }
-  
+
 
   @override
   void dispose() {
     _tabController.dispose();
-    _focusNode.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Request focus when the widget is built
-    FocusScope.of(context).requestFocus(_focusNode);
+    // Only request focus if the widget is mounted and the focus node is not disposed
+    
     
     return Scaffold(
       backgroundColor: const Color(0xFFF9F2EF),
@@ -205,9 +172,7 @@ class _HomePageState extends State<HomePage>
                         print("/////////////////////////////n"); 
                        // Don't call initState() directly
                        // Instead, refresh data if the widget is still mounted
-                       if (mounted) {
-                         _refreshData();
-                       }
+                       
                       
                     },
                     style: ElevatedButton.styleFrom(
@@ -228,13 +193,16 @@ class _HomePageState extends State<HomePage>
                           size: 24,
                         ),
                         SizedBox(width: 10),
-                        Text(
-                          'Continue Today\'s Exercise',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 0.5,
+                        Expanded(
+                          child: Text(
+                            'Continue Today\'s Exercise',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                         SizedBox(width: 10),

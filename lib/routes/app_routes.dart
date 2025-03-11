@@ -21,7 +21,7 @@ import '../presentation/loading_screen/loading_screen.dart';
 import '../presentation/speaking_phoneme/speaking_phoneme.dart';
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
 import 'package:svar_new/presentation/intro_screen/intro_screen.dart';
-import 'package:svar_new/presentation/exercises/patient_assessment.dart';
+import 'package:svar_new/presentation/patient_report/patient_assessment_page.dart';
 
 class AppRoutes {
   static const String welcomeScreenPotraitScreen =
