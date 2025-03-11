@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Primary teal colors
-  static const Color primaryColor = Color(0xFF00897B);
-  static const Color primaryLightColor = Color(0xFF4DB6AC);
-  static const Color primaryDarkColor = Color(0xFF00695C);
+  // Primary colors
+  static const Color primaryColor = Color(0xFF6A5ACD); // Purple
+  static const Color primaryLightColor = Color(0xFF8370E8);
+  static const Color primaryDarkColor = Color(0xFF54478C);
   
-  // Secondary accent colors
-  static const Color accentColor = Color(0xFF26A69A);
+  // Section header colors
+  static const Color basicInfoColor = Color(0xFF4DB6AC); // Teal
+  static const Color concernsColor = Color(0xFFE67E4D);  // Orange
+  static const Color medicalHistoryColor = Color(0xFF4A90E8); // Blue
+  static const Color developmentColor = Color(0xFF9C58D1); // Purple
+  static const Color recommendationsColor = Color(0xFF6BB96D); // Green
   
   // Background colors
-  static const Color scaffoldBackgroundColor = Color(0xFFF8F9FA);
+  static const Color scaffoldBackgroundColor = Color(0xFFF7F4F0); // Cream/beige
   static const Color cardColor = Colors.white;
+  static const Color cardBgColor = Color(0xFFF5F5F8); // Very light lavender
   
   // Text colors
   static const Color textPrimaryColor = Color(0xFF212121);
   static const Color textSecondaryColor = Color(0xFF757575);
+  static const Color labelColor = Color(0xFF6C3483); // Purple text for labels
 
   // Status colors
   static const Color successColor = Color(0xFF4CAF50);
@@ -28,9 +34,10 @@ class AppTheme {
       primaryColor: primaryColor,
       primaryColorLight: primaryLightColor,
       primaryColorDark: primaryDarkColor,
+      useMaterial3: true,
       colorScheme: ColorScheme.light(
         primary: primaryColor,
-        secondary: accentColor,
+        secondary: basicInfoColor,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         primaryContainer: primaryLightColor.withOpacity(0.1),
@@ -39,14 +46,19 @@ class AppTheme {
         background: scaffoldBackgroundColor,
         surface: cardColor,
         onSurface: textPrimaryColor,
+        // Additional colors for more nuanced UI
+        tertiary: concernsColor,
+        tertiaryContainer: Color(0xFFE0F7FA),
+        surfaceVariant: cardBgColor,
       ),
       scaffoldBackgroundColor: scaffoldBackgroundColor,
       cardColor: cardColor,
       cardTheme: CardTheme(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
         ),
+        color: cardBgColor,
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: primaryColor,

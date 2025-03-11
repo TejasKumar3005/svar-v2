@@ -1,8 +1,11 @@
+
+
+import 'package:svar_new/presentation/patient_report/buildBottomNavigationBar.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-import 'package:svar_new/presentation/patient_report/buildBottomNavigationBar.dart';
+import 'package:svar_new/presentation/patient_report/app_theme.dart';
 import 'complete_report_view.dart';
 
 
@@ -30,9 +33,6 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage> with Sing
 
   int _currentIndex = 2;
 
-
- 
-
   @override
   void initState() {
     super.initState();
@@ -59,6 +59,12 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage> with Sing
     super.dispose();
   }
 
+  void _onIndexChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    // Note: The navigation logic is handled inside the CustomBottomNavigationBar
+  }
 
   Future<void> _fetchReportData() async {
     try {
@@ -166,15 +172,6 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage> with Sing
     }
   }
 
-    // This function handles index changes from the bottom navigation bar
-  void _onIndexChanged(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-    // Note: The navigation logic is handled inside the CustomBottomNavigationBar
-  }
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -221,84 +218,98 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage> with Sing
                 )
               : FadeTransition(
                   opacity: _fadeAnimation,
-                  child: Column(
-                    children: [
-                      // Report date selector
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12, 
-                          vertical: 12
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.teal.withOpacity(0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.calendar_today,
-                              color: Colors.teal,
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Report Date:',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey.shade700,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        // Report date selector
+                        Container(
+                          margin: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16, 
+                            vertical: 16
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
                               ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_today,
+                                color: AppTheme.basicInfoColor,
+                                size: 24,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Report Date:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey.shade700,
+                                  fontSize: 16,
                                 ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: Colors.teal.shade200,
-                                  ),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    value: selectedDate,
-                                    isExpanded: true,
-                                    icon: Icon(
-                                      Icons.arrow_drop_down,
-                                      color: Colors.teal.shade700,
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _showDateSelectionBottomSheet(context);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 12,
                                     ),
-                                    items: reportDates.map((date) {
-                                      return DropdownMenuItem<String>(
-                                        value: date,
-                                        child: Text(_formatDate(date)),
-                                      );
-                                    }).toList(),
-                                    onChanged: _onDateChanged,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: Colors.grey.shade300,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          selectedDate.isNotEmpty ? selectedDate : 'Select Date',
+                                          style: TextStyle(
+                                            color: Colors.grey.shade800,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_drop_down,
+                                          color: Colors.grey.shade700,
+                                          size: 28,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      
-                      // Complete continuous report
-                      Expanded(
-                        child: reportData != null
+                        
+                        // Complete continuous report
+                        reportData != null
                             ? CompleteReportView(reportData: reportData!)
-                            : const Center(
-                                child: Text('No report data available'),
+                            : const Padding(
+                                padding: EdgeInsets.all(32.0),
+                                child: Center(
+                                  child: Text(
+                                    'No report data available',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ),
                               ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
       bottomNavigationBar: CustomBottomNavigationBar(
@@ -307,5 +318,54 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage> with Sing
       ),
     );
   }
+  
+  void _showDateSelectionBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Text(
+                  'Select Report Date',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+              const Divider(),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: reportDates.length,
+                  itemBuilder: (context, index) {
+                    final date = reportDates[index];
+                    final isSelected = date == selectedDate;
+                    
+                    return ListTile(
+                      title: Text(_formatDate(date)),
+                      tileColor: isSelected ? Colors.purple.withOpacity(0.1) : null,
+                      trailing: isSelected ? const Icon(Icons.check, color: Colors.purple) : null,
+                      onTap: () {
+                        _onDateChanged(date);
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
-
