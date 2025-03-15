@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'common_widgets.dart';
 
 class ProsodyReport extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -37,16 +36,15 @@ class ProsodyReport extends StatelessWidget {
       children: [
         // Normal Parameters Section
         if (normalParameters.isNotEmpty)
-          ReportSection(
+          _buildSection(
             title: 'Normal Parameters',
-            icon: const Icon(Icons.check_circle, color: Colors.white),
-            headerColor: Colors.amber.shade800,
+            color: Colors.orange.shade700,
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.green.shade50,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.green.shade200),
               ),
               child: Column(
@@ -86,16 +84,15 @@ class ProsodyReport extends StatelessWidget {
 
         // Affected Parameters Section
         if (affectedParameters.isNotEmpty)
-          ReportSection(
+          _buildSection(
             title: 'Affected Parameters',
-            icon: const Icon(Icons.warning, color: Colors.white),
-            headerColor: Colors.amber.shade800,
+            color: Colors.orange.shade700,
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey.shade200),
               ),
               child: Column(
@@ -165,16 +162,15 @@ class ProsodyReport extends StatelessWidget {
 
         // Additional Details Section
         if (data['abnormalityDetails'] != null)
-          ReportSection(
+          _buildSection(
             title: 'Additional Details',
-            icon: const Icon(Icons.description, color: Colors.white),
-            headerColor: Colors.amber.shade800,
+            color: Colors.orange.shade700,
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(12),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey.shade200),
               ),
               child: Text(
@@ -185,6 +181,31 @@ class ProsodyReport extends StatelessWidget {
               ),
             ),
           ),
+      ],
+    );
+  }
+
+  Widget _buildSection({
+    required String title,
+    required Widget child,
+    required Color color,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ),
+        child,
+        const SizedBox(height: 16),
       ],
     );
   }

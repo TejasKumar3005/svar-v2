@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'articulation_report.dart';
-import 'case_history_report.dart';
-import 'fluency_report.dart';
-import 'language_report.dart';
-import 'opm_report.dart';
-import 'prosody_report.dart';
-import 'voice_report.dart';
+import 'reports/articulation_report.dart';
+import 'reports/case_history_report.dart';
+import 'reports/fluency_report.dart';
+import 'reports/language_report.dart';
+import 'reports/opm_report.dart';
+import 'reports/prosody_report.dart';
+import 'reports/voice_report.dart';
 
 class AssessmentType {
   final String id;

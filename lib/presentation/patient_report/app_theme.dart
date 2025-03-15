@@ -2,26 +2,26 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   // Primary colors
-  static const Color primaryColor = Color(0xFF6A5ACD); // Purple
-  static const Color primaryLightColor = Color(0xFF8370E8);
-  static const Color primaryDarkColor = Color(0xFF54478C);
+  static const Color primaryColor = Color(0xFF26A69A); // More solid teal
+  static const Color primaryLightColor = Color(0xFF4DB6AC);
+  static const Color primaryDarkColor = Color(0xFF00897B);
   
   // Section header colors
-  static const Color basicInfoColor = Color(0xFF4DB6AC); // Teal
+  static const Color basicInfoColor = Color(0xFF26A69A); // Teal
   static const Color concernsColor = Color(0xFFE67E4D);  // Orange
-  static const Color medicalHistoryColor = Color(0xFF4A90E8); // Blue
-  static const Color developmentColor = Color(0xFF9C58D1); // Purple
-  static const Color recommendationsColor = Color(0xFF6BB96D); // Green
+  static const Color medicalHistoryColor = Color(0xFF26A69A); // Teal
+  static const Color developmentColor = Color(0xFF26A69A); // Teal
+  static const Color recommendationsColor = Color(0xFF26A69A); // Teal
   
   // Background colors
-  static const Color scaffoldBackgroundColor = Color(0xFFF7F4F0); // Cream/beige
+  static const Color scaffoldBackgroundColor = Color(0xFFF9F2EF); // Beige
   static const Color cardColor = Colors.white;
-  static const Color cardBgColor = Color(0xFFF5F5F8); // Very light lavender
+  static const Color cardBgColor = Color(0xFFFAF9FF); // Very light lavender
   
   // Text colors
   static const Color textPrimaryColor = Color(0xFF212121);
   static const Color textSecondaryColor = Color(0xFF757575);
-  static const Color labelColor = Color(0xFF6C3483); // Purple text for labels
+  static const Color labelColor = Color(0xFF00897B); // Teal for labels
 
   // Status colors
   static const Color successColor = Color(0xFF4CAF50);

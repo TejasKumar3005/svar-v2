@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'common_widgets.dart';
 
 class OpmReport extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -39,6 +38,11 @@ class OpmReport extends StatelessWidget {
     return result;
   }
 
+  bool hasContent(Map<String, dynamic>? data) {
+    if (data == null) return false;
+    return data.isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
     final structural = data['structural'] as Map<String, dynamic>? ?? {};
@@ -55,26 +59,25 @@ class OpmReport extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Structural Examination Section
-        if (structural.isNotEmpty)
-          ReportSection(
+        if (hasContent(structural))
+          _buildSection(
             title: 'Structural Examination',
-            icon: const Icon(Icons.biotech, color: Colors.white),
-            headerColor: Colors.blue,
+            color: Colors.blue.shade700,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Normal Findings
                 if (structural.entries.any((entry) => 
                     entry.value is Map<String, dynamic> && entry.value['status'] == 'normal'))
-                  ReportSubSection(
+                  _buildSubsection(
                     title: 'Normal Findings',
-                    titleColor: Colors.blue,
-                    child: Container(
+                    color: Colors.blue.shade700,
+                    content: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.green.shade50,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.green.shade200),
                       ),
                       child: Text(
@@ -89,15 +92,15 @@ class OpmReport extends StatelessWidget {
                 // Abnormal Findings
                 if (structural.entries.any((entry) => 
                     entry.value is Map<String, dynamic> && entry.value['status'] != 'normal'))
-                  ReportSubSection(
+                  _buildSubsection(
                     title: 'Abnormalities',
-                    titleColor: Colors.blue,
-                    child: Container(
+                    color: Colors.blue.shade700,
+                    content: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.grey.shade200),
                       ),
                       child: Column(
@@ -107,26 +110,11 @@ class OpmReport extends StatelessWidget {
                                 entry.value is Map<String, dynamic> && entry.value['status'] != 'normal')
                             .map((entry) => Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${formatKey(entry.key)}: ',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.blue.shade700,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          (entry.value['status'] as String?)?.substring(0, 1).toUpperCase() ?? '' +
-((entry.value['status'] as String?)?.substring(1) ?? '').toString(),
-                                          style: const TextStyle(
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  child: _buildLabelValueRow(
+                                    formatKey(entry.key),
+                                    (entry.value['status'] as String?)?.substring(0, 1).toUpperCase() ?? '' +
+                                        ((entry.value['status'] as String?) ?? '').substring(1),
+                                    Colors.blue.shade700,
                                   ),
                                 ))
                             .toList(),
@@ -139,10 +127,9 @@ class OpmReport extends StatelessWidget {
 
         // Functions Section
         if (functions.values.any((section) => section.isNotEmpty))
-          ReportSection(
+          _buildSection(
             title: 'Functions',
-            icon: const Icon(Icons.accessibility_new, color: Colors.white),
-            headerColor: Colors.blue,
+            color: Colors.blue.shade700,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: functions.entries
@@ -153,15 +140,15 @@ class OpmReport extends StatelessWidget {
                     final normalItems = getNormalItems(sectionData);
                     final abnormalItems = getAbnormalItems(sectionData);
 
-                    return ReportSubSection(
+                    return _buildSubsection(
                       title: sectionName,
-                      titleColor: Colors.blue,
-                      child: Container(
+                      color: Colors.blue.shade700,
+                      content: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: Colors.grey.shade200),
                         ),
                         child: Column(
@@ -179,25 +166,10 @@ class OpmReport extends StatelessWidget {
                               ),
                             ...abnormalItems.entries.map((entry) => Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${formatKey(entry.key)}: ',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.blue.shade700,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          entry.value.toString(),
-                                          style: const TextStyle(
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  child: _buildLabelValueRow(
+                                    formatKey(entry.key),
+                                    entry.value.toString(),
+                                    Colors.blue.shade700,
                                   ),
                                 )),
                           ],
@@ -211,16 +183,15 @@ class OpmReport extends StatelessWidget {
 
         // Remarks Section
         if (data['remarks'] != null)
-          ReportSection(
+          _buildSection(
             title: 'Additional Remarks',
-            icon: const Icon(Icons.comment, color: Colors.white),
-            headerColor: Colors.blue,
+            color: Colors.blue.shade700,
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(12),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey.shade200),
               ),
               child: Text(
@@ -231,6 +202,79 @@ class OpmReport extends StatelessWidget {
               ),
             ),
           ),
+      ],
+    );
+  }
+
+  Widget _buildSection({
+    required String title,
+    required Widget child,
+    required Color color,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ),
+        child,
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildSubsection({
+    required String title,
+    required Color color,
+    required Widget content,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0, bottom: 8.0),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ),
+        content,
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _buildLabelValueRow(String label, String value, Color labelColor) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '$label: ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: labelColor,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(
+              color: Colors.black87,
+            ),
+          ),
+        ),
       ],
     );
   }
