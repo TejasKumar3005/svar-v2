@@ -22,6 +22,7 @@ import '../presentation/speaking_phoneme/speaking_phoneme.dart';
 import '../presentation/app_navigation_screen/app_navigation_screen.dart';
 import 'package:svar_new/presentation/intro_screen/intro_screen.dart';
 import 'package:svar_new/presentation/patient_report/patient_assessment_page.dart';
+import 'package:svar_new/widgets/fees_page.dart';
 
 class AppRoutes {
   static const String welcomeScreenPotraitScreen =
@@ -75,6 +76,7 @@ class AppRoutes {
   static const String exercisePronunciation = '/exercise_pronunciation';
   static const String exercisesScreen = '/exercises_screen';
   static const String patientAssessment ='/assessmentpage';
+  static const String feesPage = '/fees_page';  
 
   static Map<String, WidgetBuilder> get routes => {
         welcomeScreenPotraitScreen: WelcomeScreenPotraitScreen.builder,
@@ -106,5 +108,6 @@ class AppRoutes {
         exerciseDetection: ExerciseDetection.builder,
         exercisePronunciation: ExercisePronunciation.builder,
         exercisesScreen: ExercisesScreen.builder,
+        feesPage: FeesPage.builder, 
       };
 }

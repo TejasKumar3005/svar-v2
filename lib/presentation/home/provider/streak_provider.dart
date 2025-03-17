@@ -10,6 +10,9 @@ class StreakProvider extends ChangeNotifier {
   Map<int, bool> _weeklyStreak = {};
   bool _isLoading = true;
 
+  List<Map<String, dynamic>> _upcomingSessions = [];
+  List<Map<String, dynamic>> get upcomingSessions => _upcomingSessions;
+
   // Additional user data fields
   String _patientEmail = "";
   String _patientPhone = "";
@@ -46,12 +49,128 @@ class StreakProvider extends ChangeNotifier {
     try {
       await _fetchUserData();
       await _calculateStreak();
+      await fetchUpcomingSessions();
     } catch (e) {
       print('Error initializing streak data: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  // Add this method to the StreakProvider class
+  Future<void> fetchUpcomingSessions() async {
+    try {
+      String? uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) return;
+
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('patients')
+          .doc(uid)
+          .get();
+
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        
+        // Get the time slots array
+        List<dynamic> timeSlots = userData['timeSlots'] ?? [];
+        
+        // Get therapist name
+        String therapistName = userData['therapistName'] ?? "No Therapist";
+        
+        // Parse time slots into readable format
+        _upcomingSessions = [];
+        
+        for (String slot in timeSlots) {
+          // Parse the time slot format: "S-7A-8A-17-3" means session from 7AM to 8AM on March 17
+          List<String> parts = slot.split('-');
+          
+          if (parts.length >= 5) {
+            // Extract time and date information
+            String startTime = _formatTimeSlot(parts[1]);
+            String endTime = _formatTimeSlot(parts[2]);
+            
+            // Get day and month
+            int day = int.tryParse(parts[3]) ?? 1;
+            int month = int.tryParse(parts[4]) ?? 1;
+            int year = DateTime.now().year;
+            
+            // Create session date
+            DateTime sessionDate = DateTime(year, month, day);
+            
+            // Only include future sessions
+            if (sessionDate.isAfter(DateTime.now()) || 
+                (sessionDate.day == DateTime.now().day && 
+                 sessionDate.month == DateTime.now().month &&
+                 sessionDate.year == DateTime.now().year)) {
+              
+              _upcomingSessions.add({
+                'date': '${_getMonthName(month)} $day, $year',
+                'timeRange': '$startTime - $endTime',
+                'therapist': therapistName,
+                'location': 'Virtual',  // Assuming virtual by default
+              });
+            }
+          }
+        }
+        
+        // Sort by date (closest first)
+        _upcomingSessions.sort((a, b) {
+          DateTime dateA = _parseDate(a['date']);
+          DateTime dateB = _parseDate(b['date']);
+          return dateA.compareTo(dateB);
+        });
+        
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Error fetching upcoming sessions: $e');
+    }
+  }
+  
+  // Helper method to parse date string
+  DateTime _parseDate(String dateStr) {
+    try {
+      List<String> parts = dateStr.split(' ');
+      String month = parts[0];
+      int day = int.parse(parts[1].replaceAll(',', ''));
+      int year = int.parse(parts[2]);
+      
+      return DateTime(year, _getMonthNumber(month), day);
+    } catch (e) {
+      return DateTime.now();
+    }
+  }
+  
+  // Helper method to format time slot (convert 7A to 7:00 AM)
+  String _formatTimeSlot(String timeSlot) {
+    bool isAM = timeSlot.contains('A');
+    String timeValue = timeSlot.replaceAll('A', '').replaceAll('P', '');
+    
+    if (timeValue.length == 1) {
+      return '$timeValue:00 ${isAM ? 'AM' : 'PM'}';
+    } else {
+      return '${timeValue.substring(0, timeValue.length - 2)}:${timeValue.substring(timeValue.length - 2)} ${isAM ? 'AM' : 'PM'}';
+    }
+  }
+  
+  // Helper method to get month name
+  String _getMonthName(int month) {
+    List<String> months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[month - 1];
+  }
+  
+  // Helper method to get month number from name
+  int _getMonthNumber(String monthName) {
+    Map<String, int> months = {
+      'January': 1, 'February': 2, 'March': 3, 'April': 4,
+      'May': 5, 'June': 6, 'July': 7, 'August': 8,
+      'September': 9, 'October': 10, 'November': 11, 'December': 12
+    };
+    return months[monthName] ?? 1;
   }
 
   // Fetch user data from Firestore

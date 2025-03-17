@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/user_profile_screen/user_profile_screen.dart'; // Import your ProfilePage
 import 'package:svar_new/presentation/home/home.dart';
 import 'package:svar_new/presentation/patient_report/patient_assessment_page.dart'; // Import your HomePage
-
+import 'package:svar_new/widgets/fees_page.dart';
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onIndexChanged;
@@ -78,6 +78,33 @@ class CustomBottomNavigationBar extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => const PatientAssessmentPage(),
                     ),
+                  )
+                  .then((_) {
+                // Only update state if still mounted
+                if (context.mounted) {
+                  onIndexChanged(index);
+                }
+              });
+            } else if (index == 2 && currentIndex != 2) {
+              // Navigate to Calendar screen (PatientAssessmentPage) when Calendar tab is clicked
+              // Only navigate if we're not already on the Calendar tab
+              Navigator.of(context)
+                  .pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => const PatientAssessmentPage(),
+                    ),
+                  )
+                  .then((_) {
+                // Only update state if still mounted
+                if (context.mounted) {
+                  onIndexChanged(index);
+                }
+              });
+            }else if (index == 3 && currentIndex != 3) {
+              // Navigate to HomePage when Today tab is clicked
+              Navigator.of(context)
+                  .pushReplacement(
+                    MaterialPageRoute(builder: (context) => const FeesPage()),
                   )
                   .then((_) {
                 // Only update state if still mounted
