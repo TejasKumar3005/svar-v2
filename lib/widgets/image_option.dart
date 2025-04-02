@@ -46,7 +46,7 @@ class _ImageWidgetState extends State<ImageWidget> {
     return Center(
       child: AnimatedContainer(
         duration: Duration(seconds: 1),
-        width: MediaQuery.of(context).size.width * 0.35,
+        width: MediaQuery.of(context).size.width * 0.75,
         height: MediaQuery.of(context).size.height * 0.45,
         decoration: BoxDecoration(
           border: Border.all(

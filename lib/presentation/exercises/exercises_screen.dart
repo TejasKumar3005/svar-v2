@@ -1,20 +1,18 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
-import 'package:svar_new/presentation/exercises/exercise_pronunciation.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/presentation/exercises/exercises_speaking_phoneme.dart';
 import 'package:svar_new/widgets/rive_preloader.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
-import 'package:svar_new/presentation/settings_screen/setting.dart';
+
 
 class ExercisesScreen extends StatefulWidget {
   const ExercisesScreen({super.key});
@@ -24,6 +22,7 @@ class ExercisesScreen extends StatefulWidget {
   static Widget builder(BuildContext context) {
     return ExercisesScreen();
   }
+
 }
 
 extension _TextExtension on Artboard {
@@ -214,7 +213,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         return;
       }
 
-      String? type = data["subtype"];
+      String? type = data["type"];
       if (type == null) {
         debugPrint("Type is null in the fetched data.");
         return;
@@ -262,7 +261,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           dtcontainer,
           params,
           startExerciseIndex,
-          data["eid"],
+          data["id"],
           data["date"]
         ];
         debugPrint("Arguments list is: $argumentsList");

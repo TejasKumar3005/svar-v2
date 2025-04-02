@@ -49,6 +49,8 @@ class ExerciseProvider extends ChangeNotifier {
     // Sort exercises chronologically
     todaysExercises.sort((a, b) =>
         DateTime.parse(a['date']).compareTo(DateTime.parse(b['date'])));
+
+
     print("Total exercises in range: ${todaysExercises}");
     print("currentExerciseIndex: $currentExerciseIndex");
     currentExerciseIndex = todaysExercises
@@ -88,7 +90,9 @@ class ExerciseProvider extends ChangeNotifier {
 
   bool _validateExerciseIndex() {
     if (currentExerciseIndex >= todaysExercises.length) {
+
       print("❌ Current index out of bounds");
+      
       return false;
     }
     return true;

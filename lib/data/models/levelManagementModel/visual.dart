@@ -161,7 +161,7 @@ class HalfMuted {
 
   factory HalfMuted.fromJson(Map<String, dynamic> json) {
     return HalfMuted._(
-      video_url: List<String>.from(json['video_url']),
+      video_url: [json['video_url'],json['video_url']],
     );
   }
 
