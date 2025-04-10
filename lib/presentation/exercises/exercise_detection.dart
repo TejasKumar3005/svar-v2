@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:rive/rive.dart';
+import 'package:rive/rive.dart' hide LinearGradient,Image;
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
 import 'package:svar_new/database/userController.dart';
@@ -27,8 +27,7 @@ class ExerciseDetection extends StatefulWidget {
 }
 
 class _DetectionState extends State<ExerciseDetection> {
-  final GlobalKey<AudioWidgetState> _audioWidgetKey =
-      GlobalKey<AudioWidgetState>();
+  final GlobalKey<AudioWidgetState> _audioWidgetKey = GlobalKey<AudioWidgetState>();
   String quizType = "video";
   int selectedOption = -1;
   int level = 0;
@@ -68,35 +67,22 @@ class _DetectionState extends State<ExerciseDetection> {
   }
 
   void _onRiveInit(Artboard artboard) async {
-    final controller =
-        StateMachineController.fromArtboard(artboard, 'State Machine 2');
+    final controller = StateMachineController.fromArtboard(artboard, 'State Machine 2');
 
     if (controller != null) {
       artboard.addController(controller);
       riveController = controller;
 
-      // Print all state machines for debugging
-      print("\nAll State Machines in artboard:");
-      for (var stateMachine in artboard.stateMachines) {
-        print("State Machine: ${stateMachine.name}");
-      }
-
       // Get the triggers
       _correctTrigger = controller.findInput<bool>('correct') as SMITrigger;
       _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
-
-      print("Controller added: $controller");
     }
   }
 
   void _triggerAnimation(bool isCorrect) {
-    print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
-
     if (isCorrect) {
       if (_correctTrigger != null) {
-        print("Firing correct trigger");
         _correctTrigger!.fire();
-        print("Correct trigger fired");
         Future.delayed(const Duration(seconds: 5), () {
           Navigator.pop(context);
         });
@@ -104,14 +90,12 @@ class _DetectionState extends State<ExerciseDetection> {
     } else {
       if (_incorrectTrigger != null) {
         _incorrectTrigger!.fire();
-        print("Incorrect trigger fired");
       }
     }
   }
 
   // Initialize both videos sequentially
-  Future<void> _initializeVideoFlow(
-      List<String> videoUrls, int mutedVideoIndex) async {
+  Future<void> _initializeVideoFlow(List<String> videoUrls, int mutedVideoIndex) async {
     await initiliaseVideo(videoUrls[0], 1, mutedVideoIndex);
     await initiliaseVideo(videoUrls[1], 2, mutedVideoIndex);
   }
@@ -128,11 +112,9 @@ class _DetectionState extends State<ExerciseDetection> {
     super.dispose();
   }
 
-  Future<void> initiliaseVideo(
-      String videoUrl, int video, int mutedVideoIndex) async {
+  Future<void> initiliaseVideo(String videoUrl, int video, int mutedVideoIndex) async {
     if (video == 1 && _videoPlayerController1 == null) {
-      _videoPlayerController1 =
-          VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+      _videoPlayerController1 = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
 
       try {
         await _videoPlayerController1!.initialize();
@@ -161,8 +143,7 @@ class _DetectionState extends State<ExerciseDetection> {
         print("Error initializing video 1: $e");
       }
     } else if (video == 2 && _videoPlayerController2 == null) {
-      _videoPlayerController2 =
-          VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+      _videoPlayerController2 = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
 
       try {
         await _videoPlayerController2!.initialize();
@@ -198,55 +179,64 @@ class _DetectionState extends State<ExerciseDetection> {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
     return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
+      body: SafeArea(
+        child: Stack(
+          children: [
+              Positioned.fill(
+                          child: Container(
+                              width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
+        // Replace gradient with background image
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/images/discri_bg.png"),
-            fit: BoxFit.cover,
+            image: AssetImage('assets/images/quiz_bg.jpeg'), // Update with your actual image path
+            fit: BoxFit.fill,
           ),
-        ),
-        padding: EdgeInsets.symmetric(
-          horizontal: 15.h,
-          vertical: 10.v,
-        ),
-        child: Column(
-          children: [
-            DisciAppBar(context), // No need for any callbacks now,
-            SizedBox(
-              height: 26.v,
-            ),
-            Expanded(
-              // Important: Wrap the quiz in an Expanded
-              child: Stack(
-                // Added Stack to hold the Rive animation
-                children: [
-                  Center(child: detectionQuiz(context, type)),
-                  if (type == "MutedUnmuted")
-                    Stack(
-                      children: [
-                        Positioned(
-                          bottom: 0.h,
-                          left: 0.h,
-                          child: IgnorePointer(
-                            child: SizedBox(
-                              height: MediaQuery.of(context).size.height,
-                              width: MediaQuery.of(context).size.width,
-                              child: RiveAnimation.asset(
-                                'assets/rive/Celebration_animation.riv',
-                                onInit: _onRiveInit,
-                                fit: BoxFit.contain,
-                                alignment: Alignment.centerLeft,
-                              ),
-                            ),
-                          ),
+                          
                         ),
+                        ),
+                        ),
+            Container(
+                width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 10.v),
+                    child: DisciAppBar(context),
+                  ),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Center(child: detectionQuiz(context, type)),
+                        if (type == "MutedUnmuted")
+                          Stack(
+                            children: [
+                              Positioned(
+                                bottom: 0.h,
+                                left: 0.h,
+                                child: IgnorePointer(
+                                  child: SizedBox(
+                                    height: MediaQuery.of(context).size.height,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: RiveAnimation.asset(
+                                      'assets/rive/Celebration_animation.riv',
+                                      onInit: _onRiveInit,
+                                      fit: BoxFit.contain,
+                                      alignment: Alignment.centerLeft,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                       ],
                     ),
+                  ),
                 ],
               ),
             ),
+            
           ],
         ),
       ),
@@ -255,16 +245,10 @@ class _DetectionState extends State<ExerciseDetection> {
 
   Widget detectionQuiz(BuildContext context, String quizType) {
     switch (quizType) {
-      // case "video":
-      //   return VideoPlayerScreen(
-      //     videoUrl: widget.data["video_url"],
-      //   );
       case "HalfMuted":
         return HalfMutedWidget(
           key: _audioWidgetKey,
-          audioLinks:
-              (ModalRoute.of(context)?.settings.arguments as List<dynamic>)[1]
-                  .getVideoUrls(),
+          audioLinks: (ModalRoute.of(context)?.settings.arguments as List<dynamic>)[1].getVideoUrls(),
         );
       case "MutedUnmuted":
         return MutedUnmuted(context);
@@ -275,167 +259,186 @@ class _DetectionState extends State<ExerciseDetection> {
 
   Widget MutedUnmuted(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
-
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
-    ;
-    return Column(
-      children: [
-        Container(
-          width: MediaQuery.of(context).size.width * 0.7,
-          padding: EdgeInsets.symmetric(
-            vertical: 5.v,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(22),
-          ),
-          child: Center(
-            child: Text(
-              ("Tap on the video which has sound").toUpperCase(),
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 26.v,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.h),
+      child: SingleChildScrollView(
+        child: Column(
           children: [
-            Expanded(
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.40,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(
-                    color: Colors.grey,
-                    width: 2,
+            // Instruction Card
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 15.v, horizontal: 16.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(22),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   ),
+                ],
+              ),
+              child: Text(
+                "TAP ON THE VIDEO WHICH HAS SOUND",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
                 ),
-                child: isVideoReady1
-                    ? AspectRatio(
-                        aspectRatio: _videoPlayerController1!.value.aspectRatio,
-                        child: Center(
-                            child: Chewie(controller: _chewieController1!)),
-                      )
-                    : Center(
-                        child: CircularProgressIndicator(
-                            color: PrimaryColors().deepOrangeA700)),
               ),
             ),
-            SizedBox(
-                width:
-                    20), // Add spacing between the two Expanded containers if needed
-            Expanded(
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.40,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(
-                    color: Colors.grey,
-                    width: 2,
-                  ),
-                ),
-                child: isVideoReady2
-                    ? AspectRatio(
-                        aspectRatio: _videoPlayerController2!.value.aspectRatio,
-                        child: Center(
-                            child: Chewie(controller: _chewieController2!)),
-                      )
-                    : Center(
-                        child: CircularProgressIndicator(
-                            color: PrimaryColors().deepOrangeA700)),
-              ),
+            SizedBox(height: 20.v),
+            
+            // First Video Card
+            _buildVideoCard(
+              isReady: isVideoReady1,
+              controller: _chewieController1,
+              videoController: _videoPlayerController1,
+              buttonType: ButtonType.Video1,
+              index: 1,
+              obj: obj,
+              startExerciseIndex: startExerciseIndex,
+              data: data,
+            ),
+            
+            SizedBox(height: 20.v),
+            
+            // Second Video Card
+            _buildVideoCard(
+              isReady: isVideoReady2,
+              controller: _chewieController2,
+              videoController: _videoPlayerController2,
+              buttonType: ButtonType.Video2,
+              index: 2,
+              obj: obj,
+              startExerciseIndex: startExerciseIndex,
+              data: data,
             ),
           ],
         ),
-        SizedBox(
-          height: 15.v,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Expanded(
-              child: Container(
-                width: MediaQuery.of(context).size.width *
-                    0.40, // Dynamically set width
-                child: OptionWidget(
-                  triggerAnimation: (value) {
-                    _triggerAnimation(value);
-                  },
-                  child: OptionButton(
-                    type: ButtonType.Video1,
-                    onPressed: () {
-                      // Implement your logic here
-                    },
-                  ),
-                  isCorrect: () {
-                    var condition = (obj[1] as dynamic).getMuted() == 1;
-
-                    var data_pro =
-                        Provider.of<ExerciseProvider>(context, listen: false);
-                    if (condition) {
-                      data_pro.incrementLevel(startExerciseIndex);
-                      if (data["completedAt"] == null) {
-                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                            .updateExerciseData(
-                              euid: data["uid"],
-                              date: data["date"],
-                            )
-                            .then((value) => print("Exercise data updated"));
-                      }
-                    }
-
-                    return condition;
-                  },
+      ),
+    );
+  }
+  
+  Widget _buildVideoCard({
+    required bool isReady,
+    required ChewieController? controller,
+    required VideoPlayerController? videoController,
+    required ButtonType buttonType,
+    required int index,
+    required List<dynamic> obj,
+    required int startExerciseIndex,
+    required Map<String, dynamic> data,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            spreadRadius: 1,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Video Container
+          ClipRRect(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.25,
+              width: double.infinity,
+              color: Colors.black.withOpacity(0.05),
+              child: isReady
+                  ? AspectRatio(
+                      aspectRatio: videoController!.value.aspectRatio,
+                      child: Center(child: Chewie(controller: controller!)),
+                    )
+                  : Center(
+                      child: CircularProgressIndicator(
+                        color: PrimaryColors().deepOrangeA700,
+                        strokeWidth: 3,
+                      ),
+                    ),
+            ),
+          ),
+          
+          // Selection Button
+          InkWell(
+            onTap: () {
+              // Button tap logic is handled by OptionWidget
+            },
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 15.v),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFF5E9FE0),
+                    Color(0xFF3D7EDB),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
               ),
-            ),
-            SizedBox(width: 20), // Add spacing between buttons if needed
-            Expanded(
-              child: Container(
-                width: MediaQuery.of(context).size.width *
-                    0.40, // Dynamically set width
-                child: OptionWidget(
-                  triggerAnimation: (value) {
-                    _triggerAnimation(value);
-                  },
-                  child: OptionButton(
-                    type: ButtonType.Video2,
-                    onPressed: () {
-                      // Implement your logic here
-                    },
-                  ),
-                  isCorrect: () {
-                    var condition = (obj[1] as dynamic).getMuted() == 0;
-
-                    var data_pro =
-                        Provider.of<ExerciseProvider>(context, listen: false);
-                    if (condition) {
-                      data_pro.incrementLevel(startExerciseIndex);
-                      if (data["completedAt"] == null) {
-                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                            .updateExerciseData(
-                              euid: data["uid"],
-                              date: data["date"],
-                            )
-                            .then((value) => print("Exercise data updated"));
-                      }
-                    }
-
-                    return condition;
-                  },
+              child: OptionWidget(
+                triggerAnimation: (value) {
+                  _triggerAnimation(value);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.volume_up,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                    SizedBox(width: 8.h),
+                    Text(
+                      "Video $index",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
+                isCorrect: () {
+                  var condition = (index == 1) 
+                      ? (obj[1] as dynamic).getMuted() == 1
+                      : (obj[1] as dynamic).getMuted() == 0;
+                      
+                  var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+                  if (condition) {
+                    data_pro.incrementLevel(startExerciseIndex);
+                    if (data["completedAt"] == null) {
+                      UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                          .updateExerciseData(
+                            euid: data["uid"],
+                            date: data["date"],
+                          )
+                          .then((value) => print("Exercise data updated"));
+                    }
+                  }
+                  return condition;
+                },
               ),
             ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -468,8 +471,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   }
 
   void _onRiveInit(Artboard artboard) async {
-    final controller =
-        StateMachineController.fromArtboard(artboard, 'State Machine 2');
+    final controller = StateMachineController.fromArtboard(artboard, 'State Machine 2');
 
     if (controller != null) {
       artboard.addController(controller);
@@ -518,97 +520,168 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
     int startExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
-    return SafeArea(
-      child: Container(
-        // Changed to Container
-        // Removed Scaffold
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Stack(
-              children: [
-                Positioned(
-                  left: 40, // Align to the left
-                  top: 0, // Align to the top (you can adjust this)
-                  bottom: 0, // Align to the bottom (or set a specific height)
-                  width: constraints.maxWidth *
-                      0.7, // Occupy half the width (adjust as needed)
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.h),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
+            children: [
+              // Animation positioned at bottom
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: constraints.maxHeight * 0.3,
+                child: IgnorePointer(
+                  child: RiveAnimation.asset(
+                    'assets/rive/Celebration_animation.riv',
+                    onInit: _onRiveInit,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.center,
+                  ),
+                ),
+              ),
+              
+              // Main content
+              Column(
+                children: [
+                  SizedBox(height: 40.v),
                   
-    // Add left padding
-    child: IgnorePointer(
-      child: RiveAnimation.asset(
-        'assets/rive/Celebration_animation.riv',
-        onInit: _onRiveInit,
-        fit: BoxFit.cover, 
-      ),
-    ),
-  ),
-                
-                Column(
-                  children: [
-                    SizedBox(height: 40.v),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16.h,
+                  // Instruction container
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(vertical: 15.v, horizontal: 16.h),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(22),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      "PRESS STOP WHEN THE SOUND CHANGES",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
                       ),
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: constraints.maxWidth * 0.4,
-                            maxHeight: constraints.maxHeight * 0.3,
-                          ),
-                          child: AudioWidget(
-                            key: _childKey,
-                            audioLinks: widget.audioLinks,
+                    ),
+                  ),
+                  
+                  SizedBox(height: 40.v),
+                  
+                  // Audio player widget
+                  Container(
+                    width: constraints.maxWidth * 0.8,
+                    height: constraints.maxHeight * 0.1,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 15,
+                          offset: Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: AudioWidget(
+
+                      key: _childKey,
+                      
+                      audioLinks: widget.audioLinks,
+                    ),
+                  ),
+                  
+                  SizedBox(height: 60.v),
+                  
+                  // Stop button
+                  Container(
+                    width: constraints.maxWidth * 0.6,
+                    height: 60.v,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xFF5E9FE0),
+                          Color(0xFF3D7EDB),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.blue.withOpacity(0.3),
+                          spreadRadius: 1,
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: OptionWidget(
+                      triggerAnimation: _triggerAnimation,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(30),
+                          onTap: () => globalAudioPlayer.stop(),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.stop_circle,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                                SizedBox(width: 10.h),
+                                Text(
+                                  "STOP",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 20.v),
-                    Expanded(
-                      flex: 5,
-                      child: Center(
-                        child: OptionWidget(
-                          triggerAnimation: _triggerAnimation,
-                          child: OptionButton(
-                            type: ButtonType.Stop,
-                            onPressed: () => globalAudioPlayer.stop(),
-                          ),
-                          isCorrect: () {
-                            if (_childKey.currentState == null) return false;
+                      isCorrect: () {
+                        if (_childKey.currentState == null) return false;
 
-                            List<double> total_length =
-                                _childKey.currentState!.lengths;
-                            if (total_length.isEmpty) return false;
+                        List<double> total_length = _childKey.currentState!.lengths;
+                        if (total_length.isEmpty) return false;
 
-                            double currentProgress =
-                                _childKey.currentState!.progress.value;
-                            const double tolerance = 0.4;
-                            bool condition = currentProgress > 0.5 &&
-                                currentProgress < 0.5 + tolerance;
+                        double currentProgress = _childKey.currentState!.progress.value;
+                        const double tolerance = 0.4;
+                        bool condition = currentProgress > 0.5 && currentProgress < 0.5 + tolerance;
 
-                            if (condition) {
-                              data_pro.incrementLevel(startExerciseIndex);
-                              if (data["completedAt"] == null) {
-                                UserData(
-                                        uid: FirebaseAuth
-                                            .instance.currentUser!.uid)
-                                    .updateExerciseData(
+                        if (condition) {
+                          data_pro.incrementLevel(startExerciseIndex);
+                          if (data["completedAt"] == null) {
+                            UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                                .updateExerciseData(
                                   euid: data["uid"],
                                   date: data["date"],
                                 );
-                              }
-                            }
-                            return condition;
-                          },
-                        ),
-                      ),
+                          }
+                        }
+                        return condition;
+                      },
                     ),
-                  ],
-                ),
-              ],
-            );
-          },
-        ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }

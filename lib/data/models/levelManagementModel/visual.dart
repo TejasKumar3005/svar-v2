@@ -94,7 +94,7 @@ class AudioToImage {
       required this.image_list});
   factory AudioToImage.fromJson(Map<String, dynamic> json) {
     return AudioToImage._(
-        audio_url: List<String>.from(json['audio_url']),
+        audio_url:[json["audio_url"] as String],
         correct_output: json["correct_output"] as String,
         image_list: List<String>.from(json["image_list"]));
   }
@@ -161,7 +161,8 @@ class HalfMuted {
 
   factory HalfMuted.fromJson(Map<String, dynamic> json) {
     return HalfMuted._(
-      video_url: List<String>.from(json['video_url']),
+    video_url: [json['video_url'],json['video_url']],
+     
     );
   }
 

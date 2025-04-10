@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:rive/rive.dart' as rive;
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
+import 'package:svar_new/presentation/patient_report/patient_assessment_page.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
+import 'package:svar_new/widgets/fees_page.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -75,16 +78,19 @@ class _HomePageState extends State<HomePage>
 
   // This function handles index changes from the bottom navigation bar
   void _onIndexChanged(int index) {
+    print("Index changed to: $index");
+    
+    SchedulerBinding.instance.addPostFrameCallback((_) {
     setState(() {
       _currentIndex = index;
     });
+  });
+  
+
     // Note: The navigation logic is handled inside the CustomBottomNavigationBar
   }
 
   late TabController _tabController;
-
- 
-
 
   // Achievement badges
   final List<Map<String, dynamic>> _achievements = [
@@ -96,23 +102,19 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-     print("HomeScreenState initState called"); 
+    print("HomeScreenState initState called");
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    
+
     // Register as an observer to detect app lifecycle changes
     WidgetsBinding.instance.addObserver(this);
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Initialize streak provider data
       Provider.of<StreakProvider>(context, listen: false)
           .initializeStreakData();
     });
   }
-  
-
-  
-
 
   @override
   void dispose() {
@@ -124,99 +126,124 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     // Only request focus if the widget is mounted and the focus node is not disposed
-    
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFFF9F2EF),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              _buildStreakSection(),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.teal.withOpacity(0.5),
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Colors.teal.shade400, Colors.teal.shade700],
-                    ),
-                  ),
-                  child: ElevatedButton(
-                     onPressed: () async {
-                      print("hello");
-                       await NavigatorService.pushNamed(AppRoutes.exercisesScreen);
-                        print("/////////////////////////////n"); 
-                       // Don't call initState() directly
-                       // Instead, refresh data if the widget is still mounted
-                       
-                      
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      minimumSize: Size(double.infinity, 60),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      padding: EdgeInsets.zero,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
+        children: [
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            top: 0, // By setting top: 0, we make it full-height
+            child: CustomBottomNavigationBar(
+              currentIndex: _currentIndex,
+              onIndexChanged: _onIndexChanged,
+            ),
+          ),
+          Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              // Setting bottom to a value that allows space for the active part of the navigation bar
+              bottom: 56,
+              child: [
+                SafeArea(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          Icons.bolt,
-                          color: Colors.yellow,
-                          size: 24,
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'Continue Today\'s Exercise',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
+                        _buildHeader(),
+                        _buildStreakSection(),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.teal.withOpacity(0.5),
+                                  spreadRadius: 2,
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.teal.shade400,
+                                  Colors.teal.shade700
+                                ],
+                              ),
                             ),
-                            textAlign: TextAlign.center,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                print("hello");
+                                await NavigatorService.pushNamed(
+                                    AppRoutes.exercisesScreen);
+                                print("/////////////////////////////n");
+                                // Don't call initState() directly
+                                // Instead, refresh data if the widget is still mounted
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                minimumSize: Size(double.infinity, 60),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                padding: EdgeInsets.zero,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.bolt,
+                                    color: Colors.yellow,
+                                    size: 24,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      'Continue Today\'s Exercise',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        letterSpacing: 0.5,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Icon(
+                                    Icons.bolt,
+                                    color: Colors.yellow,
+                                    size: 24,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                        SizedBox(width: 10),
-                        Icon(
-                          Icons.bolt,
-                          color: Colors.yellow,
-                          size: 24,
-                        ),
+                        _buildUpcomingSessions(),
+                        _buildProgressSnapshot(),
                       ],
                     ),
                   ),
                 ),
-              ),
-              _buildUpcomingSessions(),
-              _buildProgressSnapshot(),
 
-              SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onIndexChanged: _onIndexChanged,
+              PatientAssessmentPage(),
+                FeesPage(), // Placeholder for the third tab
+                UserProfileScreen(),
+                SizedBox(
+                  height: 20,
+                  width: 30,
+                )
+              ][_currentIndex]),
+        ],
       ),
     );
   }
@@ -418,105 +445,48 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-
- // Now, update the _buildUpcomingSessions method in the HomePage class
-Widget _buildUpcomingSessions() {
-  return Consumer<StreakProvider>(
-    builder: (context, streakProvider, child) {
-      // Show loading indicator while fetching data
-      if (streakProvider.isLoading) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Upcoming Sessions',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 16),
-              Center(child: CircularProgressIndicator()),
-            ],
-          ),
-        );
-      }
-
-      // If no upcoming sessions, show a message
-      if (streakProvider.upcomingSessions.isEmpty) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Upcoming Sessions',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 16),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 2,
-                      offset: Offset(0, 1),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Text(
-                      'No upcoming sessions scheduled',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
+  // Now, update the _buildUpcomingSessions method in the HomePage class
+  Widget _buildUpcomingSessions() {
+    return Consumer<StreakProvider>(
+      builder: (context, streakProvider, child) {
+        // Show loading indicator while fetching data
+        if (streakProvider.isLoading) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Upcoming Sessions',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }
-
-      // Display all upcoming sessions
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Upcoming Sessions',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+                SizedBox(height: 16),
+                Center(child: CircularProgressIndicator()),
+              ],
             ),
-            SizedBox(height: 16),
-            ...streakProvider.upcomingSessions.map((session) {
-              // Get therapist initials for avatar
-              String therapistInitials = session['therapist']
-                  .split(' ')
-                  .map((word) => word.isNotEmpty ? word[0] : '')
-                  .join('')
-                  .toUpperCase();
+          );
+        }
 
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: Container(
+        // If no upcoming sessions, show a message
+        if (streakProvider.upcomingSessions.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Upcoming Sessions',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
@@ -531,117 +501,173 @@ Widget _buildUpcomingSessions() {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Session',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey.shade700,
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.teal.shade100,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                session['location'],
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.teal.shade800,
-                                ),
-                              ),
-                            ),
-                          ],
+                    child: Center(
+                      child: Text(
+                        'No upcoming sessions scheduled',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.grey.shade700,
                         ),
-                        SizedBox(height: 12),
-                        Text(
-                          session['date'],
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          session['timeRange'],
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.teal,
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 16,
-                              backgroundColor: Colors.redAccent.shade100,
-                              child: Text(
-                                therapistInitials,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              session['therapist'],
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            OutlinedButton(
-                              onPressed: () {},
-                              style: OutlinedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                side: BorderSide(color: Colors.teal),
-                              ),
-                              child: Text('DETAILS'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              child: Text('RESCHEDULE'),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              );
-            }).toList(),
-          ],
-        ),
-      );
-    },
-  );
-}
+              ],
+            ),
+          );
+        }
+
+        // Display all upcoming sessions
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Upcoming Sessions',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 16),
+              ...streakProvider.upcomingSessions.map((session) {
+                // Get therapist initials for avatar
+                String therapistInitials = session['therapist']
+                    .split(' ')
+                    .map((word) => word.isNotEmpty ? word[0] : '')
+                    .join('')
+                    .toUpperCase();
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 2,
+                          offset: Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Session',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.teal.shade100,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  session['location'],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.teal.shade800,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            session['date'],
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            session['timeRange'],
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.teal,
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 16,
+                                backgroundColor: Colors.redAccent.shade100,
+                                child: Text(
+                                  therapistInitials,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                session['therapist'],
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              OutlinedButton(
+                                onPressed: () {},
+                                style: OutlinedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  side: BorderSide(color: Colors.teal),
+                                ),
+                                child: Text('DETAILS'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                child: Text('RESCHEDULE'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   Widget _buildProgressSnapshot() {
     return Padding(

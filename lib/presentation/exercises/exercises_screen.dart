@@ -53,10 +53,13 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         _trackTrainPosition();
       }
     });
+    
+    // Changed to portrait orientation
     SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
     ]);
+    
     super.initState();
     _riveFileFuture = RivePreloader()
         .initialize()
@@ -67,62 +70,71 @@ class _ExercisesScreenState extends State<ExercisesScreen>
   @override
   void dispose() {
     // Cancel any active timers
-
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          // Rive animation content (first/bottom layer)
-          Positioned.fill(
-            child: FutureBuilder<RiveFile?>(
-              future: _riveFileFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError || snapshot.data == null) {
-                  return const Center(child: Text('Error loading Rive file'));
-                } else {
-                  final riveFile = snapshot.data!;
+Widget build(BuildContext context) {
+  return Scaffold(
+    extendBody: true,
+    extendBodyBehindAppBar: true,
+    body: Stack(
+      children: [
+        // Rive animation content (first/bottom layer)
+        Positioned(
+          bottom: 0,
+          left: 0,
+          top: 0,
+          right: 0,
+          child: FutureBuilder<RiveFile?>(
+            future: _riveFileFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError || snapshot.data == null) {
+                return const Center(child: Text('Error loading Rive file'));
+              } else {
+                final riveFile = snapshot.data!;
 
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    controller: _scrollController,
-                    physics: const BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics()),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 500),
+                // Change the approach to display the train animation
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  controller: _scrollController,
+                  physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics()),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 500),
                       curve: Curves.easeInOut,
-                      width: MediaQuery.of(context).size.height * 13.7176,
+                      width: MediaQuery.of(context).size.height* 13.716,
                       height: MediaQuery.of(context).size.height,
-                      alignment: Alignment.centerLeft,
+                      alignment: Alignment.bottomCenter,
+                  
+                    child: Center(
                       child: RiveAnimation.direct(
                         riveFile,
-                        fit: BoxFit.contain,
+                        // Use different fit mode to better adapt to portrait
+                        fit: BoxFit.cover,
+                        alignment: Alignment.topCenter,
                         onInit: _onRiveInit,
                       ),
                     ),
-                  );
-                }
-              },
-            ),
+                  ),
+                );
+              }
+            },
           ),
-          // DisciAppBar (last/top layer)
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child:DisciAppBar(context), // No need for any callbacks now,
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+        // DisciAppBar (last/top layer)
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: DisciAppBar(context),
+        ),
+      ],
+    ),
+  );
+}
 
   void _handleLevelType(int startExerciseIndex, String params) async {
     try {
@@ -528,27 +540,6 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       return;
     }
 
-    // // Check if trying to access a future level
-    // if (targetLevel > currentLevel) {
-    //   final snackBar = SnackBar(
-    //     /// need to set following properties for best effect of awesome_snackbar_content
-    //     elevation: 0,
-    //     behavior: SnackBarBehavior.floating,
-    //     backgroundColor: Colors.transparent,
-    //     content: AwesomeSnackbarContent(
-    //       title: 'On Snap!',
-    //       message: 'PLease complete the previous levels',
-
-    //       /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
-    //       contentType: ContentType.failure,
-    //     ),
-    //   );
-    //   ScaffoldMessenger.of(context)
-    //     ..hideCurrentSnackBar()
-    //     ..showSnackBar(snackBar);
-    //   return;
-    // }
-
     // If all checks pass, handle the level
     _handleLevelType(startExerciseIndex + targetLevel - 1, "notcompleted");
   }
@@ -657,9 +648,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         train = data_pro.artboard!.component('train');
 
         if (train != null) {
-          print("train position: ${train.x}");
-
-          _previousTrainX = train.x;
+          print("train position: ${train.y}"); // Updated to y coordinate for portrait mode
+          _previousTrainX = train.y; // Store y position for portrait mode
         } else {
           debugPrint("Error: 'train' not found!");
         }
@@ -686,12 +676,13 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     }
   }
 
+  // Modified to handle vertical scrolling in portrait mode
   void _trackTrainPosition() {
     if (train != null && train.artboard != null) {
       double trainX = train.x;
 
       if (_previousTrainX != trainX) {
-        double screenWidth = MediaQuery.of(context).size.height * 13.7176;
+        double screenWidth = MediaQuery.of(context).size.width * 13.7176;
         double maxTrainX = train.artboard!.width;
         double scaledOffset = (trainX / maxTrainX) * screenWidth;
 
@@ -710,6 +701,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       }
     }
   }
+
 
   Object retrieveObject(String type, Map<String, dynamic> data) {
     if (type == "ImageToAudio") {

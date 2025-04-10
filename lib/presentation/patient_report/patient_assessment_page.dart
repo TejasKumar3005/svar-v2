@@ -195,10 +195,7 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.scaffoldBackgroundColor,
-      appBar: null, // Remove app bar
-      body: SafeArea(
+    return  SafeArea(
         child: isLoading
             ? const Center(
                 child: CircularProgressIndicator(
@@ -236,7 +233,7 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
                     opacity: _fadeAnimation,
                     child: SingleChildScrollView(
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.only(left: 16.0,right: 16.0,top: 16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -292,12 +289,9 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
                       ),
                     ),
                   ),
-      ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onIndexChanged: _onIndexChanged,
-      ),
-    );
+      );
+    
+  
   }
 
   Widget _buildDateReport(Map<String, dynamic> report) {

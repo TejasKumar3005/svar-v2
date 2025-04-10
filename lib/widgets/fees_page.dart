@@ -44,14 +44,7 @@ class _FeesPageState extends State<FeesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9F2EF),
-      appBar: AppBar(
-        title: const Text('Fees', style: TextStyle(fontWeight: FontWeight.bold)),
-        elevation: 0,
-        backgroundColor: const Color(0xFFF9F2EF),
-      ),
-      body: SingleChildScrollView(
+    return  SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -91,12 +84,9 @@ class _FeesPageState extends State<FeesPage> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onIndexChanged: _onIndexChanged,
-      ),
-    );
+      );
+  
+    
   }
 
   Widget _buildCurrentFeeCard(Map<String, dynamic> fee) {

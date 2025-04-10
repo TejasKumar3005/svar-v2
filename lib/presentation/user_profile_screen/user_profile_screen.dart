@@ -293,10 +293,7 @@ class _ProfilePageState extends State<ProfilePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9F2EF),
-      
-      body: SafeArea(
+    return SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,19 +304,16 @@ class _ProfilePageState extends State<ProfilePage>
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onIndexChanged: _onIndexChanged,
-      ),
-    );
+      );
+    
+    
   }
 
   Widget _buildProfileHeader() {
     return Consumer<StreakProvider>(
       builder: (context, streakProvider, child) {
         return Container(
-          padding: const EdgeInsets.only(bottom: 20.0),
+  
           child: Column(
             children: [
               // Profile background curve

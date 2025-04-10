@@ -47,9 +47,10 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   @override
   void initState() {
     super.initState();
+    // Change to portrait orientation
     SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
     ]);
     _player = AudioPlayer();
     leveltracker = 0;
@@ -111,126 +112,95 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int currentExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[currentExerciseIndex];
-    ;
+    
+    // Calculate screen dimensions
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+    
     return SafeArea(
       child: Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
         backgroundColor: appTheme.gray300,
         body: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
+          width: screenWidth,
+          height: screenHeight,
           child: Stack(
             children: [
+              // Background image
               Positioned.fill(
-                child: SvgPicture.asset(
-                  ImageConstant.imgAuditorybg,
-                  fit: BoxFit.cover,
+                child: Container(
+                  width: screenWidth,
+                  height: screenHeight,
+                  // Replace gradient with background image
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/quiz_bg.jpeg'),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
                 ),
               ),
               Column(
                 children: [
+                  // App bar
                   Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
-                    child:DisciAppBar(context), // No need for any callbacks now,
+                    padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
+                    child: DisciAppBar(context),
                   ),
+                    Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 5.v),
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 15.v, horizontal: 20.h),
+                // Remove decoration to make it transparent over the placeholder
+                child: Text(
+                  "IDENTIFY THE IMAGE OF THE AUDIO",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                    color: Colors.black87, // Adjust text color to be visible on placeholder
+                  ),
+                ),
+              ),
+            ),
+                  // Main content
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 40.h),
+                      padding: EdgeInsets.symmetric(horizontal: 20.h),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          // Top spacing
+                          SizedBox(height: screenHeight * 0.15),
+                          
+                          // Audio player section - with fixed height to match design
                           Container(
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            height: 80.v,
-                            child: Center(
-                              child: GestureDetector(
-                                child: OptionWidget(
-                                  triggerAnimation: (value) {
-                                    _triggerAnimation(value);
-                                  },
-                                  child: AudioWidget(
-                                    audioLinks:
-                                        widget.dtcontainer.getAudioUrl(),
-                                  ),
-                                  isCorrect: () {
-                                    return widget.dtcontainer
-                                            .getCorrectOutput() ==
-                                        widget.dtcontainer.getAudioUrl();
-                                  },
-                                ),
+                            width: screenWidth * 0.85,
+                            height: 70, // Fixed height for audio widget
+                            margin: EdgeInsets.only(bottom: screenHeight * 0.08),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: OptionWidget(
+                              triggerAnimation: (value) {
+                                _triggerAnimation(value);
+                              },
+                              child: AudioWidget(
+                                audioLinks: widget.dtcontainer.getAudioUrl(),
                               ),
+                              isCorrect: () {
+                                return widget.dtcontainer.getCorrectOutput() ==
+                                    widget.dtcontainer.getAudioUrl();
+                              },
                             ),
                           ),
-                          Expanded(
-                            child: Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (widget.dtcontainer
-                                          .getImageUrlList()
-                                          .length <=
-                                      4)
-                                    ...List.generate(
-                                      widget.dtcontainer
-                                          .getImageUrlList()
-                                          .length,
-                                      (index) {
-                                        return Row(
-                                          children: [
-                                            OptionWidget(
-                                              triggerAnimation: (value) {
-                                                _triggerAnimation(value);
-                                              },
-                                              child: ImageWidget(
-                                                imagePath: widget.dtcontainer
-                                                    .getImageUrlList()[index],
-                                              ),
-                                              isCorrect: () {
-                                                if (widget.dtcontainer
-                                                        .getCorrectOutput() ==
-                                                    widget.dtcontainer
-                                                            .getImageUrlList()[
-                                                        index]) {
-                                                  data_pro.incrementLevel(
-                                                      currentExerciseIndex);
-
-                                                  if (data["completedAt"] ==
-                                                      null) {
-                                                    UserData(
-                                                            uid: FirebaseAuth
-                                                                .instance
-                                                                .currentUser!
-                                                                .uid)
-                                                        .updateExerciseData(
-                                                          euid: data["uid"],
-                                                          date: data["date"],
-                                                        )
-                                                        .then((value) => print(
-                                                            "Exercise data updated"));
-                                                  }
-                                                }
-                                                return widget.dtcontainer
-                                                        .getCorrectOutput() ==
-                                                    widget.dtcontainer
-                                                            .getImageUrlList()[
-                                                        index];
-                                              },
-                                            ),
-                                            if (index <
-                                                widget.dtcontainer
-                                                        .getImageUrlList()
-                                                        .length -
-                                                    1)
-                                              SizedBox(width: 20),
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                ],
-                              ),
-                            ),
+                          
+                          // Image options section - with appropriate height allocation
+                          Container(
+                            height: screenHeight * 0.5, // Allocate 50% of screen height for images
+                            child: _buildImageOptions(data_pro, currentExerciseIndex, data),
                           ),
                         ],
                       ),
@@ -238,30 +208,133 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                   ),
                 ],
               ),
-              Stack(
-                children: [
-                  Positioned(
-                    bottom: 0.h,
-                    left: 0.h,
-                    child: IgnorePointer(
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-                        child: RiveAnimation.asset(
-                          'assets/rive/Celebration_animation.riv',
-                          onInit: _onRiveInit,
-                          fit: BoxFit.contain,
-                          alignment: Alignment.centerLeft,
-                        ),
-                      ),
+              // Animation positioned at bottom
+              Positioned(
+                bottom: 0,
+                left: 0,
+                child: IgnorePointer(
+                  child: SizedBox(
+                    height: screenHeight * 0.4, // Adjust animation height
+                    width: screenWidth,
+                    child: RiveAnimation.asset(
+                      'assets/rive/Celebration_animation.riv',
+                      onInit: _onRiveInit,
+                      fit: BoxFit.fitWidth,
+                      alignment: Alignment.centerLeft,
                     ),
                   ),
-                ],
-              )
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  // Method to build image options in a grid layout for portrait mode
+  Widget _buildImageOptions(ExerciseProvider data_pro, int currentExerciseIndex, Map<String, dynamic> data) {
+    int itemCount = widget.dtcontainer.getImageUrlList().length;
+    
+    if (itemCount <= 0) return Container();
+    
+    // For portrait mode, organize images in a grid with fixed heights
+    int columns = itemCount <= 2 ? itemCount : 2;
+    
+    if (itemCount <= 2) {
+      // For one or two images, display in a single row
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(itemCount, (index) {
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.h),
+              child: AspectRatio(
+                aspectRatio: 1, // Make images taller than wide (2:1 ratio)
+                child: OptionWidget(
+                  triggerAnimation: (value) {
+                    _triggerAnimation(value);
+                  },
+                  child: ImageWidget(
+                    imagePath: widget.dtcontainer.getImageUrlList()[index],
+                  ),
+                  isCorrect: () {
+                    if (widget.dtcontainer.getCorrectOutput() ==
+                        widget.dtcontainer.getImageUrlList()[index]) {
+                      data_pro.incrementLevel(currentExerciseIndex);
+
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              euid: data["uid"],
+                              date: data["date"],
+                            )
+                            .then((value) => print("Exercise data updated"));
+                      }
+                    }
+                    return widget.dtcontainer.getCorrectOutput() ==
+                        widget.dtcontainer.getImageUrlList()[index];
+                  },
+                ),
+              ),
+            ),
+          );
+        }),
+      );
+    } else {
+      // For more than two images, use a grid layout
+      int rows = (itemCount / columns).ceil();
+      
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(rows, (rowIndex) {
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.v),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(columns, (colIndex) {
+                  int index = rowIndex * columns + colIndex;
+                  if (index < itemCount) {
+                    return Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.h),
+                        child: OptionWidget(
+                          triggerAnimation: (value) {
+                            _triggerAnimation(value);
+                          },
+                          child: ImageWidget(
+                            imagePath: widget.dtcontainer.getImageUrlList()[index],
+                          ),
+                          isCorrect: () {
+                            if (widget.dtcontainer.getCorrectOutput() ==
+                                widget.dtcontainer.getImageUrlList()[index]) {
+                              data_pro.incrementLevel(currentExerciseIndex);
+
+                              if (data["completedAt"] == null) {
+                                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                                    .updateExerciseData(
+                                      euid: data["uid"],
+                                      date: data["date"],
+                                    )
+                                    .then((value) => print("Exercise data updated"));
+                              }
+                            }
+                            return widget.dtcontainer.getCorrectOutput() ==
+                                widget.dtcontainer.getImageUrlList()[index];
+                          },
+                        ),
+                      ),
+                    );
+                  } else {
+                    return Expanded(child: SizedBox());
+                  }
+                }),
+              ),
+            ),
+          );
+        }),
+      );
+    }
   }
 }
