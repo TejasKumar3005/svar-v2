@@ -105,7 +105,7 @@ Widget build(BuildContext context) {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 500),
                       curve: Curves.easeInOut,
-                      width: MediaQuery.of(context).size.height* 13.716,
+                      width: MediaQuery.of(context).size.height* 7.716,
                       height: MediaQuery.of(context).size.height,
                       alignment: Alignment.bottomCenter,
                   
@@ -113,7 +113,7 @@ Widget build(BuildContext context) {
                       child: RiveAnimation.direct(
                         riveFile,
                         // Use different fit mode to better adapt to portrait
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
                         alignment: Alignment.topCenter,
                         onInit: _onRiveInit,
                       ),
@@ -226,7 +226,7 @@ Widget build(BuildContext context) {
         return;
       }
 
-      String? type = data["subtype"];
+      String? type = data["type"];
       if (type == null) {
         debugPrint("Type is null in the fetched data.");
         return;
@@ -682,7 +682,7 @@ Widget build(BuildContext context) {
       double trainX = train.x;
 
       if (_previousTrainX != trainX) {
-        double screenWidth = MediaQuery.of(context).size.width * 13.7176;
+        double screenWidth = MediaQuery.of(context).size.height * 7.716;
         double maxTrainX = train.artboard!.width;
         double scaledOffset = (trainX / maxTrainX) * screenWidth;
 

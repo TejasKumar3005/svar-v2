@@ -202,7 +202,7 @@ class _DetectionState extends State<ExerciseDetection> {
               child: Column(
                 children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.h, vertical: 10.v),
+                    padding: EdgeInsets.symmetric(horizontal: 16.h,),
                     child: DisciAppBar(context),
                   ),
                   Expanded(
@@ -217,12 +217,12 @@ class _DetectionState extends State<ExerciseDetection> {
                                 left: 0.h,
                                 child: IgnorePointer(
                                   child: SizedBox(
-                                    height: MediaQuery.of(context).size.height,
+                                    height: MediaQuery.of(context).size.height*0.4,
                                     width: MediaQuery.of(context).size.width,
                                     child: RiveAnimation.asset(
                                       'assets/rive/Celebration_animation.riv',
                                       onInit: _onRiveInit,
-                                      fit: BoxFit.contain,
+                                      fit: BoxFit.fitHeight,
                                       alignment: Alignment.centerLeft,
                                     ),
                                   ),
@@ -269,27 +269,21 @@ class _DetectionState extends State<ExerciseDetection> {
         child: Column(
           children: [
             // Instruction Card
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 15.v, horizontal: 16.h),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(22),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15.h),
+              child: Container(
+                width: double.infinity,
+            
+                // Remove decoration to make it transparent over the placeholder
+                child: Text(
+                    "TAP ON THE VIDEO WHICH HAS SOUND",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                    color: Colors.black87, // Adjust text color to be visible on placeholder
                   ),
-                ],
-              ),
-              child: Text(
-                "TAP ON THE VIDEO WHICH HAS SOUND",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
                 ),
               ),
             ),

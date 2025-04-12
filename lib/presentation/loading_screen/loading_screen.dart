@@ -28,10 +28,7 @@ class LoadingScreenState extends State<LoadingScreen>
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+  
   }
 
   void getUserData(BuildContext context) async {
