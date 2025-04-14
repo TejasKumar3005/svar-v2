@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:rive/rive.dart'; // Import Rive package
 
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
@@ -24,11 +25,25 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class LoadingScreenState extends State<LoadingScreen>
-    with TickerProviderStateMixin {
+   {
+
+
+StateMachineController? riveController;
   @override
   void initState() {
     super.initState();
   
+    
+    // Call getUserData after widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getUserData(context);
+    });
+  }
+
+  @override
+  void dispose() {
+    riveController = null;
+    super.dispose();
   }
 
   void getUserData(BuildContext context) async {
@@ -59,89 +74,63 @@ class LoadingScreenState extends State<LoadingScreen>
       print('Error occurred: $error');
     }
   }
+    void _onRiveInit(Artboard artboard) {
+    final controller =
+        StateMachineController.fromArtboard(artboard, 'State Machine 1');
+    if (controller != null) {
+      artboard.addController(controller);
+      riveController = controller;
+
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    getUserData(context);
     return Scaffold(
-      backgroundColor: Color(0xff00FFFF),
-      extendBody: true,
-      extendBodyBehindAppBar: true,
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-              ImageConstant.imgMainInteraction,
+      backgroundColor: Color(0xff00FFFF), // Keep the original background color
+      body: Stack(
+        children: [
+          // Rive animation covering the full screen
+          Center(
+            child: Container(
+              height: MediaQuery.of(context).size.height*0.6,
+              child: RiveAnimation.asset(
+                'assets/rive/loading.riv', // Replace with your Rive file path
+            
+                fit: BoxFit.cover,
+                onInit: _onRiveInit,
+              ),
             ),
-            fit: BoxFit.cover,
           ),
-        ),
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 38.v),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Spacer(),
-              SizedBox(
-                height: 102.v,
-                width: 454.h,
-                child: Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 87.h),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              height: 47.v,
-                              width: 279.h,
-                              decoration: BoxDecoration(
-                                color: appTheme.whiteA70001,
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(72.h),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 25.v),
-                            Text(
-                              "lbl_loading".tr,
-                              style: CustomTextStyles.titleLarge21,
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        height: 28.v,
-                        width: 300.h,
-                        margin: EdgeInsets.only(bottom: 27.v),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 4.h,
-                          vertical: 3.v,
-                        ),
-                        decoration: AppDecoration.fillLightGreen.copyWith(
-                          borderRadius: BorderRadiusStyle.roundedBorder15,
-                        ),
-                        child: LinearProgressIndicator(
-                          borderRadius: BorderRadiusStyle.roundedBorder15,
-                          color: PrimaryColors().green30001,
-                          semanticsLabel: 'Linear progress indicator',
-                        ),
-                      ),
-                    )
-                  ],
+          
+          // Centered "Loading" text with styling
+          Positioned(
+            left: 0,
+            right: 0,
+          bottom: 70,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              decoration: BoxDecoration(
+            
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Center(
+                child: Text(
+                  "LOADING...",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2.0,
+                  ),
                 ),
-              )
-            ],
+              ),
+            ),
           ),
-        ),
+          
+          // Optional: Add a loading indicator at the bottom
+          
+        ],
       ),
     );
   }

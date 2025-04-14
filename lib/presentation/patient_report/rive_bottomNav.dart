@@ -139,7 +139,7 @@ class _RiveBottomnavState extends State<RiveBottomnav> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height, // Adjust height as needed
+      height: 80, // Adjust height as needed
       // Adjust width as needed
       width: MediaQuery.of(context).size.width,
 

@@ -79,13 +79,12 @@ class _HomePageState extends State<HomePage>
   // This function handles index changes from the bottom navigation bar
   void _onIndexChanged(int index) {
     print("Index changed to: $index");
-    
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
-    setState(() {
-      _currentIndex = index;
+      setState(() {
+        _currentIndex = index;
+      });
     });
-  });
-  
 
     // Note: The navigation logic is handled inside the CustomBottomNavigationBar
   }
@@ -132,117 +131,120 @@ class _HomePageState extends State<HomePage>
       body: Stack(
         children: [
           Positioned(
-            left: 0,
-            right: 0,
+              left: 0,
+              right: 0,
+              top: 0,
+              // Setting bottom to a value that allows space for the active part of the navigation bar
+
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: [
+                  SafeArea(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildHeader(),
+                          _buildStreakSection(),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.teal.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 10,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Colors.teal.shade400,
+                                    Colors.teal.shade700
+                                  ],
+                                ),
+                              ),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  print("hello");
+                                  await NavigatorService.pushNamed(
+                                      AppRoutes.exercisesScreen);
+                                  print("/////////////////////////////n");
+                                  // Don't call initState() directly
+                                  // Instead, refresh data if the widget is still mounted
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  minimumSize: Size(double.infinity, 60),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.bolt,
+                                      color: Colors.yellow,
+                                      size: 24,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        'Continue Today\'s Exercise',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          letterSpacing: 0.5,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    SizedBox(width: 10),
+                                    Icon(
+                                      Icons.bolt,
+                                      color: Colors.yellow,
+                                      size: 24,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          _buildUpcomingSessions(),
+                          _buildProgressSnapshot(),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  PatientAssessmentPage(),
+                  FeesPage(), // Placeholder for the third tab
+                  UserProfileScreen(),
+                  SizedBox(
+                    height: 20,
+                    width: 30,
+                  )
+                ][_currentIndex],
+              )),
+          Positioned(
+          
             bottom: 0,
-            top: 0, // By setting top: 0, we make it full-height
+        
             child: CustomBottomNavigationBar(
               currentIndex: _currentIndex,
               onIndexChanged: _onIndexChanged,
             ),
           ),
-          Positioned(
-              left: 0,
-              right: 0,
-              top: 0,
-              // Setting bottom to a value that allows space for the active part of the navigation bar
-              bottom: 56,
-              child: [
-                SafeArea(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildHeader(),
-                        _buildStreakSection(),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.teal.withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 10,
-                                  offset: Offset(0, 4),
-                                ),
-                              ],
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Colors.teal.shade400,
-                                  Colors.teal.shade700
-                                ],
-                              ),
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                print("hello");
-                                await NavigatorService.pushNamed(
-                                    AppRoutes.exercisesScreen);
-                                print("/////////////////////////////n");
-                                // Don't call initState() directly
-                                // Instead, refresh data if the widget is still mounted
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                minimumSize: Size(double.infinity, 60),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                padding: EdgeInsets.zero,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.bolt,
-                                    color: Colors.yellow,
-                                    size: 24,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      'Continue Today\'s Exercise',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        letterSpacing: 0.5,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Icon(
-                                    Icons.bolt,
-                                    color: Colors.yellow,
-                                    size: 24,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        _buildUpcomingSessions(),
-                        _buildProgressSnapshot(),
-                      ],
-                    ),
-                  ),
-                ),
-
-              PatientAssessmentPage(),
-                FeesPage(), // Placeholder for the third tab
-                UserProfileScreen(),
-                SizedBox(
-                  height: 20,
-                  width: 30,
-                )
-              ][_currentIndex]),
         ],
       ),
     );
