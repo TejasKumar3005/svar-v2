@@ -24,10 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   
   @override
   void initState() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
+  
     super.initState();
   }
 
