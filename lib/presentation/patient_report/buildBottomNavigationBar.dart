@@ -45,10 +45,13 @@ class CustomBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
       width: MediaQuery.of(context).size.width,
-      height: 80, // Adjust as needed
+      
+      height: 85, // Adjust as needed
     // Adjust as needed
       decoration: BoxDecoration(
+        // color: Color(0xFFF9F2EF),
         border: Border(
           top: BorderSide(color: Colors.grey.shade300, width: 1),
         ),

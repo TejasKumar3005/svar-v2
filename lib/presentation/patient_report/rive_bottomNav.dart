@@ -139,12 +139,12 @@ class _RiveBottomnavState extends State<RiveBottomnav> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80, // Adjust height as needed
+      height: 85, // Adjust height as needed
       // Adjust width as needed
       width: MediaQuery.of(context).size.width,
 
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        // color: Color(0xFFF9F2EF)
       ),
       child: RiveAnimation.asset(
         'assets/rive/nav.riv',
