@@ -42,6 +42,9 @@ class UserProfileScreenState extends State<UserProfileScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Initialize streak provider data
       Provider.of<StreakProvider>(context, listen: false).initializeStreakData();
+      setState(() {
+        isLoading = false;
+      });
     });
     
   }
@@ -304,6 +307,7 @@ class _ProfilePageState extends State<ProfilePage>
               _buildProfileHeader(),
               _buildInfoTabs(),
               _buildSupportSection(),
+              const SizedBox(height: 80), // Space for bottom navigation bar
             ],
           ),
         ),
