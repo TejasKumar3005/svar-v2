@@ -208,7 +208,8 @@ class _DetectionState extends State<ExerciseDetection> {
                   Expanded(
                     child: Stack(
                       children: [
-                        Center(child: detectionQuiz(context, type)),
+                      
+                        detectionQuiz(context, type),
                         if (type == "MutedUnmuted")
                           Stack(
                             children: [
@@ -264,7 +265,7 @@ class _DetectionState extends State<ExerciseDetection> {
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
     
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 20.h,vertical: 35.v),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -287,7 +288,7 @@ class _DetectionState extends State<ExerciseDetection> {
                 ),
               ),
             ),
-            SizedBox(height: 20.v),
+            SizedBox(height: 35.v),
             
             // First Video Card
             _buildVideoCard(
@@ -332,7 +333,7 @@ class _DetectionState extends State<ExerciseDetection> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -371,64 +372,37 @@ class _DetectionState extends State<ExerciseDetection> {
             onTap: () {
               // Button tap logic is handled by OptionWidget
             },
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 15.v),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xFF5E9FE0),
-                    Color(0xFF3D7EDB),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+            child: OptionWidget(
+            
+              triggerAnimation: (value) {
+                _triggerAnimation(value);
+              },
+              child: OptionButton(
+                
+                  type:index==1? ButtonType.Video1:ButtonType.Video2,
+                  onPressed: () {
+                    // Implement your logic here
+                  },
                 ),
-              ),
-              child: OptionWidget(
-                triggerAnimation: (value) {
-                  _triggerAnimation(value);
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.volume_up,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    SizedBox(width: 8.h),
-                    Text(
-                      "Video $index",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                isCorrect: () {
-                  var condition = (index == 1) 
-                      ? (obj[1] as dynamic).getMuted() == 1
-                      : (obj[1] as dynamic).getMuted() == 0;
-                      
-                  var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-                  if (condition) {
-                    data_pro.incrementLevel(startExerciseIndex);
-                    if (data["completedAt"] == null) {
-                      UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                          .updateExerciseData(
-                            euid: data["uid"],
-                            date: data["date"],
-                          )
-                          .then((value) => print("Exercise data updated"));
-                    }
+              isCorrect: () {
+                var condition = (index == 1) 
+                    ? (obj[1] as dynamic).getMuted() == 1
+                    : (obj[1] as dynamic).getMuted() == 0;
+                    
+                var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+                if (condition) {
+                  data_pro.incrementLevel(startExerciseIndex);
+                  if (data["completedAt"] == null) {
+                    UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                        .updateExerciseData(
+                          euid: data["uid"],
+                          date: data["date"],
+                        )
+                        .then((value) => print("Exercise data updated"));
                   }
-                  return condition;
-                },
-              ),
+                }
+                return condition;
+              },
             ),
           ),
         ],
@@ -515,7 +489,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.h),
+      padding: EdgeInsets.symmetric(horizontal: 20.h,vertical: 35.v),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Stack(
