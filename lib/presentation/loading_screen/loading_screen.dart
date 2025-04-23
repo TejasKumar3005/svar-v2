@@ -87,7 +87,7 @@ StateMachineController? riveController;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff00FFFF), // Keep the original background color
+      backgroundColor: Colors.white, // Keep the original background color
       body: Stack(
         children: [
           // Rive animation covering the full screen

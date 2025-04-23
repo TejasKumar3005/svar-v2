@@ -183,7 +183,7 @@ Widget build(BuildContext context) {
                         child: RiveAnimation.asset(
                           'assets/rive/Celebration_animation.riv',
                           onInit: _onRiveInit,
-                          fit: BoxFit.contain,
+                          fit: BoxFit.fitHeight,
                           alignment: Alignment.bottomCenter,
                         ),
                       ),

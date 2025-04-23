@@ -499,12 +499,13 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                height: constraints.maxHeight * 0.3,
+                height: constraints.maxHeight * 0.4,
+                width: constraints.maxWidth,
                 child: IgnorePointer(
                   child: RiveAnimation.asset(
                     'assets/rive/Celebration_animation.riv',
                     onInit: _onRiveInit,
-                    fit: BoxFit.contain,
+                    fit: BoxFit.fitHeight,
                     alignment: Alignment.center,
                   ),
                 ),

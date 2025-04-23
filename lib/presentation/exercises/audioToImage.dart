@@ -219,7 +219,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                     child: RiveAnimation.asset(
                       'assets/rive/Celebration_animation.riv',
                       onInit: _onRiveInit,
-                      fit: BoxFit.fitWidth,
+                      fit: BoxFit.fitHeight,
                       alignment: Alignment.centerLeft,
                     ),
                   ),
