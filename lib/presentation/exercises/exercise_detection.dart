@@ -593,35 +593,13 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                     ),
                     child: OptionWidget(
                       triggerAnimation: _triggerAnimation,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(30),
-                          onTap: () => globalAudioPlayer.stop(),
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.stop_circle,
-                                  color: Colors.white,
-                                  size: 28,
-                                ),
-                                SizedBox(width: 10.h),
-                                Text(
-                                  "STOP",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                      child: OptionButton(
+                
+                  type:ButtonType.Stop  ,
+                  onPressed: () {
+                    // Implement your logic here
+                  },
+                ),
                       isCorrect: () {
                         if (_childKey.currentState == null) return false;
 
