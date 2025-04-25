@@ -172,23 +172,26 @@ Widget build(BuildContext context) {
                   ),
 
                   // Animation overlay at bottom
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: IgnorePointer(
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.4,
-                        width: MediaQuery.of(context).size.width,
-                        child: RiveAnimation.asset(
-                          'assets/rive/Celebration_animation.riv',
-                          onInit: _onRiveInit,
-                          fit: BoxFit.fitHeight,
-                          alignment: Alignment.bottomCenter,
-                        ),
-                      ),
-                    ),
-                  ),
+                    Stack(
+                            children: [
+                              Positioned(
+                                bottom: 0.h,
+                                left: 0.h,
+                                child: IgnorePointer(
+                                  child: SizedBox(
+                                    height: MediaQuery.of(context).size.height*0.4,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: RiveAnimation.asset(
+                                      'assets/rive/Celebration_animation.riv',
+                                      onInit: _onRiveInit,
+                                      fit: BoxFit.fitHeight,
+                                      alignment: Alignment.centerLeft,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                 ],
               ),
             ),
@@ -398,150 +401,126 @@ Widget _buildSmallGenderOption(
   Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
   // Using LayoutBuilder for responsive layout
-  return LayoutBuilder(
-    builder: (context, constraints) {
-      // Calculate responsive sizes
-      double maxWidth = constraints.maxWidth;
-      double maxHeight = constraints.maxHeight;
-      
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Spacer to push content to vertical center
-      
-            Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: 15.v, horizontal: 20.h),
-          margin: EdgeInsets.only(bottom: 24.v),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(22),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 8,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Text(
-            "PRESS WHEN THE SOUND CHANGES",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ),
-          Spacer(flex: 1),
-          // Audio player component - centered
-          Container(
-            width: maxWidth * 0.85,
-            height: 70,
-            margin: EdgeInsets.only(bottom: 50),
-            decoration: BoxDecoration(
-              color: Color(0xFFF77D2B), // Orange color
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  spreadRadius: 1,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: AudioWidget(
-              key: _childKey,
-              audioLinks: diffHalf.getVideoUrls(),
-            ),
-          ),
+  return Center(
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculate responsive sizes
+        double maxWidth = constraints.maxWidth;
+        double maxHeight = constraints.maxHeight;
+        
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Spacer to push content to vertical center
+        Spacer(flex: 1),
           
-          // Change button - centered
-          ScaleTransition(
-            scale: _scaleAnimation,
-            child: OptionWidget(
-              triggerAnimation: _triggerAnimation,
-              child: Container(
-                width: 200,
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF5E9FE0), Color(0xFF3D7EDB)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+            // Audio player component - centered
+            Container(
+              width: maxWidth * 0.85,
+              height: 70,
+              margin: EdgeInsets.only(bottom: 50),
+              decoration: BoxDecoration(
+                color: Color(0xFFF77D2B), // Orange color
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                    offset: Offset(0, 4),
                   ),
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.blue.withOpacity(0.3),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                      offset: Offset(0, 4),
+                ],
+              ),
+              child: AudioWidget(
+                key: _childKey,
+                audioLinks: diffHalf.getVideoUrls(),
+              ),
+            ),
+            
+            // Change button - centered
+            ScaleTransition(
+              scale: _scaleAnimation,
+              child: OptionWidget(
+                triggerAnimation: _triggerAnimation,
+                child: Container(
+                  width: 200,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF5E9FE0), Color(0xFF3D7EDB)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
-                  ],
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
                     borderRadius: BorderRadius.circular(30),
-                    onTap: () {
-                      _animationController.forward().then((_) => _animationController.reverse());
-                    },
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.change_circle_outlined,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            "CHANGE",
-                            style: TextStyle(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blue.withOpacity(0.3),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(30),
+                      onTap: () {
+                        _animationController.forward().then((_) => _animationController.reverse());
+                      },
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.change_circle_outlined,
                               color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              letterSpacing: 1,
+                              size: 24,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 8),
+                            Text(
+                              "CHANGE",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              isCorrect: () {
-                List<double> total_length = _childKey.currentState!.lengths;
-                double ans = total_length[0] / (total_length[1] + total_length[0]);
-                var condition = _childKey.currentState!.progress.value > ans &&
-                    _childKey.currentState!.progress.value < ans + 0.4;
-
-                if (condition) {
-                  data_pro.incrementLevel(startExerciseIndex);
-                  if (data["completedAt"] == null) {
-                    UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                        .updateExerciseData(
-                      euid: data["uid"],
-                      date: data["date"],
-                    );
+                isCorrect: () {
+                  List<double> total_length = _childKey.currentState!.lengths;
+                  double ans = total_length[0] / (total_length[1] + total_length[0]);
+                  var condition = _childKey.currentState!.progress.value > ans &&
+                      _childKey.currentState!.progress.value < ans + 0.4;
+    
+                  if (condition) {
+                    data_pro.incrementLevel(startExerciseIndex);
+                    if (data["completedAt"] == null) {
+                      UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                          .updateExerciseData(
+                        euid: data["uid"],
+                        date: data["date"],
+                      );
+                    }
                   }
-                }
-                
-                return condition;
-              },
+                  
+                  return condition;
+                },
+              ),
             ),
-          ),
-          
-          // Spacer to push content to vertical center
+            
           Spacer(flex: 1),
-        ],
-      );
-    },
+          ],
+        );
+      },
+    ),
   );
 }
 

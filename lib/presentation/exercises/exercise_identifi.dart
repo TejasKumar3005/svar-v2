@@ -163,7 +163,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                 // Remove decoration to make it transparent over the placeholder
                 child: Text(
                   type == "ImageToAudio"
-                      ? "IDENTIFY THE SOUND OF THE IMAGE"
+                      ? "IDENTIFY  SOUND OF THE IMAGE"
                       : type == "MaleFemale" 
                         ? "IDENTIFY THE GENDER"
                         : type == "DiffHalf"
@@ -261,13 +261,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                 child: Stack(
                   
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadiusStyle.roundedBorder15,
-                      child: SvgPicture.asset(
-                        "assets/images/svg/QUestion.svg",
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+                
                     if (type == "WordToFig")
                       Center(
                         child: Text(

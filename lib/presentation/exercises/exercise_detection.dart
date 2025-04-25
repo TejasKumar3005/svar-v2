@@ -210,7 +210,7 @@ class _DetectionState extends State<ExerciseDetection> {
                       children: [
                       
                         detectionQuiz(context, type),
-                        if (type == "MutedUnmuted")
+                      
                           Stack(
                             children: [
                               Positioned(
@@ -492,140 +492,110 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
       padding: EdgeInsets.symmetric(horizontal: 20.h,vertical: 35.v),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          return Stack(
+          return Column(
             children: [
-              // Animation positioned at bottom
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: constraints.maxHeight * 0.4,
-                width: constraints.maxWidth,
-                child: IgnorePointer(
-                  child: RiveAnimation.asset(
-                    'assets/rive/Celebration_animation.riv',
-                    onInit: _onRiveInit,
-                    fit: BoxFit.fitHeight,
-                    alignment: Alignment.center,
-                  ),
+              Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15.h),
+          child: Container(
+            width: double.infinity,
+                      
+            // Remove decoration to make it transparent over the placeholder
+            child: Text(
+                "TAP ON THE VIDEO WHICH HAS SOUND",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+                color: Colors.black87, // Adjust text color to be visible on placeholder
+              ),
+            ),
+          ),
+                      ),
+              
+            Spacer(),
+              
+              // Audio player widget
+              Container(
+                width: constraints.maxWidth * 0.8,
+                height: constraints.maxHeight * 0.1,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 15,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: AudioWidget(
+          
+                  key: _childKey,
+                  
+                  audioLinks: widget.audioLinks,
                 ),
               ),
               
-              // Main content
-              Column(
-                children: [
-                  SizedBox(height: 40.v),
-                  
-                  // Instruction container
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 15.v, horizontal: 16.h),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(22),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      "PRESS STOP WHEN THE SOUND CHANGES",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
+              SizedBox(height: 60.v),
+              
+              // Stop button
+              Container(
+                width: constraints.maxWidth * 0.6,
+                height: 60.v,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF5E9FE0),
+                      Color(0xFF3D7EDB),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
-                  
-                  SizedBox(height: 40.v),
-                  
-                  // Audio player widget
-                  Container(
-                    width: constraints.maxWidth * 0.8,
-                    height: constraints.maxHeight * 0.1,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 15,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.3),
+                      spreadRadius: 1,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
                     ),
-                    child: AudioWidget(
-
-                      key: _childKey,
-                      
-                      audioLinks: widget.audioLinks,
-                    ),
-                  ),
-                  
-                  SizedBox(height: 60.v),
-                  
-                  // Stop button
-                  Container(
-                    width: constraints.maxWidth * 0.6,
-                    height: 60.v,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(0xFF5E9FE0),
-                          Color(0xFF3D7EDB),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.blue.withOpacity(0.3),
-                          spreadRadius: 1,
-                          blurRadius: 8,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: OptionWidget(
-                      triggerAnimation: _triggerAnimation,
-                      child: OptionButton(
-                
-                  type:ButtonType.Stop  ,
-                  onPressed: () {
-                    // Implement your logic here
+                  ],
+                ),
+                child: OptionWidget(
+                  triggerAnimation: _triggerAnimation,
+                  child: OptionButton(
+            
+              type:ButtonType.Stop  ,
+              onPressed: () {
+                // Implement your logic here
+              },
+            ),
+                  isCorrect: () {
+                    if (_childKey.currentState == null) return false;
+          
+                    List<double> total_length = _childKey.currentState!.lengths;
+                    if (total_length.isEmpty) return false;
+          
+                    double currentProgress = _childKey.currentState!.progress.value;
+                    const double tolerance = 0.4;
+                    bool condition = currentProgress > 0.5 && currentProgress < 0.5 + tolerance;
+          
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                              euid: data["uid"],
+                              date: data["date"],
+                            );
+                      }
+                    }
+                    return condition;
                   },
                 ),
-                      isCorrect: () {
-                        if (_childKey.currentState == null) return false;
-
-                        List<double> total_length = _childKey.currentState!.lengths;
-                        if (total_length.isEmpty) return false;
-
-                        double currentProgress = _childKey.currentState!.progress.value;
-                        const double tolerance = 0.4;
-                        bool condition = currentProgress > 0.5 && currentProgress < 0.5 + tolerance;
-
-                        if (condition) {
-                          data_pro.incrementLevel(startExerciseIndex);
-                          if (data["completedAt"] == null) {
-                            UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                                .updateExerciseData(
-                                  euid: data["uid"],
-                                  date: data["date"],
-                                );
-                          }
-                        }
-                        return condition;
-                      },
-                    ),
-                  ),
-                ],
               ),
+              Spacer()
             ],
           );
         },

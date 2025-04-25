@@ -11,6 +11,7 @@ enum ButtonType {
   Play,
   Settings,
   ImagePlay,
+  ImagePause,
   ArrowLeftYellow,
   ArrowRightGreen,
   Login,
@@ -85,7 +86,15 @@ class _CustomButtonState extends State<CustomButton> {
         height = 50;
         buttontype = ChicletButtonTypes.oval;
         defaultChild = const Icon(Icons.play_arrow);
+        break;    
+      case ButtonType.ImagePause:
+        imagePath = ImageConstant.imgPlayBtn;
+        width = 50;
+        height = 50;
+        buttontype = ChicletButtonTypes.oval;
+        defaultChild = const Icon(Icons.pause);
         break;
+
       case ButtonType.ArrowLeftYellow:
         imagePath = ImageConstant.imgArrowLeftYellow;
         width = 40;

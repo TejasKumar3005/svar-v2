@@ -659,7 +659,7 @@ Widget build(BuildContext context) {
         intermediateResults.add(apiResult is List ? apiResult : [apiResult]);
 
         List<dynamic> results = apiResult is List ? apiResult : [apiResult];
-        for (var item in results) {
+      var item = results[0];
           if (item is Map) {
             String resultText = item.values.first.toString().toLowerCase();
             // Check if the pronunciation matches the correct phoneme
@@ -681,7 +681,7 @@ Widget build(BuildContext context) {
               return true;
             }
           }
-        }
+        
 
         // Play wrong answer sound if pronunciation is incorrect
         await _audioPlayer.play(AssetSource('assets/audio/wrong_answer.mp3'));

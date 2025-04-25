@@ -132,7 +132,8 @@ class AudioWidgetState extends State<AudioWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomButton(
-                  type: ButtonType.ImagePlay,
+                
+                  type:_audioPlayer.playing?ButtonType.ImagePause: ButtonType.ImagePlay,
                   onPressed: () {
                     _audioPlayer.playing ? _audioPlayer.pause() : playNext();
                   },
