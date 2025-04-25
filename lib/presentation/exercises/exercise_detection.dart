@@ -501,7 +501,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                       
             // Remove decoration to make it transparent over the placeholder
             child: Text(
-                "TAP ON THE VIDEO WHICH HAS SOUND",
+                "PRESS STOP WHEN THE SOUND PLAYS",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 20,

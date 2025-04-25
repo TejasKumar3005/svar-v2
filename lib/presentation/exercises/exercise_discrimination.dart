@@ -443,57 +443,7 @@ Widget _buildSmallGenderOption(
               scale: _scaleAnimation,
               child: OptionWidget(
                 triggerAnimation: _triggerAnimation,
-                child: Container(
-                  width: 200,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF5E9FE0), Color(0xFF3D7EDB)],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.blue.withOpacity(0.3),
-                        blurRadius: 8,
-                        spreadRadius: 1,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(30),
-                      onTap: () {
-                        _animationController.forward().then((_) => _animationController.reverse());
-                      },
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.change_circle_outlined,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              "CHANGE",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                letterSpacing: 1,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                child: OptionButton(type: ButtonType.Change, onPressed: () {}),
                 isCorrect: () {
                   List<double> total_length = _childKey.currentState!.lengths;
                   double ans = total_length[0] / (total_length[1] + total_length[0]);
