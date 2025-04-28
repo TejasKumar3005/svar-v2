@@ -46,7 +46,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       
-      width: MediaQuery.of(context).size.width,
+        width: MediaQuery.of(context).size.width,
+
       
       height: 85, // Adjust as needed
     // Adjust as needed

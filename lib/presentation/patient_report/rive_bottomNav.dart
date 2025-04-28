@@ -139,11 +139,13 @@ class _RiveBottomnavState extends State<RiveBottomnav> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      
       height: 85, // Adjust height as needed
       // Adjust width as needed
       width: MediaQuery.of(context).size.width,
 
       decoration: BoxDecoration(
+        color: Colors.transparent
         // color: Color(0xFFF9F2EF)
       ),
       child: RiveAnimation.asset(
@@ -153,7 +155,7 @@ class _RiveBottomnavState extends State<RiveBottomnav> {
             ? widget.artboardName
             : null, // Use specified artboard or default
         onInit: _onRiveInit, // Callback when Rive initializes
-        fit: BoxFit.fill, // Adjust fit as needed (contain, cover, etc.)
+        fit: BoxFit.fitHeight, // Adjust fit as needed (contain, cover, etc.)
       ),
     );
   }
