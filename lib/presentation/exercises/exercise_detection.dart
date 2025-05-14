@@ -7,6 +7,7 @@ import 'package:svar_new/core/utils/playAudio.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
+import 'package:svar_new/presentation/patient_report/app_theme.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
@@ -280,11 +281,12 @@ class _DetectionState extends State<ExerciseDetection> {
                     "TAP ON THE VIDEO WHICH HAS SOUND",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                    color: Colors.black87, // Adjust text color to be visible on placeholder
-                  ),
+          fontSize: 24,
+          fontFamily: "Comic Sans MS", // Child-friendly font
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+          color: Color.fromARGB(255, 132, 140, 74),
+        ),
                 ),
               ),
             ),
@@ -335,75 +337,72 @@ class _DetectionState extends State<ExerciseDetection> {
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 1,
-            offset: Offset(0, 4),
-          ),
-        ],
+      
       ),
       child: Column(
         children: [
           // Video Container
-          ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.25,
-              width: double.infinity,
-              color: Colors.black.withOpacity(0.05),
-              child: isReady
-                  ? AspectRatio(
-                      aspectRatio: videoController!.value.aspectRatio,
-                      child: Center(child: Chewie(controller: controller!)),
-                    )
-                  : Center(
-                      child: CircularProgressIndicator(
-                        color: PrimaryColors().deepOrangeA700,
-                        strokeWidth: 3,
+          Container(
+            height: MediaQuery.of(context).size.height * 0.25,
+            width: double.infinity,
+
+             padding: const EdgeInsets.all(12.0), // Paddi
+            child: Card(
+               elevation: 6.0,
+        shadowColor: Colors.blueGrey.withOpacity(0.3),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18.0),
+        ),
+        clipBehavior: Clip.antiAlias,
+              child: Container(
+                   color: Color(0xFFE3F2FD),
+                child: isReady
+                    ? AspectRatio(
+                        aspectRatio: videoController!.value.aspectRatio,
+                        child: Center(child: Chewie(controller: controller!)),
+                      )
+                    : Center(
+                        child: CircularProgressIndicator(
+                          color: PrimaryColors().deepOrangeA700,
+                          strokeWidth: 3,
+                        ),
                       ),
-                    ),
+              ),
             ),
           ),
           
           // Selection Button
-          InkWell(
-            onTap: () {
-              // Button tap logic is handled by OptionWidget
+          OptionWidget(
+          
+            triggerAnimation: (value) {
+              _triggerAnimation(value);
             },
-            child: OptionWidget(
-            
-              triggerAnimation: (value) {
-                _triggerAnimation(value);
-              },
-              child: OptionButton(
-                
-                  type:index==1? ButtonType.Video1:ButtonType.Video2,
-                  onPressed: () {
-                    // Implement your logic here
-                  },
-                ),
-              isCorrect: () {
-                var condition = (index == 1) 
-                    ? (obj[1] as dynamic).getMuted() == 1
-                    : (obj[1] as dynamic).getMuted() == 0;
-                    
-                var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-                if (condition) {
-                  data_pro.incrementLevel(startExerciseIndex);
-                  if (data["completedAt"] == null) {
-                    UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                        .updateExerciseData(
-                          euid: data["uid"],
-                          date: data["date"],
-                        )
-                        .then((value) => print("Exercise data updated"));
-                  }
+            child: OptionButton(
+              
+                type:index==1? ButtonType.Video1:ButtonType.Video2,
+                onPressed: () {
+                  // Implement your logic here
+                },
+              ),
+            isCorrect: () {
+              var condition = (index == 1) 
+                  ? (obj[1] as dynamic).getMuted() == 1
+                  : (obj[1] as dynamic).getMuted() == 0;
+                  
+              var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+              if (condition) {
+                data_pro.incrementLevel(startExerciseIndex);
+                if (data["completedAt"] == null) {
+                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                      .updateExerciseData(
+                        euid: data["uid"],
+                        date: data["date"],
+                      )
+                      .then((value) => print("Exercise data updated"));
                 }
-                return condition;
-              },
-            ),
+              }
+              return condition;
+            },
           ),
         ],
       ),
@@ -504,11 +503,12 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                 "PRESS STOP WHEN THE SOUND PLAYS",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-                color: Colors.black87, // Adjust text color to be visible on placeholder
-              ),
+          fontSize: 24,
+          fontFamily: "Comic Sans MS", // Child-friendly font
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+          color: Color.fromARGB(255, 132, 140, 74),
+        ),
             ),
           ),
                       ),

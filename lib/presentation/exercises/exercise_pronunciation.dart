@@ -237,6 +237,7 @@ Widget build(BuildContext context) {
                       style: TextStyle(
                         height: 1,
                         fontSize: isSmallScreen ? 60 : 80,
+                        fontFamily: "Comic Sans MS",
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),

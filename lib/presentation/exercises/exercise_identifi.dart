@@ -171,11 +171,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                           : "SAME OR DIFFERENT?",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                    color: Colors.black87, // Adjust text color to be visible on placeholder
-                  ),
+          fontSize: 24,
+          fontFamily: "Comic Sans MS", // Child-friendly font
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+          color: Color.fromARGB(255, 132, 140, 74),
+        ),
                 ),
               ),
             ),

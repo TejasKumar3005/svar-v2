@@ -149,12 +149,13 @@ Widget build(BuildContext context) {
                           ? "PRESS WHEN THE SOUND CHANGES"
                           : "SAME OR DIFFERENT?",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                    color: Colors.black87, // Adjust text color to be visible on placeholder
-                  ),
+                  style:  TextStyle(
+          fontSize: 24,
+          fontFamily: "Comic Sans MS", // Child-friendly font
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.5,
+          color: Color.fromARGB(255, 132, 140, 74),
+        ),
                 ),
               ),
             ),
@@ -480,88 +481,87 @@ Widget _buildSmallGenderOption(
     int startExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
-    return Column(
-      children: [
-        // Improved audio player
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.h),
-          child: Container(
-            height: 80.v,
-            margin: EdgeInsets.symmetric(vertical: 30.v),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(40),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  spreadRadius: 1,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(40),
+    return Container(
+        padding: EdgeInsets.symmetric(vertical: 35.v,horizontal: 20.h),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Column(
+            children: [
+              // Improved audio player
+              Spacer(),
+              Container(
+                width: constraints.maxWidth * 0.9,
+                height: constraints.maxHeight * 0.1,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 15,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
+                  ),
               child: AudioWidget(
                 audioLinks: [diffSounds.getVideoUrls()[1]],
               ),
+                            ),
+            Spacer(),
+            // Button row with improved styling
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Same button
+                _buildResponseButton(
+                  "SAME",
+                  Icons.repeat,
+                  () {
+                    var condition = !diffSounds.getSame();
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                          .updateExerciseData(
+                            euid: data["uid"],
+                            date: data["date"],
+                          );
+                      }
+                    }
+                    return condition;
+                  },
+                ),
+                
+                // Different button
+                _buildResponseButton(
+                  "DIFFERENT",
+                  Icons.compare_arrows,
+                  () {
+                    var condition = diffSounds.getSame();
+                    if (condition) {
+                      data_pro.incrementLevel(startExerciseIndex);
+                      if (data["completedAt"] == null) {
+                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                          .updateExerciseData(
+                            euid: data["uid"],
+                            date: data["date"],
+                          );
+                      }
+                    }
+                    return condition;
+                  },
+                ),
+              ],
             ),
-          ),
+            Spacer()
+          ],
+        );
+      },
         ),
-        
-        // Button row with improved styling
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 20.v),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // Same button
-              _buildResponseButton(
-                "SAME",
-                Icons.repeat,
-                () {
-                  var condition = !diffSounds.getSame();
-                  if (condition) {
-                    data_pro.incrementLevel(startExerciseIndex);
-                    if (data["completedAt"] == null) {
-                      UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                        .updateExerciseData(
-                          euid: data["uid"],
-                          date: data["date"],
-                        );
-                    }
-                  }
-                  return condition;
-                },
-              ),
-              
-              // Different button
-              _buildResponseButton(
-                "DIFFERENT",
-                Icons.compare_arrows,
-                () {
-                  var condition = diffSounds.getSame();
-                  if (condition) {
-                    data_pro.incrementLevel(startExerciseIndex);
-                    if (data["completedAt"] == null) {
-                      UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                        .updateExerciseData(
-                          euid: data["uid"],
-                          date: data["date"],
-                        );
-                    }
-                  }
-                  return condition;
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
     );
-  }
-  
+}
+
   Widget _buildResponseButton(
-    String label, 
+    String label,
     IconData icon,
     bool Function() isCorrectFn,
   ) {

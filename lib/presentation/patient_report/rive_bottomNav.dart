@@ -155,7 +155,7 @@ class _RiveBottomnavState extends State<RiveBottomnav> {
             ? widget.artboardName
             : null, // Use specified artboard or default
         onInit: _onRiveInit, // Callback when Rive initializes
-        fit: BoxFit.fitHeight, // Adjust fit as needed (contain, cover, etc.)
+        fit: BoxFit.fitWidth, // Adjust fit as needed (contain, cover, etc.)
       ),
     );
   }

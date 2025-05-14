@@ -50,6 +50,7 @@ class ImageConstant {
   static String imgCoin = '$imagePath/coin.png';
   static String imgNext = '$imagePath/Next_BTN.png';
   static String imgPlayBtn = '$imagePath/svg/BigPlay_BTN_IconButton.svg';
+  static String imgPauseBtn = '$imagePath/svg/BigPlay_BTN_IconButton.svg';
 
   static String imgButtonbg = '$imagePath/svg/Opt-2.svg';
 // Log IN / Sign UP Screen Potrait images

@@ -81,3 +81,7 @@ flutter:
       fonts: 
         - asset: assets/fonts/JokermanRegular.ttf
           weight: 400
+    - family: Comic Sans MS
+      fonts: 
+        - asset: assets/fonts/ComicSans.ttf
+          weight: 400
