@@ -200,4 +200,57 @@ class AppTheme {
       ),
     );
   }
-}
+
+
+    // Define report types with their colors
+  static Map<String, Color> reportTypes = {
+    'articulation': Colors.green.shade700,
+    'Articulation': Colors.green.shade700,
+    'language': Colors.purple.shade700,
+    'Language': Colors.purple.shade700,
+    'fluency': Colors.red.shade700,
+    'Fluency': Colors.red.shade700,
+    'opm': AppTheme.primaryDarkColor,
+    'OPM': AppTheme.primaryDarkColor,
+    'opm-functions': AppTheme.primaryDarkColor,
+    'prosody': Colors.orange.shade700,
+    'Prosody': Colors.orange.shade700,
+    'voice': Colors.blueGrey.shade700,
+    'Voice': Colors.blueGrey.shade700,
+    'case_history': Colors.blue.shade700,
+    'Case_history': Colors.blue.shade700,
+    'Case History': Colors.blue.shade700,
+    'capev': Colors.blueGrey.shade700,
+    'isaa': Colors.grey.shade600,
+    "adhd": Colors.blue.shade700,
+    "mchat": Colors.pinkAccent.shade700,
+    "hi":Colors.teal.shade700,
+    "cars": Colors.purple.shade700,
+    
+  };
+
+  static Map<String,Color> borderColors={
+    'articulation': Colors.green,
+    'Articulation': Colors.green,
+    'language': Colors.purple,
+    'Language': Colors.purple,
+    'fluency': Colors.red,
+    'Fluency': Colors.red,
+    'opm': AppTheme.primaryDarkColor,
+    'OPM': AppTheme.primaryDarkColor,
+    'opm-functions': AppTheme.primaryDarkColor,
+    'prosody': Colors.orange,
+    'Prosody': Colors.orange,
+    'voice': Colors.blueGrey,
+    'Voice': Colors.blueGrey,
+    'case_history': Colors.blue,
+    'Case_history': Colors.blue,
+    'Case History': Colors.blue,
+    'capev': Colors.blueGrey,
+    'isaa': Colors.grey.shade600,
+    "adhd": Colors.blue,
+    "mchat": Colors.pinkAccent,
+    "hi": Colors.teal,
+    "cars":Colors.purple,
+  };
+  }

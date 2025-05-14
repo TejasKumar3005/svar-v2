@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:svar_new/presentation/patient_report/reports/adhd_report.dart';
+import 'package:svar_new/presentation/patient_report/reports/capev_report.dart';
+import 'package:svar_new/presentation/patient_report/reports/cars_report.dart';
+import 'package:svar_new/presentation/patient_report/reports/hi_report.dart';
+import 'package:svar_new/presentation/patient_report/reports/isaa_report.dart';
+import 'package:svar_new/presentation/patient_report/reports/mchat_report.dart';
+import 'package:svar_new/presentation/patient_report/reports/voiceAi_report.dart';
 import 'app_theme.dart';
 import 'reports/articulation_report.dart';
 import 'reports/case_history_report.dart';
@@ -36,26 +43,7 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
   int _currentIndex = 2;
 
   // Define report types with their colors
-  final Map<String, Color> reportTypes = {
-    'articulation': Colors.green.shade700,
-    'Articulation': Colors.green.shade700,
-    'language': Colors.purple.shade700,
-    'Language': Colors.purple.shade700,
-    'fluency': Colors.red.shade700,
-    'Fluency': Colors.red.shade700,
-    'opm': AppTheme.primaryDarkColor,
-    'OPM': AppTheme.primaryDarkColor,
-    'opm-functions': AppTheme.primaryDarkColor,
-    'prosody': Colors.orange.shade700,
-    'Prosody': Colors.orange.shade700,
-    'voice': Colors.blueGrey.shade700,
-    'Voice': Colors.blueGrey.shade700,
-    'case_history': Colors.blue.shade700,
-    'Case_history': Colors.blue.shade700,
-    'Case History': Colors.blue.shade700,
-    'capev': Colors.blueGrey.shade700,
-    'isaa': Colors.grey.shade600,
-  };
+  final Map<String, Color> reportTypes = AppTheme.reportTypes;
 
   @override
   void initState() {
@@ -375,6 +363,8 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
                           borderColor = Colors.grey;
                         }
 
+                        borderColor = AppTheme.borderColors[type] ?? Colors.grey;
+
                         return Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 8),
@@ -473,6 +463,22 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
           if (content.containsKey('voice') || content.containsKey('Voice'))
             _buildVoiceReport(content),
 
+          if (content.containsKey("isaa"))
+            _buildIsaaReport(content),
+
+          if (content.containsKey("mchat"))
+            _buildMchatReport(content), 
+          if (content.containsKey("cars"))
+            _buildCarsReport(content),  
+
+          if (content.containsKey("hi"))  
+            _buildHiReport(content),
+          if (content.containsKey("adhd"))
+            _buildAdhdReport(content),
+          if (content.containsKey("capev"))
+            _buildCapevReport(content),
+          if (content.containsKey("voice_analysis"))
+            _buildVoiceAiReport(content),
           // Show Language report if available
           if (content.containsKey('language') ||
               content.containsKey('Language'))
@@ -497,6 +503,46 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
         ),
         const SizedBox(height: 16),
         ArticulationReport(data: data),
+        const SizedBox(height: 16),
+        const Divider(),
+      ],
+    );
+  } 
+   Widget _buildVoiceAiReport(Map<String, dynamic> content) {
+    final data = content['voice_analysis'] ?? content['Voice_analysis'];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Voice Analysis',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 16),
+        VoiceAnalysisReport(reportData: data),
+        const SizedBox(height: 16),
+        const Divider(),
+      ],
+    );
+  }
+  Widget _buildCapevReport(Map<String, dynamic> content) {
+    final data = content['capev'] ?? content['capev'];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'CAPE-V Evaluation',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 16),
+        CapeVReport(data: data),
         const SizedBox(height: 16),
         const Divider(),
       ],
@@ -542,6 +588,121 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
         ),
         const SizedBox(height: 16),
         FluencyReport(data: data is List ? data[0] : {}),
+        const SizedBox(height: 16),
+        const Divider(),
+      ],
+    );
+  }
+  Widget _buildIsaaReport(Map<String, dynamic> content) {
+    final data = content['isaa'] ?? content['Isaa'];
+    if (data == null || (data is List && data.isEmpty))
+      return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Isaa Assessment',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 16),
+        IsaaReport(data: data is List ? data[0] : {}),
+        const SizedBox(height: 16),
+        const Divider(),
+      ],
+    );
+  }  Widget _buildMchatReport(Map<String, dynamic> content) {
+    final data = content['mchat'] ?? content['Mchat'];
+    if (data == null || (data is List && data.isEmpty))
+      return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'M-CHAT Assessment',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 16),
+        MchatReport(data: data is List ? data[0] : {}),
+        const SizedBox(height: 16),
+        const Divider(),
+      ],
+    );
+  } 
+  
+   Widget _buildCarsReport(Map<String, dynamic> content) {
+    final data = content['cars'] ?? content['Cars'];
+    if (data == null || (data is List && data.isEmpty))
+      return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'CARS Assessment',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 16),
+        CarsReport(data: data is List ? data[0] : {}),
+        const SizedBox(height: 16),
+        const Divider(),
+      ],
+    );
+  }
+  Widget _buildHiReport(Map<String, dynamic> content) {
+    final data = content['hi'] ?? content['hi'];
+    if (data == null || (data is List && data.isEmpty))
+      return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Hi Assessment',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 16),
+        HiReport(data: data is List ? data[0] : {}),
+        const SizedBox(height: 16),
+        const Divider(),
+      ],
+    );
+  } 
+   Widget _buildAdhdReport(Map<String, dynamic> content) {
+    final data = content['hi'] ?? content['hi'];
+    if (data == null || (data is List && data.isEmpty))
+      return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Adhd Assessment',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 16),
+        AdhdReport(data: data is List ? data[0] : {}),
         const SizedBox(height: 16),
         const Divider(),
       ],

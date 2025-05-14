@@ -24,7 +24,7 @@ class RiveBottomnav extends StatefulWidget {
 }
 
 class _RiveBottomnavState extends State<RiveBottomnav> {
-  // --- Rive Controller and Inputs ---
+
   StateMachineController? _controller;
   Artboard? _riveArtboard;
   SMITrigger? _smiToday;

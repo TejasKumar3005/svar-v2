@@ -2,10 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/patient_report/rive_bottomNav.dart';
-import 'package:svar_new/presentation/user_profile_screen/user_profile_screen.dart'; // Import your ProfilePage
-import 'package:svar_new/presentation/home/home.dart';
-import 'package:svar_new/presentation/patient_report/patient_assessment_page.dart'; // Import your HomePage
-import 'package:svar_new/widgets/fees_page.dart';
+
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onIndexChanged;
