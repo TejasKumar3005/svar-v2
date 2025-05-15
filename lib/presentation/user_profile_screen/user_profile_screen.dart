@@ -471,8 +471,8 @@ class _ProfilePageState extends State<ProfilePage>
                       borderRadius: BorderRadius.circular(8),
                     ),
                     tabs: const [
-                      Tab(text: 'Personal Details'),
-                      Tab (text: 'Child Details') 
+                      Tab(text: 'Personal Details', icon: Icon(Icons.person)),
+                      Tab(text: 'Child Details', icon: Icon(Icons.child_care)),
                     ],
                   ),
                 ),

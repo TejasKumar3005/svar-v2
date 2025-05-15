@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/audioToImage.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +68,32 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     // Initialize userData with uid and context
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     userData = UserData(uid: uid, buildContext: context);
+
+  
+  }
+
+  @override
+  void didChangeDependencies() async{
+    super.didChangeDependencies();
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+
+    String type = obj[0] as String;
+    print("Type: $type");
+    String text = type == "ImageToAudio"
+        ? "IDENTIFY  SOUND OF THE IMAGE"
+        : type == "MaleFemale"
+            ? "IDENTIFY THE GENDER"
+            : type == "DiffHalf"
+                ? "PRESS WHEN THE SOUND CHANGES"
+                : type=="AudioToImage"?"IDENTIFY THE IMAGE OF THE AUDIO" :"SAME OR DIFFERENT?";
+        FlutterTts flutterTts = FlutterTts();
+      
+    flutterTts.setLanguage("en-IN");
+    flutterTts.setPitch(1.0);
+    flutterTts.setSpeechRate(0.7);
+    flutterTts.setVolume(1.0);
+      await Future.delayed(const Duration(seconds: 2));
+    flutterTts.speak(text);       
   }
 
   int sel = 0;
@@ -132,19 +159,18 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                     children: [
                       Positioned.fill(
                         child: Container(
-                            width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      // Replace gradient with background image
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/quiz_bg.jpeg'), // Update with your actual image path
-          fit: BoxFit.fill,
-        ),
-                        
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                          // Replace gradient with background image
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(
+                                  'assets/images/quiz_bg.jpeg'), // Update with your actual image path
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
                       ),
-                      ),
-                      ),
-                      
                       Container(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height,
@@ -154,33 +180,37 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                         ),
                         child: Column(
                           children: [
-                            DisciAppBar(context), // No need for any callbacks now,
+                            DisciAppBar(
+                                context), // No need for any callbacks now,
                             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 5.v),
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 15.v, horizontal: 20.h),
-                // Remove decoration to make it transparent over the placeholder
-                child: Text(
-                  type == "ImageToAudio"
-                      ? "IDENTIFY  SOUND OF THE IMAGE"
-                      : type == "MaleFemale" 
-                        ? "IDENTIFY THE GENDER"
-                        : type == "DiffHalf"
-                          ? "PRESS WHEN THE SOUND CHANGES"
-                          : "SAME OR DIFFERENT?",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-          fontSize: 24,
-          fontFamily: "Comic Sans MS", // Child-friendly font
-          fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
-          color: Color.fromARGB(255, 132, 140, 74),
-        ),
-                ),
-              ),
-            ),
-            
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 15.h, vertical: 5.v),
+                              child: Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 15.v, horizontal: 20.h),
+                                // Remove decoration to make it transparent over the placeholder
+                                child: Text(
+                                  type == "ImageToAudio"
+                                      ? "IDENTIFY  SOUND OF THE IMAGE"
+                                      : type == "MaleFemale"
+                                          ? "IDENTIFY THE GENDER"
+                                          : type == "DiffHalf"
+                                              ? "PRESS WHEN THE SOUND CHANGES"
+                                              : "SAME OR DIFFERENT?",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontFamily:
+                                        "Comic Sans MS", // Child-friendly font
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                    color: Color.fromARGB(255, 132, 140, 74),
+                                  ),
+                                ),
+                              ),
+                            ),
+
                             Expanded(
                               child: Stack(
                                 children: [
@@ -199,8 +229,13 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                         left: 0,
                                         child: IgnorePointer(
                                           child: SizedBox(
-                                              height: MediaQuery.of(context).size.height * 0.4,
-                        width: MediaQuery.of(context).size.width,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.4,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
                                             child: RiveAnimation.asset(
                                               'assets/rive/Celebration_animation.riv',
                                               onInit: _onRiveInit,
@@ -260,9 +295,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                 height: MediaQuery.of(context).size.height * 0.3,
                 padding: EdgeInsets.all(1.h),
                 child: Stack(
-                  
                   children: [
-                
                     if (type == "WordToFig")
                       Center(
                         child: Text(
@@ -278,9 +311,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                   ],
                 ),
               ),
-            
               Container(
-                height: MediaQuery.of(context).size.height * 0.4, // Adjusted height for portrait
+                height: MediaQuery.of(context).size.height *
+                    0.4, // Adjusted height for portrait
                 child: buildDynamicOptions(type, provider, dtcontainer, params),
               ),
             ],
@@ -317,7 +350,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                               (index) {
                             return Container(
                               height: MediaQuery.of(context).size.height * 0.08,
-                            margin: EdgeInsets.only(bottom: 4.v),
+                              margin: EdgeInsets.only(bottom: 4.v),
                               child: OptionWidget(
                                 triggerAnimation: (value) {
                                   _triggerAnimation(value);
@@ -328,28 +361,27 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                   ],
                                 ),
                                 isCorrect: () {
-                                  bool isCorrect = dtcontainer
-                                          .getCorrectOutput() ==
-                                      dtcontainer.getAudioList()[index];
+                                  bool isCorrect =
+                                      dtcontainer.getCorrectOutput() ==
+                                          dtcontainer.getAudioList()[index];
 
-                                  var data_pro =
-                                      Provider.of<ExerciseProvider>(
-                                          context,
-                                          listen: false);
+                                  var data_pro = Provider.of<ExerciseProvider>(
+                                      context,
+                                      listen: false);
                                   if (isCorrect) {
-                                    data_pro.incrementLevel(
-                                        currentExerciseIndex);
+                                    data_pro
+                                        .incrementLevel(currentExerciseIndex);
 
                                     if (data["completedAt"] == null) {
                                       UserData(
-                                              uid: FirebaseAuth.instance
-                                                  .currentUser!.uid)
+                                              uid: FirebaseAuth
+                                                  .instance.currentUser!.uid)
                                           .updateExerciseData(
                                             euid: data["uid"],
                                             date: data["date"],
                                           )
-                                          .then((value) => print(
-                                              "Exercise data updated"));
+                                          .then((value) =>
+                                              print("Exercise data updated"));
                                     }
                                   }
 
@@ -377,8 +409,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                       children: [
                         if (dtcontainer.getTextList().length <= 4)
                           ...List.generate(
-                            dtcontainer.getTextList().length ~/ 2 + 
-                            dtcontainer.getTextList().length % 2, // Calculate rows needed
+                            dtcontainer.getTextList().length ~/ 2 +
+                                dtcontainer.getTextList().length %
+                                    2, // Calculate rows needed
                             (rowIndex) {
                               return Padding(
                                 padding: EdgeInsets.only(bottom: 2.v),
@@ -390,33 +423,40 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                       2,
                                       (colIndex) {
                                         final index = rowIndex * 2 + colIndex;
-                                        if (index < dtcontainer.getTextList().length) {
+                                        if (index <
+                                            dtcontainer.getTextList().length) {
                                           return Expanded(
                                             child: Padding(
-                                              padding: EdgeInsets.symmetric(horizontal: 5.h),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 5.h),
                                               child: OptionWidget(
                                                 triggerAnimation: (value) {
                                                   _triggerAnimation(value);
                                                 },
                                                 child: TextContainer(
-                                                  text: dtcontainer.getTextList()[index],
+                                                  text: dtcontainer
+                                                      .getTextList()[index],
                                                 ),
                                                 isCorrect: () {
                                                   bool isCorrect = dtcontainer
                                                           .getCorrectOutput() ==
-                                                      dtcontainer.getTextList()[index];
+                                                      dtcontainer
+                                                          .getTextList()[index];
 
-                                                  var data_pro =
-                                                      Provider.of<ExerciseProvider>(
-                                                          context,
-                                                          listen: false);
+                                                  var data_pro = Provider.of<
+                                                          ExerciseProvider>(
+                                                      context,
+                                                      listen: false);
                                                   if (isCorrect) {
                                                     data_pro.incrementLevel(
                                                         currentExerciseIndex);
-                                                    if (data["completedAt"] == null) {
+                                                    if (data["completedAt"] ==
+                                                        null) {
                                                       UserData(
-                                                              uid: FirebaseAuth.instance
-                                                                  .currentUser!.uid)
+                                                              uid: FirebaseAuth
+                                                                  .instance
+                                                                  .currentUser!
+                                                                  .uid)
                                                           .updateExerciseData(
                                                             euid: data["uid"],
                                                             date: data["date"],
@@ -460,8 +500,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
               children: [
                 if (dtcontainer.getImageUrlList().length <= 4)
                   ...List.generate(
-                    dtcontainer.getImageUrlList().length ~/ 2 + 
-                    dtcontainer.getImageUrlList().length % 2, // Calculate rows needed
+                    dtcontainer.getImageUrlList().length ~/ 2 +
+                        dtcontainer.getImageUrlList().length %
+                            2, // Calculate rows needed
                     (rowIndex) {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -471,7 +512,8 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                             2,
                             (colIndex) {
                               final index = rowIndex * 2 + colIndex;
-                              if (index < dtcontainer.getImageUrlList().length) {
+                              if (index <
+                                  dtcontainer.getImageUrlList().length) {
                                 return Expanded(
                                   child: Padding(
                                     padding: EdgeInsets.all(5.h),
@@ -480,28 +522,32 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                         _triggerAnimation(value);
                                       },
                                       child: ImageWidget(
-                                        imagePath: dtcontainer.getImageUrlList()[index],
+                                        imagePath: dtcontainer
+                                            .getImageUrlList()[index],
                                       ),
                                       isCorrect: () {
                                         bool isCorrect =
                                             dtcontainer.getCorrectOutput() ==
-                                                dtcontainer.getImageUrlList()[index];
+                                                dtcontainer
+                                                    .getImageUrlList()[index];
 
-                                        var data_pro = Provider.of<ExerciseProvider>(
-                                            context,
-                                            listen: false);
+                                        var data_pro =
+                                            Provider.of<ExerciseProvider>(
+                                                context,
+                                                listen: false);
                                         if (isCorrect) {
-                                          data_pro.incrementLevel(currentExerciseIndex);
+                                          data_pro.incrementLevel(
+                                              currentExerciseIndex);
                                           if (data["completedAt"] == null) {
                                             UserData(
-                                                    uid: FirebaseAuth
-                                                        .instance.currentUser!.uid)
+                                                    uid: FirebaseAuth.instance
+                                                        .currentUser!.uid)
                                                 .updateExerciseData(
                                                   euid: data["uid"],
                                                   date: data["date"],
                                                 )
-                                                .then((value) =>
-                                                    print("Exercise data updated"));
+                                                .then((value) => print(
+                                                    "Exercise data updated"));
                                           }
                                         }
 

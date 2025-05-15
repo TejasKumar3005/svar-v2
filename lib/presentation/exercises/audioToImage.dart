@@ -184,17 +184,8 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
                             ),
-                            child: OptionWidget(
-                              triggerAnimation: (value) {
-                                _triggerAnimation(value);
-                              },
-                              child: AudioWidget(
-                                audioLinks: widget.dtcontainer.getAudioUrl(),
-                              ),
-                              isCorrect: () {
-                                return widget.dtcontainer.getCorrectOutput() ==
-                                    widget.dtcontainer.getAudioUrl();
-                              },
+                            child: AudioWidget(
+                              audioLinks: widget.dtcontainer.getAudioUrl(),
                             ),
                           ),
                           

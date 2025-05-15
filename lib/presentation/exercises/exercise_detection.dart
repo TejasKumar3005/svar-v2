@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:rive/rive.dart' hide LinearGradient,Image;
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
@@ -99,6 +100,24 @@ class _DetectionState extends State<ExerciseDetection> {
   Future<void> _initializeVideoFlow(List<String> videoUrls, int mutedVideoIndex) async {
     await initiliaseVideo(videoUrls[0], 1, mutedVideoIndex);
     await initiliaseVideo(videoUrls[1], 2, mutedVideoIndex);
+  }
+    @override
+  void didChangeDependencies()async {
+    super.didChangeDependencies();
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+
+    String type = obj[0] as String;
+    print("Type: $type");
+    String text = type == "HalfMuted"
+        ? "PRESS STOP WHEN THE SOUND PLAYS"
+        : "TAP ON THE VIDEO WHICH HAS SOUND";
+    FlutterTts flutterTts = FlutterTts();
+    flutterTts.setLanguage("en-IN");
+    flutterTts.setPitch(1.0);
+    flutterTts.setSpeechRate(0.7);
+    flutterTts.setVolume(1.0);
+    await Future.delayed(const Duration(seconds: 2));
+    flutterTts.speak(text);
   }
 
   @override

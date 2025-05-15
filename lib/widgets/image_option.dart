@@ -1,3 +1,4 @@
+import 'package:chiclet/chiclet.dart';
 import 'package:flutter/material.dart'; // For SVG support
 import 'package:svar_new/widgets/Options.dart';
 import 'dart:io'; // For File
@@ -43,33 +44,25 @@ class _ImageWidgetState extends State<ImageWidget> {
   Widget build(BuildContext context) {
     final click = ClickProvider.of(context)?.click;
 
-    return Center(
-      child: AnimatedContainer(
-        duration: Duration(seconds: 1),
-        width: MediaQuery.of(context).size.width * 0.75,
+    return ChicletOutlinedAnimatedButton(
+       width: MediaQuery.of(context).size.width * 0.75,
         height: MediaQuery.of(context).size.height * 0.45,
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.black, // Border color (can use theme)
-            width: 2, // Adjusted size, no adaptSize required
-          ),
-          borderRadius: BorderRadius.circular(10), // Rounded border
-          color: Colors.cyan, // Background color
-        ),
-        child: GestureDetector(
-          onTap: () {
-            if (click != null) {
-              click();
-            }
-          },
+      buttonType: ChicletButtonTypes.roundedRectangle,
+      borderColor: Color.fromARGB(255, 132, 140, 74),
+      child: GestureDetector(
+        onTap: () {
+          if (click != null) {
+            click();
+          }
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
           child: FittedBox(
-              fit: BoxFit.fill,
-              child: CustomImageView(
+            fit: BoxFit.fill,
+            child: CustomImageView(
                 imagePath: widget.imagePath,
-              )
-              // _buildImageWidget(
-              //     widget.imagePath), // Helper function to select image type
               ),
+          ),
         ),
       ),
     );
