@@ -433,6 +433,7 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
 
   Widget _buildExpandedContent(String date, Map<String, dynamic> content) {
 
+print(content);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
@@ -522,7 +523,7 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
           ),
         ),
         const SizedBox(height: 16),
-        VoiceAnalysisReport(reportData: data),
+        VoiceAnalysisReport(reportData: data is List ? data[0] : {}),
         const SizedBox(height: 16),
         const Divider(),
       ],
@@ -542,7 +543,7 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
           ),
         ),
         const SizedBox(height: 16),
-        CapeVReport(data: data),
+        CapeVReport(data: data is List ? data[0] : {}),
         const SizedBox(height: 16),
         const Divider(),
       ],

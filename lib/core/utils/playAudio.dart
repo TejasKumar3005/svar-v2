@@ -36,7 +36,9 @@ class PlayAudio {
   Future<void> playMusicFromFile(File file, String mime, bool repeat) async {
     // Stop any currently playing audio before playing a new one
     await stopMusic();
-
+ 
+    // Check if the file exists
+    
     // Set release mode to loop if needed
     if (repeat) {
       audioPlayer.setReleaseMode(ReleaseMode.loop);
