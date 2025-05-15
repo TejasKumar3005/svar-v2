@@ -433,7 +433,7 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
 
   Widget _buildExpandedContent(String date, Map<String, dynamic> content) {
 
-print(content);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
@@ -616,7 +616,9 @@ print(content);
         const Divider(),
       ],
     );
-  }  Widget _buildMchatReport(Map<String, dynamic> content) {
+  } 
+  
+   Widget _buildMchatReport(Map<String, dynamic> content) {
     final data = content['mchat'] ?? content['Mchat'];
     if (data == null || (data is List && data.isEmpty))
       return const SizedBox.shrink();
