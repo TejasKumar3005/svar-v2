@@ -653,9 +653,16 @@ Widget build(BuildContext context) {
       // Extract just the first Hindi word if there are multiple parts
       String targetWord = correctPhoneme.split(" ")[0];
 
-      dynamic apiResult = await sendWavFile(tempPath, targetWord);
+      dynamic apiResult = await sendWavFile(tempPath, widget.character);
       print("API Response: $apiResult");
+      // find target word in apiResult
+      apiResult = apiResult is List
+          ? apiResult.firstWhere(
+              (item) => item is Map && item.containsKey(targetWord),
+              orElse: () => null)
+          : null;
 
+      print("Filtered API Response: $apiResult");
       if (apiResult != null) {
         intermediateResults.add(apiResult is List ? apiResult : [apiResult]);
 

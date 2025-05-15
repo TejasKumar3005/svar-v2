@@ -125,7 +125,9 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     // Only request focus if the widget is mounted and the focus node is not disposed
-
+ SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));
     return Scaffold(
       backgroundColor: const Color(0xFFF9F2EF),
       body: Stack(

@@ -48,12 +48,7 @@ class _OptionWidgetState extends State<OptionWidget> {
     // Play the appropriate audio
     await _playAudio(isCorrectResult);
 
-    if (isCorrectResult) {
-      // _overlayEntry = celebrationOverlay(context, () {
-      //   _overlayEntry?.remove();
-      // });
-      // Overlay.of(context).insert(_overlayEntry!);
-    } else {
+  
       setState(() {
         _isGlowing = true;
       });
@@ -64,24 +59,32 @@ class _OptionWidgetState extends State<OptionWidget> {
           });
         }
       });
-    }
+    
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isCorrectResult = widget.isCorrect();
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         boxShadow: _isGlowing
-            ? [
-                BoxShadow(
-                  color: const Color.fromARGB(255, 255, 0, 0).withOpacity(0.6),
-                  spreadRadius: 8,
-                  blurRadius: 5,
-                ),
-              ]
-            : [],
+            ? !isCorrectResult
+                ? [
+                    BoxShadow(
+                      color: const Color.fromARGB(255, 255, 0, 0).withOpacity(0.6),
+                      spreadRadius: 8,
+                      blurRadius: 5,
+                    ),
+                  ]:[
+                    BoxShadow(
+                      color: const Color.fromARGB(255, 6, 220, 27).withOpacity(0.6),
+                      spreadRadius: 8,
+                      blurRadius: 5,
+                    ),
+                  ]
+                : [],
       ),
       child: ClickProvider(child: widget.child, click: click),
     );

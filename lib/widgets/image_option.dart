@@ -44,26 +44,25 @@ class _ImageWidgetState extends State<ImageWidget> {
   Widget build(BuildContext context) {
     final click = ClickProvider.of(context)?.click;
 
-    return ChicletOutlinedAnimatedButton(
+    return ChicletAnimatedButton(
        width: MediaQuery.of(context).size.width * 0.75,
         height: MediaQuery.of(context).size.height * 0.45,
       buttonType: ChicletButtonTypes.roundedRectangle,
-      borderColor: Color.fromARGB(255, 132, 140, 74),
-      child: GestureDetector(
-        onTap: () {
+      borderRadius: 20,
+      backgroundColor: Color.fromARGB(255, 234, 243, 173),
+      onPressed: () {
           if (click != null) {
             click();
           }
-        },
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: FittedBox(
-            fit: BoxFit.fill,
-            child: CustomImageView(
-                imagePath: widget.imagePath,
-              ),
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: CustomImageView(
+           width: MediaQuery.of(context).size.width * 0.75,
+          height: MediaQuery.of(context).size.height * 0.45,
+          fit: BoxFit.cover,
+            imagePath: widget.imagePath,
           ),
-        ),
       ),
     );
   }

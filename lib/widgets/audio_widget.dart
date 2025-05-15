@@ -127,6 +127,7 @@ class AudioWidgetState extends State<AudioWidget> {
       backgroundColor: const Color(0xFFF47C37),
       height: 50,
       width: containerWidth,
+      padding: const EdgeInsets.all(3),
       child: widget.isGrid
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -162,19 +163,16 @@ class AudioWidgetState extends State<AudioWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                const SizedBox(width: 10.0),
                 CustomButton(
                     type:_audioPlayer.playing?ButtonType.ImagePause: ButtonType.ImagePlay,
                   onPressed: () {
                     _audioPlayer.playing ? _audioPlayer.pause() : playNext();
                   },
                 ),
-                const SizedBox(width: 5.0),
-                Container(
-                  height: 50,
-                  width: 5,
-                  decoration: const BoxDecoration(color: Colors.white),
-                ),
+              
                 const SizedBox(width: 16.0),
+                
                 Expanded(
                   child: GestureDetector(
                     onTap: click,

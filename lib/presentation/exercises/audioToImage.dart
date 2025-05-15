@@ -119,107 +119,105 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     
     return SafeArea(
       child: Scaffold(
-        extendBody: true,
-        extendBodyBehindAppBar: true,
-        backgroundColor: appTheme.gray300,
-        body: Container(
-          width: screenWidth,
-          height: screenHeight,
-          child: Stack(
-            children: [
-              // Background image
-              Positioned.fill(
-                child: Container(
-                  width: screenWidth,
-                  height: screenHeight,
-                  // Replace gradient with background image
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/quiz_bg.jpeg'),
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      backgroundColor: appTheme.gray300,
+      body: Container(
+        width: screenWidth,
+        height: screenHeight,
+        child: Stack(
+        children: [
+          // Background image
+          Positioned.fill(
+          child: Container(
+            width: screenWidth,
+            height: screenHeight,
+            decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/quiz_bg.jpeg'),
+              fit: BoxFit.fill,
+            ),
+            ),
+          ),
+          ),
+          Column(
+          children: [
+            // App bar
+            Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
+            child: DisciAppBar(context),
+            ),
+            Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 5.v),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: 15.v, horizontal: 20.h),
+              child: Text(
+              "IDENTIFY THE IMAGE OF THE AUDIO",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 24,
+                fontFamily: "Comic Sans MS",
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+                color: Color.fromARGB(255, 132, 140, 74),
               ),
-              Column(
-                children: [
-                  // App bar
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
-                    child: DisciAppBar(context),
-                  ),
-                    Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 5.v),
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 15.v, horizontal: 20.h),
-                // Remove decoration to make it transparent over the placeholder
-                child: Text(
-                  "IDENTIFY THE IMAGE OF THE AUDIO",
-                  textAlign: TextAlign.center,
-                  style:  TextStyle(
-          fontSize: 24,
-          fontFamily: "Comic Sans MS", // Child-friendly font
-          fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
-          color: Color.fromARGB(255, 132, 140, 74),
-        ),
-                ),
               ),
             ),
-                  // Main content
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.h),
-                      child: Column(
-                        children: [
-                          // Top spacing
-                          SizedBox(height: screenHeight * 0.15),
-                          
-                          // Audio player section - with fixed height to match design
-                          Container(
-                            width: screenWidth * 0.85,
-                            height: 70, // Fixed height for audio widget
-                            margin: EdgeInsets.only(bottom: screenHeight * 0.08),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: AudioWidget(
-                              audioLinks: widget.dtcontainer.getAudioUrl(),
-                            ),
-                          ),
-                          
-                          // Image options section - with appropriate height allocation
-                          Container(
-                            height: screenHeight * 0.5, // Allocate 50% of screen height for images
-                            child: _buildImageOptions(data_pro, currentExerciseIndex, data),
-                          ),
-                        ],
-                      ),
-                    ),
+            ),
+            // Center the main content
+            Expanded(
+            child: Center(
+              child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.h),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                // Audio player
+                Container(
+                  width: screenWidth * 0.85,
+                  height: 70,
+                  decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
                   ),
-                ],
-              ),
-              // Animation positioned at bottom
-              Positioned(
-                bottom: 0,
-                left: 0,
-                child: IgnorePointer(
-                  child: SizedBox(
-                    height: screenHeight * 0.4, // Adjust animation height
-                    width: screenWidth,
-                    child: RiveAnimation.asset(
-                      'assets/rive/Celebration_animation.riv',
-                      onInit: _onRiveInit,
-                      fit: BoxFit.fitHeight,
-                      alignment: Alignment.centerLeft,
-                    ),
+                  child: AudioWidget(
+                  audioLinks: widget.dtcontainer.getAudioUrl(),
                   ),
                 ),
+                // Small gap between audio and images
+                SizedBox(height: 20),
+                // Image options
+                Container(
+                  height: screenHeight * 0.3,
+                  child: _buildImageOptions(data_pro, currentExerciseIndex, data),
+                ),
+                ],
               ),
-            ],
+              ),
+            ),
+            ),
+          ],
           ),
+          // Animation
+          Positioned(
+          bottom: 0,
+          left: 0,
+          child: IgnorePointer(
+            child: SizedBox(
+            height: screenHeight * 0.4,
+            width: screenWidth,
+            child: RiveAnimation.asset(
+              'assets/rive/Celebration_animation.riv',
+              onInit: _onRiveInit,
+              fit: BoxFit.fitHeight,
+              alignment: Alignment.centerLeft,
+            ),
+            ),
+          ),
+          ),
+        ],
         ),
+      ),
       ),
     );
   }

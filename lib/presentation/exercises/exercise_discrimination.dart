@@ -539,12 +539,15 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Same button
-                  _buildResponseButton(
-                    "SAME",
-                    Icons.repeat,
-                    () {
-                      var condition = !diffSounds.getSame();
+                  
+                    ScaleTransition(
+                scale: _scaleAnimation,
+                child: OptionWidget(
+                  triggerAnimation: _triggerAnimation,
+                  child:
+                      OptionButton(type: ButtonType.Same, onPressed: () {}),
+                  isCorrect: () {
+                    var condition = !diffSounds.getSame();
                       if (condition) {
                         data_pro.incrementLevel(startExerciseIndex);
                         if (data["completedAt"] == null) {
@@ -556,14 +559,15 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                         }
                       }
                       return condition;
-                    },
-                  ),
-
-                  // Different button
-                  _buildResponseButton(
-                    "DIFFERENT",
-                    Icons.compare_arrows,
-                    () {
+                  },
+                ),
+              ),  ScaleTransition(
+                scale: _scaleAnimation,
+                child: OptionWidget(
+                  triggerAnimation: _triggerAnimation,
+                  child:
+                      OptionButton(type: ButtonType.Diff, onPressed: () {}),
+                  isCorrect: () {
                       var condition = diffSounds.getSame();
                       if (condition) {
                         data_pro.incrementLevel(startExerciseIndex);
@@ -576,8 +580,11 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                         }
                       }
                       return condition;
-                    },
-                  ),
+                  },
+                ),
+              ),
+
+                
                 ],
               ),
               Spacer()

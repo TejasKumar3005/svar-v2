@@ -77,7 +77,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
 Widget build(BuildContext context) {
   return Scaffold(
     extendBody: true,
-    extendBodyBehindAppBar: true,
+  
     body: Stack(
       children: [
         // Rive animation content (first/bottom layer)
@@ -95,7 +95,7 @@ Widget build(BuildContext context) {
                 return const Center(child: Text('Error loading Rive file'));
               } else {
                 final riveFile = snapshot.data!;
-
+    
                 // Change the approach to display the train animation
                 return SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -126,7 +126,7 @@ Widget build(BuildContext context) {
         ),
         // DisciAppBar (last/top layer)
         Positioned(
-          top: 0,
+          top: 20,
           left: 0,
           right: 0,
           child: DisciAppBar(context),
