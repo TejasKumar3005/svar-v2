@@ -194,8 +194,12 @@ Widget build(BuildContext context) {
       ),
       child: Stack(
         children: [
+
           // Background elements
-          DisciAppBar(context), // App bar stays at the top
+          Padding(
+            padding: const EdgeInsets.only( top: 20.0),
+            child: DisciAppBar(context),
+          ), // App bar stays at the top
           
           // Rive animation container
           Positioned(
@@ -473,6 +477,8 @@ Widget build(BuildContext context) {
     ),
   );
 }
+
+
   void showErrorSnackBar(String message) {
     final snackBar = SnackBar(
       elevation: 0,
@@ -705,7 +711,7 @@ Widget build(BuildContext context) {
     }
   }
 
-  void processResults(List<dynamic> allResults) {
+ void processResults(List<dynamic> allResults) {
     Map<String, List<String>> combinedResults = {};
 
     for (var apiResult in allResults) {
@@ -856,7 +862,7 @@ Widget build(BuildContext context) {
                   bool isCorrect = false;
                   String feedback = "";
 
-                  if (attemptResult is List && attemptResult.isNotEmpty) {
+                 if (attemptResult is List && attemptResult.isNotEmpty) {
                     var firstResult = attemptResult[0];
                     if (firstResult is Map) {
                       feedback = firstResult.values.first.toString();
@@ -946,6 +952,18 @@ Widget build(BuildContext context) {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton.icon(
                 onPressed: () {
+                    UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                            .updateExerciseData(
+                          euid: data_pro.todaysExercises[startExerciseIndex]["uid"],
+                          date: data_pro.todaysExercises[startExerciseIndex]["date"],
+                          performance:{
+                            "result":result,
+                            "time":DateTime.now().toIso8601String(),
+                            "correctAttempts":correctAttempts,
+                            "totalAttempts":totalAttempts,
+                          
+                          }
+                        );
                   if (correctAttempts >= REQUIRED_CORRECT_ATTEMPTS) {
                     data_pro.incrementLevel(startExerciseIndex);
                   }

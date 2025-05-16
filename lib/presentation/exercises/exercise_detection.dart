@@ -416,6 +416,10 @@ class _DetectionState extends State<ExerciseDetection> {
                       .updateExerciseData(
                         euid: data["uid"],
                         date: data["date"],
+                        performance: {
+                          "correct_attempt": condition,
+                          "time": DateTime.now().toString(),
+                        }
                       )
                       .then((value) => print("Exercise data updated"));
                 }
@@ -607,6 +611,10 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                             .updateExerciseData(
                               euid: data["uid"],
                               date: data["date"],
+                              performance: {
+                                "correct_attempt": condition,
+                                "time": DateTime.now().toString(),
+                              }
                             );
                       }
                     }

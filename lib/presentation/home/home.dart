@@ -4,6 +4,7 @@ import 'package:svar_new/core/app_export.dart';
 import 'package:rive/rive.dart' as rive;
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/patient_report/patient_assessment_page.dart';
+import 'package:svar_new/presentation/patient_report/patient_exercises_page.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
 import 'package:svar_new/widgets/fees_page.dart';
 import 'package:svar_new/widgets/game_stats_header.dart';
@@ -125,7 +126,7 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     // Only request focus if the widget is mounted and the focus node is not disposed
- SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ));
     return Scaffold(
@@ -177,7 +178,7 @@ class _HomePageState extends State<HomePage>
                                   print("hello");
                                   await NavigatorService.pushNamed(
                                       AppRoutes.exercisesScreen);
-                                  print("/////////////////////////////n");
+
                                   // Don't call initState() directly
                                   // Instead, refresh data if the widget is still mounted
                                 },
@@ -239,9 +240,7 @@ class _HomePageState extends State<HomePage>
                 ][_currentIndex],
               )),
           Positioned(
-          
             bottom: 0,
-        
             child: CustomBottomNavigationBar(
               currentIndex: _currentIndex,
               onIndexChanged: _onIndexChanged,
@@ -256,13 +255,8 @@ class _HomePageState extends State<HomePage>
     return Consumer<StreakProvider>(
       builder: (context, streakProvider, child) {
         // Get greeting based on time of day
-        final hour = DateTime.now().hour;
-        String greeting = 'Good Evening';
-        if (hour < 12) {
-          greeting = 'Good Morning';
-        } else if (hour < 17) {
-          greeting = 'Good Afternoon';
-        }
+      
+        String greeting = "Welcome Back,${streakProvider.patientName}";
 
         // Get motivational message based on streak count
         String motivationalMessage = 'Keep going with your exercises!';
@@ -281,33 +275,79 @@ class _HomePageState extends State<HomePage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            greeting,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                      Container(
+                        width: MediaQuery.of(context).size.width - 40,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      greeting,
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  
+                                  ],
+                                ),
+                              
+                                Text(
+                                  'Here\'s how ${streakProvider.patientName} is progressing  today',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.blueGrey,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            '👋',
-                            style: TextStyle(fontSize: 22),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'How are you feeling today?',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.blueGrey,
+                            Spacer(),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _currentIndex = 3;
+                                });
+                              },
+                              child: Container(
+                                width: 45,
+                                height: 45,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Colors.teal.shade300,
+                                      Colors.teal.shade600,
+                                    ],
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.teal.withOpacity(0.3),
+                                      spreadRadius: 2,
+                                      blurRadius: 6,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  Icons.person_rounded,
+                                  size: 28,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )
+                          ],
                         ),
                       ),
                       SizedBox(height: 12),
@@ -399,6 +439,8 @@ class _HomePageState extends State<HomePage>
                   bool isCompleted =
                       streakProvider.weeklyStreak[index] ?? false;
                   bool isToday = index == today;
+                  bool isPast = index < today;
+              
 
                   return Column(
                     children: [
@@ -418,10 +460,12 @@ class _HomePageState extends State<HomePage>
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isCompleted
-                              ? Colors.green
+                              ? Colors.teal.shade600
                               : isToday
                                   ? Colors.purple
-                                  : Colors.transparent,
+                                  : isPast
+                                      ? Colors.red
+                                      : Colors.transparent,
                           border: Border.all(
                             color: isCompleted || isToday
                                 ? Colors.transparent
@@ -435,7 +479,10 @@ class _HomePageState extends State<HomePage>
                               : isToday
                                   ? Icon(Icons.play_arrow,
                                       color: Colors.white, size: 20)
-                                  : null,
+                                  : isPast
+                                      ? Icon(Icons.close,
+                                          color: Colors.white, size: 20)
+                                      : Container(),
                         ),
                       ),
                     ],
@@ -738,7 +785,14 @@ class _HomePageState extends State<HomePage>
                     }).toList(),
                   ),
                   TextButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PatientExercisesPage(),
+                        ),
+                      );
+                    },
                     icon: Icon(
                       Icons.bar_chart,
                       size: 16,

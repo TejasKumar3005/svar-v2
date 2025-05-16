@@ -81,7 +81,7 @@ class UserData {
     required String date,
     required String euid,
     bool isCompleted = true,
-    Map<String, dynamic>? performance,
+  dynamic performance,
   }) async {
     try {
       final userDoc = userCollection.doc(uid);

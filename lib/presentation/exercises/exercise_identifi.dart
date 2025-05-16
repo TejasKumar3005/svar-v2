@@ -379,6 +379,11 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                           .updateExerciseData(
                                             euid: data["uid"],
                                             date: data["date"],
+                                            performance: {
+                                              "correct_attempt": isCorrect,
+                                            
+                                              "time": DateTime.now().toString(),
+                                            }
                                           )
                                           .then((value) =>
                                               print("Exercise data updated"));
@@ -460,6 +465,11 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                           .updateExerciseData(
                                                             euid: data["uid"],
                                                             date: data["date"],
+                                                            performance: {
+                                                              "correct_attempt": isCorrect,
+                                                        
+                                                              "time": DateTime.now().toString(),
+                                                            }
                                                           )
                                                           .then((value) => print(
                                                               "Exercise data updated"));
@@ -545,6 +555,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                 .updateExerciseData(
                                                   euid: data["uid"],
                                                   date: data["date"],
+                                                  performance: {
+                                                    
+                                                    "correct_attempt": isCorrect,
+                                                  
+                                                    "time": DateTime.now().toString(),
+                                                  }
                                                 )
                                                 .then((value) => print(
                                                     "Exercise data updated"));

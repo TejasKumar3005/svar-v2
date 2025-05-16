@@ -412,6 +412,11 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                 .updateExerciseData(
               euid: data["uid"],
               date: data["date"],
+              performance: {
+                "correct_attempt": condition,
+                "correct_output": label,
+                "time": DateTime.now().toString(),
+              }
             );
           }
         }
@@ -486,6 +491,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                             .updateExerciseData(
                           euid: data["uid"],
                           date: data["date"],
+                          performance: {
+                            "progress": _childKey.currentState!.progress.value,
+                            "total_length": total_length,
+                          }
                         );
                       }
                     }
@@ -555,6 +564,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                               .updateExerciseData(
                             euid: data["uid"],
                             date: data["date"],
+                            performance: {
+                            "correct_attempt": condition,
+                            "time": DateTime.now().toString(),
+                            }
                           );
                         }
                       }
@@ -576,6 +589,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                               .updateExerciseData(
                             euid: data["uid"],
                             date: data["date"],
+                            performance: {
+                              "correct_attempt": condition,
+                              "time": DateTime.now().toString(),
+                            }
                           );
                         }
                       }
@@ -700,6 +717,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                   .updateExerciseData(
                 euid: data["uid"],
                 date: data["date"],
+                performance: {
+                  "correct_attempt": condition,
+                  "time": DateTime.now().toString(),
+                }
               );
             }
           }

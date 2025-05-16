@@ -75,6 +75,7 @@ class UserModel {
   LevelMap levelMap;
   List<Activity> activities = [];
   Map<String,dynamic> exercises = {};
+  
   // GameStatsModel gameStats = GameStatsModel(
   //     gifts: [],
   //     progressScore: 0.0,
