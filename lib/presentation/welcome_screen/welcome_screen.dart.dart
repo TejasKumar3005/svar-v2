@@ -25,7 +25,9 @@ class WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      
       child: Scaffold(
+
         extendBody: true,
         extendBodyBehindAppBar: true,
         body: Container(
@@ -40,16 +42,19 @@ class WelcomeScreenState extends State<WelcomeScreen> {
               fit: BoxFit.cover,
             ),
           ),
+
           child: Container(
             width: 768.h,
             padding: EdgeInsets.symmetric(
               horizontal: 26.h,
               vertical: 16.v,
             ),
+
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(height: 12.v),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,6 +72,7 @@ class WelcomeScreenState extends State<WelcomeScreen> {
                         ),
                       ),
                     ),
+
                     Container(
                       height: 365.v,
                       width: 502.h,
@@ -74,15 +80,18 @@ class WelcomeScreenState extends State<WelcomeScreen> {
                         left: 179.h,
                         top: 23.v,
                       ),
+
                       child: Stack(
                         alignment: Alignment.topLeft,
                         children: [
+
                           CustomImageView(
                             imagePath: ImageConstant.imgMascot173x143,
                             height: 253.v,
                             width: 216.h,
                             alignment: Alignment.bottomRight,
                           ),
+
                           CustomImageView(
                             imagePath: ImageConstant.imgSvarLogo146x288,
                             height: 146.v,

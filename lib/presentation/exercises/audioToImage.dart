@@ -1,7 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
@@ -9,7 +8,7 @@ import 'package:svar_new/widgets/Options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
-import 'package:svar_new/presentation/settings_screen/setting.dart';
+
 
 class AudiotoimageScreen extends StatefulWidget {
   final dynamic dtcontainer;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/core/analytics/analytics.dart';
 import 'package:svar_new/core/utils/image_constant.dart';
 import 'package:svar_new/core/utils/playBgm.dart';
@@ -32,6 +33,11 @@ enum ButtonType {
   Video2,
   Stop,
   Spectrum,
+  Continue,
+  AlreadyHaveAccount,
+  CreateAccount,
+  ResetPassword,
+  Cancel
 }
 
 class CustomButton extends StatefulWidget {
@@ -62,6 +68,7 @@ class _CustomButtonState extends State<CustomButton> {
   dynamic defaultChild;
   ButtonTypes buttontype = ChicletButtonTypes.roundedRectangle;
   late VoidCallback onPressed_state;
+  Color? color;
 
   @override
   void initState() {
@@ -86,7 +93,7 @@ class _CustomButtonState extends State<CustomButton> {
         height = 50;
         buttontype = ChicletButtonTypes.oval;
         defaultChild = const Icon(Icons.play_arrow);
-        break;    
+        break;
       case ButtonType.ImagePause:
         imagePath = ImageConstant.imgPlayBtn;
         width = 50;
@@ -113,7 +120,53 @@ class _CustomButtonState extends State<CustomButton> {
         imagePath = ImageConstant.imgLoginBTn;
         height = 60;
 
-        defaultChild = const Text("Login");
+        defaultChild = Text(
+          "Login",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
+        break;
+      case ButtonType.AlreadyHaveAccount:
+        height = 60;
+        defaultChild = Text(
+          "I ALREADY HAVE AN ACCOUNT",
+          style: GoogleFonts.inter(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFF47C37)),
+        );  
+        break;  
+        
+      case ButtonType.Cancel:
+        height = 60;
+        defaultChild = Text(
+            "CANCEL",
+          style: GoogleFonts.inter(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFF47C37)),
+        );
+        break;
+      case ButtonType.ResetPassword:
+        height = 60;
+        width = 80;
+        defaultChild = Text(
+          "Send Reset Email",
+          style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold,color: Colors.white),
+        );
+        break;
+      case ButtonType.CreateAccount:
+        height = 60;
+        defaultChild = Text(
+          "SIGN IN",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
+        break;
+      case ButtonType.Continue:
+        height = 60;
+        defaultChild = Text(
+          "CONTINUE",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
         break;
       case ButtonType.Back:
         imagePath = ImageConstant.imgBackBtn;
@@ -125,20 +178,29 @@ class _CustomButtonState extends State<CustomButton> {
       case ButtonType.SignUp:
         imagePath = ImageConstant.imgSignUpBTn;
         height = 60;
-        defaultChild = const Text("Sign Up");
+        defaultChild = Text(
+          "Sign Up",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
         break;
       case ButtonType.Home:
         imagePath = ImageConstant.imgHomeBtn;
         width = 35;
         height = 35;
         buttontype = ChicletButtonTypes.oval;
-        defaultChild = const Text("Submit");
+        defaultChild = Text(
+          "Submit",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
         break;
       case ButtonType.Next:
         imagePath = ImageConstant.imgNextBtn;
         height = 60;
 
-        defaultChild = const Text("Next");
+        defaultChild = Text(
+          "Next",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
         break;
 
       case ButtonType.Replay:
@@ -181,14 +243,20 @@ class _CustomButtonState extends State<CustomButton> {
         width = 170;
         height = 80;
 
-        defaultChild = const Text("Stop");
+        defaultChild = Text(
+          "Stop",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
         break;
       case ButtonType.Diff:
         imagePath = ImageConstant.imgDiffbtn;
         width = 170;
         height = 80;
 
-        defaultChild = const Text("Diff");
+        defaultChild = Text(
+          "Diff",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
         break;
       case ButtonType.Tip2:
         imagePath = ImageConstant.imgTipbtn;
@@ -202,28 +270,40 @@ class _CustomButtonState extends State<CustomButton> {
         width = 170;
         height = 80;
 
-        defaultChild = const Text("Same");
+        defaultChild = Text(
+          "Same",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
         break;
       case ButtonType.Video1:
         imagePath = ImageConstant.imgVideo1btn;
         width = 100;
         height = 60;
 
-        defaultChild = const Text("Video 1");
+        defaultChild = Text(
+          "Video 1",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
         break;
       case ButtonType.Video2:
         imagePath = ImageConstant.imgVideo2btn;
         width = 100;
         height = 60;
 
-        defaultChild = const Text("Video 2");
+        defaultChild = Text(
+          "Video 2",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
         break;
       case ButtonType.Stop:
         imagePath = ImageConstant.imgStopBtn;
         width = 170;
         height = 80;
 
-        defaultChild = const Text("Stop");
+        defaultChild = Text(
+          "Stop",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
         break;
       case ButtonType.Spectrum:
         imagePath = ImageConstant.imgSpectrum;
@@ -243,8 +323,27 @@ class _CustomButtonState extends State<CustomButton> {
         widget.type == ButtonType.SignUp ||
         widget.type == ButtonType.Next ||
         widget.type == ButtonType.Video1 ||
+      
         widget.type == ButtonType.Video2) {
       width = MediaQuery.of(context).size.width * 0.7;
+      color = null;
+    }
+    if (widget.type == ButtonType.AlreadyHaveAccount ||
+        widget.type == ButtonType.Continue ||
+        widget.type == ButtonType.ResetPassword ||
+        widget.type == ButtonType.CreateAccount) {
+      width = MediaQuery.of(context).size.width * 0.9;
+      color = Color(0xFFF47C37);
+    }
+
+    if (widget.type == ButtonType.ResetPassword) {
+      width = 190;
+      color = Color(0xFFF47C37);
+    }
+
+    if (widget.type == ButtonType.Cancel) {
+      width = 80;
+      color =null;
     }
 
     // Handle Spectrum type with progress and color
@@ -310,7 +409,11 @@ class _CustomButtonState extends State<CustomButton> {
           onPressed_state();
         },
         buttonType: buttontype,
-        backgroundColor: Color.fromARGB(255, 29, 161, 242),
+        backgroundColor: widget.type != ButtonType.AlreadyHaveAccount && widget.type != ButtonType.Cancel
+            ? color != null
+                ? color
+                : Color.fromARGB(255, 29, 161, 242)
+            : Color.fromARGB(255, 255, 255, 255),
         height: height,
         width: width,
         child: widget.child is Widget

@@ -259,6 +259,7 @@ static String imgVolBlue3='$imagePath/svg/volume_blue3.svg';
 
   static String imgSvaLogo = '$imagePath/svg/Sva_Logo.svg';
 
+  static String imgSvaLogo1 = '$imagePath/img_svar_logo.png';
   static String imgTree = '$imagePath/img_tree.png';
 
   static String imgTreeGreen400 = '$imagePath/img_tree_green_400.png';

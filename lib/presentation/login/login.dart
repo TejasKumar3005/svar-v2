@@ -78,124 +78,128 @@ class LoginScreenState extends State<LoginScreen> {
         extendBody: true,
         extendBodyBehindAppBar: true,
         resizeToAvoidBottomInset: false,
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Full-screen video background
-            _videoController.value.isInitialized
-                ? SizedBox.expand(
-                    child: FittedBox(
-                      fit: BoxFit.cover,
-                      child: SizedBox(
-                        width: _videoController.value.size.width,
-                        height: _videoController.value.size.height,
-                        child: VideoPlayer(_videoController),
-                      ),
-                    ),
-                  )
-                : Container(color: Colors.black),
-
-            // Content
-            SingleChildScrollView(
-              child: Container(
-                width: screenWidth,
-                padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+        body: SingleChildScrollView(
+          child: Container(
+            width: screenWidth,
+            padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Back Button
+                  Row(
                     children: [
-                      // Back Button
-                      Row(
-                        children: [
-                          CustomButton(
-                            type: ButtonType.Back,
-                            onPressed: () {
-                              PlayBgm().playMusic('Back_Btn.mp3', "mp3", false);
-                              Navigator.pop(context);
-                            },
-                          ),
-                          Spacer(),
-                        ],
+                      IconButton(
+                        onPressed: () {
+                          PlayBgm().playMusic('Back_Btn.mp3', "mp3", false);
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(Icons.arrow_back,size: 30.h,),
                       ),
-
-                      // SVA Logo
-                      CustomImageView(
-                        width: screenWidth * 0.8,
-                        height: screenHeight * 0.15,
-                        fit: BoxFit.contain,
-                        imagePath: ImageConstant.imgSvaLogo,
-                      ),
-
-                      SizedBox(
-                        height: screenHeight * 0.05,
-                      ),
-
-                      // Login Form
-                      Flexible(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Email Field
-                            Field(70.h, "email", provider.emailController,
-                                context, provider),
-
-                            SizedBox(
-                              height: 15.v,
-                            ),
-
-                            // Password Field
-                            Field(70.h, 'password', provider.passController,
-                                context, provider),
-
-                            SizedBox(
-                              height: 15.v,
-                            ),
-
-                            // Forgot Password
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return ForgotPasswordDialog();
-                                        });
-                                  },
-                                  child: Text("Forgot Password?".tr,
-                                      style: TextStyle(
-                                          color: appTheme.orangeA200,
-                                          fontSize: 20.h,
-                                          fontWeight: FontWeight.bold)),
-                                ),
-                              ],
-                            ),
-
-                            // Login Button
-                            CustomButton(
-                              type: ButtonType.Login,
-                              onPressed: () async {
-                                if (_formKey.currentState!.validate() &&
-                                    !provider.loading) {
-                                  await AnalyticsService()
-                                      .logSignIn(provider.emailController.text);
-                                  LoginFormMethods methods =
-                                      LoginFormMethods(context: context);
-                                  methods.login();
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
+                      Spacer(),
                     ],
                   ),
+                  SizedBox(height: 20.h),
+ CustomImageView(
+      width: screenWidth * 0.4,
+      height: screenHeight * 0.1,
+      fit: BoxFit.contain,
+      imagePath: ImageConstant.imgSvaLogo1,
+    ),
+              
+              SizedBox(height: 20.h),
+        
+              TextFormField(
+                  cursorColor: appTheme.orangeA200,
+                controller: provider.emailController,
+                decoration: InputDecoration(
+                  fillColor: const Color.fromARGB(255, 241, 240, 240),
+                  filled: true,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    
+                  borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135),width: 2),
+                  ),
+                  hintText: "Email",
+                focusedBorder:  OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    
+                  borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135),width: 2),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    
+                    borderSide: BorderSide(color: const Color.fromARGB(255, 187, 186, 186),width: 2),
+                  ),
+                  hintStyle: TextStyle(color: Colors.grey),
                 ),
               ),
+              SizedBox(height: 20.h),
+              TextFormField(
+                  cursorColor: appTheme.orangeA200,
+                controller: provider.passController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  fillColor: const Color.fromARGB(255, 241, 240, 240),
+                  filled: true,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                  border: OutlineInputBorder(
+                    
+                    borderRadius: BorderRadius.circular(10),
+
+                    borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135),width: 2),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    
+                    borderSide: BorderSide(color: const Color.fromARGB(255, 187, 186, 186),width: 2),
+                  ),
+                
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    
+                  borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135),width: 2),
+                  ),
+              
+
+                  hintText: "Password",
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+              ),
+              SizedBox(height: 20.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                      onTap: () {
+                        showDialog(context: context, builder: (context) => ForgotPasswordDialog());
+                      },
+                    child: Text("Forgot Password?",textAlign: TextAlign.end, style: TextStyle(color: appTheme.orangeA200, fontSize: 18.h,fontWeight: FontWeight.w600),)),
+                ],
+              ),
+              SizedBox(height: 20.h),
+              CustomButton(
+                          type: ButtonType.CreateAccount,
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate() &&
+                                !provider.loading) {
+                              await AnalyticsService()
+                                  .logSignIn(provider.emailController.text);
+                              LoginFormMethods methods =
+                                  LoginFormMethods(context: context);
+                              methods.login();
+                            }
+                          },
+                        ),
+        
+                  // Login Form
+                
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );

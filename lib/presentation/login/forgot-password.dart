@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 
 class ForgotPasswordDialog extends StatefulWidget {
   @override
@@ -48,11 +49,40 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      
       title: Text("Forgot Password",style: TextStyle(color: Colors.black),textAlign: TextAlign.center,),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Field(60.h, "email", _emailController, context),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.95,
+            child:   TextFormField(
+                  cursorColor: appTheme.orangeA200,
+                controller: _emailController,
+                decoration: InputDecoration(
+                  fillColor: const Color.fromARGB(255, 241, 240, 240),
+                  filled: true,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    
+                  borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135),width: 2),
+                  ),
+                  hintText: "Email",
+                focusedBorder:  OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    
+                  borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135),width: 2),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    
+                    borderSide: BorderSide(color: const Color.fromARGB(255, 187, 186, 186),width: 2),
+                  ),
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+              ),
+          ),
         ],
       ),
       actions: [
@@ -60,12 +90,15 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
           onPressed: () {
             Navigator.of(context).pop(); // Close the dialog without action
           },
-          child: Text("Cancel", style: TextStyle(color: Colors.red)),
+          child: CustomButton(type: ButtonType.Cancel, onPressed: () {
+            Navigator.of(context).pop(); // Close the dialog without action
+          }),
         ),
-        ElevatedButton(
-          onPressed: _sendResetEmail,
-          child: Text("Send Reset Email", style: TextStyle(color: appTheme.orangeA200)),
-        ),
+      CustomButton(
+          type: ButtonType.ResetPassword,
+        onPressed: _sendResetEmail,
+      
+      ),
       ],
     );
   }
