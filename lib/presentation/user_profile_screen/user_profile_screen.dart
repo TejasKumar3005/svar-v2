@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/presentation/patient_report/buildBottomNavigationBar.dart';
 import 'package:svar_new/presentation/home/provider/streak_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/presentation/home/provider/main_interaction_provider.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
+
+import 'package:svar_new/widgets/customTextField.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
@@ -13,7 +19,7 @@ class UserProfileScreen extends StatefulWidget {
   @override
   State<UserProfileScreen> createState() => UserProfileScreenState();
 
-    static Widget builder(BuildContext context) {
+  static Widget builder(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -37,21 +43,23 @@ class UserProfileScreenState extends State<UserProfileScreen> {
   void initState() {
     super.initState();
     // Get current user ID
-    uid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
+    uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    fetchUserData();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Initialize streak provider data
-      Provider.of<StreakProvider>(context, listen: false).initializeStreakData();
+      Provider.of<StreakProvider>(context, listen: false)
+          .initializeStreakData();
       setState(() {
         isLoading = false;
       });
     });
-    
   }
 
   Future<void> fetchUserData() async {
     try {
-      final userDoc = FirebaseFirestore.instance.collection('patients').doc(uid);
+      final userDoc =
+          FirebaseFirestore.instance.collection('patients').doc(uid);
       final docSnapshot = await userDoc.get();
 
       if (docSnapshot.exists) {
@@ -76,11 +84,11 @@ class UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return  Scaffold(
+      return Scaffold(
         body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Center(child: CircularProgressIndicator())),
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Center(child: CircularProgressIndicator())),
       );
     } else {
       return ProfilePage(userData: userData);
@@ -101,8 +109,18 @@ class _ProfilePageState extends State<ProfilePage>
   int _currentIndex = 4; // Default to Today tab
   late TabController _tabController;
   bool _isPersonalDetailsSelected = true;
+  bool _isUploading = false;
 
+  TextEditingController nameController = TextEditingController();
+  TextEditingController fatherNameController = TextEditingController();
+  TextEditingController motherNameController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController contactController = TextEditingController();
+  TextEditingController childNameController = TextEditingController();
+  TextEditingController childAgeController = TextEditingController();
 
+  // This function handles index changes from the bottom navigation bar
   // This function handles index changes from the bottom navigation bar
   void _onIndexChanged(int index) {
     setState(() {
@@ -111,11 +129,71 @@ class _ProfilePageState extends State<ProfilePage>
     // Note: The navigation logic is handled inside the CustomBottomNavigationBar
   }
 
+  // Function to pick and upload image
+  Future<void> _pickAndUploadImage() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
+      if (image == null) return;
+
+      setState(() {
+        _isUploading = true;
+      });
+
+      // Get current user ID
+      final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+      if (uid.isEmpty) return;
+
+      // Upload to Firebase Storage
+      final File imageFile = File(image.path);
+      final Reference storageRef = FirebaseStorage.instance
+          .ref()
+          .child('profile_images')
+          .child('$uid.jpg');
+
+      final UploadTask uploadTask = storageRef.putFile(
+        imageFile,
+        SettableMetadata(contentType: 'image/jpeg'),
+      );
+
+      // Get download URL once upload completes
+      final TaskSnapshot taskSnapshot =
+          await uploadTask.whenComplete(() => null);
+      final String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+      // Update Firestore with new image URL
+      await FirebaseFirestore.instance.collection('patients').doc(uid).update({
+        'profileImage': downloadUrl,
+      });
+
+      // Show success message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile picture updated successfully')),
+        );
+      }
+    } catch (e) {
+      print('Error picking/uploading image: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update profile picture: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+        });
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    
+    
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       setState(() {
@@ -132,9 +210,11 @@ class _ProfilePageState extends State<ProfilePage>
 
   // Change password dialog
   Future<void> _showChangePasswordDialog() async {
-    final TextEditingController currentPasswordController = TextEditingController();
+    final TextEditingController currentPasswordController =
+        TextEditingController();
     final TextEditingController newPasswordController = TextEditingController();
-    final TextEditingController confirmPasswordController = TextEditingController();
+    final TextEditingController confirmPasswordController =
+        TextEditingController();
     bool isLoading = false;
     String errorMessage = '';
 
@@ -214,7 +294,8 @@ class _ProfilePageState extends State<ProfilePage>
                         return;
                       }
 
-                      if (newPasswordController.text != confirmPasswordController.text) {
+                      if (newPasswordController.text !=
+                          confirmPasswordController.text) {
                         setState(() {
                           errorMessage = 'New passwords do not match';
                         });
@@ -223,7 +304,8 @@ class _ProfilePageState extends State<ProfilePage>
 
                       if (newPasswordController.text.length < 6) {
                         setState(() {
-                          errorMessage = 'Password must be at least 6 characters';
+                          errorMessage =
+                              'Password must be at least 6 characters';
                         });
                         return;
                       }
@@ -259,7 +341,7 @@ class _ProfilePageState extends State<ProfilePage>
                           });
 
                           Navigator.of(context).pop();
-                          
+
                           // Show success message
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -299,46 +381,52 @@ class _ProfilePageState extends State<ProfilePage>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+  nameController.text = widget.userData?["name"] ?? '';
+      fatherNameController.text = widget.userData?["fathersName"] ?? '';
+      motherNameController.text = widget.userData?["mothersName"] ?? '';
+      addressController.text = widget.userData?["address"] ?? '';
+      emailController.text = widget.userData?["email"] ?? '';
+      contactController.text = widget.userData?["parentPhone"] ?? '';
+      childNameController.text = widget.userData?["name"] ?? '';
+      childAgeController.text = widget.userData?["age"] ?? '';
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildProfileHeader(),
               _buildInfoTabs(),
-              _buildSupportSection(),
+              // _buildSupportSection(),
               const SizedBox(height: 80), // Space for bottom navigation bar
             ],
           ),
         ),
-      );
-    
-    
+      ),
+    );
   }
 
   Widget _buildProfileHeader() {
     return Consumer<StreakProvider>(
       builder: (context, streakProvider, child) {
         return Container(
-  
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               // Profile background curve
               Container(
-                height: 120,
+                height: 220,
                 decoration: BoxDecoration(
-                  color: Colors.teal.withOpacity(0.2), // Increased opacity
+                  color: Colors.blue, // Bright blue color as in the image
                   borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(40),
-                    bottomRight: Radius.circular(40),
+                    bottomLeft: Radius.circular(60),
+                    bottomRight: Radius.circular(60),
                   ),
                 ),
-              ),
-              // Profile image (positioned to overlap the curve)
-              Transform.translate(
-                offset: const Offset(0, -60),
                 child: Center(
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Stack(
                         alignment: Alignment.bottomRight,
@@ -347,62 +435,86 @@ class _ProfilePageState extends State<ProfilePage>
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                  color: Colors.white, width: 2), // White border
+                                  color: Colors.white,
+                                  width: 4), // White border
                             ),
-                            child: CircleAvatar(
-                              radius: 55,
-                              backgroundColor: Colors.lightBlue.shade200,
-                              backgroundImage: widget.userData?['profileImage'] != null 
-                                  ? NetworkImage(widget.userData!['profileImage']) 
-                                  : null,
-                              child: widget.userData?['profileImage'] == null 
-                                  ? Icon(
-                                    Icons.person,
-                                    size: 70,
-                                    color: Colors.lightBlue.shade600,
-                                  ) 
-                                  : null,
-                            ),
+                            child: _isUploading
+                                ? CircleAvatar(
+                                    radius: 50,
+                                    backgroundColor: Colors.lightBlue.shade100,
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                    ),
+                                  )
+                                : CircleAvatar(
+                                    radius: 50,
+                                    backgroundColor: Colors.lightBlue.shade200,
+                                    backgroundImage:
+                                        widget.userData?['profileImage'] != null
+                                            ? NetworkImage(
+                                                widget.userData!['profileImage']
+                                                    as String)
+                                            : AssetImage(
+                                                "assets/images/girl.png",
+                                              ) as ImageProvider,
+                                  ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  blurRadius: 5,
-                                  spreadRadius: 1,
-                                ),
-                              ],
-                            ),
-                            child: const CircleAvatar(
-                              radius: 18,
-                              backgroundColor: Colors.lightBlue,
-                              child: Icon(
-                                Icons.edit,
-                                size: 18,
+                          GestureDetector(
+                            onTap: _pickAndUploadImage,
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
                                 color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    blurRadius: 5,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                              child: CircleAvatar(
+                                radius: 15,
+                                backgroundColor:
+                                    _isUploading ? Colors.grey : Colors.blue,
+                                child: _isUploading
+                                    ? SizedBox(
+                                        width: 10,
+                                        height: 10,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.white),
+                                        ),
+                                      )
+                                    : const Icon(
+                                        Icons.edit,
+                                        size: 15,
+                                        color: Colors.white,
+                                      ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
                       Text(
-                       streakProvider.patientName ,
+                        streakProvider.patientName,
                         style: const TextStyle(
-                          fontSize: 26,
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                           letterSpacing: 0.5,
                         ),
                       ),
-                      
                     ],
                   ),
                 ),
               ),
+              // Profile image (positioned to overlap the curve)
             ],
           ),
         );
@@ -417,73 +529,72 @@ class _ProfilePageState extends State<ProfilePage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: const EdgeInsets.only(left: 8, bottom: 8),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  color: Colors.brown.shade300,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Personal Information',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.brown.shade300,
+            margin: const EdgeInsets.only(left: 8, bottom: 8, top: 8),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    _tabController.animateTo(0);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: _isPersonalDetailsSelected
+                          ? Colors.blue
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Personal Details',
+                        style: TextStyle(
+                          color: _isPersonalDetailsSelected
+                              ? Colors.white
+                              : Colors.black,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              SizedBox(width: 15),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    _tabController.animateTo(1);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: !_isPersonalDetailsSelected
+                          ? Colors.blue
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Child Details',
+                        style: TextStyle(
+                          color: !_isPersonalDetailsSelected
+                              ? Colors.white
+                              : Colors.black,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           Container(
-            decoration: BoxDecoration(
-              color: Colors.white, // Changed to white for contrast
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.08),
-                  spreadRadius: 1,
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 4),
-                  decoration: const BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                  ),
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: Colors.teal,
-                    unselectedLabelColor: Colors.black54,
-                    labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-                    unselectedLabelStyle:
-                        const TextStyle(fontWeight: FontWeight.normal),
-                    indicator: BoxDecoration(
-                      color: Colors.teal
-                          .withOpacity(0.1), // Light teal for selected tab
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    tabs: const [
-                      Tab(text: 'Personal Details', icon: Icon(Icons.person)),
-                      Tab(text: 'Child Details', icon: Icon(Icons.child_care)),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  child: _isPersonalDetailsSelected
-                      ? _buildPersonalDetailsTab()
-                      : _buildChildDetailsTab(),
-                ),
-              ],
-            ),
+            padding: const EdgeInsets.all(16),
+            child: _isPersonalDetailsSelected
+                ? _buildPersonalDetailsTab()
+                : _buildChildDetailsTab(),
           ),
         ],
       ),
@@ -492,495 +603,171 @@ class _ProfilePageState extends State<ProfilePage>
 
   Widget _buildPersonalDetailsTab() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Name field
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.teal.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.person_outline,
-                  color: Colors.teal, // Unified color
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Name',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Consumer<StreakProvider>(
-                      builder: (context, streakProvider, child) {
-                        return Text(
-                          streakProvider.patientName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
+        Text(
+          'Name',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4b4b4b),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 8),
+        CustomTextField(
+          controller: nameController,
+      
+          hintText: 'Enter your name',
+          fillColor: Colors.grey.shade200,
+          focusedBorderColor: Colors.blue,
+          enabledBorderColor: Colors.grey.shade300,
+        ),
+
+        SizedBox(height: 20),
         // Father's Name field
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.teal.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.person_outline,
-                  color: Colors.teal,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Father\'s Name',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Consumer<StreakProvider>(
-                      builder: (context, streakProvider, child) {
-                        return Text(
-                          streakProvider.fatherName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
+        Text(
+          'Father\'s Name',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4b4b4b),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 8),
+        CustomTextField(
+          controller: fatherNameController,
+        
+          hintText: 'Enter your father\'s name',
+          fillColor: Colors.grey.shade200,
+          focusedBorderColor: Colors.blue,
+          enabledBorderColor: Colors.grey.shade300,
+        ),
+
+        SizedBox(height: 20),
         // Mother's Name field
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.teal.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.person_outline,
-                  color: Colors.teal,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Mother\'s Name',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Consumer<StreakProvider>(
-                      builder: (context, streakProvider, child) {
-                        return Text(
-                          streakProvider.motherName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
+        Text(
+          'Mother\'s Name',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4b4b4b),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 8),
+        CustomTextField(
+          controller: motherNameController,
+        
+          hintText: 'Enter your mother\'s name',
+          fillColor: Colors.grey.shade200,
+          focusedBorderColor: Colors.blue,
+          enabledBorderColor: Colors.grey.shade300,
+        ),
+
+        SizedBox(height: 20),
         // Address field
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.teal.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.home_outlined,
-                  color: Colors.teal,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Address',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Consumer<StreakProvider>(
-                      builder: (context, streakProvider, child) {
-                        return Text(
-                          streakProvider.address,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
+        Text(
+          'Address',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4b4b4b),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 8),
+        CustomTextField(
+          controller: addressController,
+      
+          hintText: 'Enter your address',
+          fillColor: Colors.grey.shade200,
+          focusedBorderColor: Colors.blue,
+          enabledBorderColor: Colors.grey.shade300,
+        ),
+
+        SizedBox(height: 20),
         // Email field
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.teal.withOpacity(0.1), // Unified background
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.email_outlined,
-                  color: Colors.teal, // Unified color
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Email',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                Consumer<StreakProvider>(
-                builder: (context, streakProvider, child) {
-                   return Text(
-                    streakProvider.patientEmail ,
-                         style: const TextStyle(
-                     fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                    ),
-                     );
-                      },
-                         ),
-                  ],
-                ),
-              ),
-            ],
+        Text(
+          'Email',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4b4b4b),
           ),
         ),
-        const SizedBox(height: 16), // Increased spacing
+        SizedBox(height: 8),
+        CustomTextField(
+          controller: emailController,
+        
+          hintText: 'Enter your email',
+          fillColor: Colors.grey.shade200,
+          focusedBorderColor: Colors.blue,
+          enabledBorderColor: Colors.grey.shade300,
+        ),
+
+        SizedBox(height: 20),
         // Contact field
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.teal.withOpacity(0.1), // Unified background
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.phone_outlined,
-                  color: Colors.teal, // Unified color
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Contact',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Consumer<StreakProvider>(
-                      builder: (context, streakProvider, child) {
-                        return Text(
-                          streakProvider.patientPhone ,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
+        Text(
+          'Contact',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4b4b4b),
           ),
         ),
-        const SizedBox(height: 16), // Added spacing for password button
-        // Password change button
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.teal.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.lock_outline,
-                  color: Colors.teal,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Password',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      '••••••••',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              TextButton(
-                onPressed: _showChangePasswordDialog,
-                child: Text(
-                  'Change',
-                  style: TextStyle(
-                    color: Colors.teal.shade700,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
+        SizedBox(height: 8),
+        CustomTextField(
+          controller: contactController,
+
+          hintText: 'Enter your contact number',
+          fillColor: Colors.grey.shade200,
+          focusedBorderColor: Colors.blue,
+          enabledBorderColor: Colors.grey.shade300,
         ),
       ],
     );
   }
 
-
   Widget _buildChildDetailsTab() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Child Name field
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.teal.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.child_care,
-                  color: Colors.teal,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Child Name',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Consumer<StreakProvider>(
-                      builder: (context, streakProvider, child) {
-                        return Text(
-                          streakProvider.patientName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
+        Text(
+          'Child Name',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4b4b4b),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 8),
+        CustomTextField(
+          controller: childNameController,
+    
+          hintText: 'Enter your child\'s name',
+          fillColor: Colors.grey.shade200,
+          focusedBorderColor: Colors.blue,
+          enabledBorderColor: Colors.grey.shade300,
+        ),
+
+        SizedBox(height: 20),
         // Child Age field
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
+        Text(
+          'Child Age',
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4b4b4b),
           ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.teal.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.cake,
-                  color: Colors.teal,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Child Age',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Consumer<StreakProvider>(
-                      builder: (context, streakProvider, child) {
-                        return Text(
-                          '${streakProvider.age} years',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        ),
+        SizedBox(height: 8),
+        CustomTextField(
+          controller: childAgeController,
+        
+          hintText: 'Enter your child\'s age',
+          fillColor: Colors.grey.shade200,
+          focusedBorderColor: Colors.blue,
+          enabledBorderColor: Colors.grey.shade300,
         ),
       ],
     );
@@ -1096,5 +883,3 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 }
-
-

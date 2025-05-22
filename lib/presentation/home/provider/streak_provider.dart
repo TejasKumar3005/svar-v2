@@ -315,8 +315,8 @@ class StreakProvider extends ChangeNotifier {
       'email': _patientEmail,
       'phone': _patientPhone,
       'profileImage': _patientProfileImage,
-      'motherName': _motherName,
-      'fatherName': _fatherName,
+      'mothersName': _motherName,
+      'fathersName': _fatherName,
       'address': _address,
       'age': _age,
     };

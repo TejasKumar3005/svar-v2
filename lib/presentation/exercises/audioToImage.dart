@@ -106,6 +106,22 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   }
 
   @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+
+    String type = obj[0] as String;
+    print("Type: $type");
+
+    // Play background music based on exercise type
+    String audioFile = "v4.wav";
+
+
+    Future.delayed(const Duration(seconds: 3), () async {
+      await _player.play(AssetSource("assets/audio/bgm/$audioFile"));
+    });
+  }
+  @override
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);

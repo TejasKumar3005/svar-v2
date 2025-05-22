@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:rive/rive.dart' as rive;
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
+import 'package:svar_new/presentation/exercises/practice_screen.dart';
 import 'package:svar_new/presentation/patient_report/patient_assessment_page.dart';
 import 'package:svar_new/presentation/patient_report/patient_exercises_page.dart';
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
@@ -17,7 +18,7 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:svar_new/presentation/patient_report/buildBottomNavigationBar.dart';
 import 'package:svar_new/presentation/home/provider/streak_provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -143,92 +144,7 @@ class _HomePageState extends State<HomePage>
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 child: [
-                  SafeArea(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildHeader(),
-                          _buildStreakSection(),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 8.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.teal.withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius: 10,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Colors.teal.shade400,
-                                    Colors.teal.shade700
-                                  ],
-                                ),
-                              ),
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  print("hello");
-                                  await NavigatorService.pushNamed(
-                                      AppRoutes.exercisesScreen);
-
-                                  // Don't call initState() directly
-                                  // Instead, refresh data if the widget is still mounted
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  minimumSize: Size(double.infinity, 60),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  padding: EdgeInsets.zero,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.bolt,
-                                      color: Colors.yellow,
-                                      size: 24,
-                                    ),
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        'Continue Today\'s Exercise',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          letterSpacing: 0.5,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Icon(
-                                      Icons.bolt,
-                                      color: Colors.yellow,
-                                      size: 24,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          _buildUpcomingSessions(),
-                          _buildProgressSnapshot(),
-                        ],
-                      ),
-                    ),
-                  ),
+                PracticeScreen(),
 
                   PatientAssessmentPage(),
                   FeesPage(), // Placeholder for the third tab
