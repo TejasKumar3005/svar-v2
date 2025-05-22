@@ -418,7 +418,7 @@ class _ProfilePageState extends State<ProfilePage>
               Container(
                 height: 220,
                 decoration: BoxDecoration(
-                  color: Colors.blue, // Bright blue color as in the image
+                  color: Color(0xFF1cb0f6), // Bright blue color as in the image
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(60),
                     bottomRight: Radius.circular(60),
@@ -478,7 +478,7 @@ class _ProfilePageState extends State<ProfilePage>
                               child: CircleAvatar(
                                 radius: 15,
                                 backgroundColor:
-                                    _isUploading ? Colors.grey : Colors.blue,
+                                    _isUploading ? Colors.grey : Color(0xFF1cb0f6),
                                 child: _isUploading
                                     ? SizedBox(
                                         width: 10,
@@ -542,7 +542,7 @@ class _ProfilePageState extends State<ProfilePage>
                     padding: EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
                       color: _isPersonalDetailsSelected
-                          ? Colors.blue
+                          ? Color(0xFF1cb0f6)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -570,7 +570,7 @@ class _ProfilePageState extends State<ProfilePage>
                     padding: EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
                       color: !_isPersonalDetailsSelected
-                          ? Colors.blue
+                          ? Color(0xFF1cb0f6)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -720,7 +720,7 @@ class _ProfilePageState extends State<ProfilePage>
 
           hintText: 'Enter your contact number',
           fillColor: Colors.grey.shade200,
-          focusedBorderColor: Colors.blue,
+          focusedBorderColor: Color(0xFF1cb0f6),
           enabledBorderColor: Colors.grey.shade300,
         ),
       ],

@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage>
                 width: MediaQuery.of(context).size.width,
                 child: [
                 PracticeScreen(),
-
+              
                   PatientAssessmentPage(),
                   FeesPage(), // Placeholder for the third tab
                   UserProfileScreen(),
