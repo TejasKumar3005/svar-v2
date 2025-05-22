@@ -14,7 +14,7 @@ class ImageToAudio {
     return ImageToAudio._(
         image_url: json["image_url"] as String,
         audio_list: List<String>.from(json["audio_list"]),
-        correct_output: json["correct_output"] as String);
+        correct_output: json["correct_output"] ??"");
   }
   String getImageUrl() {
     return image_url;

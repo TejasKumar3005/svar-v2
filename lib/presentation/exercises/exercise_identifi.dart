@@ -1,20 +1,18 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/audioToImage.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/exercises/identification_provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart';
-import 'package:svar_new/presentation/settings_screen/setting.dart';
+
 
 class ExerciseIdentification extends StatefulWidget {
   const ExerciseIdentification({Key? key})
@@ -68,32 +66,32 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     // Initialize userData with uid and context
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     userData = UserData(uid: uid, buildContext: context);
-
-  
+    
   }
 
   @override
-  void didChangeDependencies() async{
+  void didChangeDependencies() async {
     super.didChangeDependencies();
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
 
     String type = obj[0] as String;
     print("Type: $type");
-    String text = type == "ImageToAudio"
-        ? "IDENTIFY  SOUND OF THE IMAGE"
+
+    // Play background music based on exercise type
+    String audioFile = type == "ImageToAudio"
+        ? "v1.wav"
         : type == "MaleFemale"
-            ? "IDENTIFY THE GENDER"
+            ? "v2.wav"
             : type == "DiffHalf"
-                ? "PRESS WHEN THE SOUND CHANGES"
-                : type=="AudioToImage"?"IDENTIFY THE IMAGE OF THE AUDIO" :"SAME OR DIFFERENT?";
-        FlutterTts flutterTts = FlutterTts();
-      
-    flutterTts.setLanguage("en-IN");
-    flutterTts.setPitch(1.0);
-    flutterTts.setSpeechRate(0.7);
-    flutterTts.setVolume(1.0);
-      await Future.delayed(const Duration(seconds: 2));
-    flutterTts.speak(text);       
+                ? "v3.wav"
+                : type == "AudioToImage"
+                    ? "v4.wav"
+                    : "v5.wav";
+
+
+    Future.delayed(const Duration(seconds: 3), () async {
+      await _player.play(AssetSource("assets/audio/bgm/$audioFile"));
+    });
   }
 
   int sel = 0;
@@ -192,12 +190,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                 // Remove decoration to make it transparent over the placeholder
                                 child: Text(
                                   type == "ImageToAudio"
-                                      ? "IDENTIFY  SOUND OF THE IMAGE"
+                                      ? "Look at the image. Can you tell what sound it makes?"
                                       : type == "MaleFemale"
-                                          ? "IDENTIFY THE GENDER"
+                                          ? "Listen to the voice carefully. Can you tell which one is male and which one is female?"
                                           : type == "DiffHalf"
-                                              ? "PRESS WHEN THE SOUND CHANGES"
-                                              : "SAME OR DIFFERENT?",
+                                              ? "Listen closely. Tap the button as soon as the sound changes."
+                                              : "You will hear two sounds. Are they the same or different?",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 24,
@@ -377,15 +375,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                               uid: FirebaseAuth
                                                   .instance.currentUser!.uid)
                                           .updateExerciseData(
-                                            euid: data["uid"],
-                                            date: data["date"],
-                                            performance: {
-                                              "correct_attempt": isCorrect,
-                                            
-                                              "time": DateTime.now().toString(),
-                                            }
-                                          )
-                                          .then((value) =>
+                                              euid: data["uid"],
+                                              date: data["date"],
+                                              performance: {
+                                            "correct_attempt": isCorrect,
+                                            "time": DateTime.now().toString(),
+                                          }).then((value) =>
                                               print("Exercise data updated"));
                                     }
                                   }
@@ -463,15 +458,16 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                                   .currentUser!
                                                                   .uid)
                                                           .updateExerciseData(
-                                                            euid: data["uid"],
-                                                            date: data["date"],
-                                                            performance: {
-                                                              "correct_attempt": isCorrect,
-                                                        
-                                                              "time": DateTime.now().toString(),
-                                                            }
-                                                          )
-                                                          .then((value) => print(
+                                                              euid: data["uid"],
+                                                              date:
+                                                                  data["date"],
+                                                              performance: {
+                                                            "correct_attempt":
+                                                                isCorrect,
+                                                            "time":
+                                                                DateTime.now()
+                                                                    .toString(),
+                                                          }).then((value) => print(
                                                               "Exercise data updated"));
                                                     }
                                                   }
@@ -553,16 +549,13 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                     uid: FirebaseAuth.instance
                                                         .currentUser!.uid)
                                                 .updateExerciseData(
-                                                  euid: data["uid"],
-                                                  date: data["date"],
-                                                  performance: {
-                                                    
-                                                    "correct_attempt": isCorrect,
-                                                  
-                                                    "time": DateTime.now().toString(),
-                                                  }
-                                                )
-                                                .then((value) => print(
+                                                    euid: data["uid"],
+                                                    date: data["date"],
+                                                    performance: {
+                                                  "correct_attempt": isCorrect,
+                                                  "time":
+                                                      DateTime.now().toString(),
+                                                }).then((value) => print(
                                                     "Exercise data updated"));
                                           }
                                         }

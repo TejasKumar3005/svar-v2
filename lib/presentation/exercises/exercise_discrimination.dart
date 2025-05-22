@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -35,6 +36,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
   bool isPlaying = false;
+    late AudioPlayer _player;
 
   // Animation controller for feedback
   late AnimationController _animationController;
@@ -48,6 +50,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
   void initState() {
     super.initState();
     // Initialize animation controller
+    _player = AudioPlayer();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -108,19 +111,24 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
     String type = obj[0] as String;
     print("Type: $type");
     String text = type == "OddOne"
-        ? "PICK THE ODD ONE OUT"
+        ? "Listen to the sounds. Which one sounds different from the others?"
         : type == "MaleFemale"
-            ? "IDENTIFY THE GENDER"
+            ? "Listen to the voice carefully. Can you tell which one is male and which one is female?"
             : type == "DiffHalf"
-                ? "PRESS WHEN THE SOUND CHANGES"
-                : "SAME OR DIFFERENT?";
-    FlutterTts flutterTts = FlutterTts();
-    flutterTts.setLanguage("en-IN");
-    flutterTts.setPitch(1.0);
-    flutterTts.setSpeechRate(0.7);
-    flutterTts.setVolume(1.0);
-      await Future.delayed(const Duration(seconds: 2));
-    flutterTts.speak(text);
+                ? "Listen closely. Tap the button as soon as the sound changes."
+                : "You will hear two sounds. Are they the same or different?";
+      String audioFile = type == "OddOne"
+        ? "v8.wav"
+        : type == "MaleFemale"
+            ? "v2.wav"
+            : type == "DiffHalf"
+                ? "v3.wav"
+                
+                
+                    : "v5.wav";            
+    Future.delayed(const Duration(seconds: 3), () async {
+      await _player.play(AssetSource("assets/audio/bgm/$audioFile"));
+    });
   }
 
   @override
@@ -169,13 +177,13 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                       EdgeInsets.symmetric(vertical: 15.v, horizontal: 20.h),
                   // Remove decoration to make it transparent over the placeholder
                   child: Text(
-                    type == "OddOne"
-                        ? "PICK THE ODD ONE OUT"
-                        : type == "MaleFemale"
-                            ? "IDENTIFY THE GENDER"
-                            : type == "DiffHalf"
-                                ? "PRESS WHEN THE SOUND CHANGES"
-                                : "SAME OR DIFFERENT?",
+                  type == "OddOne"
+        ? "Listen to the sounds. Which one sounds different from the others?"
+        : type == "MaleFemale"
+            ? "Listen to the voice carefully. Can you tell which one is male and which one is female?"
+            : type == "DiffHalf"
+                ? "Listen closely. Tap the button as soon as the sound changes."
+                : "You will hear two sounds. Are they the same or different?",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,

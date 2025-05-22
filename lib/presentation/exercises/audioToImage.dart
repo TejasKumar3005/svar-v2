@@ -152,7 +152,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
               width: double.infinity,
               padding: EdgeInsets.symmetric(vertical: 15.v, horizontal: 20.h),
               child: Text(
-              "IDENTIFY THE IMAGE OF THE AUDIO",
+              "Listen to the sound. Which image matches this sound?",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 24,

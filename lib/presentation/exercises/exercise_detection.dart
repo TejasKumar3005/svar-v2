@@ -109,15 +109,13 @@ class _DetectionState extends State<ExerciseDetection> {
     String type = obj[0] as String;
     print("Type: $type");
     String text = type == "HalfMuted"
-        ? "PRESS STOP WHEN THE SOUND PLAYS"
-        : "TAP ON THE VIDEO WHICH HAS SOUND";
-    FlutterTts flutterTts = FlutterTts();
-    flutterTts.setLanguage("en-IN");
-    flutterTts.setPitch(1.0);
-    flutterTts.setSpeechRate(0.7);
-    flutterTts.setVolume(1.0);
-    await Future.delayed(const Duration(seconds: 2));
-    flutterTts.speak(text);
+        ? "Wait quietly. Tap the stop button as soon as you hear the sound."
+        : "Watch the videos. Tap the one that has sound.";
+
+    String audioFile = type == "HalfMuted"
+        ? "v6.wav"
+        
+                    : "v7.wav";
   }
 
   @override
@@ -297,7 +295,7 @@ class _DetectionState extends State<ExerciseDetection> {
             
                 // Remove decoration to make it transparent over the placeholder
                 child: Text(
-                    "TAP ON THE VIDEO WHICH HAS SOUND",
+                    "Watch the videos. Tap the one that has sound.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
           fontSize: 24,
@@ -523,7 +521,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                       
             // Remove decoration to make it transparent over the placeholder
             child: Text(
-                "PRESS STOP WHEN THE SOUND PLAYS",
+                "Wait quietly. Tap the stop button as soon as you hear the sound.",
               textAlign: TextAlign.center,
               style: TextStyle(
           fontSize: 24,
