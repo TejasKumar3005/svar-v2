@@ -449,8 +449,8 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
             _buildCaseHistoryReport(content['Case_history']),
 
           // Show Fluency report if available
-          if (content.containsKey('fluency') || content.containsKey('Fluency'))
-            _buildFluencyReport(content),
+          // if (content.containsKey('fluency') || content.containsKey('Fluency'))
+          //   _buildFluencyReport(content),
 
           // Show OPM report if available
           if (content.containsKey('opm') || content.containsKey('OPM'))
@@ -461,8 +461,8 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
             _buildProsodyReport(content),
 
           // Show Voice report if available
-          if (content.containsKey('voice') || content.containsKey('Voice'))
-            _buildVoiceReport(content),
+          // if (content.containsKey('voice') || content.containsKey('Voice'))
+          //   _buildVoiceReport(content),
 
           if (content.containsKey("isaa"))
             _buildIsaaReport(content),
@@ -476,8 +476,8 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
             _buildHiReport(content),
           if (content.containsKey("adhd"))
             _buildAdhdReport(content),
-          if (content.containsKey("capev"))
-            _buildCapevReport(content),
+          // if (content.containsKey("capev"))
+          //   _buildCapevReport(content),
           if (content.containsKey("voice_analysis"))
             _buildVoiceAiReport(content),
           // Show Language report if available

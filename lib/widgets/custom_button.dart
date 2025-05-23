@@ -37,7 +37,8 @@ enum ButtonType {
   AlreadyHaveAccount,
   CreateAccount,
   ResetPassword,
-  Cancel
+  Cancel,
+  Save
 }
 
 class CustomButton extends StatefulWidget {
@@ -100,6 +101,16 @@ class _CustomButtonState extends State<CustomButton> {
         height = 50;
         buttontype = ChicletButtonTypes.oval;
         defaultChild = const Icon(Icons.pause);
+        break;
+
+      case ButtonType.Save:
+      
+        height = 60;
+      
+        defaultChild = Text(
+          "Save",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
         break;
 
       case ButtonType.ArrowLeftYellow:
@@ -323,7 +334,7 @@ class _CustomButtonState extends State<CustomButton> {
         widget.type == ButtonType.SignUp ||
         widget.type == ButtonType.Next ||
         widget.type == ButtonType.Video1 ||
-      
+        widget.type == ButtonType.Save ||
         widget.type == ButtonType.Video2) {
       width = MediaQuery.of(context).size.width * 0.7;
       color = null;
@@ -339,6 +350,11 @@ class _CustomButtonState extends State<CustomButton> {
     if (widget.type == ButtonType.ResetPassword) {
       width = 190;
       color = Color(0xFFF47C37);
+    }
+
+    if(widget.type == ButtonType.Save){
+  
+      color = Color(0xFF1cb0f6);
     }
 
     if (widget.type == ButtonType.Cancel) {

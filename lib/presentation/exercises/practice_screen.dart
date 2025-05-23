@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/presentation/exercises/exercises_screen.dart';
 import 'package:svar_new/presentation/home/provider/streak_provider.dart';
+import 'package:svar_new/presentation/patient_report/app_theme.dart';
 class PracticeScreen extends StatefulWidget {
   const PracticeScreen({Key? key}) : super(key: key);
 
@@ -19,292 +21,255 @@ class _PracticeScreenState extends State<PracticeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Consumer<StreakProvider>(
-            builder: (context, streakProvider, child) {
-              return Column(
-                children: [
-                  // Top section with fox and greeting
-                  Container(
-                    padding: EdgeInsets.all(20).copyWith(bottom: 30),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1cb0f6), // Exact blue color from image
-                      borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20)),
-                    ),
-                    child: Stack(
-                      children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                        
-                          children: [
-                                                  
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Image.asset(
-                                  'assets/images/img_mascot.png',
-                                  height: 220,
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                       Text(
-                                        'Hey ${streakProvider.getPatientDetails()["fathersName"]}!',
-                                        style: TextStyle(
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                       Text(
-                                        'Ready to help\n ${streakProvider.patientName} today?',
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          color: Colors.white,
-                                          height: 1.2,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.local_fire_department,
-                                            color: Colors.amber,
-                                            size: 20,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '${streakProvider.streakCount} day streak',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.amber,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 40),
-                            // Start button
-                            
-                          ],
-                        ),
-                        Positioned(
-                        top: 170,
-                      
-                        left: 0,
-                        right: 0,
-                          child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFff9600),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    onTap: () {},
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 16, horizontal: 20),
-                                      child: Column(
-                                        children: [
-                                           Text(
-                                            'Start Talking with ${streakProvider.patientName}!',
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Icon(Icons.timer_outlined,
-                                                  color: Colors.white, size: 16),
-                                              const SizedBox(width: 4),
-                                              const Text(
-                                                '10 min',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Icon(Icons.star,
-                                                  color: Colors.white, size: 16),
-                                              const SizedBox(width: 4),
-                                              const Text(
-                                                'Earn 10 XP',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                        ),
-                      ],
-                    ),
+      body: SingleChildScrollView(
+        
+        child: Consumer<StreakProvider>(
+          builder: (context, streakProvider, child) {
+            return Column(
+              children: [
+                // Top section with fox and greeting
+                Container(
+                  padding: EdgeInsets.all(20).copyWith(bottom: 30),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1cb0f6), // Exact blue color from image
+                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(60),bottomRight: Radius.circular(60)),
                   ),
-              
-                  const SizedBox(height: 24),
-                        
-                  // Progress section
-                  Container(
-                    margin: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Color(0xFFafafaf)),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4)),
-          ],
-        ),
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                  child: Stack(
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
                       
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Progress',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                        children: [
+                                                
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                'assets/images/img_mascot.png',
+                                height: 220,
                               ),
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF2196F3),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(
-                                    Icons.local_fire_department,
-                                    color: Colors.white,
-                                    size: 24,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Column(
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                     Text(
+                                      'Hey ${streakProvider.getPatientDetails()["fathersName"]}!',
+                                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white),
+                                    ),
+                                    const SizedBox(height: 4),
+                                     Text(
+                                      'Ready to help\n ${streakProvider.patientName} today?',
+                                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white),
+                                    ),
+                                    const SizedBox(height: 8),
                                     Row(
                                       children: [
-                                        const Text(
-                                          '2/4',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                        Icon(
+                                          Icons.local_fire_department,
+                                          color: Colors.amber,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '${streakProvider.streakCount} day streak',
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color.fromARGB(255, 255, 140, 0)),
                                         ),
                                       ],
                                     ),
-                                    const Text(
-                                      'Sessions',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.black54,
-                                      ),
-                                    ),
                                   ],
                                 ),
-                                const Spacer(),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    const Text(
-                                      "Today's Practice:",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.black54,
-                                      ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 40),
+                          // Start button
+                          
+                        ],
+                      ),
+                      Positioned(
+                      top: 170,
+                    
+                      left: 0,
+                      right: 0,
+                        child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFff9600),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    NavigatorService.pushNamed(AppRoutes.exercisesScreen);
+                                  },
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16, horizontal: 20),
+                                    child: Column(
+                                      children: [
+                                         Text(
+                                          'Start Talking with ${streakProvider.patientName}!',
+                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.timer_outlined,
+                                                color: Colors.white, size: 16),
+                                            const SizedBox(width: 4),
+                                             Text(
+                                              '10 min',
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Icon(Icons.star,
+                                                color: Colors.white, size: 16),
+                                            const SizedBox(width: 4),
+                                             Text(
+                                              'Earn 10 XP',
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(height: 2),
-                                    const Text(
-                                      '20 mins',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.local_fire_department,
-                                  color: Colors.orange,
-                                  size: 24,
-                                ),
-                                const SizedBox(width: 8),
-                               Text(
-                                  '${streakProvider.streakCount} days in a row!',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                          
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: _buildStreakSection(),
-              ),
+                ),
+            
+                const SizedBox(height: 16),
                       
-                              
-                        // Focus Sound button
-                      
-                        const SizedBox(height: 16),
-                              
+                // Progress section
+                Container(
+                  margin: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color:  Color.fromARGB(255, 187, 186, 186), width: 2),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4)),
+        ],
+      ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                           Text(
+                            'Progress',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF2196F3),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(
+                                  Icons.local_fire_department,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                       Text(
+                                        '2/4',
+                                        style:Theme.of(context).textTheme.titleMedium,
+                                      ),
+                                    ],
+                                  ),
+                                   Text(
+                                    'Sessions',
+                                    style: Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
+                              const Spacer(),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                   Text(
+                                    "Today's Practice:",
+                                    style:  Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  const SizedBox(height: 2),
+                                   Text(
+                                    '20 mins',
+                                    style: Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.local_fire_department,
+                                color: Colors.orange,
+                                size: 24,
+                              ),
+                              const SizedBox(width: 8),
+                             Text(
+                                '${streakProvider.streakCount} days in a row!',
+                                    style:Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
                         
+                    ],
+                  ),
+                ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: _buildStreakSection(),
+            ),
+                    
+                            
+                      // Focus Sound button
+                    
                       
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: _buildUpcomingSessions(),
-                        ),
-      
-                        SizedBox(height: 50),
-                ],
-              );
-            }
-          ),
+                            
+                      
+                    
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: _buildUpcomingSessions(),
+                      ),
+            
+                      SizedBox(height: 50),
+              ],
+            );
+          }
         ),
       ),
     );
+
   }
 
 
@@ -327,7 +292,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Color(0xFFafafaf)),
+            border: Border.all(color:  Color.fromARGB(255, 187, 186, 186), width: 2),
             boxShadow: [
               BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4)),
             ],
@@ -342,11 +307,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   children: [
                     Text(
                       'Your Weekly Streak',
-                      style: GoogleFonts.inter(
-                        fontSize: 18,
-                        color: Color(0xFF4b4b4b),
-                        fontWeight: FontWeight.bold,
-                      ),
+                        style: Theme.of(context).textTheme.titleMedium,
                     ),
                     Row(
                       children: [
@@ -354,11 +315,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                         SizedBox(width: 4),
                         Text(
                           '${streakProvider.streakCount} days',
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.orange,
-                          ),
+                          style: Theme.of(context).textTheme.titleSmall!.copyWith(color:AppTheme.primaryOrange ),
                         ),
                       ],
                     ),
@@ -443,10 +400,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               children: [
                 Text(
                   'Upcoming Sessions',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 SizedBox(height: 16),
                 Center(child: CircularProgressIndicator()),
@@ -462,7 +416,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Color(0xFFafafaf)),
+            border: Border.all(color:  Color.fromARGB(255, 187, 186, 186), width: 2),
           
             boxShadow: [
               BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4)),
@@ -473,10 +427,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               children: [
                 Text(
                   'Upcoming Sessions',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 SizedBox(height: 16),
                 Center(
@@ -499,7 +450,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
             decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Color(0xFFafafaf)),
+              border: Border.all(color:  Color.fromARGB(255, 187, 186, 186), width: 2),
             boxShadow: [
               BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4)),
             ],
@@ -511,10 +462,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               children: [
                 Text(
                   'Upcoming Sessions',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
                 SizedBox(height: 16),
                 ...streakProvider.upcomingSessions.map((session) {
@@ -550,11 +498,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                               children: [
                                 Text(
                                   'Session',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey.shade700,
-                                  ),
+                                  style: Theme.of(context).textTheme.titleSmall,
                                 ),
                                 Container(
                                   padding: EdgeInsets.symmetric(

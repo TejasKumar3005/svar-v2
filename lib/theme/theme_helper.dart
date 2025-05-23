@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/core/utils/pref_utils.dart';
 import 'package:svar_new/core/utils/size_utils.dart';
 
@@ -12,10 +13,14 @@ class ThemeHelper {
     'primary': PrimaryColors()
   };
 
+
+
 // A map of color schemes supported by the app
   Map<String, ColorScheme> _supportedColorScheme = {
     'primary': ColorSchemes.primaryColorScheme
   };
+
+  
 
   /// Returns the primary colors for the current theme.
   PrimaryColors _getThemeColors() {
@@ -67,78 +72,50 @@ class ThemeHelper {
 
 /// Class containing the supported text theme styles.
 class TextThemes {
+  static const Color textPrimaryColor = Color(0xFF4b4b4b);
+    static const Color textSecondaryColor = Color(0xFF757575);
   static TextTheme textTheme(ColorScheme colorScheme) => TextTheme(
-        displayLarge: TextStyle(
-          color: appTheme.whiteA70001,
-          fontSize: 55.fSize,
-          fontFamily: 'Poppins',
-          fontWeight: FontWeight.w700,
+        headlineLarge: GoogleFonts.inter(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          color: textPrimaryColor,
         ),
-        displayMedium: TextStyle(
-          color: appTheme.black900,
-          fontSize: 40.fSize,
-          fontFamily: 'Jokerman',
-          fontWeight: FontWeight.w400,
+        headlineMedium: GoogleFonts.inter(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: textPrimaryColor,
         ),
-        displaySmall: TextStyle(
-          color: appTheme.black900,
-          fontSize: 36.fSize,
-          fontFamily: 'Jokerman',
-          fontWeight: FontWeight.w400,
+        headlineSmall: GoogleFonts.inter(
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+          color: textPrimaryColor,
         ),
-        headlineLarge: TextStyle(
-          color: appTheme.whiteA70001,
-          fontSize: 30.fSize,
-          fontFamily: 'Nunito',
-          fontWeight: FontWeight.w700,
+        titleLarge: GoogleFonts.inter(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: textPrimaryColor,
         ),
-        headlineMedium: TextStyle(
-          color: appTheme.teal90001,
-          fontSize: 27.fSize,
-          fontFamily: 'Nunito',
-          fontWeight: FontWeight.w900,
+        titleMedium: GoogleFonts.inter(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: textPrimaryColor,
         ),
-        headlineSmall: TextStyle(
-          color: appTheme.whiteA70001,
-          fontSize: 24.fSize,
-          fontFamily: 'Tiro Devanagari Hindi',
-          fontWeight: FontWeight.w400,
+        titleSmall: GoogleFonts.inter(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: textPrimaryColor,
         ),
-        labelLarge: TextStyle(
-          color: appTheme.teal90003,
-          fontSize: 13.fSize,
-          fontFamily: 'Nunito',
-          fontWeight: FontWeight.w600,
+        bodyLarge: GoogleFonts.inter(
+          fontSize: 16,
+          color: textPrimaryColor,
         ),
-        labelMedium: TextStyle(
-          color: appTheme.whiteA70001,
-          fontSize: 11.fSize,
-          fontFamily: 'Nunito',
-          fontWeight: FontWeight.w900,
+        bodyMedium: GoogleFonts.inter(
+          fontSize: 14,
+          color: textPrimaryColor,
         ),
-        labelSmall: TextStyle(
-          color: appTheme.whiteA70001,
-          fontSize: 9.fSize,
-          fontFamily: 'Nunito',
-          fontWeight: FontWeight.w700,
-        ),
-        titleLarge: TextStyle(
-          color: appTheme.whiteA70001,
-          fontSize: 20.fSize,
-          fontFamily: 'Nunito',
-          fontWeight: FontWeight.w800,
-        ),
-        titleMedium: TextStyle(
-          color: appTheme.whiteA70001,
-          fontSize: 18.fSize,
-          fontFamily: 'Nunito',
-          fontWeight: FontWeight.w800,
-        ),
-        titleSmall: TextStyle(
-          color: appTheme.teal90003,
-          fontSize: 14.fSize,
-          fontFamily: 'Nunito',
-          fontWeight: FontWeight.w800,
+        bodySmall: GoogleFonts.inter(
+          fontSize: 12,
+          color: textSecondaryColor,
         ),
       );
 }
@@ -192,7 +169,7 @@ class PrimaryColors {
   Color get blueGray900 => Color(0XFF0B213B);
 
   Color get brown100 => Color(0XFF9F4300);
-    Color get brown200 => Color(0XFF844A16);
+  Color get brown200 => Color(0XFF844A16);
 
 // Cyan
   Color get cyan100 => Color(0XFFB4FAFF);
@@ -354,8 +331,6 @@ class PrimaryColors {
   Color get yellow90005 => Color(0XFFF78D11);
   Color get yellow90006 => Color(0XFFE98D32);
   Color get yellowA700 => Color(0XFFFFD600);
-
-
 
   get black90001 => null;
 }

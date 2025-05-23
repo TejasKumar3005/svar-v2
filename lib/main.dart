@@ -121,6 +121,7 @@ class MyApp extends StatelessWidget {
               return MaterialApp(
                 theme: theme,
                 title: 'Svar',
+                
                 navigatorKey: NavigatorService.navigatorKey,
                 scaffoldMessengerKey: globalMessengerKey,
                 debugShowCheckedModeBanner: false,
@@ -138,7 +139,7 @@ class MyApp extends StatelessWidget {
                 initialRoute: auth.currentUser == null
                     ? AppRoutes.loginSignup
                     : AppRoutes
-                        .home, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
+                        .loadingScreen, //auditoryScreenAssessmentScreenAudioVisualResizedScreen
                 routes: AppRoutes.routes,
                 // home: SettingsScreen(),
               );

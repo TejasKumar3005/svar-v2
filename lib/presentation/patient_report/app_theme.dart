@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Primary colors
@@ -6,6 +7,7 @@ class AppTheme {
   static const Color primaryLightColor = Color(0xFF4DB6AC);
   static const Color primaryDarkColor = Color(0xFF00897B);
   
+  static const Color primaryOrange = Color(0xFFff9600);
   // Section header colors
   static const Color basicInfoColor = Color(0xFF26A69A); // Teal
   static const Color concernsColor = Color(0xFFE67E4D);  // Orange
@@ -19,7 +21,7 @@ class AppTheme {
   static const Color cardBgColor = Color(0xFFFAF9FF); // Very light lavender
   
   // Text colors
-  static const Color textPrimaryColor = Color(0xFF212121);
+  static const Color textPrimaryColor = Color(0xFF4b4b4b);
   static const Color textSecondaryColor = Color(0xFF757575);
   static const Color labelColor = Color(0xFF00897B); // Teal for labels
 
@@ -154,46 +156,46 @@ class AppTheme {
           fontSize: 12,
         ),
       ),
-      textTheme: const TextTheme(
-        headlineLarge: TextStyle(
-          fontSize: 28,
+      textTheme:  TextTheme(
+        headlineLarge: GoogleFonts.inter(
+          fontSize: 30,
           fontWeight: FontWeight.bold,
           color: textPrimaryColor,
         ),
-        headlineMedium: TextStyle(
+        headlineMedium: GoogleFonts.inter(
           fontSize: 24,
           fontWeight: FontWeight.bold,
           color: textPrimaryColor,
         ),
-        headlineSmall: TextStyle(
-          fontSize: 20,
+        headlineSmall: GoogleFonts.inter(
+          fontSize: 22,
           fontWeight: FontWeight.bold,
           color: textPrimaryColor,
         ),
-        titleLarge: TextStyle(
+        titleLarge: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.bold,
           color: textPrimaryColor,
         ),
-        titleMedium: TextStyle(
+        titleMedium: GoogleFonts.inter(
           fontSize: 16,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.bold,
           color: textPrimaryColor,
         ),
-        titleSmall: TextStyle(
+        titleSmall: GoogleFonts.inter(
           fontSize: 14,
-          fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
           color: textPrimaryColor,
         ),
-        bodyLarge: TextStyle(
+        bodyLarge: GoogleFonts.inter(
           fontSize: 16,
           color: textPrimaryColor,
         ),
-        bodyMedium: TextStyle(
+        bodyMedium: GoogleFonts.inter(
           fontSize: 14,
           color: textPrimaryColor,
         ),
-        bodySmall: TextStyle(
+        bodySmall: GoogleFonts.inter(
           fontSize: 12,
           color: textSecondaryColor,
         ),

@@ -149,19 +149,17 @@ Widget _buildSpeechAssessmentSection() {
             );
           } else {
             // Row layout for larger screens - cards side by side
-            return IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: _buildAwarenessCard(useFullWidth: false),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildDysfluenciesCard(useFullWidth: false, maxHeight: null),
-                  ),
-                ],
-              ),
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _buildAwarenessCard(useFullWidth: false),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildDysfluenciesCard(useFullWidth: false, maxHeight: null),
+                ),
+              ],
             );
           }
         },

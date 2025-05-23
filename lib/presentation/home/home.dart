@@ -19,7 +19,6 @@ import 'dart:math' as math;
 import 'package:svar_new/presentation/patient_report/buildBottomNavigationBar.dart';
 import 'package:svar_new/presentation/home/provider/streak_provider.dart';
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -49,19 +48,7 @@ class HomeScreenState extends State<HomeScreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Speech Therapy App',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-        fontFamily:
-            'Nunito', // Rounded friendly sans-serif font similar to Duolingo
-        textTheme: const TextTheme(
-          headlineLarge: TextStyle(fontWeight: FontWeight.w700, fontSize: 24),
-          headlineMedium: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
-          titleLarge: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
-          titleMedium: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-          bodyLarge: TextStyle(fontWeight: FontWeight.w400, fontSize: 16),
-          bodyMedium: TextStyle(fontWeight: FontWeight.w400, fontSize: 14),
-        ),
-      ),
+      theme: theme, // Use theme from ThemeHelper instead of custom ThemeData
       home: const HomePage(),
     );
   }
@@ -135,26 +122,42 @@ class _HomePageState extends State<HomePage>
       body: Stack(
         children: [
           Positioned(
-              left: 0,
-              right: 0,
-              top: 0,
-              // Setting bottom to a value that allows space for the active part of the navigation bar
-
-              child: Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: [
-                PracticeScreen(),
-              
-                  PatientAssessmentPage(),
-                  FeesPage(), // Placeholder for the third tab
-                  UserProfileScreen(),
-                  SizedBox(
-                    height: 20,
-                    width: 30,
-                  )
-                ][_currentIndex],
-              )),
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 80, // Leave space for bottom navigation bar
+            child: Column(
+              children: [
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        physics: const ClampingScrollPhysics(),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+                            maxWidth: constraints.maxWidth,
+                          ),
+                          child: IntrinsicHeight(
+                            child: [
+                              PracticeScreen(),
+                              PatientAssessmentPage(),
+                              FeesPage(), // Placeholder for the third tab
+                              UserProfileScreen(),
+                              SizedBox(
+                                height: 20,
+                                width: 30,
+                              )
+                            ][_currentIndex],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
           Positioned(
             bottom: 0,
             child: CustomBottomNavigationBar(
@@ -171,7 +174,7 @@ class _HomePageState extends State<HomePage>
     return Consumer<StreakProvider>(
       builder: (context, streakProvider, child) {
         // Get greeting based on time of day
-      
+
         String greeting = "Welcome Back,${streakProvider.patientName}";
 
         // Get motivational message based on streak count
@@ -214,10 +217,8 @@ class _HomePageState extends State<HomePage>
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                  
                                   ],
                                 ),
-                              
                                 Text(
                                   'Here\'s how ${streakProvider.patientName} is progressing  today',
                                   style: TextStyle(
@@ -356,7 +357,6 @@ class _HomePageState extends State<HomePage>
                       streakProvider.weeklyStreak[index] ?? false;
                   bool isToday = index == today;
                   bool isPast = index < today;
-              
 
                   return Column(
                     children: [

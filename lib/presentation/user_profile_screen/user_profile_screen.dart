@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:svar_new/data/models/userModel.dart';
+import 'package:svar_new/database/userController.dart';
+import 'package:svar_new/presentation/patient_report/app_theme.dart';
 import 'package:svar_new/presentation/patient_report/buildBottomNavigationBar.dart';
 import 'package:svar_new/presentation/home/provider/streak_provider.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +15,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 
 import 'package:svar_new/widgets/customTextField.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
@@ -394,11 +398,24 @@ class _ProfilePageState extends State<ProfilePage>
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _buildProfileHeader(),
               _buildInfoTabs(),
               // _buildSupportSection(),
+              CustomButton(type: ButtonType.Save, onPressed: (){
+                UserData(uid: FirebaseAuth.instance.currentUser?.uid ?? '').updateUserFields({
+                  "name": childNameController.text,
+                  "fathersName": fatherNameController.text,
+                  "mothersName": motherNameController.text,
+                  "address": addressController.text,
+                  "email": emailController.text,
+                  "parentPhone": contactController.text,
+            
+                  "age": childAgeController.text,
+                }, widget.userData!);
+                print("Save button pressed");
+              }),
               const SizedBox(height: 80), // Space for bottom navigation bar
             ],
           ),
@@ -549,12 +566,7 @@ class _ProfilePageState extends State<ProfilePage>
                     child: Center(
                       child: Text(
                         'Personal Details',
-                        style: TextStyle(
-                          color: _isPersonalDetailsSelected
-                              ? Colors.white
-                              : Colors.black,
-                          fontWeight: FontWeight.w500,
-                        ),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: _isPersonalDetailsSelected ? Colors.white : AppTheme.textPrimaryColor),
                       ),
                     ),
                   ),
@@ -577,12 +589,7 @@ class _ProfilePageState extends State<ProfilePage>
                     child: Center(
                       child: Text(
                         'Child Details',
-                        style: TextStyle(
-                          color: !_isPersonalDetailsSelected
-                              ? Colors.white
-                              : Colors.black,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: !_isPersonalDetailsSelected ? Colors.white : AppTheme.textPrimaryColor),
                       ),
                     ),
                   ),
@@ -608,11 +615,7 @@ class _ProfilePageState extends State<ProfilePage>
         // Name field
         Text(
           'Name',
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF4b4b4b),
-          ),
+            style: Theme.of(context).textTheme.titleSmall,
         ),
         SizedBox(height: 8),
         CustomTextField(

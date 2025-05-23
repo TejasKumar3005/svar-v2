@@ -254,6 +254,23 @@ class UserData {
     }
   }
 
+
+  Future<void> updateUserFields(Map<String, dynamic> fieldsToUpdate,Map<String, dynamic> oldData) async {
+    try {
+      // Only update the specified fields in Firestore
+      await userCollection.doc(uid).update(fieldsToUpdate);
+      
+      Map<String, dynamic> updatedData = {...oldData};
+      fieldsToUpdate.forEach((key, value) {
+        updatedData[key] = value;
+      });
+      UserModel updatedUser = UserModel.fromJson(updatedData);
+      Provider.of<UserDataProvider>(buildContext!, listen: false).setUser(updatedUser);
+    } on FirebaseException catch (e) {
+      showErrorSnackBar(e.toString());
+    }
+  }
+
   Future getParentalTip() async {
     try {
       QuerySnapshot querySnapshot = await tipsCollection.get();

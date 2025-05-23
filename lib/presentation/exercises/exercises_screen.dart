@@ -615,7 +615,7 @@ Widget build(BuildContext context) {
             print(
                 "type ${actualIndex}: ${data_pro.todaysExercises[actualIndex]['type']}");
             textRun_subtype.text =
-                data_pro.todaysExercises[actualIndex]['type'];
+                (data_pro.todaysExercises[actualIndex]['description'] as String).split(' (')[0];
           } else {
             debugPrint("Error: '$subtypeKey' text run not found!");
           }
@@ -626,7 +626,7 @@ Widget build(BuildContext context) {
             textRun_desc.text =
                 data_pro.todaysExercises[actualIndex]['description'] == null
                     ? 'No Description'
-                    : data_pro.todaysExercises[actualIndex]['description'];
+                    : (data_pro.todaysExercises[actualIndex]['description'] as String).split(' (')[1];
           } else {
             debugPrint("Error: '$descKey' text run not found!");
           }
