@@ -41,7 +41,8 @@ class ExercisePronunciation extends StatefulWidget {
   }
 }
 
-class ExercisePronunciationState extends State<ExercisePronunciation> {
+class ExercisePronunciationState extends State<ExercisePronunciation>
+    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   final _vadHandler = VadHandler.create(isDebug: true);
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool isRecordingSegment = false;
@@ -72,10 +73,36 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
   bool isPlayingRecording = false;
   final AudioPlayer _recordingPlayer = AudioPlayer();
 
+  // Flag to track if VAD should restart after playback
+  bool _shouldRestartVadAfterPlayback = false;
+
+  // Cache screen size to avoid rebuilds
+  Size? _cachedScreenSize;
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initializeWithConnectivityCheck();
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    // Update cached screen size when screen metrics change
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final newSize = MediaQuery.of(context).size;
+        if (_cachedScreenSize != newSize) {
+          setState(() {
+            _cachedScreenSize = newSize;
+          });
+        }
+      }
+    });
   }
 
   Future<void> _initializeWithConnectivityCheck() async {
@@ -102,7 +129,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     print("Starting TTS for text: $text");
     if (text.isEmpty) return;
 
-    // Stop VAD if it's listening
+    // Store VAD state and stop if it's listening
+    bool wasVadListening = _isVadListening;
     if (_isVadListening) {
       print("Stopping VAD for TTS");
       _vadHandler.stopListening();
@@ -119,7 +147,26 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       print("Error speaking: $e");
     } finally {
       setState(() => isSpeaking = false);
-      // Don't automatically restart VAD - let user control it
+
+      // Restart VAD if it was previously listening
+      if (wasVadListening &&
+          correctAttempts < REQUIRED_CORRECT_ATTEMPTS &&
+          result.isEmpty) {
+        Future.delayed(Duration(milliseconds: 500), () {
+          if (mounted && !_isVadListening) {
+            _vadHandler.startListening(
+              frameSamples: 1536,
+              preSpeechPadFrames: kIsWeb ? 12 : 6,
+              redemptionFrames: kIsWeb ? 10 : 5,
+              minSpeechFrames: 3,
+              positiveSpeechThreshold: 0.7,
+              negativeSpeechThreshold: 0.35,
+              submitUserSpeechOnPause: true,
+            );
+            setState(() => _isVadListening = true);
+          }
+        });
+      }
     }
   }
 
@@ -130,7 +177,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
     await flutterTts.stop();
     await _audioPlayer.stop();
 
+    // Store VAD state and stop if listening
     if (_isVadListening) {
+      _shouldRestartVadAfterPlayback = true;
       _vadHandler.stopListening();
       setState(() => _isVadListening = false);
     }
@@ -139,6 +188,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
       // Stop playback
       await _recordingPlayer.stop();
       setState(() => isPlayingRecording = false);
+
+      // Restart VAD if it should be restarted
+      _restartVadIfNeeded();
     } else {
       // Start playback
       setState(() => isPlayingRecording = true);
@@ -154,330 +206,369 @@ class ExercisePronunciationState extends State<ExercisePronunciation> {
 
         // Listen for playback completion
         _recordingPlayer.onPlayerComplete.listen((_) {
-          setState(() => isPlayingRecording = false);
+          if (mounted) {
+            setState(() => isPlayingRecording = false);
+            // Restart VAD if it should be restarted
+            _restartVadIfNeeded();
+          }
         });
       } catch (e) {
         print("Error playing recording: $e");
         setState(() => isPlayingRecording = false);
         showErrorSnackBar("Error playing recording");
+        // Restart VAD if it should be restarted
+        _restartVadIfNeeded();
       }
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  final size = MediaQuery.of(context).size;
-  final isSmallScreen = size.width < 600;
+  void _restartVadIfNeeded() {
+    if (_shouldRestartVadAfterPlayback &&
+        correctAttempts < REQUIRED_CORRECT_ATTEMPTS &&
+        !result.isNotEmpty) {
+      _shouldRestartVadAfterPlayback = false;
 
-  // Post frame callback for overlay management
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    if (!mounted) return;
-
-    if (loading && _overlayEntry == null) {
-      _overlayEntry = createOverlayEntry(context);
-      Overlay.of(context).insert(_overlayEntry!);
-    } else if (!loading && _overlayEntry != null) {
-      _overlayEntry?.remove();
-      _overlayEntry = null;
+      Future.delayed(Duration(milliseconds: 500), () {
+        if (mounted && !_isVadListening && !isSpeaking) {
+          _vadHandler.startListening(
+            frameSamples: 1536,
+            preSpeechPadFrames: kIsWeb ? 12 : 6,
+            redemptionFrames: kIsWeb ? 10 : 5,
+            minSpeechFrames: 3,
+            positiveSpeechThreshold: 0.7,
+            negativeSpeechThreshold: 0.35,
+            submitUserSpeechOnPause: true,
+          );
+          setState(() => _isVadListening = true);
+        }
+      });
     }
-  });
+  }
 
-  return Scaffold(
-    body: Container(
-      width: size.width,
-      height: size.height,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(ImageConstant.imgGroup7),
-          fit: BoxFit.cover,
+  @override
+  Widget build(BuildContext context) {
+    super.build(context); // Call super.build for AutomaticKeepAliveClientMixin
+
+    // Cache screen size to avoid unnecessary rebuilds
+    _cachedScreenSize ??= MediaQuery.of(context).size;
+    final size = _cachedScreenSize!;
+    final isSmallScreen = size.width < 600;
+
+    // Post frame callback for overlay management
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      if (loading && _overlayEntry == null) {
+        _overlayEntry = createOverlayEntry(context);
+        Overlay.of(context).insert(_overlayEntry!);
+      } else if (!loading && _overlayEntry != null) {
+        _overlayEntry?.remove();
+        _overlayEntry = null;
+      }
+    });
+
+    return Scaffold(
+      body: Container(
+        width: size.width,
+        height: size.height,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(ImageConstant.imgGroup7),
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-      child: Stack(
-        children: [
+        child: Stack(
+          children: [
+            // Background elements
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: DisciAppBar(context),
+            ), // App bar stays at the top
 
-          // Background elements
-          Padding(
-            padding: const EdgeInsets.only( top: 20.0),
-            child: DisciAppBar(context),
-          ), // App bar stays at the top
-          
-          // Rive animation container
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: IgnorePointer(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height*0.4,
-                width: MediaQuery.of(context).size.width,
-                child: rive.RiveAnimation.asset(
-                  'assets/rive/5_stepping_stone.riv',
-                  onInit: _onRiveInit,
-                  fit: BoxFit.contain,
+            // Rive animation container
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: IgnorePointer(
+                child: SizedBox(
+                  height: size.height * 0.4,
+                  width: size.width,
+                  child: rive.RiveAnimation.asset(
+                    'assets/rive/5_stepping_stone.riv',
+                    onInit: _onRiveInit,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),
-          ),
 
-          // Main character display with improved positioning
-          if (result.isEmpty)
-            Positioned(
+            // Main character display with improved positioning
+            if (result.isEmpty)
+              Positioned(
                 left: 0,
-              right: 0,
-              top: size.height * 0.2, // Adjusted to create space above
-               // Center the character horizontally and vertically
-              child: GestureDetector(
-                onTap: () async {
-                  await speakHindi(widget.character);
-                },
-                child: Container(
-                  width: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
-                  height: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
-                  margin: EdgeInsets.only(bottom: size.height * 0.2), // Move up to create space below
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: Text(
-                      widget.character,
-                      style: TextStyle(
-                        height: 1,
-                        fontSize: isSmallScreen ? 60 : 80,
-                        fontFamily: "Comic Sans MS",
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                right: 0,
+                top: size.height * 0.2, // Adjusted to create space above
+                // Center the character horizontally and vertically
+                child: GestureDetector(
+                  onTap: () async {
+                    await speakHindi(widget.character);
+                  },
+                  child: Container(
+                    width: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
+                    height: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
+                    margin: EdgeInsets.only(
+                        bottom:
+                            size.height * 0.2), // Move up to create space below
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(
+                        widget.character,
+                        style: TextStyle(
+                          height: 1,
+                          fontSize: isSmallScreen ? 60 : 80,
+                          fontFamily: "Comic Sans MS",
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
 
-          // Main UI control layout centered beneath the character
-          if (result.isEmpty)
-            Positioned(
-              bottom: size.height * 0.4, // Positioned above the stepping stones
-              left: 0,
-              right: 0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Listen Again Button
-                  Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () async {
-                          print("TTS button pressed");
-                          if (_isVadListening) {
-                            print("Stopping VAD for TTS");
-                            _vadHandler.stopListening();
-                            _isVadListening = false;
-                          }
-                          await speakHindiWithoutRecording(widget.character);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(24), // Slightly larger
-                          backgroundColor: Colors.blue[600],
-                          elevation: 4,
-                        ),
-                        child: const Icon(Icons.volume_up,
-                            color: Colors.white, size: 32),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Listen Again",
-                        style: TextStyle(
-                          color: Colors.blue[700],
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                  
-                  // Spacing between buttons
-                  SizedBox(width: size.width * 0.15),
-                  
-                  // Record Button
-                  Column(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () async {
-                          print("VAD button pressed");
-                          if (isSpeaking) {
-                            print("Cannot start recording while TTS is speaking");
-                            showErrorSnackBar("Please wait for the audio to finish playing");
-                            return;
-                          }
-
-                          setState(() {
+            // Main UI control layout centered beneath the character
+            if (result.isEmpty)
+              Positioned(
+                bottom:
+                    size.height * 0.4, // Positioned above the stepping stones
+                left: 0,
+                right: 0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Listen Again Button
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () async {
+                            print("TTS button pressed");
                             if (_isVadListening) {
-                              print("Stopping VAD");
+                              print("Stopping VAD for TTS");
                               _vadHandler.stopListening();
                               _isVadListening = false;
-                            } else {
-                              print("Starting VAD");
-                              _vadHandler.startListening(
-                                frameSamples: 1536,
-                                preSpeechPadFrames: kIsWeb ? 12 : 6,
-                                redemptionFrames: kIsWeb ? 10 : 5,
-                                minSpeechFrames: 3,
-                                positiveSpeechThreshold: 0.7,
-                                negativeSpeechThreshold: 0.35,
-                                submitUserSpeechOnPause: true,
-                              );
-                              _isVadListening = true;
                             }
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(24), // Slightly larger
-                          backgroundColor: _isVadListening
-                              ? Colors.red[600]
-                              : Colors.green[600],
-                          elevation: 4,
-                        ),
-                        child: Icon(
-                          _isVadListening ? Icons.mic : Icons.mic_none,
-                          color: Colors.white,
-                          size: 32,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: _isVadListening
-                              ? Colors.red[50]
-                              : Colors.green[50],
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: _isVadListening
-                                ? Colors.red[200]!
-                                : Colors.green[200]!,
-                            width: 1,
+                            await speakHindiWithoutRecording(widget.character);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                            padding:
+                                const EdgeInsets.all(24), // Slightly larger
+                            backgroundColor: Colors.blue[600],
+                            elevation: 4,
                           ),
+                          child: const Icon(Icons.volume_up,
+                              color: Colors.white, size: 32),
                         ),
-                        child: Text(
-                          _isVadListening
-                              ? "Listening..."
-                              : "Ready to Record",
+                        const SizedBox(height: 8),
+                        Text(
+                          "Listen Again",
                           style: TextStyle(
-                            color: _isVadListening
-                                ? Colors.red[700]
-                                : Colors.green[700],
+                            color: Colors.blue[700],
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+                      ],
+                    ),
 
-          // Play Last Recording button (only shown when available)
-          if (result.isEmpty && lastRecordingPath != null)
-            Positioned(
-              top: size.height * 0.15, // Positioned near the top
-              right: size.width * 0.05, // Aligned to the right
-              child: Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.8),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 4,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        await playLastRecording();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(12),
-                        backgroundColor: Colors.purple[700],
-                        elevation: 2,
-                      ),
-                      child: Icon(
-                        isPlayingRecording ? Icons.stop : Icons.play_arrow,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "Play Recording",
-                      style: TextStyle(
-                        color: Colors.purple[800],
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
+                    // Spacing between buttons
+                    SizedBox(width: size.width * 0.15),
+
+                    // Record Button
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () async {
+                            print("VAD button pressed");
+                            if (isSpeaking) {
+                              print(
+                                  "Cannot start recording while TTS is speaking");
+                              showErrorSnackBar(
+                                  "Please wait for the audio to finish playing");
+                              return;
+                            }
+
+                            setState(() {
+                              if (_isVadListening) {
+                                print("Stopping VAD");
+                                _vadHandler.stopListening();
+                                _isVadListening = false;
+                              } else {
+                                print("Starting VAD");
+                                _vadHandler.startListening(
+                                  frameSamples: 1536,
+                                  preSpeechPadFrames: kIsWeb ? 12 : 6,
+                                  redemptionFrames: kIsWeb ? 10 : 5,
+                                  minSpeechFrames: 3,
+                                  positiveSpeechThreshold: 0.7,
+                                  negativeSpeechThreshold: 0.35,
+                                  submitUserSpeechOnPause: true,
+                                );
+                                _isVadListening = true;
+                              }
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                            padding:
+                                const EdgeInsets.all(24), // Slightly larger
+                            backgroundColor: _isVadListening
+                                ? Colors.red[600]
+                                : Colors.green[600],
+                            elevation: 4,
+                          ),
+                          child: Icon(
+                            _isVadListening ? Icons.mic : Icons.mic_none,
+                            color: Colors.white,
+                            size: 32,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: _isVadListening
+                                ? Colors.red[50]
+                                : Colors.green[50],
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: _isVadListening
+                                  ? Colors.red[200]!
+                                  : Colors.green[200]!,
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            _isVadListening
+                                ? "Listening..."
+                                : "Ready to Record",
+                            style: TextStyle(
+                              color: _isVadListening
+                                  ? Colors.red[700]
+                                  : Colors.green[700],
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-            ),
-          
-          if (result.isNotEmpty)
-            pronunciationResultWidget(result, context, widget.character),
-            
-          // Recording indicator
-          if (isRecordingSegment)
-            Positioned(
-              top: size.height * 0.15, // Positioned at the top
-              left: 0,
-              right: 0,
-              child: Center(
+
+            // Play Last Recording button (only shown when available)
+            if (result.isEmpty && lastRecordingPath != null)
+              Positioned(
+                top: size.height * 0.15, // Positioned near the top
+                right: size.width * 0.05, // Aligned to the right
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.white.withOpacity(0.8),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
+                        color: Colors.black26,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
                       ),
                     ],
                   ),
-                  child: Row(
+                  child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.mic,
-                        color: Colors.red,
-                        size: isSmallScreen ? 20 : 24,
+                      ElevatedButton(
+                        onPressed: () async {
+                          await playLastRecording();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(12),
+                          backgroundColor: Colors.purple[700],
+                          elevation: 2,
+                        ),
+                        child: Icon(
+                          isPlayingRecording ? Icons.stop : Icons.play_arrow,
+                          color: Colors.white,
+                          size: 24,
+                        ),
                       ),
-                      SizedBox(width: isSmallScreen ? 6 : 8),
+                      const SizedBox(height: 4),
                       Text(
-                        "Recording attempt ${totalAttempts + 1}",
+                        "Play Recording",
                         style: TextStyle(
-                          fontSize: isSmallScreen ? 14 : 16,
-                          fontWeight: FontWeight.bold,
+                          color: Colors.purple[800],
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ),
-        ],
-      ),
-    ),
-  );
-}
 
+            if (result.isNotEmpty)
+              pronunciationResultWidget(result, context, widget.character),
+
+            // Recording indicator
+            if (isRecordingSegment)
+              Positioned(
+                top: size.height * 0.15, // Positioned at the top
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.mic,
+                          color: Colors.red,
+                          size: isSmallScreen ? 20 : 24,
+                        ),
+                        SizedBox(width: isSmallScreen ? 6 : 8),
+                        Text(
+                          "Recording attempt ${totalAttempts + 1}",
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 14 : 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 
   void showErrorSnackBar(String message) {
     final snackBar = SnackBar(
@@ -673,29 +764,28 @@ Widget build(BuildContext context) {
         intermediateResults.add(apiResult is List ? apiResult : [apiResult]);
 
         List<dynamic> results = apiResult is List ? apiResult : [apiResult];
-      var item = results[0];
-          if (item is Map) {
-            String resultText = item.values.first.toString().toLowerCase();
-            // Check if the pronunciation matches the correct phoneme
-            bool isCorrectPronunciation =
-                resultText.contains('correctly') && correctPhoneme.isNotEmpty;
+        var item = results[0];
+        if (item is Map) {
+          String resultText = item.values.first.toString().toLowerCase();
+          // Check if the pronunciation matches the correct phoneme
+          bool isCorrectPronunciation =
+              resultText.contains('correctly') && correctPhoneme.isNotEmpty;
 
-            if (isCorrectPronunciation) {
-              correctAttempts++;
-              _triggerNextAnimation();
+          if (isCorrectPronunciation) {
+            correctAttempts++;
+            _triggerNextAnimation();
 
-              if (correctAttempts >= REQUIRED_CORRECT_ATTEMPTS) {
-                setState(() {
-                  isRecordingComplete = true;
-                  loading = false;
-                });
-                processResults(intermediateResults);
-                return true;
-              }
+            if (correctAttempts >= REQUIRED_CORRECT_ATTEMPTS) {
+              setState(() {
+                isRecordingComplete = true;
+                loading = false;
+              });
+              processResults(intermediateResults);
               return true;
             }
+            return true;
           }
-        
+        }
 
         // Play wrong answer sound if pronunciation is incorrect
         await _audioPlayer.play(AssetSource('assets/audio/wrong_answer.mp3'));
@@ -711,7 +801,7 @@ Widget build(BuildContext context) {
     }
   }
 
- void processResults(List<dynamic> allResults) {
+  void processResults(List<dynamic> allResults) {
     Map<String, List<String>> combinedResults = {};
 
     for (var apiResult in allResults) {
@@ -862,7 +952,7 @@ Widget build(BuildContext context) {
                   bool isCorrect = false;
                   String feedback = "";
 
-                 if (attemptResult is List && attemptResult.isNotEmpty) {
+                  if (attemptResult is List && attemptResult.isNotEmpty) {
                     var firstResult = attemptResult[0];
                     if (firstResult is Map) {
                       feedback = firstResult.values.first.toString();
@@ -952,23 +1042,24 @@ Widget build(BuildContext context) {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton.icon(
                 onPressed: () {
-                    UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                            .updateExerciseData(
-                          euid: data_pro.todaysExercises[startExerciseIndex]["uid"],
-                          date: data_pro.todaysExercises[startExerciseIndex]["date"],
-                          performance:{
-                            "result":result,
-                            "time":DateTime.now().toIso8601String(),
-                            "correctAttempts":correctAttempts,
-                            "totalAttempts":totalAttempts,
-                          
-                          }
-                        );
+                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                      .updateExerciseData(
+                          euid: data_pro.todaysExercises[startExerciseIndex]
+                              ["uid"],
+                          date: data_pro.todaysExercises[startExerciseIndex]
+                              ["date"],
+                          performance: {
+                        "result": result,
+                        "time": DateTime.now().toIso8601String(),
+                        "correctAttempts": correctAttempts,
+                        "totalAttempts": totalAttempts,
+                      });
                   if (correctAttempts >= REQUIRED_CORRECT_ATTEMPTS) {
                     data_pro.incrementLevel(startExerciseIndex);
                   }
                   Navigator.pop(context);
                 },
+                
                 icon: const Icon(Icons.arrow_forward),
                 label: const Text("NEXT"),
                 style: ElevatedButton.styleFrom(
@@ -1018,6 +1109,7 @@ Widget build(BuildContext context) {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _recordingPlayer.dispose();
     if (_isVadListening) {
       _vadHandler.stopListening();
@@ -1027,6 +1119,7 @@ Widget build(BuildContext context) {
     riveController?.dispose();
     _overlayEntry?.remove();
     _overlayEntry = null;
+    _shouldRestartVadAfterPlayback = false;
     super.dispose();
   }
 

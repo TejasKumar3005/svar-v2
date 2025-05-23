@@ -98,15 +98,15 @@ class _CustomButtonState extends State<CustomButton> {
         imagePath = ImageConstant.imgPlayBtn;
         width = 50;
         height = 50;
-        width = widget.width ?? 0;
+
         buttontype = ChicletButtonTypes.oval;
         defaultChild = const Icon(Icons.play_arrow);
         break;
       case ButtonType.ImagePause:
-        imagePath = ImageConstant.imgPlayBtn;
+        imagePath = ImageConstant.imgPauseBtn;
         width = 50;
         height = 50;
-        width = widget.width ?? 0;
+  
         buttontype = ChicletButtonTypes.oval;
         defaultChild = const Icon(Icons.pause);
         break;

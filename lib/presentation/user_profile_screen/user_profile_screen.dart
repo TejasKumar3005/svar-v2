@@ -10,9 +10,7 @@ import 'package:svar_new/presentation/home/provider/streak_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/presentation/home/provider/main_interaction_provider.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
+
 
 import 'package:svar_new/widgets/customTextField.dart';
 import 'package:svar_new/widgets/custom_button.dart';
@@ -146,65 +144,6 @@ class _ProfilePageState extends State<ProfilePage>
     // Note: The navigation logic is handled inside the CustomBottomNavigationBar
   }
 
-  // Function to pick and upload image
-  Future<void> _pickAndUploadImage() async {
-    try {
-      final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-      if (image == null) return;
-
-      setState(() {
-        _isUploading = true;
-      });
-
-      // Get current user ID
-      final String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-      if (uid.isEmpty) return;
-
-      // Upload to Firebase Storage
-      final File imageFile = File(image.path);
-      final Reference storageRef = FirebaseStorage.instance
-          .ref()
-          .child('profile_images')
-          .child('$uid.jpg');
-
-      final UploadTask uploadTask = storageRef.putFile(
-        imageFile,
-        SettableMetadata(contentType: 'image/jpeg'),
-      );
-
-      // Get download URL once upload completes
-      final TaskSnapshot taskSnapshot =
-          await uploadTask.whenComplete(() => null);
-      final String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-
-      // Update Firestore with new image URL
-      await FirebaseFirestore.instance.collection('patients').doc(uid).update({
-        'profileImage': downloadUrl,
-      });
-
-      // Show success message
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile picture updated successfully')),
-        );
-      }
-    } catch (e) {
-      print('Error picking/uploading image: $e');
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update profile picture: $e')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isUploading = false;
-        });
-      }
-    }
-  }
 
   @override
   void initState() {
@@ -575,16 +514,7 @@ class _ProfilePageState extends State<ProfilePage>
                                   color: Colors.white,
                                   width: 4), // White border
                             ),
-                            child: _isUploading
-                                ? CircleAvatar(
-                                    radius: 50,
-                                    backgroundColor: Colors.lightBlue.shade100,
-                                    child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white),
-                                    ),
-                                  )
-                                : CircleAvatar(
+                            child: CircleAvatar(
                                     radius: 50,
                                     backgroundColor: Colors.lightBlue.shade200,
                                     backgroundImage:
@@ -597,43 +527,40 @@ class _ProfilePageState extends State<ProfilePage>
                                               ) as ImageProvider,
                                   ),
                           ),
-                          GestureDetector(
-                            onTap: _pickAndUploadImage,
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.2),
-                                    blurRadius: 5,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
-                              ),
-                              child: CircleAvatar(
-                                radius: 15,
-                                backgroundColor: _isUploading
-                                    ? Colors.grey
-                                    : Color(0xFF1cb0f6),
-                                child: _isUploading
-                                    ? SizedBox(
-                                        width: 10,
-                                        height: 10,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                  Colors.white),
-                                        ),
-                                      )
-                                    : const Icon(
-                                        Icons.edit,
-                                        size: 15,
-                                        color: Colors.white,
+                          Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  blurRadius: 5,
+                                  spreadRadius: 1,
+                                ),
+                              ],
+                            ),
+                            child: CircleAvatar(
+                              radius: 15,
+                              backgroundColor: _isUploading
+                                  ? Colors.grey
+                                  : Color(0xFF1cb0f6),
+                              child: _isUploading
+                                  ? SizedBox(
+                                      width: 10,
+                                      height: 10,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
                                       ),
-                              ),
+                                    )
+                                  : const Icon(
+                                      Icons.edit,
+                                      size: 15,
+                                      color: Colors.white,
+                                    ),
                             ),
                           ),
                         ],
