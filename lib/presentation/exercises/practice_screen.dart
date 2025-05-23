@@ -104,7 +104,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                                     'Continue Today\'s Exercises',
                                     style: Theme.of(context)
                                         .textTheme
-                                        .headlineSmall
+                                        .titleMedium
                                         ?.copyWith(color: Colors.white),
                                   ),
                                   Padding(

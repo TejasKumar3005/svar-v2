@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:svar_new/presentation/patient_report/buildBottomNavigationBar.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -63,6 +64,9 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
   @override
   void initState() {
     super.initState();
+      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -194,6 +198,8 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
       }
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {

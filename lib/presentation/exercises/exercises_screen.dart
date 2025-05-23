@@ -615,7 +615,7 @@ Widget build(BuildContext context) {
             print(
                 "type ${actualIndex}: ${data_pro.todaysExercises[actualIndex]['type']}");
             textRun_subtype.text =
-                (data_pro.todaysExercises[actualIndex]['description'] as String).split(' (')[0];
+                (data_pro.todaysExercises[actualIndex]['description']as String).split(' (')[0];
           } else {
             debugPrint("Error: '$subtypeKey' text run not found!");
           }

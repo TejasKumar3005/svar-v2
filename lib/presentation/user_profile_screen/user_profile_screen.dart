@@ -209,7 +209,9 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   void initState() {
     super.initState();
-
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       setState(() {
@@ -278,7 +280,7 @@ class _ProfilePageState extends State<ProfilePage>
     _tabController.dispose();
     super.dispose();
   }
-
+     
   // Change password dialog
   Future<void> _showChangePasswordDialog() async {
     final TextEditingController currentPasswordController =
@@ -462,83 +464,81 @@ class _ProfilePageState extends State<ProfilePage>
     childAgeController.text = widget.userData?["age"] ?? '';
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildProfileHeader(),
-              _buildInfoTabs(),
-              // _buildSupportSection(),
-              // Conditional buttons based on field changes
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: _hasChanges
-                    ? Row(
-                        children: [
-                          Expanded(
-                            child: CustomButton(
-                              type: ButtonType.Save,
-                              onPressed: () {
-                                UserData(
-                                        uid: FirebaseAuth
-                                                .instance.currentUser?.uid ??
-                                            '')
-                                    .updateUserFields({
-                                  "name": childNameController.text,
-                                  "fathersName": fatherNameController.text,
-                                  "mothersName": motherNameController.text,
-                                  "address": addressController.text,
-                                  "email": emailController.text,
-                                  "parentPhone": contactController.text,
-                                  "age": childAgeController.text,
-                                }, widget.userData!);
-
-                                // Update original values after save
-                                _initializeOriginalValues();
-
-                                // Reset hasChanges
-                                setState(() {
-                                  _hasChanges = false;
-                                });
-
-                                // Show success message
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text('Profile updated successfully'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-
-                                print("Save button pressed");
-                              },
-                            ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildProfileHeader(),
+            _buildInfoTabs(),
+            // _buildSupportSection(),
+            // Conditional buttons based on field changes
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _hasChanges
+                  ? Row(
+                      children: [
+                        Expanded(
+                          child: CustomButton(
+                            type: ButtonType.Save,
+                            onPressed: () {
+                              UserData(
+                                      uid: FirebaseAuth
+                                              .instance.currentUser?.uid ??
+                                          '')
+                                  .updateUserFields({
+                                "name": childNameController.text,
+                                "fathersName": fatherNameController.text,
+                                "mothersName": motherNameController.text,
+                                "address": addressController.text,
+                                "email": emailController.text,
+                                "parentPhone": contactController.text,
+                                "age": childAgeController.text,
+                              }, widget.userData!);
+      
+                              // Update original values after save
+                              _initializeOriginalValues();
+      
+                              // Reset hasChanges
+                              setState(() {
+                                _hasChanges = false;
+                              });
+      
+                              // Show success message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('Profile updated successfully'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+      
+                              print("Save button pressed");
+                            },
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: CustomButton(
-                              type: ButtonType.Logout,
-                              onPressed: () {
-                                FirebaseAuth.instance.signOut();
-                                NavigatorService.pushNamed(
-                                    AppRoutes.loginSignup);
-                              },
-                            ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: CustomButton(
+                            type: ButtonType.Logout,
+                            onPressed: () {
+                              FirebaseAuth.instance.signOut();
+                              NavigatorService.pushNamed(
+                                  AppRoutes.loginSignup);
+                            },
                           ),
-                        ],
-                      )
-                    : CustomButton(
-                        type: ButtonType.Logout,
-                        onPressed: () {
-                          FirebaseAuth.instance.signOut();
-                          NavigatorService.pushNamed(AppRoutes.loginSignup);
-                        },
-                      ),
-              ),
-              const SizedBox(height: 80), // Space for bottom navigation bar
-            ],
-          ),
+                        ),
+                      ],
+                    )
+                  : CustomButton(
+                      type: ButtonType.Logout,
+                      onPressed: () {
+                        FirebaseAuth.instance.signOut();
+                        NavigatorService.pushNamed(AppRoutes.loginSignup);
+                      },
+                    ),
+            ),
+            const SizedBox(height: 80), // Space for bottom navigation bar
+          ],
         ),
       ),
     );
