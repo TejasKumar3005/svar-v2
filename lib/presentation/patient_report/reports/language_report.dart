@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LanguageReport extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -17,7 +18,7 @@ class LanguageReport extends StatelessWidget {
         // Non-Verbal Communication Section
         _buildSection(
           title: 'Non-Verbal Communication',
-          color: Colors.purple.shade700,
+          color: Color(0xFF1cb0f6),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -25,8 +26,9 @@ class LanguageReport extends StatelessWidget {
               Expanded(
                 child: _buildSubsection(
                   title: 'Expression',
-                  color: Colors.purple.shade700,
-                  items: _getActiveItems(nonVerbal['expression'] as Map<String, dynamic>?),
+                  color: Color(0xFF1cb0f6),
+                  items: _getActiveItems(
+                      nonVerbal['expression'] as Map<String, dynamic>?),
                 ),
               ),
               const SizedBox(width: 16),
@@ -34,8 +36,9 @@ class LanguageReport extends StatelessWidget {
               Expanded(
                 child: _buildSubsection(
                   title: 'Reception',
-                  color: Colors.purple.shade700,
-                  items: _getActiveItems(nonVerbal['reception'] as Map<String, dynamic>?),
+                  color: Color(0xFF1cb0f6),
+                  items: _getActiveItems(
+                      nonVerbal['reception'] as Map<String, dynamic>?),
                 ),
               ),
             ],
@@ -45,7 +48,7 @@ class LanguageReport extends StatelessWidget {
         // Verbal Communication Section
         _buildSection(
           title: 'Verbal Communication',
-          color: Colors.purple.shade700,
+          color: Color(0xFF1cb0f6),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -63,10 +66,10 @@ class LanguageReport extends StatelessWidget {
                     children: [
                       Text(
                         'Expression',
-                        style: TextStyle(
+                        style: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.purple.shade700,
+                          color: Color(0xFF1cb0f6),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -75,10 +78,12 @@ class LanguageReport extends StatelessWidget {
                           'Level',
                           verbal['expression']['level'] == 'none'
                               ? 'No verbal expression'
-                              : verbal['expression']['level'].replaceAllMapped(
-                                  RegExp(r'([A-Z])'),
-                                  (match) => ' ${match.group(0)}',
-                                ).trim(),
+                              : verbal['expression']['level']
+                                  .replaceAllMapped(
+                                    RegExp(r'([A-Z])'),
+                                    (match) => ' ${match.group(0)}',
+                                  )
+                                  .trim(),
                         ),
                         if (verbal['expression']['details'] != null) ...[
                           const SizedBox(height: 12),
@@ -107,10 +112,10 @@ class LanguageReport extends StatelessWidget {
                     children: [
                       Text(
                         'Reception',
-                        style: TextStyle(
+                        style: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.purple.shade700,
+                          color: Color(0xFF1cb0f6),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -118,12 +123,12 @@ class LanguageReport extends StatelessWidget {
                         if (verbal['reception']['simpleCommands'] == true)
                           _buildBulletPoint(
                             'Understands simple commands',
-                            Colors.purple.shade700,
+                            Color(0xFF1cb0f6),
                           ),
                         if (verbal['reception']['questions'] == true)
                           _buildBulletPoint(
                             'Responds to questions',
-                            Colors.purple.shade700,
+                            Color(0xFF1cb0f6),
                           ),
                         if (verbal['reception']['details'] != null) ...[
                           const SizedBox(height: 12),
@@ -137,9 +142,10 @@ class LanguageReport extends StatelessWidget {
                             verbal['reception']['details'] == null)
                           Text(
                             'No reception details provided',
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               fontStyle: FontStyle.italic,
                               color: Colors.grey.shade600,
+                              fontSize: 14,
                             ),
                           ),
                       ],
@@ -155,7 +161,7 @@ class LanguageReport extends StatelessWidget {
         if (communication['details'] != null)
           _buildSection(
             title: 'Communication Content',
-            color: Colors.purple.shade700,
+            color: Color(0xFF1cb0f6),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -166,8 +172,10 @@ class LanguageReport extends StatelessWidget {
               ),
               child: Text(
                 communication['details'],
-                style: const TextStyle(
+                style: GoogleFonts.inter(
                   height: 1.5,
+                  fontSize: 14,
+                  color: Color(0xFF4b4b4b),
                 ),
               ),
             ),
@@ -178,14 +186,14 @@ class LanguageReport extends StatelessWidget {
 
   List<String> _getActiveItems(Map<String, dynamic>? obj) {
     if (obj == null) return [];
-    
+
     return obj.entries
-      .where((entry) => entry.value == true)
-      .map((entry) => entry.key.replaceAllMapped(
-        RegExp(r'([A-Z])'), 
-        (match) => ' ${match.group(0)}'
-      ).trim())
-      .toList();
+        .where((entry) => entry.value == true)
+        .map((entry) => entry.key
+            .replaceAllMapped(
+                RegExp(r'([A-Z])'), (match) => ' ${match.group(0)}')
+            .trim())
+        .toList();
   }
 
   Widget _buildSection({
@@ -198,13 +206,23 @@ class LanguageReport extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+          child: Row(
+            children: [
+              Icon(
+                Icons.chat_bubble_outline,
+                color: color,
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4b4b4b),
+                ),
+              ),
+            ],
           ),
         ),
         child,
@@ -230,7 +248,7 @@ class LanguageReport extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: GoogleFonts.inter(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: color,
@@ -242,9 +260,10 @@ class LanguageReport extends StatelessWidget {
           else
             Text(
               'No data available',
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontStyle: FontStyle.italic,
                 color: Colors.grey.shade600,
+                fontSize: 14,
               ),
             ),
         ],
@@ -260,7 +279,7 @@ class LanguageReport extends StatelessWidget {
         children: [
           Text(
             '•',
-            style: TextStyle(
+            style: GoogleFonts.inter(
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
               color: color,
@@ -270,8 +289,9 @@ class LanguageReport extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style: GoogleFonts.inter(
                 fontSize: 14.0,
+                color: Color(0xFF4b4b4b),
               ),
             ),
           ),
@@ -286,16 +306,16 @@ class LanguageReport extends StatelessWidget {
         children: [
           TextSpan(
             text: '$label: ',
-            style: TextStyle(
-              color: Colors.purple.shade700,
+            style: GoogleFonts.inter(
+              color: Color(0xFF1cb0f6),
               fontWeight: FontWeight.bold,
               fontSize: 14,
             ),
           ),
           TextSpan(
             text: value,
-            style: const TextStyle(
-              color: Colors.black87,
+            style: GoogleFonts.inter(
+              color: Color(0xFF4b4b4b),
               fontSize: 14,
             ),
           ),

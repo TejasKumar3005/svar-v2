@@ -16,6 +16,7 @@ enum ButtonType {
   ArrowLeftYellow,
   ArrowRightGreen,
   Login,
+  Logout,
   Back,
   SignUp,
   Home,
@@ -38,7 +39,8 @@ enum ButtonType {
   CreateAccount,
   ResetPassword,
   Cancel,
-  Save
+  Save,
+  Practice
 }
 
 class CustomButton extends StatefulWidget {
@@ -47,6 +49,7 @@ class CustomButton extends StatefulWidget {
   final double? progress; // Only used for Spectrum
   final Color? color; // Only used for Spectrum
   final dynamic child;
+  final double? width;
   const CustomButton({
     Key? key,
     required this.type,
@@ -54,6 +57,7 @@ class CustomButton extends StatefulWidget {
     this.progress,
     this.color,
     this.child,
+    this.width,
   }) : super(key: key);
 
   @override
@@ -79,12 +83,14 @@ class _CustomButtonState extends State<CustomButton> {
       case ButtonType.Play:
         imagePath = ImageConstant.playBtn;
         height = 60;
+        width = widget.width ?? 0;
         buttontype = ChicletButtonTypes.oval;
         defaultChild = const Icon(Icons.play_arrow_rounded);
         break;
       case ButtonType.Settings:
         imagePath = ImageConstant.settingsBtn;
         height = 60;
+        width = widget.width ?? 0;
         buttontype = ChicletButtonTypes.oval;
         defaultChild = const Icon(Icons.settings);
         break;
@@ -92,6 +98,7 @@ class _CustomButtonState extends State<CustomButton> {
         imagePath = ImageConstant.imgPlayBtn;
         width = 50;
         height = 50;
+        width = widget.width ?? 0;
         buttontype = ChicletButtonTypes.oval;
         defaultChild = const Icon(Icons.play_arrow);
         break;
@@ -99,19 +106,29 @@ class _CustomButtonState extends State<CustomButton> {
         imagePath = ImageConstant.imgPlayBtn;
         width = 50;
         height = 50;
+        width = widget.width ?? 0;
         buttontype = ChicletButtonTypes.oval;
         defaultChild = const Icon(Icons.pause);
         break;
 
+      case ButtonType.Practice:
+        height = 80;
+        defaultChild = Text(
+          "Practice",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
+        break;
+
       case ButtonType.Save:
-      
         height = 60;
-      
+        width = widget.width ?? 0;
         defaultChild = Text(
           "Save",
           style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
         );
         break;
+
+
 
       case ButtonType.ArrowLeftYellow:
         imagePath = ImageConstant.imgArrowLeftYellow;
@@ -136,6 +153,15 @@ class _CustomButtonState extends State<CustomButton> {
           style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
         );
         break;
+
+      case ButtonType.Logout:
+        height = 60;
+        width = widget.width ?? 0;
+        defaultChild = Text(
+          "Logout",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        );
+        break;
       case ButtonType.AlreadyHaveAccount:
         height = 60;
         defaultChild = Text(
@@ -144,13 +170,13 @@ class _CustomButtonState extends State<CustomButton> {
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Color(0xFFF47C37)),
-        );  
-        break;  
-        
+        );
+        break;
+
       case ButtonType.Cancel:
         height = 60;
         defaultChild = Text(
-            "CANCEL",
+          "CANCEL",
           style: GoogleFonts.inter(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -162,7 +188,8 @@ class _CustomButtonState extends State<CustomButton> {
         width = 80;
         defaultChild = Text(
           "Send Reset Email",
-          style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold,color: Colors.white),
+          style: GoogleFonts.inter(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
         );
         break;
       case ButtonType.CreateAccount:
@@ -334,7 +361,7 @@ class _CustomButtonState extends State<CustomButton> {
         widget.type == ButtonType.SignUp ||
         widget.type == ButtonType.Next ||
         widget.type == ButtonType.Video1 ||
-        widget.type == ButtonType.Save ||
+      
         widget.type == ButtonType.Video2) {
       width = MediaQuery.of(context).size.width * 0.7;
       color = null;
@@ -342,7 +369,8 @@ class _CustomButtonState extends State<CustomButton> {
     if (widget.type == ButtonType.AlreadyHaveAccount ||
         widget.type == ButtonType.Continue ||
         widget.type == ButtonType.ResetPassword ||
-        widget.type == ButtonType.CreateAccount) {
+        widget.type == ButtonType.CreateAccount ||
+        widget.type == ButtonType.Practice) {
       width = MediaQuery.of(context).size.width * 0.9;
       color = Color(0xFFF47C37);
     }
@@ -352,14 +380,17 @@ class _CustomButtonState extends State<CustomButton> {
       color = Color(0xFFF47C37);
     }
 
-    if(widget.type == ButtonType.Save){
-  
+    if (widget.type == ButtonType.Save) {
       color = Color(0xFF1cb0f6);
     }
 
     if (widget.type == ButtonType.Cancel) {
       width = 80;
-      color =null;
+      color = null;
+    }
+
+    if(widget.type == ButtonType.Logout){
+      color = Color(0xFFff4b4b);
     }
 
     // Handle Spectrum type with progress and color
@@ -425,7 +456,8 @@ class _CustomButtonState extends State<CustomButton> {
           onPressed_state();
         },
         buttonType: buttontype,
-        backgroundColor: widget.type != ButtonType.AlreadyHaveAccount && widget.type != ButtonType.Cancel
+        backgroundColor: widget.type != ButtonType.AlreadyHaveAccount &&
+                widget.type != ButtonType.Cancel
             ? color != null
                 ? color
                 : Color.fromARGB(255, 29, 161, 242)

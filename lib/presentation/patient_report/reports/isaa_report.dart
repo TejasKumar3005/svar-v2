@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class IsaaReport extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -109,9 +110,10 @@ class IsaaReport extends StatelessWidget {
     final String remarks = data['remarks'] ?? '';
 
     // Calculate total score and severity if not provided in data
-    final Map<String, dynamic> result = data['totalScore'] != null && data['severity'] != null
-        ? {'totalScore': data['totalScore'], 'severity': data['severity']}
-        : calculateIsa(scores);
+    final Map<String, dynamic> result =
+        data['totalScore'] != null && data['severity'] != null
+            ? {'totalScore': data['totalScore'], 'severity': data['severity']}
+            : calculateIsa(scores);
 
     final int totalScore = result['totalScore'];
     final String severity = result['severity'];
@@ -119,235 +121,241 @@ class IsaaReport extends StatelessWidget {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Title
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text(
-                'Indian Scale for Assessment for Autism (ISAA) Report',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.indigo.shade800,
-                ),
-              ),
-            ),
-
+          
             // Summary Card
-            Card(
-              elevation: 2,
+            Container(
               margin: const EdgeInsets.only(bottom: 24.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.0),
+                border: Border.all(color: Colors.grey.shade200),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.05),
+                    spreadRadius: 1,
+                    blurRadius: 4,
+                    offset: Offset(0, 1),
+                  ),
+                ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Summary',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.indigo.shade700,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.summarize_outlined,
+                        color: Color(0xFF1cb0f6),
+                        size: 20,
                       ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Summary',
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4b4b4b),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Classification Table
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    const SizedBox(height: 16),
-                    
-                    // Classification Table
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        children: [
-                          // Table Header
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.indigo.shade100,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(8),
-                                topRight: Radius.circular(8),
+                    child: Column(
+                      children: [
+                        // Table Header
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.indigo.shade100,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  'Classification',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.indigo.shade800,
+                                  ),
+                                ),
                               ),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: Text(
-                                    'Classification',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.indigo.shade800,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    'No Autism',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.indigo.shade800,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    'Mild Autism',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.indigo.shade800,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    'Moderate Autism',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.indigo.shade800,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    'Severe Autism',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.indigo.shade800,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          
-                          // Table Data Row
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: Text(
-                                    'Score Range',
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                const Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    '< 70',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                const Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    '70 - 106',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                const Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    '107 - 153',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                const Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    '> 153',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Results Summary
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.indigo.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Total Score: ',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 15,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: hasScores ? '$totalScore' : 'N/A',
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'No Autism',
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Colors.indigo.shade700,
+                                    color: Colors.indigo.shade800,
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Classification: ',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 15,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: hasScores ? severity : 'N/A',
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Mild Autism',
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Colors.indigo.shade700,
+                                    color: Colors.indigo.shade800,
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Moderate Autism',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.indigo.shade800,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  'Severe Autism',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.indigo.shade800,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+
+                        // Table Data Row
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  'Score Range',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              const Expanded(
+                                flex: 2,
+                                child: Text(
+                                  '< 70',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              const Expanded(
+                                flex: 2,
+                                child: Text(
+                                  '70 - 106',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              const Expanded(
+                                flex: 2,
+                                child: Text(
+                                  '107 - 153',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              const Expanded(
+                                flex: 2,
+                                child: Text(
+                                  '> 153',
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Results Summary
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.indigo.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Total Score: ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              TextSpan(
+                                text: hasScores ? '$totalScore' : 'N/A',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.indigo.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Classification: ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              TextSpan(
+                                text: hasScores ? severity : 'N/A',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.indigo.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
 
@@ -376,17 +384,17 @@ class IsaaReport extends StatelessWidget {
                       ...sections.entries.map((entry) {
                         final sectionTitle = entry.key;
                         final items = entry.value;
-                        
+
                         // Filter items in this section that actually have a score recorded
                         final scoredItemsInSection = items
                             .where((item) => scores[item] != null)
                             .toList();
-                        
+
                         // Only render the section if there are scored items in it
                         if (scoredItemsInSection.isEmpty) {
                           return const SizedBox.shrink();
                         }
-                        
+
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -410,27 +418,27 @@ class IsaaReport extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             ...scoredItemsInSection.map((item) => Padding(
-                              padding: const EdgeInsets.only(
-                                left: 16,
-                                bottom: 8,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(item),
+                                  padding: const EdgeInsets.only(
+                                    left: 16,
+                                    bottom: 8,
                                   ),
-                                  Text(
-                                    getScoreLabel(scores[item]),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.indigo.shade700,
-                                    ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(item),
+                                      ),
+                                      Text(
+                                        getScoreLabel(scores[item]),
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.indigo.shade700,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            )),
+                                )),
                             const SizedBox(height: 16),
                           ],
                         );

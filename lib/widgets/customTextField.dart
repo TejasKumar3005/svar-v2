@@ -3,15 +3,22 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/presentation/patient_report/app_theme.dart';
 import 'package:svar_new/theme/theme_helper1.dart';
 
-Widget CustomTextField({required TextEditingController controller, String? hintText, Color? fillColor, Color? focusedBorderColor, Color? enabledBorderColor, String? initialValue}) {
+Widget CustomTextField(
+    {required TextEditingController controller,
+    String? hintText,
+    Color? fillColor,
+    Color? focusedBorderColor,
+    Color? enabledBorderColor,
+    String? initialValue}) {
   return TextFormField(
     cursorColor: appTheme.orangeA200,
     initialValue: initialValue,
     controller: controller,
-    
-    style: GoogleFonts.inter(color: AppTheme.textPrimaryColor, fontSize: 16,fontWeight: FontWeight.bold),
+    style: GoogleFonts.inter(
+        color: AppTheme.textPrimaryColor,
+        fontSize: 16,
+        fontWeight: FontWeight.bold),
     decoration: InputDecoration(
-      
       fillColor: const Color.fromARGB(255, 241, 240, 240),
       filled: true,
       contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
@@ -21,7 +28,6 @@ Widget CustomTextField({required TextEditingController controller, String? hintT
             color: const Color.fromARGB(255, 135, 135, 135), width: 2),
       ),
       hintText: hintText,
-    
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(
@@ -32,8 +38,8 @@ Widget CustomTextField({required TextEditingController controller, String? hintT
         borderSide: BorderSide(
             color: const Color.fromARGB(255, 187, 186, 186), width: 2),
       ),
-    
-      hintStyle: GoogleFonts.inter(color: Colors.grey, fontSize: 16,fontWeight: FontWeight.bold),
+      hintStyle: GoogleFonts.inter(
+          color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),
     ),
   );
 }

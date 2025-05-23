@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// A Flutter implementation of the ADHD Assessment Report
 /// Converted from React/Material-UI to Flutter
@@ -25,7 +26,7 @@ class AdhdReport extends StatelessWidget {
           'severity': 'info',
           'icon': Icons.info_outline,
           'title': 'Assessment Incomplete or Unavailable',
-          'color': Colors.blue
+          'color': Color(0xFF1cb0f6)
         };
       }
 
@@ -52,12 +53,13 @@ class AdhdReport extends StatelessWidget {
           'severity': 'info',
           'icon': Icons.info_outline,
           'title': 'Assessment Result',
-          'color': Colors.blue
+          'color': Color(0xFF1cb0f6)
         };
       }
     }
 
-    final Map<String, dynamic> diagnosisDetails = getDiagnosisDetails(results['diagnosis']);
+    final Map<String, dynamic> diagnosisDetails =
+        getDiagnosisDetails(results['diagnosis']);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,48 +67,73 @@ class AdhdReport extends StatelessWidget {
         // Title
         Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
-          child: Text(
-            'ADHD Assessment Report (DSM-5 Criteria)',
-            style: Theme.of(context).textTheme.titleLarge,
+          child: Row(
+            children: [
+              Icon(
+                Icons.psychology_outlined,
+                color: Color(0xFF1cb0f6),
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'ADHD Assessment Report (DSM-5 Criteria)',
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4b4b4b),
+                ),
+              ),
+            ],
           ),
         ),
 
         // Summary Section
         if (hasResults)
-          Card(
+          Container(
             margin: const EdgeInsets.only(bottom: 24.0),
-            shape: RoundedRectangleBorder(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: Colors.grey.shade200),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.05),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: Offset(0, 1),
+                ),
+              ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: _buildAlertBox(
-                context,
-                diagnosisDetails['icon'],
-                diagnosisDetails['title'],
-                diagnosisDetails['color'],
-                results['diagnosis'],
-                results['inattentionCount'],
-                results['hyperactivityCount'],
-              ),
+            child: _buildAlertBox(
+              context,
+              diagnosisDetails['icon'],
+              diagnosisDetails['title'],
+              diagnosisDetails['color'],
+              results['diagnosis'],
+              results['inattentionCount'],
+              results['hyperactivityCount'],
             ),
           )
         else
           Container(
             margin: const EdgeInsets.only(bottom: 24.0),
-            decoration: BoxDecoration(
-              color: Colors.blue[50],
-              borderRadius: BorderRadius.circular(4.0),
-              border: Border.all(color: Colors.blue[300]!),
-            ),
             padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Color(0xFF1cb0f6).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: Color(0xFF1cb0f6).withOpacity(0.3)),
+            ),
             child: Row(
               children: [
-                Icon(Icons.info_outline, color: Colors.blue[700], size: 24),
+                Icon(Icons.info_outline, color: Color(0xFF1cb0f6), size: 24),
                 const SizedBox(width: 16.0),
-                const Text(
+                Text(
                   'No assessment results found.',
-                  style: TextStyle(color: Colors.black87),
+                  style: GoogleFonts.inter(
+                    color: Color(0xFF4b4b4b),
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),
@@ -115,168 +142,231 @@ class AdhdReport extends StatelessWidget {
         // Present Symptoms Summary Section
         if (hasResults &&
             ((results['presentInattentionSymptoms'] != null &&
-                    (results['presentInattentionSymptoms'] as List).isNotEmpty) ||
+                    (results['presentInattentionSymptoms'] as List)
+                        .isNotEmpty) ||
                 (results['presentHyperactivitySymptoms'] != null &&
-                    (results['presentHyperactivitySymptoms'] as List).isNotEmpty)))
-          Card(
+                    (results['presentHyperactivitySymptoms'] as List)
+                        .isNotEmpty)))
+          Container(
             margin: const EdgeInsets.only(bottom: 24.0),
-            shape: RoundedRectangleBorder(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: Colors.grey.shade200),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.05),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: Offset(0, 1),
+                ),
+              ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Present Symptoms Summary',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  
-                  // Inattention Symptoms
-                  if (results['presentInattentionSymptoms'] != null &&
-                      (results['presentInattentionSymptoms'] as List).isNotEmpty)
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 12.0),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(4.0),
-                      ),
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.psychology, size: 16, color: Colors.blue[700]),
-                              const SizedBox(width: 8.0),
-                              Text(
-                                'Inattention',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.blue[700],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8.0),
-                          ...(results['presentInattentionSymptoms'] as List).map((symptom) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 4.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('• ', style: TextStyle(height: 1.5)),
-                                  Expanded(
-                                    child: Text(
-                                      symptom,
-                                      style: Theme.of(context).textTheme.bodyMedium,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.list_alt,
+                      color: Color(0xFF1cb0f6),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Present Symptoms Summary',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4b4b4b),
                       ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
 
-                  // Hyperactivity/Impulsivity Symptoms
-                  if (results['presentHyperactivitySymptoms'] != null &&
-                      (results['presentHyperactivitySymptoms'] as List).isNotEmpty)
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.green[50],
-                        borderRadius: BorderRadius.circular(4.0),
-                      ),
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.directions_run, size: 16, color: Colors.green[700]),
-                              const SizedBox(width: 8.0),
-                              Text(
-                                'Hyperactivity & Impulsivity',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.green[700],
-                                ),
+                // Inattention Symptoms
+                if (results['presentInattentionSymptoms'] != null &&
+                    (results['presentInattentionSymptoms'] as List).isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 12.0),
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF1cb0f6).withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(8.0),
+                      border:
+                          Border.all(color: Color(0xFF1cb0f6).withOpacity(0.2)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.psychology,
+                                size: 16, color: Color(0xFF1cb0f6)),
+                            const SizedBox(width: 8.0),
+                            Text(
+                              'Inattention',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF1cb0f6),
+                                fontSize: 14,
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 8.0),
-                          ...(results['presentHyperactivitySymptoms'] as List).map((symptom) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 4.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('• ', style: TextStyle(height: 1.5)),
-                                  Expanded(
-                                    child: Text(
-                                      symptom,
-                                      style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8.0),
+                        ...(results['presentInattentionSymptoms'] as List)
+                            .map((symptom) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 4.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('• ',
+                                    style: GoogleFonts.inter(
+                                        height: 1.5, color: Color(0xFF4b4b4b))),
+                                Expanded(
+                                  child: Text(
+                                    symptom,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 14,
+                                      color: Color(0xFF4b4b4b),
                                     ),
                                   ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        ],
-                      ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ],
                     ),
-                ],
-              ),
+                  ),
+
+                // Hyperactivity/Impulsivity Symptoms
+                if (results['presentHyperactivitySymptoms'] != null &&
+                    (results['presentHyperactivitySymptoms'] as List)
+                        .isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(8.0),
+                      border: Border.all(color: Colors.green.withOpacity(0.2)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.directions_run,
+                                size: 16, color: Colors.green.shade700),
+                            const SizedBox(width: 8.0),
+                            Text(
+                              'Hyperactivity & Impulsivity',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.green.shade700,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8.0),
+                        ...(results['presentHyperactivitySymptoms'] as List)
+                            .map((symptom) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 4.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('• ',
+                                    style: GoogleFonts.inter(
+                                        height: 1.5, color: Color(0xFF4b4b4b))),
+                                Expanded(
+                                  child: Text(
+                                    symptom,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 14,
+                                      color: Color(0xFF4b4b4b),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+              ],
             ),
           ),
 
         // Additional Notes Section
         if (additionalNotes.isNotEmpty)
-          Card(
+          Container(
             margin: const EdgeInsets.only(bottom: 24.0),
-            shape: RoundedRectangleBorder(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: Colors.grey.shade200),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.05),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: Offset(0, 1),
+                ),
+              ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Additional Clinical Notes',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  Card(
-                    margin: EdgeInsets.zero,
-                    color: Colors.grey[50],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.note_alt_outlined,
+                      color: Color(0xFF1cb0f6),
+                      size: 20,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        additionalNotes,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                    const SizedBox(width: 8),
+                    Text(
+                      'Additional Clinical Notes',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4b4b4b),
                       ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 12.0),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                ],
-              ),
+                  child: Text(
+                    additionalNotes,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: Color(0xFF4b4b4b),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
         // Disclaimer Footer
         Text(
           'Note: This assessment is based on DSM-5 criteria for ADHD. Professional clinical judgment should be used in conjunction with this screening tool for a formal diagnosis.',
-          style: TextStyle(
+          style: GoogleFonts.inter(
             fontSize: 12,
             color: Colors.grey[600],
             fontStyle: FontStyle.italic,
@@ -289,7 +379,10 @@ class AdhdReport extends StatelessWidget {
             padding: const EdgeInsets.only(top: 16.0),
             child: Text(
               'No ADHD assessment data available for this report.',
-              style: TextStyle(color: Colors.grey[600]),
+              style: GoogleFonts.inter(
+                color: Colors.grey[600],
+                fontSize: 14,
+              ),
             ),
           ),
       ],
@@ -307,11 +400,12 @@ class AdhdReport extends StatelessWidget {
     dynamic hyperactivityCount,
   ) {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4.0),
-        border: Border.all(color: color),
-      ),
       padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8.0),
+        border: Border.all(color: color.withOpacity(0.3)),
+        color: color.withOpacity(0.05),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -323,42 +417,50 @@ class AdhdReport extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontWeight: FontWeight.w500),
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF4b4b4b),
+                    fontSize: 14,
+                  ),
                 ),
                 const SizedBox(height: 8.0),
                 Text(
                   diagnosis ?? 'No diagnosis available',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF4b4b4b),
+                    fontSize: 14,
+                  ),
                 ),
                 const SizedBox(height: 8.0),
                 Text(
                   'Inattention Symptoms Present:',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     color: Colors.grey[700],
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                 ),
                 Text(
                   '${inattentionCount ?? 'N/A'} / 9',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     color: Colors.grey[700],
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 4.0),
                 Text(
                   'Hyperactivity/Impulsivity Symptoms Present:',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     color: Colors.grey[700],
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                 ),
                 Text(
                   '${hyperactivityCount ?? 'N/A'} / 9',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     color: Colors.grey[700],
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
                 ),

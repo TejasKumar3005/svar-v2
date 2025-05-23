@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/exercises/exercises_screen.dart';
 import 'package:svar_new/presentation/home/provider/streak_provider.dart';
 import 'package:svar_new/presentation/patient_report/app_theme.dart';
+import 'package:svar_new/widgets/custom_button.dart';
+
 class PracticeScreen extends StatefulWidget {
   const PracticeScreen({Key? key}) : super(key: key);
 
@@ -12,266 +15,241 @@ class PracticeScreen extends StatefulWidget {
 }
 
 class _PracticeScreenState extends State<PracticeScreen> {
-
   @override
   void initState() {
-  
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
-        
-        child: Consumer<StreakProvider>(
-          builder: (context, streakProvider, child) {
-            return Column(
-              children: [
-                // Top section with fox and greeting
-                Container(
-                  padding: EdgeInsets.all(20).copyWith(bottom: 30),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1cb0f6), // Exact blue color from image
-                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(60),bottomRight: Radius.circular(60)),
-                  ),
-                  child: Stack(
-                    children: [
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                      
-                        children: [
-                                                
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                'assets/images/img_mascot.png',
-                                height: 220,
+        child:
+            Consumer<StreakProvider>(builder: (context, streakProvider, child) {
+          return Column(
+            children: [
+              // Top section with fox and greeting
+              Container(
+                padding: EdgeInsets.all(20).copyWith(bottom: (MediaQuery.of(context).size.width * 0.1)/2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1cb0f6), // Exact blue color from image
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(30),
+                      bottomRight: Radius.circular(30)),
+                ),
+                child: Stack(
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+
+                            Image.asset(
+                              'assets/images/img_mascot.png',
+                              height: 220,
+                            ),
+
+                            const SizedBox(width: 30),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 25),
+                                  Text(
+                                    'Hey ${streakProvider.getPatientDetails()["fathersName"].contains(' ') ? streakProvider.getPatientDetails()["fathersName"].split(' ')[0] : streakProvider.getPatientDetails()["fathersName"]}!',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge
+                                        ?.copyWith(color: Colors.white),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                      'Ready to help\n ${streakProvider.patientName.contains(' ') ? streakProvider.patientName.split(' ')[0] : streakProvider.patientName} today?',
+
+                                    style: Theme.of(context)
+                                        .textTheme
+
+                                        .headlineMedium
+                                        ?.copyWith(color: Colors.white),
+                                  ),
+                                  
+                                ],
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 40),
+                        // Start button
+                      ],
+                    ),
+
+                    Positioned(
+  top: 170,
+                      left: 0,
+                      right: 0,
+                      child :CustomButton(type: ButtonType.Practice,
+                      child:  Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    child: Icon(Icons.bolt, color: Color(0xFFffde00), size: 30),
+                                  ),
+                                  Text(
+                                    'Continue Today\'s Exercises',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(color: Colors.white),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: Icon(Icons.bolt, color: Color(0xFFffde00), size: 30),
+                                  ),
+                                
+                                ],
+                              ),
+                      ),
+
+                       onPressed: () {
+                        NavigatorService.pushNamed(
+                                AppRoutes.exercisesScreen);
+                      })
+                    ),
+
+
+
+                  
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Progress section
+              Container(
+                margin: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                      color: Color.fromARGB(255, 187, 186, 186), width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: Offset(0, 4)),
+                  ],
+                ),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Progress',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF2196F3),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.local_fire_department,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
-                                     Text(
-                                      'Hey ${streakProvider.getPatientDetails()["fathersName"]}!',
-                                      style: Theme.of(context).textTheme.headlineLarge?.copyWith(color: Colors.white),
-                                    ),
-                                    const SizedBox(height: 4),
-                                     Text(
-                                      'Ready to help\n ${streakProvider.patientName} today?',
-                                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.local_fire_department,
-                                          color: Colors.amber,
-                                          size: 20,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '${streakProvider.streakCount} day streak',
-                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: const Color.fromARGB(255, 255, 140, 0)),
-                                        ),
-                                      ],
+                                    Text(
+                                      '${streakProvider.exercises[DateFormat('yyyy-MM-dd').format(DateTime.now())]?["completed"] ?? 0}/${streakProvider.exercises[DateFormat('yyyy-MM-dd').format(DateTime.now())]?["total"] ?? 0}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 40),
-                          // Start button
-                          
-                        ],
-                      ),
-                      Positioned(
-                      top: 170,
-                    
-                      left: 0,
-                      right: 0,
-                        child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFff9600),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    NavigatorService.pushNamed(AppRoutes.exercisesScreen);
-                                  },
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16, horizontal: 20),
-                                    child: Column(
-                                      children: [
-                                         Text(
-                                          'Start Talking with ${streakProvider.patientName}!',
-                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Icon(Icons.timer_outlined,
-                                                color: Colors.white, size: 16),
-                                            const SizedBox(width: 4),
-                                             Text(
-                                              '10 min',
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Icon(Icons.star,
-                                                color: Colors.white, size: 16),
-                                            const SizedBox(width: 4),
-                                             Text(
-                                              'Earn 10 XP',
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
+                                Text(
+                                  'Exercises',
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
-                              ),
+                              ],
                             ),
-                      ),
-                    ],
-                  ),
-                ),
-            
-                const SizedBox(height: 16),
-                      
-                // Progress section
-                Container(
-                  margin: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color:  Color.fromARGB(255, 187, 186, 186), width: 2),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4)),
-        ],
-      ),
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                           Text(
-                            'Progress',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF2196F3),
-                                  borderRadius: BorderRadius.circular(12),
+                            const Spacer(),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  "Today's Practice:",
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
-                                child: const Icon(
-                                  Icons.local_fire_department,
-                                  color: Colors.white,
-                                  size: 24,
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${5 * (streakProvider.exercises[DateFormat('yyyy-MM-dd').format(DateTime.now())]?["total"] ?? 0)} mins',
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
                                 ),
-                              ),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                       Text(
-                                        '2/4',
-                                        style:Theme.of(context).textTheme.titleMedium,
-                                      ),
-                                    ],
-                                  ),
-                                   Text(
-                                    'Sessions',
-                                    style: Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                ],
-                              ),
-                              const Spacer(),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                   Text(
-                                    "Today's Practice:",
-                                    style:  Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                  const SizedBox(height: 2),
-                                   Text(
-                                    '20 mins',
-                                    style: Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.local_fire_department,
-                                color: Colors.orange,
-                                size: 24,
-                              ),
-                              const SizedBox(width: 8),
-                             Text(
-                                '${streakProvider.streakCount} days in a row!',
-                                    style:Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                        
-                    ],
-                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.local_fire_department,
+                              color: Colors.orange,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${streakProvider.streakCount} days in a row!',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: _buildStreakSection(),
-            ),
-                    
-                            
-                      // Focus Sound button
-                    
-                      
-                            
-                      
-                    
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: _buildUpcomingSessions(),
-                      ),
-            
-                      SizedBox(height: 50),
-              ],
-            );
-          }
-        ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: _buildStreakSection(),
+              ),
+
+              // Focus Sound button
+
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: _buildUpcomingSessions(),
+              ),
+
+              SizedBox(height: 50),
+            ],
+          );
+        }),
       ),
     );
-
   }
-
 
   Widget _buildStreakSection() {
     return Consumer<StreakProvider>(
@@ -288,13 +266,16 @@ class _PracticeScreenState extends State<PracticeScreen> {
         final today = DateTime.now().weekday - 1;
 
         return Container(
-          
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color:  Color.fromARGB(255, 187, 186, 186), width: 2),
+            border:
+                Border.all(color: Color.fromARGB(255, 187, 186, 186), width: 2),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4)),
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: Offset(0, 4)),
             ],
           ),
           child: Padding(
@@ -307,7 +288,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   children: [
                     Text(
                       'Your Weekly Streak',
-                        style: Theme.of(context).textTheme.titleMedium,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                     Row(
                       children: [
@@ -315,7 +296,10 @@ class _PracticeScreenState extends State<PracticeScreen> {
                         SizedBox(width: 4),
                         Text(
                           '${streakProvider.streakCount} days',
-                          style: Theme.of(context).textTheme.titleSmall!.copyWith(color:AppTheme.primaryOrange ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall!
+                              .copyWith(color: AppTheme.primaryOrange),
                         ),
                       ],
                     ),
@@ -330,8 +314,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                         streakProvider.weeklyStreak[index] ?? false;
                     bool isToday = index == today;
                     bool isPast = index < today;
-                
-          
+
                     return Column(
                       children: [
                         Text(
@@ -365,7 +348,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
                           ),
                           child: Center(
                             child: isCompleted
-                                ? Icon(Icons.check, color: Colors.white, size: 20)
+                                ? Icon(Icons.check,
+                                    color: Colors.white, size: 20)
                                 : isToday
                                     ? Icon(Icons.play_arrow,
                                         color: Colors.white, size: 20)
@@ -412,16 +396,19 @@ class _PracticeScreenState extends State<PracticeScreen> {
         // If no upcoming sessions, show a message
         if (streakProvider.upcomingSessions.isEmpty) {
           return Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color:  Color.fromARGB(255, 187, 186, 186), width: 2),
-          
-            boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4)),
-            ],
-          ),
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                  color: Color.fromARGB(255, 187, 186, 186), width: 2),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, 4)),
+              ],
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -447,12 +434,16 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
         // Display all upcoming sessions
         return Container(
-            decoration: BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-              border: Border.all(color:  Color.fromARGB(255, 187, 186, 186), width: 2),
+            border:
+                Border.all(color: Color.fromARGB(255, 187, 186, 186), width: 2),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4)),
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: Offset(0, 4)),
             ],
           ),
           child: Padding(
@@ -472,7 +463,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                       .map((word) => word.isNotEmpty ? word[0] : '')
                       .join('')
                       .toUpperCase();
-          
+
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: Container(
@@ -598,7 +589,4 @@ class _PracticeScreenState extends State<PracticeScreen> {
       },
     );
   }
-
-
 }
-

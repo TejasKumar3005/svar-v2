@@ -37,45 +37,66 @@ class PlayBgm with WidgetsBindingObserver {
   }
 
   Future<void> _handleBackgroundState() async {
-    _wasPlayingBeforeBackground = audioPlayer.state == PlayerState.playing;
-    if (_wasPlayingBeforeBackground) {
-      await audioPlayer.pause();
+    try {
+      _wasPlayingBeforeBackground = audioPlayer.state == PlayerState.playing;
+      if (_wasPlayingBeforeBackground) {
+        await audioPlayer.pause();
+      }
+    } catch (e) {
+      print('Error handling background state: $e');
     }
   }
 
   Future<void> _handleForegroundState() async {
-    if (_wasPlayingBeforeBackground) {
-      await audioPlayer.resume();
+    try {
+      if (_wasPlayingBeforeBackground) {
+        await audioPlayer.resume();
+      }
+    } catch (e) {
+      print('Error handling foreground state: $e');
     }
   }
 
   // Method to play music
   Future<void> playMusic(String audio, String mime, bool repeat) async {
-    // Stop any currently playing audio before playing a new one
-    await stopMusic();
+    try {
+      // Stop any currently playing audio before playing a new one
+      await stopMusic();
 
-    // Set release mode to loop if needed
-    if (repeat) {
-      audioPlayer.setReleaseMode(ReleaseMode.loop);
+      // Set release mode to loop if needed
+      if (repeat) {
+        audioPlayer.setReleaseMode(ReleaseMode.loop);
+      }
+
+      // Play the audio - AssetSource automatically adds 'assets/' prefix
+      await audioPlayer.play(
+        AssetSource('audio/bgm/$audio'), // Removed 'assets/' prefix
+        volume: 0.5,
+      );
+    } catch (e) {
+      print('Error playing audio $audio: $e');
+      // Optionally, you can try to continue without crashing the app
     }
-
-    // Play the audio
-    await audioPlayer.play(
-      AssetSource('assets/audio/bgm/$audio', mimeType: mime),
-      volume: 0.5,
-    );
   }
 
   // Method to stop music
   Future<void> stopMusic() async {
-    if (audioPlayer.state == PlayerState.playing) {
-      await audioPlayer.stop();
+    try {
+      if (audioPlayer.state == PlayerState.playing) {
+        await audioPlayer.stop();
+      }
+    } catch (e) {
+      print('Error stopping audio: $e');
     }
   }
 
   // Method to set volume
   Future<void> setVolume(double volume) async {
-    await audioPlayer.setVolume(volume);
+    try {
+      await audioPlayer.setVolume(volume);
+    } catch (e) {
+      print('Error setting volume: $e');
+    }
   }
 
   // Cleanup method - should be called when app is disposed

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/core/app_export.dart'; // Make sure this import is correct
+import 'package:svar_new/presentation/patient_report/app_theme.dart';
 // Make sure this import is correct
 import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart'; // Make sure this import is correct
 import 'package:svar_new/widgets/custom_button.dart'; // Make sure this import is correct
@@ -175,26 +176,29 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width,
-            height: 80, // Fixed height to prevent layout shifts
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: _taglines.length,
-              onPageChanged: (int page) {
-                setState(() {
-                  _currentPage = page;
-                });
-              },
-              itemBuilder: (context, index) {
-                return Text(
-                  _taglines[index],
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                );
-              },
+            height: 90, // Fixed height to prevent layout shifts
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: _taglines.length,
+                onPageChanged: (int page) {
+                  setState(() {
+                    _currentPage = page;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  return Text(
+                    _taglines[index],
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimaryColor,
+                    ),
+                  );
+                },
+              ),
             ),
           ),
           SizedBox(height: 10),
@@ -225,7 +229,7 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
     // Completely rebuild the button instead of switching its type
     if (_currentPage == _taglines.length - 1) {
       return Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: CustomButton(
           type: ButtonType.CreateAccount,
           onPressed: () {
@@ -236,7 +240,7 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
       );
     } else {
       return Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: CustomButton(
           type: ButtonType.Next,
           onPressed: () {

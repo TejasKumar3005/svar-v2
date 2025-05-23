@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/presentation/patient_report/reports/adhd_report.dart';
 import 'package:svar_new/presentation/patient_report/reports/capev_report.dart';
 import 'package:svar_new/presentation/patient_report/reports/cars_report.dart';
@@ -42,8 +43,22 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
 
   int _currentIndex = 2;
 
-  // Define report types with their colors
-  final Map<String, Color> reportTypes = AppTheme.reportTypes;
+  // Define report types with their colors - matching user profile theme
+  final Map<String, Color> reportTypes = {
+    'articulation': Color(0xFF1cb0f6),
+    'language': Color(0xFF1cb0f6),
+    'fluency': Color(0xFF1cb0f6),
+    'prosody': Color(0xFF1cb0f6),
+    'voice': Color(0xFF1cb0f6),
+    'opm': Color(0xFF1cb0f6),
+    'case_history': Color(0xFF1cb0f6),
+    'isaa': Color(0xFF1cb0f6),
+    'mchat': Color(0xFF1cb0f6),
+    'cars': Color(0xFF1cb0f6),
+    'hi': Color(0xFF1cb0f6),
+    'adhd': Color(0xFF1cb0f6),
+    'voice_analysis': Color(0xFF1cb0f6),
+  };
 
   @override
   void initState() {
@@ -145,28 +160,27 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
     }
   }
 
- String _formatDate(String dateString) {
-  try {
+  String _formatDate(String dateString) {
+    try {
       // Handle dates in format "yyyy-M-d"
       final parts = dateString.split('-');
       if (parts.length == 3) {
         final year = int.parse(parts[0]);
         final month = int.parse(parts[1]);
         final day = int.parse(parts[2]);
-        
+
         final date = DateTime(year, month, day);
         return DateFormat('MMMM d, yyyy').format(date);
       }
       return dateString;
-    }  catch (e) {
-    print("errrrrrrr ${e}");
-    
-    // Try an alternative parsing approach if standard parsing fails
-    
-    
-    return dateString;
+    } catch (e) {
+      print("errrrrrrr ${e}");
+
+      // Try an alternative parsing approach if standard parsing fails
+
+      return dateString;
+    }
   }
-}
 
   void _toggleExpanded(String date) {
     setState(() {
@@ -183,103 +197,131 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
 
   @override
   Widget build(BuildContext context) {
-    return  SafeArea(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
         child: isLoading
             ? const Center(
                 child: CircularProgressIndicator(
-                  color: AppTheme.primaryColor,
+                  color: Color(0xFF1cb0f6),
                 ),
               )
             : errorMessage.isNotEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 70,
-                          color: Colors.red.shade300,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          errorMessage,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.red,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        ElevatedButton.icon(
-                          onPressed: _fetchReportData,
-                          icon: const Icon(Icons.refresh),
-                          label: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  )
+                ? _buildErrorState()
                 : FadeTransition(
                     opacity: _fadeAnimation,
                     child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 16.0,right: 16.0,top: 16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Header
-                            Card(
-                              margin: const EdgeInsets.only(bottom: 16),
-                              elevation: 0,
-                              color: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.assessment,
-                                          color: AppTheme.primaryColor,
-                                          size: 28,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        const Text(
-                                          'Evaluation Reports',
-                                          style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    const Text(
-                                      'View and manage patient evaluation reports organized by date',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black54,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            // Reports by date (accordion style)
-                            ...allReports
-                                .map((report) => _buildDateReport(report)),
-                          ],
-                        ),
+                      child: Column(
+                        children: [
+                          _buildHeader(),
+                          _buildReportsList(),
+                        ],
                       ),
                     ),
                   ),
-      );
-    
-  
+      ),
+    );
+  }
+
+  Widget _buildErrorState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 70,
+            color: Colors.red.shade300,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            errorMessage,
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              color: Colors.red,
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: _fetchReportData,
+            icon: const Icon(Icons.refresh),
+            label: Text(
+              'Retry',
+              style: GoogleFonts.inter(fontWeight: FontWeight.w500),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF1cb0f6),
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      height: 200,
+      decoration: BoxDecoration(
+        color: Color(0xFF1cb0f6),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.assessment,
+              color: Colors.white,
+              size: 48,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Evaluation Reports',
+              style: GoogleFonts.inter(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 0.5,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'View and manage patient evaluation reports',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                color: Colors.white.withOpacity(0.9),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReportsList() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 16),
+          Text(
+            'Reports by Date',
+            style: GoogleFonts.inter(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4b4b4b),
+            ),
+          ),
+          const SizedBox(height: 16),
+          ...allReports.map((report) => _buildDateReport(report)),
+        ],
+      ),
+    );
   }
 
   Widget _buildDateReport(Map<String, dynamic> report) {
@@ -288,12 +330,19 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
     final reportTypes = report['reportTypes'] as List<dynamic>;
     final bool isExpanded = expandedDates.contains(date);
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      elevation: 0,
-      color: const Color(0xFFF5F8F7), // Very light mint/teal background
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -301,9 +350,9 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
           // Date header with dropdown arrow
           InkWell(
             onTap: () => _toggleExpanded(date),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -312,10 +361,10 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
                     children: [
                       Text(
                         _formatDate(date),
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: AppTheme.primaryColor,
+                        style: GoogleFonts.inter(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimaryColor,
                         ),
                       ),
                       AnimatedRotation(
@@ -324,64 +373,37 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
                         curve: Curves.easeInOutCubic,
                         child: Icon(
                           Icons.keyboard_arrow_down,
-                          color: AppTheme.primaryColor,
+                          color: Color(0xFF1cb0f6),
+                          size: 28,
                         ),
                       )
                     ],
                   ),
                   if (reportTypes.isNotEmpty) ...[
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: 10,
+                      runSpacing: 10,
                       children: reportTypes.map<Widget>((type) {
-                        String displayName = type;
-                        Color borderColor;
-
-                        if (type == 'Case_history') {
-                          displayName = 'Case History';
-                          borderColor = Colors.blue;
-                        } else if (type == 'opm-functions') {
-                          displayName = 'OPM';
-                          borderColor = AppTheme.primaryColor;
-                        } else if (type == 'articulation') {
-                          borderColor = Colors.green;
-                        } else if (type == 'language') {
-                          borderColor = Colors.purple;
-                        } else if (type == 'fluency') {
-                          borderColor = Colors.red;
-                        } else if (type == 'prosody') {
-                          borderColor = Colors.orange;
-                        } else if (type == 'voice' || type == 'capev') {
-                          borderColor = Colors.blueGrey;
-                        } else if (type == 'opm') {
-                          borderColor = AppTheme.primaryColor;
-                          displayName = 'opm';
-                        } else if (type == 'OPM') {
-                          borderColor = AppTheme.primaryColor;
-                        } else {
-                          borderColor = Colors.grey;
-                        }
-
-                        borderColor = AppTheme.borderColors[type] ?? Colors.grey;
+                        String displayName = _getDisplayName(type);
 
                         return Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
+                              horizontal: 16, vertical: 10),
                           decoration: BoxDecoration(
+                            color: Color(0xFF1cb0f6).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: borderColor,
+                              color: Color(0xFF1cb0f6),
                               width: 1.5,
                             ),
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.white,
                           ),
                           child: Text(
                             displayName,
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               fontSize: 14,
-                              color: borderColor,
-                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF1cb0f6),
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         );
@@ -393,21 +415,66 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
             ),
           ),
 
-          // Expanded content with animation proportional to content size
+          // Expanded content with animation
           AnimatedSize(
             duration: Duration(milliseconds: content.keys.length * 100),
-            curve: Curves.easeInCubic,
+            curve: Curves.easeInOutCubic,
             alignment: Alignment.topCenter,
             child: SizedBox(
               width: double.infinity,
               child: isExpanded
-                  ? _buildExpandedContent(date, content)
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade50,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(16),
+                          bottomRight: Radius.circular(16),
+                        ),
+                      ),
+                      child: _buildExpandedContent(date, content),
+                    )
                   : const SizedBox(height: 0),
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _getDisplayName(String type) {
+    switch (type.toLowerCase()) {
+      case 'case_history':
+        return 'Case History';
+      case 'opm-functions':
+      case 'opm':
+        return 'OPM';
+      case 'voice_analysis':
+        return 'Voice Analysis';
+      case 'articulation':
+        return 'Articulation';
+      case 'language':
+        return 'Language';
+      case 'fluency':
+        return 'Fluency';
+      case 'prosody':
+        return 'Prosody';
+      case 'voice':
+        return 'Voice';
+      case 'capev':
+        return 'CAPE-V';
+      case 'isaa':
+        return 'ISAA';
+      case 'mchat':
+        return 'M-CHAT';
+      case 'cars':
+        return 'CARS';
+      case 'hi':
+        return 'HI Assessment';
+      case 'adhd':
+        return 'ADHD';
+      default:
+        return type.toUpperCase();
+    }
   }
 
   Duration _calculateDuration(Widget content) {
@@ -424,66 +491,113 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
     // final RenderBox box = context.findRenderObject() as RenderBox;
     // final size = box.size;
     // final multiplier = math.min(2.0, math.max(1.0, size.height / 200));
-     print("this is the duration");
-     print(Duration(
+    print("this is the duration");
+    print(Duration(
         milliseconds: (baseDuration.inMilliseconds * multiplier).round()));
     return Duration(
         milliseconds: (baseDuration.inMilliseconds * multiplier).round());
   }
 
   Widget _buildExpandedContent(String date, Map<String, dynamic> content) {
-
-
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: EdgeInsets.only(top: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Show Articulation report if available
           if (content.containsKey('articulation') ||
               content.containsKey('Articulation'))
-            _buildArticulationReport(content),
+            _buildReportSection('Articulation Evaluation',
+                () => _buildArticulationReport(content)),
 
           // Show Case History report if available
           if (content.containsKey('Case_history'))
-            _buildCaseHistoryReport(content['Case_history']),
-
-          // Show Fluency report if available
-          // if (content.containsKey('fluency') || content.containsKey('Fluency'))
-          //   _buildFluencyReport(content),
+            _buildReportSection('Case History Report',
+                () => _buildCaseHistoryReport(content['Case_history'])),
 
           // Show OPM report if available
           if (content.containsKey('opm') || content.containsKey('OPM'))
-            _buildOPMReport(content),
+            _buildReportSection(
+                'OPM Assessment', () => _buildOPMReport(content)),
 
           // Show Prosody report if available
           if (content.containsKey('prosody') || content.containsKey('Prosody'))
-            _buildProsodyReport(content),
-
-          // Show Voice report if available
-          // if (content.containsKey('voice') || content.containsKey('Voice'))
-          //   _buildVoiceReport(content),
+            _buildReportSection(
+                'Prosody Assessment', () => _buildProsodyReport(content)),
 
           if (content.containsKey("isaa"))
-            _buildIsaaReport(content),
+            _buildReportSection(
+                'ISAA Assessment', () => _buildIsaaReport(content)),
 
           if (content.containsKey("mchat"))
-            _buildMchatReport(content), 
-          if (content.containsKey("cars"))
-            _buildCarsReport(content),  
+            _buildReportSection(
+                'M-CHAT Assessment', () => _buildMchatReport(content)),
 
-          if (content.containsKey("hi"))  
-            _buildHiReport(content),
+          if (content.containsKey("cars"))
+            _buildReportSection(
+                'CARS Assessment', () => _buildCarsReport(content)),
+
+          if (content.containsKey("hi"))
+            _buildReportSection('HI Assessment', () => _buildHiReport(content)),
+
           if (content.containsKey("adhd"))
-            _buildAdhdReport(content),
-          // if (content.containsKey("capev"))
-          //   _buildCapevReport(content),
+            _buildReportSection(
+                'ADHD Assessment', () => _buildAdhdReport(content)),
+
           if (content.containsKey("voice_analysis"))
-            _buildVoiceAiReport(content),
+            _buildReportSection(
+                'Voice Analysis', () => _buildVoiceAiReport(content)),
+
           // Show Language report if available
           if (content.containsKey('language') ||
               content.containsKey('Language'))
-            _buildLanguageReport(content),
+            _buildReportSection(
+                'Language Assessment', () => _buildLanguageReport(content)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReportSection(String title, Widget Function() reportBuilder) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.05),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.assessment_outlined,
+                color: Color(0xFF1cb0f6),
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4b4b4b),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          reportBuilder(),
         ],
       ),
     );
@@ -491,320 +605,91 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
 
   Widget _buildArticulationReport(Map<String, dynamic> content) {
     final data = content['articulation'] ?? content['Articulation'];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Articulation Evaluation',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        ArticulationReport(data: data),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
-  } 
-   Widget _buildVoiceAiReport(Map<String, dynamic> content) {
-    final data = content['voice_analysis'] ?? content['Voice_analysis'];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Voice Analysis',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        VoiceAnalysisReport(reportData: data is List ? data[0] : {}),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
+    return ArticulationReport(data: data);
   }
+
+  Widget _buildVoiceAiReport(Map<String, dynamic> content) {
+    final data = content['voice_analysis'] ?? content['Voice_analysis'];
+    return VoiceAnalysisReport(reportData: data is List ? data[0] : {});
+  }
+
   Widget _buildCapevReport(Map<String, dynamic> content) {
     final data = content['capev'] ?? content['capev'];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'CAPE-V Evaluation',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        CapeVReport(data: data is List ? data[0] : {}),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
+    return CapeVReport(data: data is List ? data[0] : {});
   }
 
   Widget _buildCaseHistoryReport(List<dynamic> data) {
     if (data.isEmpty) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Case History Report',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        CaseHistoryReport(data: data[0]),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
+    return CaseHistoryReport(data: data[0]);
   }
 
   Widget _buildFluencyReport(Map<String, dynamic> content) {
     final data = content['fluency'] ?? content['Fluency'];
     if (data == null || (data is List && data.isEmpty))
       return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Fluency Assessment',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        FluencyReport(data: data is List ? data[0] : {}),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
+    return FluencyReport(data: data is List ? data[0] : {});
   }
+
   Widget _buildIsaaReport(Map<String, dynamic> content) {
     final data = content['isaa'] ?? content['Isaa'];
     if (data == null || (data is List && data.isEmpty))
       return const SizedBox.shrink();
+    return IsaaReport(data: data is List ? data[0] : {});
+  }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Isaa Assessment',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        IsaaReport(data: data is List ? data[0] : {}),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
-  } 
-  
-   Widget _buildMchatReport(Map<String, dynamic> content) {
+  Widget _buildMchatReport(Map<String, dynamic> content) {
     final data = content['mchat'] ?? content['Mchat'];
     if (data == null || (data is List && data.isEmpty))
       return const SizedBox.shrink();
+    return MchatReport(data: data is List ? data[0] : {});
+  }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'M-CHAT Assessment',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        MchatReport(data: data is List ? data[0] : {}),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
-  } 
-  
-   Widget _buildCarsReport(Map<String, dynamic> content) {
+  Widget _buildCarsReport(Map<String, dynamic> content) {
     final data = content['cars'] ?? content['Cars'];
     if (data == null || (data is List && data.isEmpty))
       return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'CARS Assessment',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        CarsReport(data: data is List ? data[0] : {}),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
+    return CarsReport(data: data is List ? data[0] : {});
   }
+
   Widget _buildHiReport(Map<String, dynamic> content) {
     final data = content['hi'] ?? content['hi'];
     if (data == null || (data is List && data.isEmpty))
       return const SizedBox.shrink();
+    return HiReport(data: data is List ? data[0] : {});
+  }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Hi Assessment',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        HiReport(data: data is List ? data[0] : {}),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
-  } 
-   Widget _buildAdhdReport(Map<String, dynamic> content) {
+  Widget _buildAdhdReport(Map<String, dynamic> content) {
     final data = content['hi'] ?? content['hi'];
     if (data == null || (data is List && data.isEmpty))
       return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Adhd Assessment',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        AdhdReport(data: data is List ? data[0] : {}),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
+    return AdhdReport(data: data is List ? data[0] : {});
   }
 
   Widget _buildOPMReport(Map<String, dynamic> content) {
     final data = content['opm'] ?? content['OPM'];
     if (data == null || (data is List && data.isEmpty))
       return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'OPM Assessment',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        OpmReport(data: data is List ? data[0] : {}),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
+    return OpmReport(data: data is List ? data[0] : {});
   }
 
   Widget _buildProsodyReport(Map<String, dynamic> content) {
     final data = content['prosody'] ?? content['Prosody'];
     if (data == null || (data is List && data.isEmpty))
       return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Prosody Assessment',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        ProsodyReport(data: data is List ? data[0] : {}),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
+    return ProsodyReport(data: data is List ? data[0] : {});
   }
 
   Widget _buildVoiceReport(Map<String, dynamic> content) {
     final data = content['voice'] ?? content['Voice'];
     if (data == null || (data is List && data.isEmpty))
       return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Voice Assessment',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        VoiceReport(data: data is List ? data[0] : {}),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
+    return VoiceReport(data: data is List ? data[0] : {});
   }
 
   Widget _buildLanguageReport(Map<String, dynamic> content) {
     final data = content['language'] ?? content['Language'];
     if (data == null || (data is List && data.isEmpty))
       return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Language Assessment',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 16),
-        LanguageReport(data: data is List ? data[0] : {}),
-        const SizedBox(height: 16),
-        const Divider(),
-      ],
-    );
+    return LanguageReport(data: data is List ? data[0] : {});
   }
 }

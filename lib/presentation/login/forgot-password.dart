@@ -49,56 +49,49 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      
-      title: Text("Forgot Password",style: TextStyle(color: Colors.black),textAlign: TextAlign.center,),
+      insetPadding: EdgeInsets.symmetric(horizontal: 20),
+      contentPadding: EdgeInsets.all(20),
+      title: Text("Forgot Password", style: Theme.of(context).textTheme.titleMedium),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: MediaQuery.of(context).size.width * 0.95,
-            child:   TextFormField(
-                  cursorColor: appTheme.orangeA200,
-                controller: _emailController,
-                decoration: InputDecoration(
-                  fillColor: const Color.fromARGB(255, 241, 240, 240),
-                  filled: true,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    
-                  borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135),width: 2),
-                  ),
-                  hintText: "Email",
-                focusedBorder:  OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    
-                  borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135),width: 2),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    
-                    borderSide: BorderSide(color: const Color.fromARGB(255, 187, 186, 186),width: 2),
-                  ),
-                  hintStyle: TextStyle(color: Colors.grey),
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: TextFormField(
+              cursorColor: appTheme.orangeA200,
+              controller: _emailController,
+              style: Theme.of(context).textTheme.titleMedium, 
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                fillColor: const Color.fromARGB(255, 241, 240, 240),
+                filled: true,
+                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135), width: 2),
                 ),
+                hintText: "Email",
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135), width: 2),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: const Color.fromARGB(255, 187, 186, 186), width: 2),
+                ),
+                hintStyle: TextStyle(color: Colors.grey),
               ),
+            ),
           ),
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(); // Close the dialog without action
-          },
-          child: CustomButton(type: ButtonType.Cancel, onPressed: () {
-            Navigator.of(context).pop(); // Close the dialog without action
-          }),
+        Center(
+          child: CustomButton(
+            type: ButtonType.ResetPassword,
+            onPressed: _sendResetEmail,
+          ),
         ),
-      CustomButton(
-          type: ButtonType.ResetPassword,
-        onPressed: _sendResetEmail,
-      
-      ),
       ],
     );
   }

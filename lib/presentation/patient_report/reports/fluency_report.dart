@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FluencyReport extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -30,8 +31,7 @@ class FluencyReport extends StatelessWidget {
           _buildAverageDurationSection(data['Average Duration']),
 
         // Remarks Section (if available)
-        if (data.containsKey('remarks'))
-          _buildRemarksSection(data['remarks']),
+        if (data.containsKey('remarks')) _buildRemarksSection(data['remarks']),
       ],
     );
   }
@@ -83,13 +83,15 @@ class FluencyReport extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildInfoRow('Status', disfluencyData['Status'] ?? 'N/A'),
-              if (disfluencyData.containsKey('Types') && disfluencyData['Types'] is Map) ...[
+              if (disfluencyData.containsKey('Types') &&
+                  disfluencyData['Types'] is Map) ...[
                 const SizedBox(height: 12),
                 Text(
                   'Present Types:',
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade700,
+                    color: Color(0xFF4b4b4b),
+                    fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -105,15 +107,16 @@ class FluencyReport extends StatelessWidget {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.red.shade50,
+                              color: Color(0xFF1cb0f6).withOpacity(0.1),
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.red.shade200),
+                              border: Border.all(color: Color(0xFF1cb0f6)),
                             ),
                             child: Text(
                               entry.key,
-                              style: TextStyle(
-                                color: Colors.red.shade700,
-                                fontSize: 14,
+                              style: GoogleFonts.inter(
+                                color: Color(0xFF1cb0f6),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ))
@@ -128,115 +131,119 @@ class FluencyReport extends StatelessWidget {
     );
   }
 
-Widget _buildSpeechAssessmentSection() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      _buildSectionTitle('Speech Assessment'),
-      LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          // Determine if we should use column or row layout
-          final useColumnLayout = constraints.maxWidth < 500;
-          
-          if (useColumnLayout) {
-            // Column layout for small screens - each card takes full width
-            return Column(
-              children: [
-                _buildAwarenessCard(useFullWidth: true),
-                const SizedBox(height: 16),
-                _buildDysfluenciesCard(useFullWidth: true, maxHeight: 150),
-              ],
-            );
-          } else {
-            // Row layout for larger screens - cards side by side
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: _buildAwarenessCard(useFullWidth: false),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildDysfluenciesCard(useFullWidth: false, maxHeight: null),
-                ),
-              ],
-            );
-          }
-        },
+  Widget _buildSpeechAssessmentSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle('Speech Assessment'),
+        LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            // Determine if we should use column or row layout
+            final useColumnLayout = constraints.maxWidth < 500;
+
+            if (useColumnLayout) {
+              // Column layout for small screens - each card takes full width
+              return Column(
+                children: [
+                  _buildAwarenessCard(useFullWidth: true),
+                  const SizedBox(height: 16),
+                  _buildDysfluenciesCard(useFullWidth: true, maxHeight: 150),
+                ],
+              );
+            } else {
+              // Row layout for larger screens - cards side by side
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: _buildAwarenessCard(useFullWidth: false),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildDysfluenciesCard(
+                        useFullWidth: false, maxHeight: null),
+                  ),
+                ],
+              );
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildAwarenessCard({required bool useFullWidth}) {
+    return Container(
+      width: useFullWidth ? double.infinity : null,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade200),
       ),
-      const SizedBox(height: 16),
-    ],
-  );
-}
-
-Widget _buildAwarenessCard({required bool useFullWidth}) {
-  return Container(
-    width: useFullWidth ? double.infinity : null,
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.grey.shade200),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'Awareness',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.grey.shade700,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Awareness',
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4b4b4b),
+              fontSize: 14,
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          data['Awareness'] ?? 'N/A',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: data['Awareness'] == 'Present'
-                ? Colors.green
-                : Colors.orange,
+          const SizedBox(height: 12),
+          Text(
+            data['Awareness'] ?? 'N/A',
+            style: GoogleFonts.inter(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: data['Awareness'] == 'Present'
+                  ? Colors.green
+                  : Color(0xFF1cb0f6),
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
-Widget _buildDysfluenciesCard({required bool useFullWidth, double? maxHeight}) {
-  return Container(
-    width: useFullWidth ? double.infinity : null,
-    constraints: maxHeight != null ? BoxConstraints(maxHeight: maxHeight) : null,
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.grey.shade200),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'Dysfluencies Percentage',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.grey.shade700,
+  Widget _buildDysfluenciesCard(
+      {required bool useFullWidth, double? maxHeight}) {
+    return Container(
+      width: useFullWidth ? double.infinity : null,
+      constraints:
+          maxHeight != null ? BoxConstraints(maxHeight: maxHeight) : null,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Dysfluencies Percentage',
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4b4b4b),
+              fontSize: 14,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        _buildPercentageRow('Reading', data['Reading'] ?? '0'),
-        _buildPercentageRow('Spontaneous Speech', data['Spontaneous Speech'] ?? '0'),
-        _buildPercentageRow('Picture Description', data['Picture Description'] ?? '0'),
-      ],
-    ),
-  );
-}
-
-
-
+          const SizedBox(height: 8),
+          _buildPercentageRow('Reading', data['Reading'] ?? '0'),
+          _buildPercentageRow(
+              'Spontaneous Speech', data['Spontaneous Speech'] ?? '0'),
+          _buildPercentageRow(
+              'Picture Description', data['Picture Description'] ?? '0'),
+        ],
+      ),
+    );
+  }
 
   Widget _buildSecondaryBehaviorsSection(Map<String, dynamic> behaviorsData) {
     return Column(
@@ -263,110 +270,114 @@ Widget _buildDysfluenciesCard({required bool useFullWidth, double? maxHeight}) {
     );
   }
 
- Widget _buildAverageDurationSection(dynamic duration) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      _buildSectionTitle('Average Duration'),
-      Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-            // Check if the available width is less than a threshold
-            if (constraints.maxWidth < 450) {
-              // Use a column layout for smaller screens
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Average Duration of Three Longest Stuttering Events',
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Text(
-                        duration.toString(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'seconds',
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              );
-            } else {
-              // Use row layout for larger screens with modified text
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Limit the label width to prevent overflow
-                  Expanded(
-                    flex: 3,
-                    child: Text(
+  Widget _buildAverageDurationSection(dynamic duration) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionTitle('Average Duration'),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              // Check if the available width is less than a threshold
+              if (constraints.maxWidth < 450) {
+                // Use a column layout for smaller screens
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
                       'Average Duration of Three Longest Stuttering Events',
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
+                      style: GoogleFonts.inter(
+                        color: Color(0xFF4b4b4b),
+                        fontSize: 14,
                       ),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                      maxLines: 2,
                     ),
-                  ),
-                  // Add some spacing
-                  const SizedBox(width: 16),
-                  // Keep the value from being compressed
-                  Expanded(
-                    flex: 1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.min,
+                    const SizedBox(height: 12),
+                    Row(
                       children: [
                         Text(
                           duration.toString(),
-                          style: const TextStyle(
+                          style: GoogleFonts.inter(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
+                            color: Color(0xFF1cb0f6),
                           ),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           'seconds',
-                          style: TextStyle(
+                          style: GoogleFonts.inter(
                             color: Colors.grey.shade600,
                             fontSize: 14,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              );
-            }
-          },
+                  ],
+                );
+              } else {
+                // Use row layout for larger screens with modified text
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Limit the label width to prevent overflow
+                    Expanded(
+                      flex: 3,
+                      child: Text(
+                        'Average Duration of Three Longest Stuttering Events',
+                        style: GoogleFonts.inter(
+                          color: Color(0xFF4b4b4b),
+                          fontSize: 14,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                        maxLines: 2,
+                      ),
+                    ),
+                    // Add some spacing
+                    const SizedBox(width: 16),
+                    // Keep the value from being compressed
+                    Expanded(
+                      flex: 1,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            duration.toString(),
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Color(0xFF1cb0f6),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'seconds',
+                            style: GoogleFonts.inter(
+                              color: Colors.grey.shade600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
         ),
-      ),
-      const SizedBox(height: 16),
-    ],
-  );
-}
+        const SizedBox(height: 16),
+      ],
+    );
+  }
 
   Widget _buildRemarksSection(dynamic remarks) {
     return Column(
@@ -383,9 +394,10 @@ Widget _buildDysfluenciesCard({required bool useFullWidth, double? maxHeight}) {
           ),
           child: Text(
             remarks.toString(),
-            style: const TextStyle(
+            style: GoogleFonts.inter(
               fontSize: 14,
               height: 1.5,
+              color: Color(0xFF4b4b4b),
             ),
           ),
         ),
@@ -397,13 +409,23 @@ Widget _buildDysfluenciesCard({required bool useFullWidth, double? maxHeight}) {
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.red.shade700,
-        ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.assessment_outlined,
+            color: Color(0xFF1cb0f6),
+            size: 18,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF4b4b4b),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -422,7 +444,7 @@ Widget _buildDysfluenciesCard({required bool useFullWidth, double? maxHeight}) {
           children: [
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontSize: 14,
                 color: Colors.grey.shade600,
               ),
@@ -434,10 +456,10 @@ Widget _buildDysfluenciesCard({required bool useFullWidth, double? maxHeight}) {
               children: [
                 Text(
                   value,
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.red.shade700,
+                    color: Color(0xFF1cb0f6),
                   ),
                 ),
                 if (unit != null)
@@ -445,7 +467,7 @@ Widget _buildDysfluenciesCard({required bool useFullWidth, double? maxHeight}) {
                     padding: const EdgeInsets.only(left: 4.0),
                     child: Text(
                       unit,
-                      style: TextStyle(
+                      style: GoogleFonts.inter(
                         fontSize: 14,
                         color: Colors.grey.shade600,
                       ),
@@ -465,14 +487,17 @@ Widget _buildDysfluenciesCard({required bool useFullWidth, double? maxHeight}) {
       children: [
         Text(
           label,
-          style: TextStyle(
-            color: Colors.grey.shade700,
+          style: GoogleFonts.inter(
+            color: Color(0xFF4b4b4b),
+            fontSize: 14,
           ),
         ),
         Text(
           value,
-          style: const TextStyle(
+          style: GoogleFonts.inter(
             fontWeight: FontWeight.bold,
+            color: Color(0xFF4b4b4b),
+            fontSize: 14,
           ),
         ),
       ],
@@ -487,21 +512,24 @@ Widget _buildDysfluenciesCard({required bool useFullWidth, double? maxHeight}) {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.inter(
               color: Colors.grey.shade600,
+              fontSize: 13,
             ),
           ),
           Row(
             children: [
               Text(
                 value,
-                style: const TextStyle(
+                style: GoogleFonts.inter(
                   fontWeight: FontWeight.bold,
+                  color: Color(0xFF4b4b4b),
+                  fontSize: 13,
                 ),
               ),
               Text(
                 ' %',
-                style: TextStyle(
+                style: GoogleFonts.inter(
                   color: Colors.grey.shade600,
                   fontSize: 12,
                 ),
@@ -521,9 +549,10 @@ Widget _buildDysfluenciesCard({required bool useFullWidth, double? maxHeight}) {
           padding: const EdgeInsets.only(bottom: 8.0),
           child: Text(
             label,
-            style: TextStyle(
+            style: GoogleFonts.inter(
               fontWeight: FontWeight.w500,
-              color: Colors.grey.shade700,
+              color: Color(0xFF4b4b4b),
+              fontSize: 14,
             ),
           ),
         ),
@@ -535,18 +564,25 @@ Widget _buildDysfluenciesCard({required bool useFullWidth, double? maxHeight}) {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: index <= value ? Colors.red.shade50 : Colors.grey.shade50,
+                  color: index <= value
+                      ? Color(0xFF1cb0f6).withOpacity(0.1)
+                      : Colors.grey.shade50,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: index <= value ? Colors.red.shade300 : Colors.grey.shade300,
+                    color: index <= value
+                        ? Color(0xFF1cb0f6)
+                        : Colors.grey.shade300,
                   ),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   index.toString(),
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     fontWeight: FontWeight.bold,
-                    color: index <= value ? Colors.red.shade700 : Colors.grey.shade400,
+                    color: index <= value
+                        ? Color(0xFF1cb0f6)
+                        : Colors.grey.shade400,
+                    fontSize: 14,
                   ),
                 ),
               ),

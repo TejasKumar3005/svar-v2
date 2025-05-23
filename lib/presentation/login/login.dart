@@ -44,10 +44,7 @@ class LoginScreenState extends State<LoginScreen> {
 
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-        
   }
-
-
 
   @override
   void dispose() {
@@ -55,10 +52,8 @@ class LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     var provider = context.watch<LoginProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (provider.loading && _overlayEntry == null) {
@@ -95,107 +90,124 @@ class LoginScreenState extends State<LoginScreen> {
                           PlayBgm().playMusic('Back_Btn.mp3', "mp3", false);
                           Navigator.pop(context);
                         },
-                        icon: Icon(Icons.arrow_back,size: 30.h,),
+                        icon: Icon(
+                          Icons.arrow_back,
+                          size: 30.h,
+                        ),
                       ),
                       Spacer(),
                     ],
                   ),
                   SizedBox(height: 20.h),
- CustomImageView(
-      width: screenWidth * 0.4,
-      height: screenHeight * 0.1,
-      fit: BoxFit.contain,
-      imagePath: ImageConstant.imgSvaLogo1,
-    ),
-              
-              SizedBox(height: 20.h),
-        
-              TextFormField(
-                  cursorColor: appTheme.orangeA200,
-                controller: provider.emailController,
-                decoration: InputDecoration(
-                  fillColor: const Color.fromARGB(255, 241, 240, 240),
-                  filled: true,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    
-                  borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135),width: 2),
+                  CustomImageView(
+                    width: screenWidth * 0.4,
+                    height: screenHeight * 0.1,
+                    fit: BoxFit.contain,
+                    imagePath: ImageConstant.imgSvaLogo1,
                   ),
-                  hintText: "Email",
-                focusedBorder:  OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    
-                  borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135),width: 2),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    
-                    borderSide: BorderSide(color: const Color.fromARGB(255, 187, 186, 186),width: 2),
-                  ),
-                  hintStyle: TextStyle(color: Colors.grey),
-                ),
-              ),
-              SizedBox(height: 20.h),
-              TextFormField(
-                  cursorColor: appTheme.orangeA200,
-                controller: provider.passController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  fillColor: const Color.fromARGB(255, 241, 240, 240),
-                  filled: true,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                  border: OutlineInputBorder(
-                    
-                    borderRadius: BorderRadius.circular(10),
 
-                    borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135),width: 2),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    
-                    borderSide: BorderSide(color: const Color.fromARGB(255, 187, 186, 186),width: 2),
-                  ),
-                
-                focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    
-                  borderSide: BorderSide(color: const Color.fromARGB(255, 135, 135, 135),width: 2),
-                  ),
-              
+                  SizedBox(height: 20.h),
 
-                  hintText: "Password",
-                  hintStyle: TextStyle(color: Colors.grey),
-                ),
-              ),
-              SizedBox(height: 20.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                      onTap: () {
-                        showDialog(context: context, builder: (context) => ForgotPasswordDialog());
-                      },
-                    child: Text("Forgot Password?",textAlign: TextAlign.end, style: TextStyle(color: appTheme.orangeA200, fontSize: 18.h,fontWeight: FontWeight.w600),)),
-                ],
-              ),
-              SizedBox(height: 20.h),
-              CustomButton(
-                          type: ButtonType.CreateAccount,
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate() &&
-                                !provider.loading) {
-                              await AnalyticsService()
-                                  .logSignIn(provider.emailController.text);
-                              LoginFormMethods methods =
-                                  LoginFormMethods(context: context);
-                              methods.login();
-                            }
+                  TextFormField(
+                    cursorColor: appTheme.orangeA200,
+                    controller: provider.emailController,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    decoration: InputDecoration(
+                      fillColor: const Color.fromARGB(255, 241, 240, 240),
+                      filled: true,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 135, 135, 135),
+                            width: 2),
+                      ),
+                      hintText: "Email",
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 135, 135, 135),
+                            width: 2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 187, 186, 186),
+                            width: 2),
+                      ),
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+                  TextFormField(
+                    cursorColor: appTheme.orangeA200,
+                    controller: provider.passController,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      fillColor: const Color.fromARGB(255, 241, 240, 240),
+                      filled: true,
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 135, 135, 135),
+                            width: 2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 187, 186, 186),
+                            width: 2),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                            color: const Color.fromARGB(255, 135, 135, 135),
+                            width: 2),
+                      ),
+                      hintText: "Password",
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => ForgotPasswordDialog());
                           },
-                        ),
-        
+                          child: Text(
+                            "Forgot Password?",
+                            textAlign: TextAlign.end,
+                            style: TextStyle(
+                                color: appTheme.orangeA200,
+                                fontSize: 18.h,
+                                fontWeight: FontWeight.w600),
+                          )),
+                    ],
+                  ),
+                  SizedBox(height: 20.h),
+                  CustomButton(
+                    type: ButtonType.CreateAccount,
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate() &&
+                          !provider.loading) {
+                        await AnalyticsService()
+                            .logSignIn(provider.emailController.text);
+                        LoginFormMethods methods =
+                            LoginFormMethods(context: context);
+                        methods.login();
+                      }
+                    },
+                  ),
+
                   // Login Form
-                
                 ],
               ),
             ),
@@ -263,11 +275,9 @@ class LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     hintText: name.tr,
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 22.h),
-                    
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
-
                     contentPadding:
                         EdgeInsets.symmetric(vertical: 16.h, horizontal: 6.h),
                     suffixIcon: name == "password"
@@ -293,7 +303,6 @@ class LoginScreenState extends State<LoginScreen> {
                     if (value == null || value == "") {
                       return "Please enter $name";
                     }
-                    
                   },
                 ),
               ),

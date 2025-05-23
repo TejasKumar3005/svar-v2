@@ -115,6 +115,9 @@ class _ProfilePageState extends State<ProfilePage>
   bool _isPersonalDetailsSelected = true;
   bool _isUploading = false;
 
+  // Track if any field has changed
+  bool _hasChanges = false;
+
   TextEditingController nameController = TextEditingController();
   TextEditingController fatherNameController = TextEditingController();
   TextEditingController motherNameController = TextEditingController();
@@ -123,6 +126,16 @@ class _ProfilePageState extends State<ProfilePage>
   TextEditingController contactController = TextEditingController();
   TextEditingController childNameController = TextEditingController();
   TextEditingController childAgeController = TextEditingController();
+
+  // Store original values to compare against
+  String _originalName = '';
+  String _originalFatherName = '';
+  String _originalMotherName = '';
+  String _originalAddress = '';
+  String _originalEmail = '';
+  String _originalContact = '';
+  String _originalChildName = '';
+  String _originalChildAge = '';
 
   // This function handles index changes from the bottom navigation bar
   // This function handles index changes from the bottom navigation bar
@@ -196,18 +209,72 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   void initState() {
     super.initState();
-    
-    
+
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       setState(() {
         _isPersonalDetailsSelected = _tabController.index == 0;
       });
     });
+
+    // Initialize original values and add listeners to text controllers
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeOriginalValues();
+      _addFieldListeners();
+    });
+  }
+
+  void _initializeOriginalValues() {
+    _originalName = widget.userData?["name"] ?? '';
+    _originalFatherName = widget.userData?["fathersName"] ?? '';
+    _originalMotherName = widget.userData?["mothersName"] ?? '';
+    _originalAddress = widget.userData?["address"] ?? '';
+    _originalEmail = widget.userData?["email"] ?? '';
+    _originalContact = widget.userData?["parentPhone"] ?? '';
+    _originalChildName = widget.userData?["name"] ?? '';
+    _originalChildAge = widget.userData?["age"] ?? '';
+  }
+
+  void _addFieldListeners() {
+    nameController.addListener(_checkForChanges);
+    fatherNameController.addListener(_checkForChanges);
+    motherNameController.addListener(_checkForChanges);
+    addressController.addListener(_checkForChanges);
+    emailController.addListener(_checkForChanges);
+    contactController.addListener(_checkForChanges);
+    childNameController.addListener(_checkForChanges);
+    childAgeController.addListener(_checkForChanges);
+  }
+
+  void _checkForChanges() {
+    bool hasChanges = nameController.text != _originalName ||
+        fatherNameController.text != _originalFatherName ||
+        motherNameController.text != _originalMotherName ||
+        addressController.text != _originalAddress ||
+        emailController.text != _originalEmail ||
+        contactController.text != _originalContact ||
+        childNameController.text != _originalChildName ||
+        childAgeController.text != _originalChildAge;
+
+    if (hasChanges != _hasChanges) {
+      setState(() {
+        _hasChanges = hasChanges;
+      });
+    }
   }
 
   @override
   void dispose() {
+    // Remove listeners to prevent memory leaks
+    nameController.removeListener(_checkForChanges);
+    fatherNameController.removeListener(_checkForChanges);
+    motherNameController.removeListener(_checkForChanges);
+    addressController.removeListener(_checkForChanges);
+    emailController.removeListener(_checkForChanges);
+    contactController.removeListener(_checkForChanges);
+    childNameController.removeListener(_checkForChanges);
+    childAgeController.removeListener(_checkForChanges);
+
     _tabController.dispose();
     super.dispose();
   }
@@ -385,14 +452,14 @@ class _ProfilePageState extends State<ProfilePage>
 
   @override
   Widget build(BuildContext context) {
-  nameController.text = widget.userData?["name"] ?? '';
-      fatherNameController.text = widget.userData?["fathersName"] ?? '';
-      motherNameController.text = widget.userData?["mothersName"] ?? '';
-      addressController.text = widget.userData?["address"] ?? '';
-      emailController.text = widget.userData?["email"] ?? '';
-      contactController.text = widget.userData?["parentPhone"] ?? '';
-      childNameController.text = widget.userData?["name"] ?? '';
-      childAgeController.text = widget.userData?["age"] ?? '';
+    nameController.text = widget.userData?["name"] ?? '';
+    fatherNameController.text = widget.userData?["fathersName"] ?? '';
+    motherNameController.text = widget.userData?["mothersName"] ?? '';
+    addressController.text = widget.userData?["address"] ?? '';
+    emailController.text = widget.userData?["email"] ?? '';
+    contactController.text = widget.userData?["parentPhone"] ?? '';
+    childNameController.text = widget.userData?["name"] ?? '';
+    childAgeController.text = widget.userData?["age"] ?? '';
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -403,19 +470,72 @@ class _ProfilePageState extends State<ProfilePage>
               _buildProfileHeader(),
               _buildInfoTabs(),
               // _buildSupportSection(),
-              CustomButton(type: ButtonType.Save, onPressed: (){
-                UserData(uid: FirebaseAuth.instance.currentUser?.uid ?? '').updateUserFields({
-                  "name": childNameController.text,
-                  "fathersName": fatherNameController.text,
-                  "mothersName": motherNameController.text,
-                  "address": addressController.text,
-                  "email": emailController.text,
-                  "parentPhone": contactController.text,
-            
-                  "age": childAgeController.text,
-                }, widget.userData!);
-                print("Save button pressed");
-              }),
+              // Conditional buttons based on field changes
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: _hasChanges
+                    ? Row(
+                        children: [
+                          Expanded(
+                            child: CustomButton(
+                              type: ButtonType.Save,
+                              onPressed: () {
+                                UserData(
+                                        uid: FirebaseAuth
+                                                .instance.currentUser?.uid ??
+                                            '')
+                                    .updateUserFields({
+                                  "name": childNameController.text,
+                                  "fathersName": fatherNameController.text,
+                                  "mothersName": motherNameController.text,
+                                  "address": addressController.text,
+                                  "email": emailController.text,
+                                  "parentPhone": contactController.text,
+                                  "age": childAgeController.text,
+                                }, widget.userData!);
+
+                                // Update original values after save
+                                _initializeOriginalValues();
+
+                                // Reset hasChanges
+                                setState(() {
+                                  _hasChanges = false;
+                                });
+
+                                // Show success message
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content:
+                                        Text('Profile updated successfully'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+
+                                print("Save button pressed");
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: CustomButton(
+                              type: ButtonType.Logout,
+                              onPressed: () {
+                                FirebaseAuth.instance.signOut();
+                                NavigatorService.pushNamed(
+                                    AppRoutes.loginSignup);
+                              },
+                            ),
+                          ),
+                        ],
+                      )
+                    : CustomButton(
+                        type: ButtonType.Logout,
+                        onPressed: () {
+                          FirebaseAuth.instance.signOut();
+                          NavigatorService.pushNamed(AppRoutes.loginSignup);
+                        },
+                      ),
+              ),
               const SizedBox(height: 80), // Space for bottom navigation bar
             ],
           ),
@@ -437,8 +557,8 @@ class _ProfilePageState extends State<ProfilePage>
                 decoration: BoxDecoration(
                   color: Color(0xFF1cb0f6), // Bright blue color as in the image
                   borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(60),
-                    bottomRight: Radius.circular(60),
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
                   ),
                 ),
                 child: Center(
@@ -494,8 +614,9 @@ class _ProfilePageState extends State<ProfilePage>
                               ),
                               child: CircleAvatar(
                                 radius: 15,
-                                backgroundColor:
-                                    _isUploading ? Colors.grey : Color(0xFF1cb0f6),
+                                backgroundColor: _isUploading
+                                    ? Colors.grey
+                                    : Color(0xFF1cb0f6),
                                 child: _isUploading
                                     ? SizedBox(
                                         width: 10,
@@ -566,7 +687,13 @@ class _ProfilePageState extends State<ProfilePage>
                     child: Center(
                       child: Text(
                         'Personal Details',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(color: _isPersonalDetailsSelected ? Colors.white : AppTheme.textPrimaryColor),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(
+                                color: _isPersonalDetailsSelected
+                                    ? Colors.white
+                                    : AppTheme.textPrimaryColor),
                       ),
                     ),
                   ),
@@ -589,7 +716,13 @@ class _ProfilePageState extends State<ProfilePage>
                     child: Center(
                       child: Text(
                         'Child Details',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(color: !_isPersonalDetailsSelected ? Colors.white : AppTheme.textPrimaryColor),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(
+                                color: !_isPersonalDetailsSelected
+                                    ? Colors.white
+                                    : AppTheme.textPrimaryColor),
                       ),
                     ),
                   ),
@@ -615,12 +748,11 @@ class _ProfilePageState extends State<ProfilePage>
         // Name field
         Text(
           'Name',
-            style: Theme.of(context).textTheme.titleSmall,
+          style: Theme.of(context).textTheme.titleSmall,
         ),
         SizedBox(height: 8),
         CustomTextField(
           controller: nameController,
-      
           hintText: 'Enter your name',
           fillColor: Colors.grey.shade200,
           focusedBorderColor: Colors.blue,
@@ -640,7 +772,6 @@ class _ProfilePageState extends State<ProfilePage>
         SizedBox(height: 8),
         CustomTextField(
           controller: fatherNameController,
-        
           hintText: 'Enter your father\'s name',
           fillColor: Colors.grey.shade200,
           focusedBorderColor: Colors.blue,
@@ -660,7 +791,6 @@ class _ProfilePageState extends State<ProfilePage>
         SizedBox(height: 8),
         CustomTextField(
           controller: motherNameController,
-        
           hintText: 'Enter your mother\'s name',
           fillColor: Colors.grey.shade200,
           focusedBorderColor: Colors.blue,
@@ -680,7 +810,6 @@ class _ProfilePageState extends State<ProfilePage>
         SizedBox(height: 8),
         CustomTextField(
           controller: addressController,
-      
           hintText: 'Enter your address',
           fillColor: Colors.grey.shade200,
           focusedBorderColor: Colors.blue,
@@ -700,7 +829,6 @@ class _ProfilePageState extends State<ProfilePage>
         SizedBox(height: 8),
         CustomTextField(
           controller: emailController,
-        
           hintText: 'Enter your email',
           fillColor: Colors.grey.shade200,
           focusedBorderColor: Colors.blue,
@@ -720,7 +848,6 @@ class _ProfilePageState extends State<ProfilePage>
         SizedBox(height: 8),
         CustomTextField(
           controller: contactController,
-
           hintText: 'Enter your contact number',
           fillColor: Colors.grey.shade200,
           focusedBorderColor: Color(0xFF1cb0f6),
@@ -746,7 +873,6 @@ class _ProfilePageState extends State<ProfilePage>
         SizedBox(height: 8),
         CustomTextField(
           controller: childNameController,
-    
           hintText: 'Enter your child\'s name',
           fillColor: Colors.grey.shade200,
           focusedBorderColor: Colors.blue,
@@ -766,7 +892,6 @@ class _ProfilePageState extends State<ProfilePage>
         SizedBox(height: 8),
         CustomTextField(
           controller: childAgeController,
-        
           hintText: 'Enter your child\'s age',
           fillColor: Colors.grey.shade200,
           focusedBorderColor: Colors.blue,

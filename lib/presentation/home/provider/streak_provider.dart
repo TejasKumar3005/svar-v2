@@ -12,6 +12,8 @@ class StreakProvider extends ChangeNotifier {
 
   List<Map<String, dynamic>> _upcomingSessions = [];
   List<Map<String, dynamic>> get upcomingSessions => _upcomingSessions;
+  Map<String,Map<String,dynamic>> _exercises = {};
+  Map<String,Map<String,dynamic>> get exercises => _exercises;
 
   // Additional user data fields
   String _patientEmail = "";
@@ -196,8 +198,17 @@ class StreakProvider extends ChangeNotifier {
         _fatherName = userData['fathersName']?? "no name";
         _address = userData['address']?? " no address";
         _age = userData['age']?? " no age"; 
+        Map<String,Map<String,dynamic>> exes = {};
+          for(var date in userData['exercises'].keys){
+            exes[date] = {
+              "total":userData['exercises'][date].length,
+              "completed":userData['exercises'][date].where((exercise) => exercise['completedAt'] != null).length,
 
-        print(userData['age']);
+            };
+          }
+        _exercises = exes;
+
+      print(_exercises);
 
         // Get therapist information if available
         if (userData['therapist'] != null && userData['therapist'].isNotEmpty) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// A Flutter implementation of the Integrated Scale of Development Report
 /// Converted from React/Material-UI to Flutter
@@ -19,7 +20,7 @@ String formatScoreDisplay(dynamic scoreValue) {
   if (scoreValue == null || scoreValue == '') {
     return 'N/A'; // Not Available / Not Assessed
   }
-  
+
   // Convert to number if it's a string
   num? numScore;
   if (scoreValue is String) {
@@ -27,20 +28,21 @@ String formatScoreDisplay(dynamic scoreValue) {
   } else if (scoreValue is num) {
     numScore = scoreValue;
   }
-  
+
   // Check if conversion failed or resulted in NaN
   if (numScore == null) {
     return 'Invalid'; // Indicates non-numeric input was saved
   }
-  
+
   // Basic check for plausible age range
   if (numScore < 0) {
     return 'Invalid';
   }
-  
+
   // Format valid number
   return '${numScore} months';
 }
+
 // Main widget for the Integrated Scale of Development Report
 class HiReport extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -53,151 +55,200 @@ class HiReport extends StatelessWidget {
     final String remarks = data['remarks'] ?? '';
 
     // Filter out remarks and any unexpected keys to get only scale data
-    final Map<String, dynamic> scaleData = Map.fromEntries(
-      data.entries.where((entry) => 
-        entry.key != 'remarks' && scaleLabels.containsKey(entry.key)
-      )
-    );
+    final Map<String, dynamic> scaleData = Map.fromEntries(data.entries.where(
+        (entry) =>
+            entry.key != 'remarks' && scaleLabels.containsKey(entry.key)));
 
     // Check if there is any actual scale data to display
-    final bool hasScaleData = scaleData.values.any(
-      (value) => value != null && value != ''
-    );
+    final bool hasScaleData =
+        scaleData.values.any((value) => value != null && value != '');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Title
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: Text(
-            'Integrated Scale of Development Report',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-        ),
-
         // Developmental Levels Section
         if (hasScaleData)
-          Card(
-            margin: const EdgeInsets.only(bottom: 24.0),
-            shape: RoundedRectangleBorder(
+          Container(
+            margin: const EdgeInsets.only(bottom: 20.0),
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: Colors.grey.shade200),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.05),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: Offset(0, 1),
+                ),
+              ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Developmental Levels',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  ...scaleLabels.entries.toList().asMap().entries.map((entry) {
-                    final int index = entry.key;
-                    final MapEntry<String, String> scaleEntry = entry.value;
-                    final String key = scaleEntry.key;
-                    final String label = scaleEntry.value;
-                    
-                    final dynamic scoreValue = scaleData[key];
-                    final String displayScore = formatScoreDisplay(scoreValue);
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.timeline,
+                      color: Color(0xFF1cb0f6),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Developmental Levels',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4b4b4b),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+                ...scaleLabels.entries.toList().asMap().entries.map((entry) {
+                  final int index = entry.key;
+                  final MapEntry<String, String> scaleEntry = entry.value;
+                  final String key = scaleEntry.key;
+                  final String label = scaleEntry.value;
 
-                    return Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  label,
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                  final dynamic scoreValue = scaleData[key];
+                  final String displayScore = formatScoreDisplay(scoreValue);
+
+                  return Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                label,
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF4b4b4b),
                                 ),
                               ),
-                              SizedBox(
-                                width: 90.0,
-                                child: Text(
-                                  displayScore,
-                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                  textAlign: TextAlign.right,
+                            ),
+                            SizedBox(
+                              width: 90.0,
+                              child: Text(
+                                displayScore,
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1cb0f6),
                                 ),
+                                textAlign: TextAlign.right,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        // Add divider if not the last item
-                        if (index < scaleLabels.length - 1)
-                          const Divider(height: 1),
-                      ],
-                    );
-                  }).toList(),
-                ],
-              ),
+                      ),
+                      // Add divider if not the last item
+                      if (index < scaleLabels.length - 1)
+                        Divider(height: 1, color: Colors.grey.shade200),
+                    ],
+                  );
+                }).toList(),
+              ],
             ),
           )
         else
           // Show message if no scale data, but remarks might still exist
-          Padding(
-            padding: const EdgeInsets.only(top: 16.0, bottom: 24.0),
+          Container(
+            margin: const EdgeInsets.only(bottom: 20.0),
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
             child: Text(
               'No developmental scale data recorded.',
-              style: TextStyle(color: Colors.grey[600]),
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
             ),
           ),
 
         // Remarks Section
         if (remarks.isNotEmpty)
-          Card(
+          Container(
             margin: const EdgeInsets.only(bottom: 16.0),
-            shape: RoundedRectangleBorder(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: Colors.grey.shade200),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.05),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: Offset(0, 1),
+                ),
+              ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Additional Remarks',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  Card(
-                    margin: EdgeInsets.zero,
-                    color: Colors.grey[50],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.note_alt_outlined,
+                      color: Color(0xFF1cb0f6),
+                      size: 20,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        remarks,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                    const SizedBox(width: 8),
+                    Text(
+                      'Additional Remarks',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4b4b4b),
                       ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 12.0),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                ],
-              ),
+                  child: Text(
+                    remarks,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: Color(0xFF4b4b4b),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
         // Fallback message if absolutely no data (neither scales nor remarks)
         if (!hasScaleData && remarks.isEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 16.0),
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
             child: Text(
               'No Integrated Scales data available for this report.',
-              style: TextStyle(color: Colors.grey[600]),
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
             ),
           ),
       ],
