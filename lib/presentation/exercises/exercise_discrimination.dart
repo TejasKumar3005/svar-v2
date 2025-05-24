@@ -548,7 +548,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                   ],
                 ),
                 child: AudioWidget(
-                  audioLinks: [diffSounds.getVideoUrls()[1]],
+                  audioLinks:diffSounds.getVideoUrls(),
                 ),
               ),
               Spacer(),
