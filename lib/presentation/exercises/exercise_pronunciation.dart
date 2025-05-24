@@ -1049,7 +1049,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                           date: data_pro.todaysExercises[startExerciseIndex]
                               ["date"],
                           performance: {
-                        "result": result,
+                        "result": intermediateResults,
                         "time": DateTime.now().toIso8601String(),
                         "correctAttempts": correctAttempts,
                         "totalAttempts": totalAttempts,
