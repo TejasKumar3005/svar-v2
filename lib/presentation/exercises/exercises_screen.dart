@@ -53,14 +53,13 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         _trackTrainPosition();
       }
     });
-    
+
     // Changed to portrait orientation
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    
-    super.initState();
+
     _riveFileFuture = RivePreloader()
         .initialize()
         .then((_) => RivePreloader().getRiveFile('assets/rive/levels.riv'));
@@ -69,72 +68,71 @@ class _ExercisesScreenState extends State<ExercisesScreen>
 
   @override
   void dispose() {
-    // Cancel any active timers
+    _animationController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    extendBody: true,
-  
-    body: Stack(
-      children: [
-        // Rive animation content (first/bottom layer)
-        Positioned(
-          bottom: 0,
-          left: 0,
-          top: 0,
-          right: 0,
-          child: FutureBuilder<RiveFile?>(
-            future: _riveFileFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError || snapshot.data == null) {
-                return const Center(child: Text('Error loading Rive file'));
-              } else {
-                final riveFile = snapshot.data!;
-    
-                // Change the approach to display the train animation
-                return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  controller: _scrollController,
-                  physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics()),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      extendBody: true,
+      body: Stack(
+        children: [
+          // Rive animation content (first/bottom layer)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            top: 0,
+            right: 0,
+            child: FutureBuilder<RiveFile?>(
+              future: _riveFileFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError || snapshot.data == null) {
+                  return const Center(child: Text('Error loading Rive file'));
+                } else {
+                  final riveFile = snapshot.data!;
+
+                  // Change the approach to display the train animation
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    controller: _scrollController,
+                    physics: const BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics()),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
                       curve: Curves.easeInOut,
-                      width: MediaQuery.of(context).size.height* 7.716,
+                      width: MediaQuery.of(context).size.height * 7.716,
                       height: MediaQuery.of(context).size.height,
                       alignment: Alignment.bottomCenter,
-                  
-                    child: Center(
-                      child: RiveAnimation.direct(
-                        riveFile,
-                        // Use different fit mode to better adapt to portrait
-                        fit: BoxFit.contain,
-                        alignment: Alignment.topCenter,
-                        onInit: _onRiveInit,
+                      child: Center(
+                        child: RiveAnimation.direct(
+                          riveFile,
+                          // Use different fit mode to better adapt to portrait
+                          fit: BoxFit.contain,
+                          alignment: Alignment.topCenter,
+                          onInit: _onRiveInit,
+                        ),
                       ),
                     ),
-                  ),
-                );
-              }
-            },
+                  );
+                }
+              },
+            ),
           ),
-        ),
-        // DisciAppBar (last/top layer)
-        Positioned(
-          top: 20,
-          left: 0,
-          right: 0,
-          child: DisciAppBar(context),
-        ),
-      ],
-    ),
-  );
-}
+          // DisciAppBar (last/top layer)
+          Positioned(
+            top: 20,
+            left: 0,
+            right: 0,
+            child: DisciAppBar(context),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _handleLevelType(int startExerciseIndex, String params) async {
     try {
@@ -614,9 +612,14 @@ Widget build(BuildContext context) {
           if (textRun_subtype != null) {
             print(
                 "type ${actualIndex}: ${data_pro.todaysExercises[actualIndex]['type']}");
-            textRun_subtype.text = data_pro.todaysExercises[actualIndex]['description'] != null 
-                ? (data_pro.todaysExercises[actualIndex]['description'] as String).split(' (')[0]
-                : 'No Description';
+            String description = data_pro.todaysExercises[actualIndex]
+                    ['description'] ??
+                'No Description';
+            if (description.contains(' (')) {
+              textRun_subtype.text = description.split(' (')[0];
+            } else {
+              textRun_subtype.text = description;
+            }
           } else {
             debugPrint("Error: '$subtypeKey' text run not found!");
           }
@@ -624,9 +627,20 @@ Widget build(BuildContext context) {
           String descKey = "desc${i + 1}";
           TextValueRun? textRun_desc = data_pro.artboard!.textRun(descKey);
           if (textRun_desc != null) {
-            textRun_desc.text = data_pro.todaysExercises[actualIndex]['description'] != null 
-                ? (data_pro.todaysExercises[actualIndex]['description'] as String).split(' (')[1]
-                : 'No Description';
+            String description = data_pro.todaysExercises[actualIndex]
+                    ['description'] ??
+                'No Description';
+            if (description.contains(' (')) {
+              List<String> parts = description.split(' (');
+              if (parts.length > 1) {
+                // Remove the closing parenthesis if it exists
+                textRun_desc.text = parts[1].replaceAll(')', '');
+              } else {
+                textRun_desc.text = '';
+              }
+            } else {
+              textRun_desc.text = '';
+            }
           } else {
             debugPrint("Error: '$descKey' text run not found!");
           }
@@ -648,7 +662,8 @@ Widget build(BuildContext context) {
         train = data_pro.artboard!.component('train');
 
         if (train != null) {
-          print("train position: ${train.y}"); // Updated to y coordinate for portrait mode
+          print(
+              "train position: ${train.y}"); // Updated to y coordinate for portrait mode
           _previousTrainX = train.y; // Store y position for portrait mode
         } else {
           debugPrint("Error: 'train' not found!");
@@ -681,14 +696,15 @@ Widget build(BuildContext context) {
     if (train != null && train.artboard != null) {
       double trainX = train.x;
 
-      if (_previousTrainX != trainX) {
+      if (_previousTrainX == null || _previousTrainX != trainX) {
         double screenWidth = MediaQuery.of(context).size.height * 7.716;
         double maxTrainX = train.artboard!.width;
         double scaledOffset = (trainX / maxTrainX) * screenWidth;
 
         if (_scrollController.hasClients) {
           // Calculate the distance and use it to adjust animation duration
-          double deltaX = (trainX - _previousTrainX!).abs();
+          double deltaX =
+              _previousTrainX != null ? (trainX - _previousTrainX!).abs() : 0;
           int animationDuration = (deltaX * 10).toInt().clamp(50, 200);
 
           _scrollController.animateTo(
@@ -701,7 +717,6 @@ Widget build(BuildContext context) {
       }
     }
   }
-
 
   Object retrieveObject(String type, Map<String, dynamic> data) {
     if (type == "ImageToAudio") {
