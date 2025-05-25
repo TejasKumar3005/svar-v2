@@ -7,13 +7,7 @@ class NavigatorService {
 
 static Future<dynamic> pushNamed(String routeName, {dynamic arguments, String? riveFileName}) async {
     debugPrint('Pushing route: $routeName');
-    return navigatorKey.currentState?.push(
-      RivePageRoute(
-        routeName: routeName,
-        arguments: arguments,
-        riveFileName: riveFileName ?? 'assets/rive/transition.riv',
-      ),
-    );
+    return navigatorKey.currentState?.pushNamed(routeName, arguments: arguments);
   }
 
   static Future<void> goBack() async {

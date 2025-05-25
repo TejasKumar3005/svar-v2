@@ -89,7 +89,7 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
         child: Scaffold(
           extendBody: true,
           extendBodyBehindAppBar: true,
-          bottomSheet: _buildBottomButton(),
+          
           body: _buildPage(screenWidth, screenHeight,
               topWidget: _buildLogo(screenWidth, screenHeight),
               bottomWidget: _buildTagline()),
@@ -220,6 +220,7 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
               ),
             ),
           ),
+          _buildBottomButton()
         ],
       ),
     );
@@ -242,6 +243,7 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
       return Padding(
         padding: const EdgeInsets.all(16.0),
         child: CustomButton(
+          
           type: ButtonType.Next,
           onPressed: () {
             if(_currentPage==3){

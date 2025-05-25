@@ -13,7 +13,6 @@ import 'package:svar_new/database/userController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart';
 
-
 class ExerciseIdentification extends StatefulWidget {
   const ExerciseIdentification({Key? key})
       : super(
@@ -66,7 +65,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     // Initialize userData with uid and context
     String uid = FirebaseAuth.instance.currentUser?.uid ?? '';
     userData = UserData(uid: uid, buildContext: context);
-    
   }
 
   @override
@@ -87,7 +85,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                 : type == "AudioToImage"
                     ? "v4.wav"
                     : "v5.wav";
-
 
     Future.delayed(const Duration(seconds: 3), () async {
       await _player.play(AssetSource("assets/audio/bgm/$audioFile"));
@@ -282,41 +279,45 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
       String type, dynamic dtcontainer, String params) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.h),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Changed from Row to Column for portrait mode
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.3,
-                padding: EdgeInsets.all(1.h),
-                child: Stack(
-                  children: [
-                    if (type == "WordToFig")
-                      Center(
-                        child: Text(
-                          dtcontainer.getImageUrl(),
-                          style: TextStyle(fontSize: 90),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Changed from Row to Column for portrait mode
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  padding: EdgeInsets.all(1.h),
+                  child: Stack(
+                    children: [
+                      if (type == "WordToFig")
+                        Center(
+                          child: Text(
+                            dtcontainer.getImageUrl(),
+                            style: TextStyle(fontSize: 90),
+                          ),
+                        )
+                      else
+                        CustomImageView(
+                          imagePath: dtcontainer.getImageUrl(),
+                          radius: BorderRadiusStyle.roundedBorder15,
                         ),
-                      )
-                    else
-                      CustomImageView(
-                        imagePath: dtcontainer.getImageUrl(),
-                        radius: BorderRadiusStyle.roundedBorder15,
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height *
-                    0.4, // Adjusted height for portrait
-                child: buildDynamicOptions(type, provider, dtcontainer, params),
-              ),
-            ],
-          ),
-        ],
+                Container(
+                  height: MediaQuery.of(context).size.height *
+                      0.3, // Adjusted height for portrait
+                  child:
+                      buildDynamicOptions(type, provider, dtcontainer, params),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -332,9 +333,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     switch (quizType) {
       case "ImageToAudio":
         return dtcontainer.getAudioList().length <= 4
-            ? Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: 16.0), // Adjust padding as needed
+            ? Center(
                 child: Container(
                     height: MediaQuery.of(context).size.height *
                         0.4, // Adjust height as needed
@@ -398,99 +397,93 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
       case "FigToWord":
         return StatefulBuilder(
           builder: (context, setState) {
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.3,
-              width: MediaQuery.of(context).size.width,
-              child: Stack(
-                children: [
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (dtcontainer.getTextList().length <= 4)
-                          ...List.generate(
-                            dtcontainer.getTextList().length ~/ 2 +
-                                dtcontainer.getTextList().length %
-                                    2, // Calculate rows needed
-                            (rowIndex) {
-                              return Padding(
-                                padding: EdgeInsets.only(bottom: 2.v),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    // Create 2 items per row (if available)
-                                    ...List.generate(
-                                      2,
-                                      (colIndex) {
-                                        final index = rowIndex * 2 + colIndex;
-                                        if (index <
-                                            dtcontainer.getTextList().length) {
-                                          return Expanded(
-                                            child: Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 5.h),
-                                              child: OptionWidget(
-                                                triggerAnimation: (value) {
-                                                  _triggerAnimation(value);
-                                                },
-                                                child: TextContainer(
-                                                  text: dtcontainer
-                                                      .getTextList()[index],
-                                                ),
-                                                isCorrect: () {
-                                                  bool isCorrect = dtcontainer
-                                                          .getCorrectOutput() ==
-                                                      dtcontainer
-                                                          .getTextList()[index];
+            return Center(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.3,
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (dtcontainer.getTextList().length <= 4)
+                      ...List.generate(
+                        dtcontainer.getTextList().length ~/ 2 +
+                            dtcontainer.getTextList().length %
+                                2, // Calculate rows needed
+                        (rowIndex) {
+                          return Padding(
+                            padding: EdgeInsets.only(bottom: 2.v),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // Create 2 items per row (if available)
+                                ...List.generate(
+                                  2,
+                                  (colIndex) {
+                                    final index = rowIndex * 2 + colIndex;
+                                    if (index <
+                                        dtcontainer.getTextList().length) {
+                                      return Expanded(
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 5.h),
+                                          child: OptionWidget(
+                                            triggerAnimation: (value) {
+                                              _triggerAnimation(value);
+                                            },
+                                            child: TextContainer(
+                                              text: dtcontainer
+                                                  .getTextList()[index],
+                                            ),
+                                            isCorrect: () {
+                                              bool isCorrect = dtcontainer
+                                                      .getCorrectOutput() ==
+                                                  dtcontainer
+                                                      .getTextList()[index];
 
-                                                  var data_pro = Provider.of<
-                                                          ExerciseProvider>(
+                                              var data_pro =
+                                                  Provider.of<ExerciseProvider>(
                                                       context,
                                                       listen: false);
-                                                  if (isCorrect) {
-                                                    data_pro.incrementLevel(
-                                                        currentExerciseIndex);
-                                                    if (data["completedAt"] ==
-                                                        null) {
-                                                      UserData(
-                                                              uid: FirebaseAuth
-                                                                  .instance
-                                                                  .currentUser!
-                                                                  .uid)
-                                                          .updateExerciseData(
-                                                              euid: data["uid"],
-                                                              date:
-                                                                  data["date"],
-                                                              performance: {
-                                                            "correct_attempt":
-                                                                isCorrect,
-                                                            "time":
-                                                                DateTime.now()
-                                                                    .toString(),
-                                                          }).then((value) => print(
-                                                              "Exercise data updated"));
-                                                    }
-                                                  }
+                                              if (isCorrect) {
+                                                data_pro.incrementLevel(
+                                                    currentExerciseIndex);
+                                                if (data["completedAt"] ==
+                                                    null) {
+                                                  UserData(
+                                                          uid: FirebaseAuth
+                                                              .instance
+                                                              .currentUser!
+                                                              .uid)
+                                                      .updateExerciseData(
+                                                          euid: data["uid"],
+                                                          date: data["date"],
+                                                          performance: {
+                                                        "correct_attempt":
+                                                            isCorrect,
+                                                        "time": DateTime.now()
+                                                            .toString(),
+                                                      }).then((value) => print(
+                                                          "Exercise data updated"));
+                                                }
+                                              }
 
-                                                  return isCorrect;
-                                                },
-                                              ),
-                                            ),
-                                          );
-                                        } else {
-                                          return Expanded(child: SizedBox());
-                                        }
-                                      },
-                                    ),
-                                  ],
+                                              return isCorrect;
+                                            },
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      return Expanded(child: SizedBox());
+                                    }
+                                  },
                                 ),
-                              );
-                            },
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                  ],
+                ),
               ),
             );
           },
@@ -498,84 +491,87 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
 
       case "WordToFig":
         debugPrint("entering in the word to fig section");
-        return Container(
-            height: MediaQuery.of(context).size.height * 0.4,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                if (dtcontainer.getImageUrlList().length <= 4)
-                  ...List.generate(
-                    dtcontainer.getImageUrlList().length ~/ 2 +
-                        dtcontainer.getImageUrlList().length %
-                            2, // Calculate rows needed
-                    (rowIndex) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          // Create 2 items per row (if available)
-                          ...List.generate(
-                            2,
-                            (colIndex) {
-                              final index = rowIndex * 2 + colIndex;
-                              if (index <
-                                  dtcontainer.getImageUrlList().length) {
-                                return Expanded(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(5.h),
-                                    child: OptionWidget(
-                                      triggerAnimation: (value) {
-                                        _triggerAnimation(value);
-                                      },
-                                      child: ImageWidget(
-                                        imagePath: dtcontainer
-                                            .getImageUrlList()[index],
-                                      ),
-                                      isCorrect: () {
-                                        bool isCorrect =
-                                            dtcontainer.getCorrectOutput() ==
-                                                dtcontainer
-                                                    .getImageUrlList()[index];
+        return Center(
+          child: Container(
+              height: MediaQuery.of(context).size.height * 0.4,
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (dtcontainer.getImageUrlList().length <= 4)
+                    ...List.generate(
+                      dtcontainer.getImageUrlList().length ~/ 2 +
+                          dtcontainer.getImageUrlList().length %
+                              2, // Calculate rows needed
+                      (rowIndex) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            // Create 2 items per row (if available)
+                            ...List.generate(
+                              2,
+                              (colIndex) {
+                                final index = rowIndex * 2 + colIndex;
+                                if (index <
+                                    dtcontainer.getImageUrlList().length) {
+                                  return Expanded(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(5.h),
+                                      child: OptionWidget(
+                                        triggerAnimation: (value) {
+                                          _triggerAnimation(value);
+                                        },
+                                        child: ImageWidget(
+                                          imagePath: dtcontainer
+                                              .getImageUrlList()[index],
+                                        ),
+                                        isCorrect: () {
+                                          bool isCorrect =
+                                              dtcontainer.getCorrectOutput() ==
+                                                  dtcontainer
+                                                      .getImageUrlList()[index];
 
-                                        var data_pro =
-                                            Provider.of<ExerciseProvider>(
-                                                context,
-                                                listen: false);
-                                        if (isCorrect) {
-                                          data_pro.incrementLevel(
-                                              currentExerciseIndex);
-                                          if (data["completedAt"] == null) {
-                                            UserData(
-                                                    uid: FirebaseAuth.instance
-                                                        .currentUser!.uid)
-                                                .updateExerciseData(
-                                                    euid: data["uid"],
-                                                    date: data["date"],
-                                                    performance: {
-                                                  "correct_attempt": isCorrect,
-                                                  "time":
-                                                      DateTime.now().toString(),
-                                                }).then((value) => print(
-                                                    "Exercise data updated"));
+                                          var data_pro =
+                                              Provider.of<ExerciseProvider>(
+                                                  context,
+                                                  listen: false);
+                                          if (isCorrect) {
+                                            data_pro.incrementLevel(
+                                                currentExerciseIndex);
+                                            if (data["completedAt"] == null) {
+                                              UserData(
+                                                      uid: FirebaseAuth.instance
+                                                          .currentUser!.uid)
+                                                  .updateExerciseData(
+                                                      euid: data["uid"],
+                                                      date: data["date"],
+                                                      performance: {
+                                                    "correct_attempt":
+                                                        isCorrect,
+                                                    "time": DateTime.now()
+                                                        .toString(),
+                                                  }).then((value) => print(
+                                                      "Exercise data updated"));
+                                            }
                                           }
-                                        }
 
-                                        return isCorrect;
-                                      },
+                                          return isCorrect;
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                );
-                              } else {
-                                return Expanded(child: SizedBox());
-                              }
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-              ],
-            ));
+                                  );
+                                } else {
+                                  return Expanded(child: SizedBox());
+                                }
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                ],
+              )),
+        );
 
       default:
         return Container();

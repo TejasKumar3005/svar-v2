@@ -26,6 +26,7 @@ class AudioWidget extends StatefulWidget {
 
 class AudioWidgetState extends State<AudioWidget> {
   StreamSubscription<Duration>? _positionSubscription;
+  StreamSubscription<PlayerState>? _playerStateSubscription;
   late AudioPlayer _audioPlayer;
   late int currentIndex;
   late List<double> lengths;
@@ -33,7 +34,12 @@ class AudioWidgetState extends State<AudioWidget> {
 
   // ValueNotifier for progress
   final ValueNotifier<double> _progress = ValueNotifier<double>(0.0);
+  // ValueNotifier for playing state
+  final ValueNotifier<bool> _isPlaying = ValueNotifier<bool>(false);
+
   ValueNotifier<double> get progress => _progress;
+  ValueNotifier<bool> get isPlaying => _isPlaying;
+
   @override
   void initState() {
     super.initState();
@@ -42,11 +48,17 @@ class AudioWidgetState extends State<AudioWidget> {
     totalLength = 0.0;
     lengths = [];
     _loadAudioLengths(); // Use _ to indicate private method
+
     _positionSubscription = _audioPlayer.positionStream.listen((position) {
       if (_audioPlayer.duration != null &&
           _audioPlayer.duration!.inSeconds > 0) {
         _progress.value = _calculateProgress(position);
       }
+    });
+
+    // Listen to player state changes
+    _playerStateSubscription = _audioPlayer.playerStateStream.listen((state) {
+      _isPlaying.value = state.playing;
     });
   }
 
@@ -110,8 +122,10 @@ class AudioWidgetState extends State<AudioWidget> {
   @override
   void dispose() {
     _positionSubscription?.cancel();
+    _playerStateSubscription?.cancel();
     _audioPlayer.dispose();
     _progress.dispose(); // Dispose ValueNotifier
+    _isPlaying.dispose(); // Dispose playing state ValueNotifier
     super.dispose();
   }
 
@@ -132,11 +146,19 @@ class AudioWidgetState extends State<AudioWidget> {
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CustomButton(
-                
-                  type:_audioPlayer.playing?ButtonType.ImagePause: ButtonType.ImagePlay,
-                  onPressed: () {
-                    _audioPlayer.playing ? _audioPlayer.pause() : playNext();
+                ValueListenableBuilder<bool>(
+                  valueListenable: _isPlaying,
+                  builder: (context, isPlayingValue, child) {
+                    return CustomButton(
+                      type: isPlayingValue
+                          ? ButtonType.ImagePause
+                          : ButtonType.ImagePlay,
+                      onPressed: () {
+                        _audioPlayer.playing
+                            ? _audioPlayer.pause()
+                            : playNext();
+                      },
+                    );
                   },
                 ),
                 const SizedBox(height: 8),
@@ -164,15 +186,22 @@ class AudioWidgetState extends State<AudioWidget> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(width: 10.0),
-                CustomButton(
-                    type:_audioPlayer.playing?ButtonType.ImagePause: ButtonType.ImagePlay,
-                  onPressed: () {
-                    _audioPlayer.playing ? _audioPlayer.pause() : playNext();
+                ValueListenableBuilder<bool>(
+                  valueListenable: _isPlaying,
+                  builder: (context, isPlayingValue, child) {
+                    return CustomButton(
+                      type: isPlayingValue
+                          ? ButtonType.ImagePause
+                          : ButtonType.ImagePlay,
+                      onPressed: () {
+                        _audioPlayer.playing
+                            ? _audioPlayer.pause()
+                            : playNext();
+                      },
+                    );
                   },
                 ),
-              
                 const SizedBox(width: 16.0),
-                
                 Expanded(
                   child: GestureDetector(
                     onTap: click,

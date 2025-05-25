@@ -234,7 +234,7 @@ class _CustomButtonState extends State<CustomButton> {
       case ButtonType.Next:
         imagePath = ImageConstant.imgNextBtn;
         height = 60;
-
+        width = widget.width ?? 0;
         defaultChild = Text(
           "Next",
           style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
@@ -363,7 +363,7 @@ class _CustomButtonState extends State<CustomButton> {
         widget.type == ButtonType.Video1 ||
       
         widget.type == ButtonType.Video2) {
-      width = MediaQuery.of(context).size.width * 0.7;
+      width = widget.width ?? MediaQuery.of(context).size.width * 0.9;
       color = null;
     }
     if (widget.type == ButtonType.AlreadyHaveAccount ||
