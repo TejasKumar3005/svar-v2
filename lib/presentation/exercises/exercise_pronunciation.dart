@@ -79,6 +79,12 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
   // Cache screen size to avoid rebuilds
   Size? _cachedScreenSize;
 
+  // App lifecycle state tracking
+  AppLifecycleState? _lastLifecycleState;
+  bool _wasVadListeningBeforePause = false;
+  bool _wasSpeakingBeforePause = false;
+  bool _wasPlayingRecordingBeforePause = false;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -103,6 +109,145 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
         }
       }
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    print('App lifecycle state changed to: $state');
+
+    switch (state) {
+      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
+        _handleAppPause();
+        break;
+      case AppLifecycleState.resumed:
+        _handleAppResume();
+        break;
+      case AppLifecycleState.detached:
+        _handleAppDetached();
+        break;
+      case AppLifecycleState.hidden:
+        _handleAppPause();
+        break;
+    }
+    _lastLifecycleState = state;
+  }
+
+  void _handleAppPause() {
+    print('Handling app pause - preserving state');
+
+    // Save current states
+    _wasVadListeningBeforePause = _isVadListening;
+    _wasSpeakingBeforePause = isSpeaking;
+    _wasPlayingRecordingBeforePause = isPlayingRecording;
+
+    // Stop all audio activities to free resources
+    if (_isVadListening) {
+      print('Stopping VAD due to app pause');
+      _safeStopVadListening();
+    }
+
+    if (isSpeaking) {
+      print('Stopping TTS due to app pause');
+      flutterTts.stop();
+      setState(() {
+        isSpeaking = false;
+      });
+    }
+
+    if (isPlayingRecording) {
+      print('Stopping recording playback due to app pause');
+      _recordingPlayer.stop();
+      setState(() {
+        isPlayingRecording = false;
+      });
+    }
+
+    // Stop other audio players
+    _audioPlayer.stop();
+  }
+
+  void _handleAppResume() {
+    print('Handling app resume - restoring state');
+
+    // Small delay to ensure app is fully resumed
+    Future.delayed(Duration(milliseconds: 500), () {
+      if (!mounted) return;
+
+      // Only restore VAD if we haven't completed the exercise and weren't in results
+      if (_wasVadListeningBeforePause &&
+          correctAttempts < REQUIRED_CORRECT_ATTEMPTS &&
+          result.isEmpty &&
+          !isSpeaking &&
+          !isPlayingRecording) {
+        print('Restoring VAD listening state');
+        _safeStartVadListening();
+      }
+
+      // Reset pause state flags
+      _wasVadListeningBeforePause = false;
+      _wasSpeakingBeforePause = false;
+      _wasPlayingRecordingBeforePause = false;
+    });
+  }
+
+  void _handleAppDetached() {
+    print('App detached - cleaning up resources');
+    _handleAppPause();
+  }
+
+  /// Safely starts VAD listening with proper error handling and state checks
+  bool _safeStartVadListening() {
+    if (!mounted ||
+        _isVadListening ||
+        isSpeaking ||
+        isPlayingRecording ||
+        correctAttempts >= REQUIRED_CORRECT_ATTEMPTS ||
+        result.isNotEmpty) {
+      print(
+          'Cannot start VAD: mounted=$mounted, vadListening=$_isVadListening, speaking=$isSpeaking, playing=$isPlayingRecording, correctAttempts=$correctAttempts, hasResults=${result.isNotEmpty}');
+      return false;
+    }
+
+    try {
+      _vadHandler.startListening(
+        frameSamples: 1536,
+        preSpeechPadFrames: kIsWeb ? 12 : 6,
+        redemptionFrames: kIsWeb ? 10 : 5,
+        minSpeechFrames: 3,
+        positiveSpeechThreshold: 0.7,
+        negativeSpeechThreshold: 0.35,
+        submitUserSpeechOnPause: true,
+      );
+      setState(() => _isVadListening = true);
+      print('VAD listening started successfully');
+      return true;
+    } catch (e) {
+      print('Error starting VAD listening: $e');
+      setState(() => _isVadListening = false);
+      return false;
+    }
+  }
+
+  /// Safely stops VAD listening with proper error handling
+  void _safeStopVadListening() {
+    if (!_isVadListening) return;
+
+    try {
+      _vadHandler.stopListening();
+      setState(() {
+        _isVadListening = false;
+        isRecordingSegment = false;
+      });
+      print('VAD listening stopped successfully');
+    } catch (e) {
+      print('Error stopping VAD listening: $e');
+      setState(() {
+        _isVadListening = false;
+        isRecordingSegment = false;
+      });
+    }
   }
 
   Future<void> _initializeWithConnectivityCheck() async {
@@ -133,10 +278,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     bool wasVadListening = _isVadListening;
     if (_isVadListening) {
       print("Stopping VAD for TTS");
-      _vadHandler.stopListening();
-      setState(() {
-        _isVadListening = false;
-      });
+      _safeStopVadListening();
     }
 
     try {
@@ -153,17 +295,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
           correctAttempts < REQUIRED_CORRECT_ATTEMPTS &&
           result.isEmpty) {
         Future.delayed(Duration(milliseconds: 500), () {
-          if (mounted && !_isVadListening) {
-            _vadHandler.startListening(
-              frameSamples: 1536,
-              preSpeechPadFrames: kIsWeb ? 12 : 6,
-              redemptionFrames: kIsWeb ? 10 : 5,
-              minSpeechFrames: 3,
-              positiveSpeechThreshold: 0.7,
-              negativeSpeechThreshold: 0.35,
-              submitUserSpeechOnPause: true,
-            );
-            setState(() => _isVadListening = true);
+          if (mounted && result.isEmpty) {
+            _safeStartVadListening();
           }
         });
       }
@@ -180,8 +313,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     // Store VAD state and stop if listening
     if (_isVadListening) {
       _shouldRestartVadAfterPlayback = true;
-      _vadHandler.stopListening();
-      setState(() => _isVadListening = false);
+      _safeStopVadListening();
     }
 
     if (isPlayingRecording) {
@@ -225,21 +357,12 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
   void _restartVadIfNeeded() {
     if (_shouldRestartVadAfterPlayback &&
         correctAttempts < REQUIRED_CORRECT_ATTEMPTS &&
-        !result.isNotEmpty) {
+        result.isEmpty) {
       _shouldRestartVadAfterPlayback = false;
 
       Future.delayed(Duration(milliseconds: 500), () {
-        if (mounted && !_isVadListening && !isSpeaking) {
-          _vadHandler.startListening(
-            frameSamples: 1536,
-            preSpeechPadFrames: kIsWeb ? 12 : 6,
-            redemptionFrames: kIsWeb ? 10 : 5,
-            minSpeechFrames: 3,
-            positiveSpeechThreshold: 0.7,
-            negativeSpeechThreshold: 0.35,
-            submitUserSpeechOnPause: true,
-          );
-          setState(() => _isVadListening = true);
+        if (mounted && result.isEmpty) {
+          _safeStartVadListening();
         }
       });
     }
@@ -399,25 +522,21 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                               return;
                             }
 
-                            setState(() {
-                              if (_isVadListening) {
-                                print("Stopping VAD");
-                                _vadHandler.stopListening();
-                                _isVadListening = false;
-                              } else {
-                                print("Starting VAD");
-                                _vadHandler.startListening(
-                                  frameSamples: 1536,
-                                  preSpeechPadFrames: kIsWeb ? 12 : 6,
-                                  redemptionFrames: kIsWeb ? 10 : 5,
-                                  minSpeechFrames: 3,
-                                  positiveSpeechThreshold: 0.7,
-                                  negativeSpeechThreshold: 0.35,
-                                  submitUserSpeechOnPause: true,
-                                );
-                                _isVadListening = true;
-                              }
-                            });
+                            if (isPlayingRecording) {
+                              print(
+                                  "Cannot start recording while playback is active");
+                              showErrorSnackBar(
+                                  "Please wait for playback to finish");
+                              return;
+                            }
+
+                            if (_isVadListening) {
+                              print("Stopping VAD");
+                              _safeStopVadListening();
+                            } else {
+                              print("Starting VAD");
+                              _safeStartVadListening();
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             shape: const CircleBorder(),
@@ -607,13 +726,18 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
   void _setupVadHandler() {
     _vadHandler.onSpeechEnd.listen((List<double> samples) async {
       debugPrint('Speech ended');
+
+      if (!mounted) {
+        print('Widget not mounted, skipping speech end processing');
+        return;
+      }
+
       setState(() {
         isRecordingSegment = false;
       });
 
       // Stop listening before processing
-      _vadHandler.stopListening();
-      _isVadListening = false;
+      _safeStopVadListening();
 
       try {
         // Process the current recording.
@@ -621,34 +745,20 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
         // Increment total attempts regardless of result.
         totalAttempts++;
 
-        // If we haven't reached the required number of correct attempts, resume listening.
-        if (correctAttempts < REQUIRED_CORRECT_ATTEMPTS) {
-          _vadHandler.startListening(
-            frameSamples: 1536,
-            preSpeechPadFrames: kIsWeb ? 12 : 6,
-            redemptionFrames: kIsWeb ? 10 : 5,
-            minSpeechFrames: 3,
-            positiveSpeechThreshold: 0.7,
-            negativeSpeechThreshold: 0.35,
-            submitUserSpeechOnPause: true,
-          );
-          _isVadListening = true;
+        // If we haven't reached the required number of correct attempts and widget is still mounted, resume listening.
+        if (mounted &&
+            correctAttempts < REQUIRED_CORRECT_ATTEMPTS &&
+            result.isEmpty) {
+          _safeStartVadListening();
         }
       } catch (e) {
         print("Error in speech end handler: $e");
-        showErrorSnackBar("Error processing recording: $e");
+        if (mounted) {
+          showErrorSnackBar("Error processing recording: $e");
 
-        if (correctAttempts < REQUIRED_CORRECT_ATTEMPTS) {
-          _vadHandler.startListening(
-            frameSamples: 1536,
-            preSpeechPadFrames: kIsWeb ? 12 : 6,
-            redemptionFrames: kIsWeb ? 10 : 5,
-            minSpeechFrames: 3,
-            positiveSpeechThreshold: 0.7,
-            negativeSpeechThreshold: 0.35,
-            submitUserSpeechOnPause: true,
-          );
-          _isVadListening = true;
+          if (correctAttempts < REQUIRED_CORRECT_ATTEMPTS && result.isEmpty) {
+            _safeStartVadListening();
+          }
         }
       }
     });
@@ -656,28 +766,36 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     // On Speech Start
     _vadHandler.onSpeechStart.listen((_) {
       print('Speech detected.');
-      setState(() {
-        isRecordingSegment = true;
-        receivedEvents.add('Speech detected - Attempt ${totalAttempts + 1}');
-      });
+      if (mounted) {
+        setState(() {
+          isRecordingSegment = true;
+          receivedEvents.add('Speech detected - Attempt ${totalAttempts + 1}');
+        });
+      }
     });
 
     // On speech misfire
     _vadHandler.onVADMisfire.listen((_) {
       print('VAD misfire detected.');
-      setState(() {
-        receivedEvents.add('VAD misfire detected.');
-      });
+      if (mounted) {
+        setState(() {
+          receivedEvents.add('VAD misfire detected.');
+        });
+      }
     });
 
     // On Error
     _vadHandler.onError.listen((String message) {
-      print('Error: $message');
-      setState(() {
-        loading = false;
-        isRecordingSegment = false;
-        receivedEvents.add('Error: $message');
-      });
+      print('VAD Error: $message');
+      if (mounted) {
+        setState(() {
+          loading = false;
+          isRecordingSegment = false;
+          _isVadListening = false;
+          receivedEvents.add('Error: $message');
+        });
+        showErrorSnackBar("Recording error: $message");
+      }
     });
   }
 
@@ -1059,7 +1177,6 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                   }
                   Navigator.pop(context);
                 },
-                
                 icon: const Icon(Icons.arrow_forward),
                 label: const Text("NEXT"),
                 style: ElevatedButton.styleFrom(
@@ -1109,17 +1226,60 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
 
   @override
   void dispose() {
+    print('Disposing ExercisePronunciationState');
+
+    // Remove observers first
     WidgetsBinding.instance.removeObserver(this);
-    _recordingPlayer.dispose();
-    if (_isVadListening) {
-      _vadHandler.stopListening();
+
+    // Stop all audio activities
+    try {
+      if (_isVadListening) {
+        _vadHandler.stopListening();
+        _isVadListening = false;
+      }
+      _vadHandler.dispose();
+    } catch (e) {
+      print('Error disposing VAD handler: $e');
     }
-    _vadHandler.dispose();
-    flutterTts.stop();
-    riveController?.dispose();
-    _overlayEntry?.remove();
-    _overlayEntry = null;
+
+    try {
+      flutterTts.stop();
+    } catch (e) {
+      print('Error stopping TTS: $e');
+    }
+
+    try {
+      _audioPlayer.dispose();
+    } catch (e) {
+      print('Error disposing audio player: $e');
+    }
+
+    try {
+      _recordingPlayer.dispose();
+    } catch (e) {
+      print('Error disposing recording player: $e');
+    }
+
+    try {
+      riveController?.dispose();
+    } catch (e) {
+      print('Error disposing rive controller: $e');
+    }
+
+    // Clean up overlay
+    try {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+    } catch (e) {
+      print('Error removing overlay: $e');
+    }
+
+    // Reset flags
     _shouldRestartVadAfterPlayback = false;
+    _wasVadListeningBeforePause = false;
+    _wasSpeakingBeforePause = false;
+    _wasPlayingRecordingBeforePause = false;
+
     super.dispose();
   }
 
