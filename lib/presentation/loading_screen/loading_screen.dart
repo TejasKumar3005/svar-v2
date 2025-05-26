@@ -9,6 +9,7 @@ import 'package:svar_new/database/userController.dart';
 import 'package:flutter/material.dart';
 
 import 'package:svar_new/providers/userDataProvider.dart';
+import 'package:svar_new/presentation/home/home.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({Key? key})
@@ -64,11 +65,24 @@ StateMachineController? riveController;
       print(exx);
 
       CachingManager.cacheFilesInIsolate(exx);
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.of(context).pushReplacement(PageRouteBuilder(
+          settings: const RouteSettings(name: AppRoutes.home),
+          transitionDuration: const Duration(milliseconds: 500),
+          pageBuilder: (context, animation, secondaryAnimation) {
+        // Replace the following with your actual home screen widget.
+        return HomeScreen();
+          },
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+          },
+        ));
+      });
 
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        AppRoutes.home,
-        (route) => false,
-      );
+      
     } catch (error) {
       // Handle any exceptions that occur during the process
       print('Error occurred: $error');

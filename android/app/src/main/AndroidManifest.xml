@@ -10,7 +10,7 @@
 
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-
+<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" tools:node="remove" />
     <application
         android:label="svar_new"
         android:icon="@mipmap/ic_launcher"

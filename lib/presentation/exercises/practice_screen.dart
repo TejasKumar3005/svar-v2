@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/presentation/exercises/exercises_screen.dart';
 import 'package:svar_new/presentation/home/provider/streak_provider.dart';
@@ -47,10 +48,24 @@ class _PracticeScreenState extends State<PracticeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
 
-                            Image.asset(
-                              'assets/images/img_mascot.png',
-                              height: 220,
+                            // Image.asset(
+                            //   'assets/images/img_mascot.png',
+                            //   height: 220,
+                            // ),
+
+                            SizedBox(
+                              width: 140,
+                              height: 200,
+                              child: RiveAnimation.asset(
+                                'assets/rive/blink.riv',
+                                fit: BoxFit.contain,
+                                animations: ['blink'],
+                                onInit: (artboard) {
+                                  // You can perform any additional initialization here
+                                },
+                              ),
                             ),
+
 
                             const SizedBox(width: 30),
                             Expanded(
@@ -87,7 +102,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     ),
 
                     Positioned(
-  top: 170,
+                      // top: 170,
+                      bottom : 4,
                       left: 0,
                       right: 0,
                       child :CustomButton(type: ButtonType.Practice,
