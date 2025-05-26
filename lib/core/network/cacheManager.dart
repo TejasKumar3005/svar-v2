@@ -25,7 +25,7 @@ class CachingManager {
   Future<File?> getCachedFile(String fileUrl) async {
     try {
       // Try to get the file from cache
-      print("getting from cache");
+      print("getting from cache"+fileUrl);
       final cachedFile = await DefaultCacheManager().getFileFromCache(fileUrl);
       if (cachedFile != null ) {
         print("cached file");

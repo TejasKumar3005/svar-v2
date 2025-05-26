@@ -4,14 +4,20 @@ import 'package:flutter/services.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io';
 
 class VideoPlayerScreen extends StatefulWidget {
   final String videoUrl;
 
-  VideoPlayerScreen({required this.videoUrl});
+  VideoPlayerScreen({required this.videoUrl}) {
+    print('VideoPlayerScreen: Constructor called with URL: $videoUrl');
+  }
 
   @override
-  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
+  _VideoPlayerScreenState createState() {
+    print('VideoPlayerScreen: createState() called');
+    return _VideoPlayerScreenState();
+  }
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
@@ -22,59 +28,135 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   bool _hasError = false;
   String _errorMessage = '';
 
+  _VideoPlayerScreenState() {
+    print('VideoPlayerScreen: State constructor called');
+  }
+
   @override
   void initState() {
     super.initState();
+    print('VideoPlayerScreen: initState called');
+    print('VideoPlayerScreen: Video URL: ${widget.videoUrl}');
+
     // Set landscape orientation for video playback
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+
+    print('VideoPlayerScreen: About to call _initializePlayer()');
     _initializePlayer();
   }
 
-  void _initializePlayer() async {
+  Future<bool> _checkNetworkConnectivity() async {
+    if (kIsWeb) return true; // Assume web has connectivity
+
     try {
+      final result = await InternetAddress.lookup('google.com');
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  void _initializePlayer() async {
+    print('VideoPlayerScreen: _initializePlayer() method started');
+
+    try {
+      print('VideoPlayerScreen: Setting loading state');
       setState(() {
         _isLoading = true;
         _hasError = false;
       });
 
+      // Clean up any existing controllers
+      if (_chewieController != null) {
+        print('VideoPlayerScreen: Disposing existing chewie controller');
+        _chewieController?.dispose();
+        _chewieController = null;
+      }
+
+      print(
+          'VideoPlayerScreen: Initializing video player for URL: ${widget.videoUrl}');
+
       if (kIsWeb) {
         // For web, use the network URL directly
+        print('VideoPlayerScreen: Running on web, using network URL');
         _videoPlayerController =
             VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
       } else {
         // For non-web platforms, try to use cached file first
+        print(
+            'VideoPlayerScreen: Running on mobile, attempting to get cached file for URL: ${widget.videoUrl}');
         CachingManager cachingManager = CachingManager();
-        final cachedFile = await cachingManager.getCachedFile(widget.videoUrl);
+        print('VideoPlayerScreen: CachingManager instance created');
 
-        if (cachedFile != null) {
-          // Use cached file if available
-          _videoPlayerController = VideoPlayerController.file(cachedFile);
-        } else {
-          // Fallback to network URL if cached file is not found
-          print('Cached file not found, falling back to network URL');
+        try {
+          print('VideoPlayerScreen: About to call getCachedFile()');
+          final cachedFile =
+              await cachingManager.getCachedFile(widget.videoUrl);
+          print('VideoPlayerScreen: getCachedFile() completed');
+
+          print("VideoPlayerScreen: cachedFile result: ${cachedFile?.path}");
+          print(
+              "VideoPlayerScreen: cachedFile exists: ${cachedFile?.existsSync() ?? false}");
+
+          if (cachedFile != null && cachedFile.existsSync()) {
+            // Use cached file if available and exists
+            final fileSize = await cachedFile.length();
+            print('Using cached file for video playback: ${cachedFile.path}');
+            print('Cached file size: $fileSize bytes');
+            _videoPlayerController = VideoPlayerController.file(cachedFile);
+          } else {
+            print('Cached file not available or does not exist');
+            // Fallback to network URL if cached file is not found
+            print('Cached file not found, falling back to network URL');
+
+            // Check network connectivity before falling back to network
+            final hasNetwork = await _checkNetworkConnectivity();
+            if (!hasNetwork) {
+              throw Exception(
+                  'No internet connection available and video not cached');
+            }
+
+            _videoPlayerController =
+                VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+          }
+        } catch (cacheError) {
+          print('Error getting cached file: $cacheError');
+          // Fallback to network on cache error
+          print('Cache error, falling back to network URL');
+
+          // Check network connectivity before falling back to network
+          final hasNetwork = await _checkNetworkConnectivity();
+          if (!hasNetwork) {
+            throw Exception(
+                'No internet connection available and cache failed');
+          }
+
           _videoPlayerController =
               VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
         }
       }
 
-      // Initialize the video controller
+      // Initialize the video controller with error handling
       await _videoPlayerController.initialize();
 
-      // Add listener for video completion
-      _videoPlayerController.addListener(() {
-        if (_videoPlayerController.value.position ==
-            _videoPlayerController.value.duration) {
-          _exitScreen();
-        }
-      });
+      // Verify the video was properly initialized
+      if (!_videoPlayerController.value.isInitialized) {
+        throw Exception('Video controller failed to initialize');
+      }
 
-      // Create Chewie controller
+      print(
+          'Video initialized successfully. Duration: ${_videoPlayerController.value.duration}');
+
+      // Add listener for video completion and errors
+      _videoPlayerController.addListener(_videoListener);
+
+      // Create Chewie controller with auto-play enabled
       _chewieController = ChewieController(
         videoPlayerController: _videoPlayerController,
-        autoPlay: false,
+        autoPlay: true, // Changed to true for better UX
         looping: false,
         aspectRatio: _videoPlayerController.value.aspectRatio,
         fullScreenByDefault: true,
@@ -83,17 +165,60 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           DeviceOrientation.landscapeLeft,
           DeviceOrientation.landscapeRight,
         ],
+        errorBuilder: (context, errorMessage) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error, color: Colors.white, size: 60),
+                SizedBox(height: 16),
+                Text(
+                  'Video Error',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  errorMessage,
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        },
       );
 
       setState(() {
         _isLoading = false;
       });
+
+      print('Video player setup completed successfully');
     } catch (e) {
       print('Error initializing video player: $e');
       setState(() {
         _isLoading = false;
         _hasError = true;
         _errorMessage = 'Failed to load video: ${e.toString()}';
+      });
+    }
+  }
+
+  void _videoListener() {
+    if (!mounted) return;
+
+    final value = _videoPlayerController.value;
+
+    // Handle video completion
+    if (value.position >= value.duration && value.duration.inMilliseconds > 0) {
+      _exitScreen();
+    }
+
+    // Handle video errors
+    if (value.hasError) {
+      print('Video error: ${value.errorDescription}');
+      setState(() {
+        _hasError = true;
+        _errorMessage = value.errorDescription ?? 'Unknown video error';
       });
     }
   }
@@ -116,8 +241,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       DeviceOrientation.portraitDown,
     ]);
 
-    _videoPlayerController.dispose();
-    _chewieController?.dispose();
+    // Clean up video listener safely
+    try {
+      _videoPlayerController.removeListener(_videoListener);
+    } catch (e) {
+      print('Error removing video listener: $e');
+    }
+
+    // Dispose controllers safely
+    try {
+      _videoPlayerController.dispose();
+    } catch (e) {
+      print('Error disposing video controller: $e');
+    }
+
+    try {
+      _chewieController?.dispose();
+    } catch (e) {
+      print('Error disposing chewie controller: $e');
+    }
+
     super.dispose();
   }
 
@@ -183,6 +326,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(
+        'VideoPlayerScreen: build() called - _isLoading: $_isLoading, _hasError: $_hasError');
     return WillPopScope(
       onWillPop: () async {
         _exitScreen();
@@ -221,7 +366,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           _chewieController != null &&
                                   _videoPlayerController.value.isInitialized
                               ? Chewie(controller: _chewieController!)
-                              : Center(child: CircularProgressIndicator()),
+                              : Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      ),
+                                      SizedBox(height: 16),
+                                      Text(
+                                        'Preparing video...',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                           if (_showPlayButton)
                             Center(
                               child: GestureDetector(
@@ -250,7 +414,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                               onTap: _exitScreen,
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.black54,
+                                  color: Colors.white,
                                   shape: BoxShape.circle,
                                 ),
                                 padding: EdgeInsets.all(8),
