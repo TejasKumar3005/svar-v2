@@ -84,11 +84,18 @@ class _CelebrationOverlayWidgetState extends State<CelebrationOverlayWidget> {
   }
 
   @override
+  void dispose() {
+    timer.cancel(); // Cancel timer to prevent memory leak
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: GestureDetector(
         onTap: (){
+          timer.cancel(); // Cancel timer when manually closing
           widget.removeOverlay();
           Navigator.pop(context, true);
         },

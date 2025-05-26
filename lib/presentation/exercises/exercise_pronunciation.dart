@@ -530,13 +530,13 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                               return;
                             }
 
-                            if (_isVadListening) {
-                              print("Stopping VAD");
+                              if (_isVadListening) {
+                                print("Stopping VAD");
                               _safeStopVadListening();
-                            } else {
-                              print("Starting VAD");
+                              } else {
+                                print("Starting VAD");
                               _safeStartVadListening();
-                            }
+                              }
                           },
                           style: ElevatedButton.styleFrom(
                             shape: const CircleBorder(),
@@ -754,7 +754,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
       } catch (e) {
         print("Error in speech end handler: $e");
         if (mounted) {
-          showErrorSnackBar("Error processing recording: $e");
+        showErrorSnackBar("Error processing recording: $e");
 
           if (correctAttempts < REQUIRED_CORRECT_ATTEMPTS && result.isEmpty) {
             _safeStartVadListening();
@@ -767,10 +767,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     _vadHandler.onSpeechStart.listen((_) {
       print('Speech detected.');
       if (mounted) {
-        setState(() {
-          isRecordingSegment = true;
-          receivedEvents.add('Speech detected - Attempt ${totalAttempts + 1}');
-        });
+      setState(() {
+        isRecordingSegment = true;
+        receivedEvents.add('Speech detected - Attempt ${totalAttempts + 1}');
+      });
       }
     });
 
@@ -778,9 +778,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     _vadHandler.onVADMisfire.listen((_) {
       print('VAD misfire detected.');
       if (mounted) {
-        setState(() {
-          receivedEvents.add('VAD misfire detected.');
-        });
+      setState(() {
+        receivedEvents.add('VAD misfire detected.');
+      });
       }
     });
 
@@ -788,12 +788,12 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     _vadHandler.onError.listen((String message) {
       print('VAD Error: $message');
       if (mounted) {
-        setState(() {
-          loading = false;
-          isRecordingSegment = false;
+      setState(() {
+        loading = false;
+        isRecordingSegment = false;
           _isVadListening = false;
-          receivedEvents.add('Error: $message');
-        });
+        receivedEvents.add('Error: $message');
+      });
         showErrorSnackBar("Recording error: $message");
       }
     });
@@ -1233,17 +1233,17 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
 
     // Stop all audio activities
     try {
-      if (_isVadListening) {
-        _vadHandler.stopListening();
+    if (_isVadListening) {
+      _vadHandler.stopListening();
         _isVadListening = false;
-      }
-      _vadHandler.dispose();
+    }
+    _vadHandler.dispose();
     } catch (e) {
       print('Error disposing VAD handler: $e');
     }
 
     try {
-      flutterTts.stop();
+    flutterTts.stop();
     } catch (e) {
       print('Error stopping TTS: $e');
     }
@@ -1261,15 +1261,15 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     }
 
     try {
-      riveController?.dispose();
+    riveController?.dispose();
     } catch (e) {
       print('Error disposing rive controller: $e');
     }
 
     // Clean up overlay
     try {
-      _overlayEntry?.remove();
-      _overlayEntry = null;
+    _overlayEntry?.remove();
+    _overlayEntry = null;
     } catch (e) {
       print('Error removing overlay: $e');
     }

@@ -101,7 +101,11 @@ class AudioWidgetState extends State<AudioWidget> {
         await _audioPlayer.setUrl(widget.audioLinks[currentIndex]);
         await _audioPlayer.play();
 
-        _audioPlayer.playerStateStream.listen((state) {
+        // Cancel previous subscription to prevent memory leaks
+        _playerStateSubscription?.cancel();
+
+        _playerStateSubscription =
+            _audioPlayer.playerStateStream.listen((state) {
           if (state.processingState == ProcessingState.completed) {
             if (currentIndex < widget.audioLinks.length - 1) {
               currentIndex++;

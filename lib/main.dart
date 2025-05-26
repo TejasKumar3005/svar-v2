@@ -19,6 +19,7 @@ import 'package:svar_new/providers/userDataProvider.dart';
 import 'core/app_export.dart';
 import 'package:svar_new/presentation/phoneme_level_one/provider/rive_provider.dart';
 import 'package:svar_new/widgets/rive_preloader.dart';
+import 'package:svar_new/core/utils/memory_leak_detector.dart';
 
 Future<void> initializeFirebase() async {
   await Firebase.initializeApp(
@@ -28,7 +29,7 @@ Future<void> initializeFirebase() async {
 
 Future<User?> initializeFirebaseAuth() async {
   final completer = Completer<User?>();
-  
+
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     if (!completer.isCompleted) {
       completer.complete(user);
@@ -58,12 +59,15 @@ void main() async {
     await RivePreloader().initialize();
   }
 
+  // Initialize memory leak detection in debug mode
+  if (kDebugMode) {
+    final memoryDetector = MemoryLeakDetector();
+    memoryDetector.startMonitoring();
+  }
+
   Future.wait([
-    SystemChrome.setPreferredOrientations([
-    
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown
-    ]),
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]),
     PrefUtils().init()
   ]).then((value) {
     initializeFirebaseAuth();
@@ -92,7 +96,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  
     return Sizer(
       builder: (context, orientation, deviceType) {
         return MultiProvider(
@@ -121,7 +124,7 @@ class MyApp extends StatelessWidget {
               return MaterialApp(
                 theme: theme,
                 title: 'Svar',
-                
+
                 navigatorKey: NavigatorService.navigatorKey,
                 scaffoldMessengerKey: globalMessengerKey,
                 debugShowCheckedModeBanner: false,
@@ -150,6 +153,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-
