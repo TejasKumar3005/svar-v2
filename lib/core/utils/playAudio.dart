@@ -63,6 +63,36 @@ class PlayAudio {
     await audioPlayer.setVolume(volume);
   }
   void dispose() {
+    try {
+      audioPlayer.stop();
     audioPlayer.dispose();
+    } catch (e) {
+      print('Error disposing PlayAudio: $e');
+    }
+  }
+
+  // Method to check if audio is currently playing
+  bool get isPlaying => audioPlayer.state == PlayerState.playing;
+
+  // Method to pause music
+  Future<void> pauseMusic() async {
+    try {
+      if (audioPlayer.state == PlayerState.playing) {
+        await audioPlayer.pause();
+      }
+    } catch (e) {
+      print('Error pausing audio: $e');
+    }
+  }
+
+  // Method to resume music
+  Future<void> resumeMusic() async {
+    try {
+      if (audioPlayer.state == PlayerState.paused) {
+        await audioPlayer.resume();
+      }
+    } catch (e) {
+      print('Error resuming audio: $e');
+    }
   }
 }

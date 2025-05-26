@@ -57,5 +57,6 @@ class RegisterProvider extends ChangeNotifier {
     passwordController.dispose();
     otpController.dispose();
     phoneNumberController.dispose();
+    guardianController.dispose(); // Add missing controller disposal
   }
 }

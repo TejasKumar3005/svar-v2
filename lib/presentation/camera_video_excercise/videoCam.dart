@@ -86,10 +86,9 @@ class _VideoCamScreenState extends State<VideoCamScreen>
   @override
   void initState() {
     super.initState();
-
+    WidgetsBinding.instance.addObserver(this); // Add lifecycle observer
   
   WidgetsBinding.instance.addPostFrameCallback((_){
-
     _requestCameraPermission();
     // initiliaseVideo();
   });
@@ -142,23 +141,31 @@ class _VideoCamScreenState extends State<VideoCamScreen>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Remove lifecycle observer
     _videoPlayerController.dispose();
     _chewieController?.dispose();
-    // _controller.dispose();
+    _controller.dispose(); // Properly dispose camera controller
+    _overlayEntry?.remove(); // Clean up overlay
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
   
-    if (state == AppLifecycleState.inactive) {
-      // _controller.dispose();
+    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+      // Pause camera to save resources
+      if (_controller.value.isInitialized) {
+        _controller.pausePreview();
+      }
     } else if (state == AppLifecycleState.resumed) {
-      if ( !_controller.value.isInitialized) {
+      if (!_controller.value.isInitialized) {
       _initializeCamera().then((_) {
-        // Ensure the camera is locked to the desired orientation
-      
+          // Camera reinitialized
       });
+      } else {
+        // Resume camera preview
+        _controller.resumePreview();
     }
     }
   }

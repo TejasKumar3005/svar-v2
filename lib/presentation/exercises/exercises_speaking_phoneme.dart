@@ -75,7 +75,8 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
   @override
   void dispose() {
     _audioPlayer.dispose();
-    // _controller.dispose();
+    _controller.dispose(); // Uncomment and properly dispose video controller
+    _overlayEntry?.remove(); // Clean up overlay
     super.dispose();
   }
 
