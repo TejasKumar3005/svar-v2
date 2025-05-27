@@ -1160,6 +1160,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton.icon(
                 onPressed: () {
+
+                  print("intermediateResults: $intermediateResults");
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
                           euid: data_pro.todaysExercises[startExerciseIndex]
