@@ -1221,10 +1221,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
       Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
-      if (data.isEmpty) {
-        return;
-      }
-
+      print("data: $data");
+      if (data.isEmpty) return;
       String? type = data["type"];
       if (type == null) {
         debugPrint("Type is null in the fetched data.");
@@ -1234,16 +1232,15 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       debugPrint("Fetched type for Pronunciation: $type");
       debugPrint("Data is: $data");
 
-      final Object dtcontainer = retrieveObject(type, data);
+      // final Object dtcontainer = retrieveObject(type, data);
+      // if (dtcontainer is String && dtcontainer == "unexpected value") {
+      //    _showErrorSnackbar('Could not process exercise data for $type.');
+      //    return;
+      // }
 
       List<dynamic> argumentsList = [
-        type,
-        dtcontainer,
-        params,
-        startExerciseIndex,
-        data["eid"],
-        data["date"],
-        data,
+        type, "NULL", params, startExerciseIndex,
+        data["uid"], data["date"], data,
       ];
 
       debugPrint("Arguments list is: $argumentsList");
@@ -1304,7 +1301,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         }
         List<dynamic> argumentsList = [
           type, dtcontainer, params, startExerciseIndex,
-          data["eid"], data["date"]
+          data["uid"], data["date"]
         ];
         NavigatorService.pushNamed(AppRoutes.exerciseDetection, arguments: argumentsList);
       }
@@ -1360,7 +1357,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         }
         List<dynamic> argumentsList = [
           type, dtcontainer, params, startExerciseIndex,
-          data["eid"], data["date"]
+          data["uid"], data["date"]
         ];
         NavigatorService.pushNamed(AppRoutes.exerciseDiscrimination, arguments: argumentsList);
       }
@@ -1416,7 +1413,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         }
         List<dynamic> argumentsList = [
           type, dtcontainer, params, startExerciseIndex,
-          data["eid"], data["date"], data
+          data["uid"], data["date"], data
         ];
         NavigatorService.pushNamed(AppRoutes.exerciseIdentification, arguments: argumentsList);
       }
@@ -1489,7 +1486,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         }
         List<dynamic> argumentsList = [
           type, dtcontainer, params, startExerciseIndex,
-          data["eid"], data["date"]
+          data["uid"], data["date"]
         ];
         NavigatorService.pushNamed(AppRoutes.exerciseIdentification, arguments: argumentsList);
       }
