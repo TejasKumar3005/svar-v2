@@ -1174,9 +1174,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                         "correctAttempts": correctAttempts,
                         "totalAttempts": totalAttempts,
                       });
-                  if (correctAttempts >= REQUIRED_CORRECT_ATTEMPTS) {
+                  // if (correctAttempts >= REQUIRED_CORRECT_ATTEMPTS) {
                     data_pro.incrementLevel(startExerciseIndex);
-                  }
+                  // }
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.arrow_forward),
