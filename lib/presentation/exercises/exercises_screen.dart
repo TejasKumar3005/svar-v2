@@ -1351,10 +1351,10 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         );
       } else {
         final Object dtcontainer = retrieveObject(type, data);
-         if (dtcontainer is String && dtcontainer == "unexpected value") {
-           _showErrorSnackbar('Could not process exercise data for $type.');
-           return;
-        }
+        //  if (dtcontainer is String && dtcontainer == "unexpected value") {
+        //    _showErrorSnackbar('Could not process exercise data for $type.');
+        //    return;
+        // }
         List<dynamic> argumentsList = [
           type, dtcontainer, params, startExerciseIndex,
           data["uid"], data["date"]

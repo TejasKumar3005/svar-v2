@@ -183,7 +183,9 @@ class DiffSounds {
 
   factory DiffSounds.fromJson(Map<String, dynamic> json) {
     return DiffSounds._(
-      video_url: json['video_url'],
+      video_url: json['video_url'] != null
+          ? List<String>.from(json['video_url'])
+          : [],
       same: json['same'] as bool,
     );
   }
