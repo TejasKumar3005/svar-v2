@@ -107,40 +107,40 @@ StateMachineController? riveController;
           // Rive animation covering the full screen
           Center(
             child: Container(
-              height: MediaQuery.of(context).size.height*0.6,
+              // height: MediaQuery.of(context).size.height*0.6,
               child: RiveAnimation.asset(
                 'assets/rive/loading.riv', // Replace with your Rive file path
             
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 onInit: _onRiveInit,
               ),
             ),
           ),
           
           // Centered "Loading" text with styling
-          Positioned(
-            left: 0,
-            right: 0,
-          bottom: 70,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              decoration: BoxDecoration(
+          // Positioned(
+          //   left: 0,
+          //   right: 0,
+          // bottom: 70,
+          //   child: Container(
+          //     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          //     decoration: BoxDecoration(
             
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Center(
-                child: Text(
-                  "LOADING...",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2.0,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          //       borderRadius: BorderRadius.circular(20),
+          //     ),
+          //     child: Center(
+          //       child: Text(
+          //         "LOADING...",
+          //         style: TextStyle(
+          //           color: Colors.black,
+          //           fontSize: 28,
+          //           fontWeight: FontWeight.bold,
+          //           letterSpacing: 2.0,
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           
           // Optional: Add a loading indicator at the bottom
           

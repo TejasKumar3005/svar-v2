@@ -1221,30 +1221,41 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
       Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
-      if (data.isEmpty) return;
-      String? type = data["type"];
-      if (type == null) {
-        debugPrint("Type is null in Pronunciation data.");
-        _showErrorSnackbar('Exercise data is incomplete.');
+      if (data.isEmpty) {
         return;
       }
 
-      final Object dtcontainer = retrieveObject(type, data);
-      if (dtcontainer is String && dtcontainer == "unexpected value") {
-         _showErrorSnackbar('Could not process exercise data for $type.');
-         return;
+      String? type = data["type"];
+      if (type == null) {
+        debugPrint("Type is null in the fetched data.");
+        return;
       }
 
+      debugPrint("Fetched type for Pronunciation: $type");
+      debugPrint("Data is: $data");
+
+      final Object dtcontainer = retrieveObject(type, data);
+
       List<dynamic> argumentsList = [
-        type, dtcontainer, params, startExerciseIndex,
-        data["eid"], data["date"], data,
+        type,
+        dtcontainer,
+        params,
+        startExerciseIndex,
+        data["eid"],
+        data["date"],
+        data,
       ];
-      NavigatorService.pushNamed(AppRoutes.exercisePronunciation, arguments: argumentsList);
+
+      debugPrint("Arguments list is: $argumentsList");
+
+      await Future.delayed(Duration.zero);
+      NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
+          arguments: argumentsList);
     } catch (e) {
       debugPrint("Error in Pronunciation handling: $e");
-      _showErrorSnackbar('Error loading pronunciation exercise.');
     }
   }
+
 
   void _handleDetection(
       BuildContext context, String params, int startExerciseIndex) async {
