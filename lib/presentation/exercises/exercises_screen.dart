@@ -754,6 +754,7 @@ import 'package:chiclet/chiclet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
@@ -809,9 +810,12 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         // Try to find the date of the current exercise
         int currentExerciseGlobalIndex = data_pro.currentExerciseIndex;
         String? currentDateKey;
-        if (currentExerciseGlobalIndex >= 0 && currentExerciseGlobalIndex < data_pro.todaysExercises.length) {
-          String? currentExerciseDate = data_pro.todaysExercises[currentExerciseGlobalIndex]['date'];
-          if (currentExerciseDate != null && _dateKeys.contains(currentExerciseDate)) {
+        if (currentExerciseGlobalIndex >= 0 &&
+            currentExerciseGlobalIndex < data_pro.todaysExercises.length) {
+          String? currentExerciseDate =
+              data_pro.todaysExercises[currentExerciseGlobalIndex]['date'];
+          if (currentExerciseDate != null &&
+              _dateKeys.contains(currentExerciseDate)) {
             currentDateKey = currentExerciseDate;
           }
         }
@@ -819,7 +823,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         if (currentDateKey != null) {
           _selectedDateTabIndex = _dateKeys.indexOf(currentDateKey);
         } else {
-           _selectedDateTabIndex = 0; // Default to the first (most recent) date
+          _selectedDateTabIndex = 0; // Default to the first (most recent) date
         }
 
         // Ensure PageController is initialized only once or correctly updated
@@ -847,7 +851,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       grouped[date]!.add(exercise);
     }
     var sortedKeys = grouped.keys.toList(growable: false)
-      ..sort((a, b) => b.compareTo(a)); // Sort dates descending (most recent first)
+      ..sort((a, b) =>
+          b.compareTo(a)); // Sort dates descending (most recent first)
     return {for (var k in sortedKeys) k: grouped[k]!};
   }
 
@@ -884,7 +889,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           bool isSelected = index == _selectedDateTabIndex;
           return GestureDetector(
             onTap: () {
-              if(_pageController.hasClients) {
+              if (_pageController.hasClients) {
                 _pageController.animateToPage(
                   index,
                   duration: Duration(milliseconds: 300),
@@ -897,16 +902,23 @@ class _ExercisesScreenState extends State<ExercisesScreen>
               padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
               margin: EdgeInsets.symmetric(horizontal: 4.0),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.lightBlue.shade100 : Colors.grey.shade200,
+                color: isSelected
+                    ? Colors.lightBlue.shade100
+                    : Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(20.0),
-                border: isSelected ? Border.all(color: Colors.lightBlue, width: 1.5) : null,
+                border: isSelected
+                    ? Border.all(color: Colors.lightBlue, width: 1.5)
+                    : null,
               ),
               child: Center(
                 child: Text(
                   formatDateForTabDisplay(_dateKeys[index]),
                   style: TextStyle(
-                    color: isSelected ? Colors.lightBlue.shade700 : Colors.grey.shade700,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected
+                        ? Colors.lightBlue.shade700
+                        : Colors.grey.shade700,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
               ),
@@ -923,72 +935,102 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     ExerciseStatus status,
     int originalIndex,
   ) {
-    String description = exercise['description'] as String? ?? 'Unnamed Exercise';
+    String description =
+        exercise['description'] as String? ?? 'Unnamed Exercise';
     // String exerciseType = exercise['exerciseType'] as String? ?? 'N/A';
 
     Color itemColor;
     Color iconColor;
     Color textColor;
+    Color bgColor;
     IconData statusIconData;
     Widget leftIconWidget;
 
     bool isLocked = status == ExerciseStatus.locked;
 
+    print("status: $status");
+
     switch (status) {
       case ExerciseStatus.completed:
-        itemColor = Colors.green.shade600;
-        iconColor = Colors.white;
-        textColor = Colors.white;
+        itemColor = Colors.green.shade100;
+        iconColor = Colors.green.shade600;
+        bgColor = Colors.green.shade50;
+        textColor = Colors.green.shade600;
         statusIconData = Icons.check_circle;
-        leftIconWidget = Icon(Icons.emoji_events_outlined, color: Colors.white.withOpacity(0.8), size: 36);
+        leftIconWidget = Icon(Icons.emoji_events_outlined,
+            color: Colors.green.shade600.withOpacity(0.8), size: 36);
         break;
       case ExerciseStatus.current:
-        itemColor = Colors.orange.shade600;
-        iconColor = Colors.white;
-        textColor = Colors.white;
+        itemColor = Colors.orange.shade100;
+        iconColor = Colors.orange.shade600;
+        bgColor = Colors.orange.shade50;
+        textColor = Colors.orange.shade600;
         statusIconData = Icons.play_circle_filled;
-        leftIconWidget = Icon(Icons.local_fire_department_outlined, color: Colors.white.withOpacity(0.8), size: 36);
+        leftIconWidget = Icon(Icons.local_fire_department_outlined,
+            color: Colors.orange.shade600.withOpacity(0.8), size: 36);
         break;
       case ExerciseStatus.pending: // Not current, not completed, but accessible
-      case ExerciseStatus.locked: // Not yet accessible
-      default:
-        itemColor = Colors.grey.shade300;
-        iconColor = Colors.grey.shade600;
-        textColor = Colors.grey.shade700;
+      case ExerciseStatus.locked:
+        itemColor = Color(0xFFBBBBBB);
+        iconColor = Color(0xFFAEAEAE);
+        bgColor = Color(0xFFE5E5E5);
+        textColor = Color(0xFFAEAEAE);
         statusIconData = Icons.lock;
-        leftIconWidget = Icon(Icons.school_outlined, color: Colors.grey.shade500, size: 36);
+        leftIconWidget =
+            Icon(Icons.school_outlined, color: Color(0xFFAEAEAE), size: 36);
+        break; // Not yet accessible
+      default:
+        itemColor = Colors.black;
+        iconColor = Colors.grey.shade600;
+        bgColor = Colors.grey.withOpacity(0.8);
+        textColor = Colors.grey.shade600;
+        statusIconData = Icons.lock;
+        leftIconWidget =
+            Icon(Icons.school_outlined, color: Colors.grey.shade600, size: 36);
         break;
     }
-    
+
     // If it's pending but not explicitly locked by game logic, show a different icon than lock
     // For simplicity now, pending and locked use the same visual, but tappability differs.
     // If we want "pending but available" to look different from "locked", add a new case.
+    print("itemColor: $itemColor");
+    print("bgColor: $bgColor");
+    print("textColor: $textColor");
+    print("iconColor: $iconColor");
 
-    return ChicletOutlinedAnimatedButton(
-      onPressed: isLocked ? null : () {
-      _handleLevelType(originalIndex, "notcompleted");
-    },
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            leftIconWidget,
-            SizedBox(width: 16.0),
-            Expanded(
-              child: Text(
-                description,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17,
-                  color: textColor,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ChicletAnimatedButton(
+        height: 80,
+        backgroundColor: bgColor,
+        buttonColor: itemColor,
+        onPressed: isLocked
+            ? () {}
+            : () {
+                _handleLevelType(originalIndex, "notcompleted");
+              },
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              leftIconWidget,
+              SizedBox(width: 16.0),
+              Expanded(
+                child: Text(
+                  description,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                    color: textColor,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            SizedBox(width: 12.0),
-            Icon(statusIconData, color: iconColor, size: 28),
-          ],
+              SizedBox(width: 12.0),
+              Icon(statusIconData, color: iconColor, size: 28),
+            ],
+          ),
         ),
       ),
     );
@@ -996,7 +1038,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
 
   @override
   Widget build(BuildContext context) {
-    var data_pro = Provider.of<ExerciseProvider>(context);
+    var data_pro = context.watch<ExerciseProvider>();
     final groupedExercises = _groupExercisesByDate(data_pro.todaysExercises);
     // _dateKeys is updated in initState and _initializeDateTabsAndPage
 
@@ -1015,11 +1057,12 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(Icons.school_outlined, size: 40, color: Colors.white), // Changed Icon
+                  Icon(Icons.school_outlined,
+                      size: 40, color: Colors.white), // Changed Icon
                   SizedBox(height: 8),
                   Text(
                     "My Exercises", // Changed Text
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
@@ -1027,7 +1070,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                   SizedBox(height: 4),
                   Text(
                     "Complete your daily activities", // Changed Text
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                         fontSize: 14, color: Colors.white.withOpacity(0.85)),
                   ),
                 ],
@@ -1051,7 +1094,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                 ? Center(
                     child: Text(
                     "No exercises available.",
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    style: GoogleFonts.inter(fontSize: 16, color: Colors.grey),
                   ))
                 : PageView.builder(
                     controller: _pageController,
@@ -1067,17 +1110,22 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                           groupedExercises[dateKey] ?? [];
 
                       if (exercisesForDate.isEmpty) {
-                        return Center(child: Text("No exercises for ${formatDateForTabDisplay(dateKey)}."));
+                        return Center(
+                            child: Text(
+                                "No exercises for ${formatDateForTabDisplay(dateKey)}.",
+                                style: GoogleFonts.inter(
+                                    fontSize: 16, color: Colors.grey)));
                       }
 
                       return ListView.builder(
                         padding: EdgeInsets.all(16.0),
                         itemCount: exercisesForDate.length,
                         itemBuilder: (context, itemIndex) {
-                          Map<String, dynamic> exercise = exercisesForDate[itemIndex];
+                          Map<String, dynamic> exercise =
+                              exercisesForDate[itemIndex];
                           int originalIndexOfThisExercise =
                               data_pro.todaysExercises.indexOf(exercise);
-                          
+
                           bool isCompleted = exercise["completedAt"] != null;
                           ExerciseStatus status;
 
@@ -1085,44 +1133,59 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                           // The very first exercise is never locked by this rule.
                           bool isLogicallyLocked = false;
                           if (originalIndexOfThisExercise > 0) {
-                              // Check if *any* exercise before this one (in the global list) is incomplete.
-                              // A simpler rule: if the *immediately* previous global exercise is not complete, this one is locked.
-                              // For a more Duolingo-like sequence, you usually unlock one by one.
-                              Map<String, dynamic>? previousExercise = (originalIndexOfThisExercise -1 < data_pro.todaysExercises.length && originalIndexOfThisExercise -1 >=0 ) ? data_pro.todaysExercises[originalIndexOfThisExercise - 1] : null;
-                              if(previousExercise != null && previousExercise["completedAt"] == null){
-                                isLogicallyLocked = true;
-                              }
+                            // Check if *any* exercise before this one (in the global list) is incomplete.
+                            // A simpler rule: if the *immediately* previous global exercise is not complete, this one is locked.
+                            // For a more Duolingo-like sequence, you usually unlock one by one.
+                            Map<String, dynamic>? previousExercise =
+                                (originalIndexOfThisExercise - 1 <
+                                            data_pro.todaysExercises.length &&
+                                        originalIndexOfThisExercise - 1 >= 0)
+                                    ? data_pro.todaysExercises[
+                                        originalIndexOfThisExercise - 1]
+                                    : null;
+                            if (previousExercise != null &&
+                                previousExercise["completedAt"] == null) {
+                              isLogicallyLocked = true;
+                            }
                           }
-                          
+
                           // The "current" one should not be locked by previous incomplete, but by game flow.
                           if (isCompleted) {
                             status = ExerciseStatus.completed;
-                          } else if (originalIndexOfThisExercise == currentExerciseOverallIndex) {
+                          } else if (originalIndexOfThisExercise ==
+                              currentExerciseOverallIndex) {
                             status = ExerciseStatus.current;
-                          } else if (isLogicallyLocked && originalIndexOfThisExercise > currentExerciseOverallIndex) { 
+                          } else if (isLogicallyLocked &&
+                              originalIndexOfThisExercise >
+                                  currentExerciseOverallIndex) {
                             // If it's after current and something before it is incomplete
                             status = ExerciseStatus.locked;
+                          } else {
+                            status = ExerciseStatus
+                                .pending; // Available but not current, or before current and not done
+                            // If it's before current and not done, it's pending.
+                            // If it's after current but the one before it is done, it's pending (next up)
+                            if (originalIndexOfThisExercise >
+                                currentExerciseOverallIndex)
+                              status = ExerciseStatus
+                                  .locked; // Simplified: lock all after current if not current.
                           }
-                          else {
-                            status = ExerciseStatus.pending; // Available but not current, or before current and not done
-                             // If it's before current and not done, it's pending.
-                             // If it's after current but the one before it is done, it's pending (next up)
-                            if(originalIndexOfThisExercise > currentExerciseOverallIndex) status = ExerciseStatus.locked; // Simplified: lock all after current if not current.
-                          }
-                          
+
                           // Refined status logic:
                           if (isCompleted) {
                             status = ExerciseStatus.completed;
-                          } else if (originalIndexOfThisExercise == currentExerciseOverallIndex) {
+                          } else if (originalIndexOfThisExercise ==
+                              currentExerciseOverallIndex) {
                             status = ExerciseStatus.current;
-                          } else if (originalIndexOfThisExercise > currentExerciseOverallIndex) {
+                          } else if (originalIndexOfThisExercise >
+                              currentExerciseOverallIndex) {
                             // Any exercise after the current one is considered locked until current is done.
                             status = ExerciseStatus.locked;
+                          } else {
+                            // originalIndexOfThisExercise < currentExerciseOverallIndex && !isCompleted
+                            status = ExerciseStatus
+                                .pending; // An older exercise that wasn't completed
                           }
-                           else { // originalIndexOfThisExercise < currentExerciseOverallIndex && !isCompleted
-                            status = ExerciseStatus.pending; // An older exercise that wasn't completed
-                          }
-
 
                           return _buildExerciseListItem(
                             context,
@@ -1145,16 +1208,17 @@ class _ExercisesScreenState extends State<ExercisesScreen>
   // Make sure they are present in your final code.
   // For brevity, I'm omitting them here as they were correct in the prior step.
   // Ensure you copy them back.
-  
+
   void _handleLevelType(int exerciseIndex, String params) async {
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
 
       if (data_pro.todaysExercises.isEmpty ||
-          exerciseIndex < 0 || 
+          exerciseIndex < 0 ||
           exerciseIndex >= data_pro.todaysExercises.length) {
         debugPrint("No exercises found or index out of bounds: $exerciseIndex");
-        _showErrorSnackbar('No exercises found for today or invalid selection.');
+        _showErrorSnackbar(
+            'No exercises found for today or invalid selection.');
         return;
       }
       String? exerciseType =
@@ -1188,7 +1252,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       }
     } catch (e) {
       debugPrint("Error in _handleLevelType: $e");
-      _showErrorSnackbar('An error occurred while trying to load the exercise.');
+      _showErrorSnackbar(
+          'An error occurred while trying to load the exercise.');
     }
   }
 
@@ -1233,8 +1298,13 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       // }
 
       List<dynamic> argumentsList = [
-        type, "NULL", params, startExerciseIndex,
-        data["uid"], data["date"], data,
+        type,
+        "NULL",
+        params,
+        startExerciseIndex,
+        data["uid"],
+        data["date"],
+        data,
       ];
 
       debugPrint("Arguments list is: $argumentsList");
@@ -1247,7 +1317,6 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     }
   }
 
-
   void _handleDetection(
       BuildContext context, String params, int startExerciseIndex) async {
     try {
@@ -1257,7 +1326,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       if (data.isEmpty) return;
       String? type = data["type"];
       if (type == null) {
-         debugPrint("Type is null in Detection data.");
+        debugPrint("Type is null in Detection data.");
         _showErrorSnackbar('Exercise data is incomplete.');
         return;
       }
@@ -1266,7 +1335,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         String? videoUrl = data["video_url"];
         if (videoUrl == null) {
           debugPrint("Video URL is null for Detection video.");
-           _showErrorSnackbar('Video link is missing.');
+          _showErrorSnackbar('Video link is missing.');
           return;
         }
         Navigator.push(
@@ -1275,13 +1344,15 @@ class _ExercisesScreenState extends State<ExercisesScreen>
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                if(!mounted) return;
+                if (!mounted) return;
                 data_pro.incrementLevel(startExerciseIndex);
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(euid: data["uid"], date: data["date"])
-                      .then((value) => print("Exercise data updated for ${data["uid"]}"))
-                      .catchError((e) => print("Error updating exercise data: $e"));
+                      .then((value) =>
+                          print("Exercise data updated for ${data["uid"]}"))
+                      .catchError(
+                          (e) => print("Error updating exercise data: $e"));
                 }
               },
             ),
@@ -1290,14 +1361,19 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       } else {
         final Object dtcontainer = retrieveObject(type, data);
         if (dtcontainer is String && dtcontainer == "unexpected value") {
-           _showErrorSnackbar('Could not process exercise data for $type.');
-           return;
+          _showErrorSnackbar('Could not process exercise data for $type.');
+          return;
         }
         List<dynamic> argumentsList = [
-          type, dtcontainer, params, startExerciseIndex,
-          data["uid"], data["date"]
+          type,
+          dtcontainer,
+          params,
+          startExerciseIndex,
+          data["uid"],
+          data["date"]
         ];
-        NavigatorService.pushNamed(AppRoutes.exerciseDetection, arguments: argumentsList);
+        NavigatorService.pushNamed(AppRoutes.exerciseDetection,
+            arguments: argumentsList);
       }
     } catch (e) {
       debugPrint("Error in Detection handling: $e");
@@ -1331,13 +1407,15 @@ class _ExercisesScreenState extends State<ExercisesScreen>
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                if(!mounted) return;
+                if (!mounted) return;
                 data_pro.incrementLevel(startExerciseIndex);
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(euid: data["uid"], date: data["date"])
-                      .then((value) => print("Exercise data updated for ${data["uid"]}"))
-                      .catchError((e) => print("Error updating exercise data: $e"));
+                      .then((value) =>
+                          print("Exercise data updated for ${data["uid"]}"))
+                      .catchError(
+                          (e) => print("Error updating exercise data: $e"));
                 }
               },
             ),
@@ -1350,10 +1428,15 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         //    return;
         // }
         List<dynamic> argumentsList = [
-          type, dtcontainer, params, startExerciseIndex,
-          data["uid"], data["date"]
+          type,
+          dtcontainer,
+          params,
+          startExerciseIndex,
+          data["uid"],
+          data["date"]
         ];
-        NavigatorService.pushNamed(AppRoutes.exerciseDiscrimination, arguments: argumentsList);
+        NavigatorService.pushNamed(AppRoutes.exerciseDiscrimination,
+            arguments: argumentsList);
       }
     } catch (e) {
       debugPrint("Error in Discrimination handling: $e");
@@ -1377,7 +1460,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       if (type == "video") {
         String? videoUrl = data["video_url"];
         if (videoUrl == null) {
-           debugPrint("Video URL is null for Identification video.");
+          debugPrint("Video URL is null for Identification video.");
           _showErrorSnackbar('Video link is missing.');
           return;
         }
@@ -1387,13 +1470,15 @@ class _ExercisesScreenState extends State<ExercisesScreen>
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                if(!mounted) return;
+                if (!mounted) return;
                 data_pro.incrementLevel(startExerciseIndex);
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(euid: data["uid"], date: data["date"])
-                      .then((value) => print("Exercise data updated for ${data["uid"]}"))
-                      .catchError((e) => print("Error updating exercise data: $e"));
+                      .then((value) =>
+                          print("Exercise data updated for ${data["uid"]}"))
+                      .catchError(
+                          (e) => print("Error updating exercise data: $e"));
                 }
               },
             ),
@@ -1402,14 +1487,20 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       } else {
         final Object dtcontainer = retrieveObject(type, data);
         if (dtcontainer is String && dtcontainer == "unexpected value") {
-           _showErrorSnackbar('Could not process exercise data for $type.');
-           return;
+          _showErrorSnackbar('Could not process exercise data for $type.');
+          return;
         }
         List<dynamic> argumentsList = [
-          type, dtcontainer, params, startExerciseIndex,
-          data["uid"], data["date"], data
+          type,
+          dtcontainer,
+          params,
+          startExerciseIndex,
+          data["uid"],
+          data["date"],
+          data
         ];
-        NavigatorService.pushNamed(AppRoutes.exerciseIdentification, arguments: argumentsList);
+        NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
+            arguments: argumentsList);
       }
     } catch (e) {
       debugPrint("Error in Identification handling: $e");
@@ -1422,7 +1513,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
       Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
-      String? type = data["type"]; 
+      String? type = data["type"];
       if (type == null) {
         debugPrint("Sub-type is null for 'Level' exercise.");
         _showErrorSnackbar('Exercise sub-type is missing.');
@@ -1442,20 +1533,26 @@ class _ExercisesScreenState extends State<ExercisesScreen>
             builder: (context) => ExerciseVideo(
               videoUrl: videoUrl,
               onVideoComplete: () {
-                if(!mounted) return;
+                if (!mounted) return;
                 data_pro.incrementLevel(startExerciseIndex);
                 if (data["completedAt"] == null) {
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(euid: data["uid"], date: data["date"])
-                      .then((value) => print("Exercise data updated for ${data["uid"]}"))
-                      .catchError((e) => print("Error updating exercise data: $e"));
+                      .then((value) =>
+                          print("Exercise data updated for ${data["uid"]}"))
+                      .catchError(
+                          (e) => print("Error updating exercise data: $e"));
                 }
               },
             ),
           ),
         );
       } else if (type == "speech") {
-        if (data["text"] == null || data["video_url"] == null || data["test_speech"] == null || data["uid"] == null || data["date"] == null) {
+        if (data["text"] == null ||
+            data["video_url"] == null ||
+            data["test_speech"] == null ||
+            data["uid"] == null ||
+            data["date"] == null) {
           debugPrint("Missing data for 'Level' speech type: $data");
           _showErrorSnackbar('Incomplete data for speech exercise.');
           return;
@@ -1464,7 +1561,9 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           context,
           MaterialPageRoute(
             builder: (context) => ExercisesSpeakingPhoneme(
-              text: (data["text"] as List).map((item) => Map<String, dynamic>.from(item)).toList(),
+              text: (data["text"] as List)
+                  .map((item) => Map<String, dynamic>.from(item))
+                  .toList(),
               videoUrl: data["video_url"],
               testSpeech: data["test_speech"],
               uid: data["uid"],
@@ -1475,14 +1574,19 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       } else {
         final Object dtcontainer = retrieveObject(type, data);
         if (dtcontainer is String && dtcontainer == "unexpected value") {
-           _showErrorSnackbar('Could not process exercise data for $type.');
-           return;
+          _showErrorSnackbar('Could not process exercise data for $type.');
+          return;
         }
         List<dynamic> argumentsList = [
-          type, dtcontainer, params, startExerciseIndex,
-          data["uid"], data["date"]
+          type,
+          dtcontainer,
+          params,
+          startExerciseIndex,
+          data["uid"],
+          data["date"]
         ];
-        NavigatorService.pushNamed(AppRoutes.exerciseIdentification, arguments: argumentsList);
+        NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
+            arguments: argumentsList);
       }
     } catch (e) {
       debugPrint("Error in Level handling: $e");
@@ -1503,13 +1607,14 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       if (type == "OddOne") return OddOne.fromJson(data);
       if (type == "DiffHalf") return DiffHalf.fromJson(data);
       if (type == "MaleFemale") return MaleFemale.fromJson(data);
-      
-      debugPrint("Unexpected object type to retrieve: $type. Returning 'unexpected value'.");
+
+      debugPrint(
+          "Unexpected object type to retrieve: $type. Returning 'unexpected value'.");
       return "unexpected value";
     } catch (e) {
-      debugPrint("Error in retrieveObject for type $type: $e. Returning 'unexpected value'.");
+      debugPrint(
+          "Error in retrieveObject for type $type: $e. Returning 'unexpected value'.");
       return "unexpected value";
     }
   }
-
 }

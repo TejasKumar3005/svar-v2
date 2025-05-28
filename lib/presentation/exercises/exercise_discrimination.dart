@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
@@ -401,7 +402,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                 child: Center(
                   child: Text(
                     label,
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 14, // Smaller font size
@@ -691,7 +692,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                   SizedBox(width: 8.h),
                   Text(
                     label,
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,

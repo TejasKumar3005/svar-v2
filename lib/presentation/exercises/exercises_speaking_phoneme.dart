@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -166,7 +167,7 @@ class SpeakingPhonemeScreenState extends State<ExercisesSpeakingPhoneme> {
             bool value = textMap[key];
             return TextSpan(
               text: key,
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontSize: 100,
                 color: value ? Colors.blue : Colors.black,
               ),
@@ -422,7 +423,7 @@ Widget pronunciationResultWidget(
                 ),
                 child: Text(
                   txt, // Replace dynamically as needed
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     fontSize: 25.0,
                     fontWeight: FontWeight.bold,
                     color: Colors.white, // Text color
@@ -448,7 +449,7 @@ Widget pronunciationResultWidget(
                     children: [
                       Text(
                         key.toUpperCase(),
-                        style: TextStyle(
+                        style: GoogleFonts.inter(
                           fontSize: 18.0,
                           fontWeight: FontWeight.bold,
                           color: const Color.fromARGB(221, 234, 235, 233),
@@ -458,7 +459,7 @@ Widget pronunciationResultWidget(
                       Expanded(
                         child: Text(
                           value,
-                          style: TextStyle(
+                          style: GoogleFonts.inter(
                             fontSize: 18.0,
                             color: const Color.fromARGB(255, 244, 239, 239),
                           ),
@@ -492,7 +493,7 @@ Widget pronunciationResultWidget(
                   children: [
                     Text(
                       "NEXT",
-                      style: TextStyle(
+                        style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:rive/rive.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/presentation/exercises/exercises_screen.dart';
 import 'package:svar_new/presentation/home/provider/streak_provider.dart';
 import 'package:svar_new/presentation/patient_report/app_theme.dart';
 import 'package:svar_new/widgets/custom_button.dart';

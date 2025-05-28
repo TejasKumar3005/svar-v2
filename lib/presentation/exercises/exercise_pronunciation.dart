@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -496,7 +497,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                         const SizedBox(height: 8),
                         Text(
                           "Listen Again",
-                          style: TextStyle(
+                          style: GoogleFonts.inter(
                             color: Colors.blue[700],
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
@@ -573,7 +574,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                             _isVadListening
                                 ? "Listening..."
                                 : "Ready to Record",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: _isVadListening
                                   ? Colors.red[700]
                                   : Colors.green[700],
@@ -628,7 +629,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                       const SizedBox(height: 4),
                       Text(
                         "Play Recording",
-                        style: TextStyle(
+                        style: GoogleFonts.inter(
                           color: Colors.purple[800],
                           fontWeight: FontWeight.w600,
                           fontSize: 12,
@@ -673,7 +674,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                         SizedBox(width: isSmallScreen ? 6 : 8),
                         Text(
                           "Recording attempt ${totalAttempts + 1}",
-                          style: TextStyle(
+                            style: GoogleFonts.inter(
                             fontSize: isSmallScreen ? 14 : 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -1047,9 +1048,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                   const Icon(Icons.record_voice_over,
                       color: Colors.white, size: 24),
                   const SizedBox(width: 12),
-                  const Text(
+                   Text(
                     "Pronunciation Results",
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -1107,7 +1108,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                           child: Center(
                             child: Text(
                               "${attemptIndex + 1}",
-                              style: TextStyle(
+                              style: GoogleFonts.inter(
                                 color: isCorrect
                                     ? Colors.green[700]
                                     : Colors.red[700],
@@ -1123,7 +1124,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                             children: [
                               Text(
                                 "$txt $feedback",
-                                style: TextStyle(
+                                style: GoogleFonts.inter(
                                   fontSize: 16.0,
                                   color: isCorrect
                                       ? Colors.green[700]
@@ -1134,7 +1135,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                               if (isCorrect)
                                 Text(
                                   "Great job!",
-                                  style: TextStyle(
+                                  style: GoogleFonts.inter(
                                     fontSize: 14.0,
                                     color: Colors.green[600],
                                     fontStyle: FontStyle.italic,
@@ -1174,9 +1175,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                         "correctAttempts": correctAttempts,
                         "totalAttempts": totalAttempts,
                       });
-                  // if (correctAttempts >= REQUIRED_CORRECT_ATTEMPTS) {
+                  if (correctAttempts >= REQUIRED_CORRECT_ATTEMPTS) {
                     data_pro.incrementLevel(startExerciseIndex);
-                  // }
+                  }
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.arrow_forward),

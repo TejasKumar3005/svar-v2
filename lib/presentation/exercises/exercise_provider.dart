@@ -98,11 +98,15 @@ class ExerciseProvider extends ChangeNotifier {
     print("\n=== Increment Level Attempt ===");
     if (!_validateExerciseIndex()) return;
 
+    todaysExercises[currentLevel]['completedAt'] = DateTime.now().toIso8601String();
+
     // Check if current exercise is already completed
     if (currentExerciseIndex > currentLevel) {
       print("❌ Exercise already completed");
       return;
     }
+
+
 
     if (currentExerciseIndex + 1 >= todaysExercises.length) {
       print("❌ No more exercises available");

@@ -62,7 +62,7 @@ StateMachineController? riveController;
       var data_pro = Provider.of<UserDataProvider>(context, listen: false);
       var exx =
           await userData.getfortnightExercises(data_pro.userModel.exercises);
-      print(exx);
+    
 
       CachingManager.cacheFilesInIsolate(exx);
       Future.delayed(const Duration(seconds: 2), () {

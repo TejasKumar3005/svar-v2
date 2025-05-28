@@ -1,6 +1,7 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -180,12 +181,12 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
                 SizedBox(height: 16),
                 Text(
                   'Video Error',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: GoogleFonts.inter(color: Colors.white, fontSize: 18),
                 ),
                 SizedBox(height: 8),
                 Text(
                   errorMessage,
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                  style: GoogleFonts.inter(color: Colors.white70, fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -305,7 +306,7 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
           SizedBox(height: 16),
           Text(
             'Error Loading Video',
-            style: TextStyle(
+            style: GoogleFonts.inter(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -314,7 +315,7 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
           SizedBox(height: 8),
           Text(
             _errorMessage,
-            style: TextStyle(
+            style: GoogleFonts.inter(
               color: Colors.white70,
               fontSize: 14,
             ),
@@ -362,7 +363,7 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
                           SizedBox(height: 16),
                           Text(
                             'Loading video...',
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
                               fontSize: 16,
                             ),
@@ -390,7 +391,7 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
                                       SizedBox(height: 16),
                                       Text(
                                         'Preparing video...',
-                                        style: TextStyle(
+                                        style: GoogleFonts.inter(
                                           color: Colors.white,
                                           fontSize: 16,
                                         ),
