@@ -750,6 +750,7 @@
 //   }
 // }
 import 'dart:async';
+import 'package:chiclet/chiclet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1003,38 +1004,35 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         break;
     }
     
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8.0),
-      elevation: isLocked ? 1.0 : 3.0,
-      color: itemColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: InkWell(
-        onTap: isLocked ? null : () {
-          _handleLevelType(originalIndex, "notcompleted");
-        },
-        borderRadius: BorderRadius.circular(12.0),
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              leftIconWidget,
-              SizedBox(width: 16.0),
-              Expanded(
-                child: Text(
-                  description,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 17,
-                    color: textColor,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+    // If it's pending but not explicitly locked by game logic, show a different icon than lock
+    // For simplicity now, pending and locked use the same visual, but tappability differs.
+    // If we want "pending but available" to look different from "locked", add a new case.
+
+    return ChicletOutlinedAnimatedButton(
+      onPressed: isLocked ? null : () {
+      _handleLevelType(originalIndex, "notcompleted");
+    },
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            leftIconWidget,
+            SizedBox(width: 16.0),
+            Expanded(
+              child: Text(
+                description,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                  color: textColor,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(width: 12.0),
-              Icon(statusIconData, color: iconColor, size: 28),
-            ],
-          ),
+            ),
+            SizedBox(width: 12.0),
+            Icon(statusIconData, color: iconColor, size: 28),
+          ],
         ),
       ),
     );

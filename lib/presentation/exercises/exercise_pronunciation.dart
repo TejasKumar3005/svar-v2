@@ -1161,15 +1161,15 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
               child: ElevatedButton.icon(
                 onPressed: () {
 
-                  print("intermediateResults: $intermediateResults");
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
                           euid: data_pro.todaysExercises[startExerciseIndex]
                               ["uid"],
                           date: data_pro.todaysExercises[startExerciseIndex]
                               ["date"],
+                              isCompleted: false,
                           performance: {
-                        "result": intermediateResults,
+                        "result": intermediateResults.expand((list) => list).toList(),
                         "time": DateTime.now().toIso8601String(),
                         "correctAttempts": correctAttempts,
                         "totalAttempts": totalAttempts,
