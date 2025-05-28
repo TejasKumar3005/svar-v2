@@ -288,8 +288,8 @@ class _CustomButtonState extends State<CustomButton> {
         break;
       case ButtonType.Diff:
         imagePath = ImageConstant.imgDiffbtn;
-        width = 170;
-        height = 80;
+        width = 200;
+        height = 70;
 
         defaultChild = Text(
           "Diff",
@@ -305,8 +305,8 @@ class _CustomButtonState extends State<CustomButton> {
         break;
       case ButtonType.Same:
         imagePath = ImageConstant.imgSamebtn;
-        width = 170;
-        height = 80;
+        width = 200;
+        height = 70;
 
         defaultChild = Text(
           "Same",

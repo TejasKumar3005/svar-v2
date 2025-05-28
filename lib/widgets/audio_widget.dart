@@ -29,8 +29,9 @@ class AudioWidgetState extends State<AudioWidget> {
   StreamSubscription<PlayerState>? _playerStateSubscription;
   late AudioPlayer _audioPlayer;
   late int currentIndex;
-  late List<double> lengths;
+  late List<double> _lengths;
   late double totalLength;
+  bool _isInitialized = false;
 
   // ValueNotifier for progress
   final ValueNotifier<double> _progress = ValueNotifier<double>(0.0);
@@ -39,6 +40,8 @@ class AudioWidgetState extends State<AudioWidget> {
 
   ValueNotifier<double> get progress => _progress;
   ValueNotifier<bool> get isPlaying => _isPlaying;
+  List<double> get lengths => _lengths;
+  bool get isInitialized => _isInitialized;
 
   @override
   void initState() {
@@ -46,7 +49,7 @@ class AudioWidgetState extends State<AudioWidget> {
     currentIndex = 0;
     _audioPlayer = AudioPlayer();
     totalLength = 0.0;
-    lengths = [];
+    _lengths = [];
     _loadAudioLengths(); // Use _ to indicate private method
 
     _positionSubscription = _audioPlayer.positionStream.listen((position) {
@@ -65,7 +68,7 @@ class AudioWidgetState extends State<AudioWidget> {
   double _calculateProgress(Duration position) {
     double completedSeconds = 0;
     for (int i = 0; i < currentIndex; i++) {
-      completedSeconds += lengths[i];
+      completedSeconds += _lengths[i];
     }
     return (completedSeconds + position.inSeconds.toDouble()) / totalLength;
   }
@@ -73,9 +76,10 @@ class AudioWidgetState extends State<AudioWidget> {
   Future<void> _loadAudioLengths() async {
     for (int i = 0; i < widget.audioLinks.length; i++) {
       double length = await _getAudioLength(widget.audioLinks[i]);
-      lengths.add(length);
+      _lengths.add(length);
       totalLength += length;
     }
+    _isInitialized = true;
   }
 
   Future<double> _getAudioLength(String link) async {

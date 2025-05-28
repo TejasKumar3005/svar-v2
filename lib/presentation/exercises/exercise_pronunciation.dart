@@ -1160,6 +1160,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton.icon(
                 onPressed: () {
+
+                  print("intermediateResults: $intermediateResults");
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
                           euid: data_pro.todaysExercises[startExerciseIndex]
@@ -1172,9 +1174,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                         "correctAttempts": correctAttempts,
                         "totalAttempts": totalAttempts,
                       });
-                  if (correctAttempts >= REQUIRED_CORRECT_ATTEMPTS) {
+                  // if (correctAttempts >= REQUIRED_CORRECT_ATTEMPTS) {
                     data_pro.incrementLevel(startExerciseIndex);
-                  }
+                  // }
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.arrow_forward),

@@ -9,6 +9,7 @@ import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/Options.dart';
+import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart' hide LinearGradient, Image;
 import 'package:svar_new/presentation/settings_screen/setting.dart';
@@ -36,7 +37,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
   bool isPlaying = false;
-    late AudioPlayer _player;
+  late AudioPlayer _player;
 
   // Animation controller for feedback
   late AnimationController _animationController;
@@ -117,13 +118,13 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
             : type == "DiffHalf"
                 ? "Listen closely. Tap the button as soon as the sound changes."
                 : "You will hear two sounds. Are they the same or different?";
-      String audioFile = type == "OddOne"
+    String audioFile = type == "OddOne"
         ? "v8.wav"
         : type == "MaleFemale"
             ? "v2.wav"
             : type == "DiffHalf"
                 ? "v3.wav"
-                    : "v5.wav";            
+                : "v5.wav";
     Future.delayed(const Duration(seconds: 3), () async {
       await _player.play(AssetSource("assets/audio/bgm/$audioFile"));
     });
@@ -176,13 +177,13 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                       EdgeInsets.symmetric(vertical: 15.v, horizontal: 20.h),
                   // Remove decoration to make it transparent over the placeholder
                   child: Text(
-                  type == "OddOne"
-        ? "Listen to the sounds. Which one sounds different from the others?"
-        : type == "MaleFemale"
-            ? "Listen to the voice carefully. Can you tell which one is male and which one is female?"
-            : type == "DiffHalf"
-                ? "Listen closely. Tap the button as soon as the sound changes."
-                : "You will hear two sounds. Are they the same or different?",
+                    type == "OddOne"
+                        ? "Listen to the sounds. Which one sounds different from the others?"
+                        : type == "MaleFemale"
+                            ? "Listen to the voice carefully. Can you tell which one is male and which one is female?"
+                            : type == "DiffHalf"
+                                ? "Listen closely. Tap the button as soon as the sound changes."
+                                : "You will hear two sounds. Are they the same or different?",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
@@ -270,69 +271,69 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
 
         return Center(
           child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Audio player component - centered and sized appropriately
-            Container(
-              width: maxWidth * 0.8,
-              height: 70,
-              margin: EdgeInsets.only(bottom: 40),
-              decoration: BoxDecoration(
-                color: Color(0xFFF77D2B), // Orange color
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    spreadRadius: 1,
-                    offset: Offset(0, 4),
-                  ),
-                ],
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Audio player component - centered and sized appropriately
+              Container(
+                width: maxWidth * 0.8,
+                height: 70,
+                margin: EdgeInsets.only(bottom: 40),
+                decoration: BoxDecoration(
+                  color: Color(0xFFF77D2B), // Orange color
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: AudioWidget(
+                  audioLinks: maleFemale.getVideoUrl(),
+                ),
               ),
-              child: AudioWidget(
-                audioLinks: maleFemale.getVideoUrl(),
-              ),
-            ),
 
-            // Gender selection options - smaller size and centered
-            Container(
-              width: maxWidth * 0.85,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Female option
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 10),
-                      child: _buildSmallGenderOption(
-                        "FEMALE",
-                        "assets/images/female.png",
-                        () => maleFemale.getCorrectOutput() == "female",
-                        startExerciseIndex,
-                        data,
+              // Gender selection options - smaller size and centered
+              Container(
+                width: maxWidth * 0.85,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Female option
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: _buildSmallGenderOption(
+                          "FEMALE",
+                          "assets/images/female.png",
+                          () => maleFemale.getCorrectOutput() == "female",
+                          startExerciseIndex,
+                          data,
+                        ),
                       ),
                     ),
-                  ),
 
-                  // Male option
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 10),
-                      child: _buildSmallGenderOption(
-                        "MALE",
-                        "assets/images/male.png",
-                        () => maleFemale.getCorrectOutput() == "male",
-                        startExerciseIndex,
-                        data,
+                    // Male option
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 10),
+                        child: _buildSmallGenderOption(
+                          "MALE",
+                          "assets/images/male.png",
+                          () => maleFemale.getCorrectOutput() == "male",
+                          startExerciseIndex,
+                          data,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
           ),
         );
       },
@@ -420,12 +421,12 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
           if (data["completedAt"] == null) {
             UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                 .updateExerciseData(
-              euid: data["uid"],
-              date: data["date"],
-              performance: {
-                "correct_attempt": condition,
-                "correct_output": label,
-                "time": DateTime.now().toString(),
+                    euid: data["uid"],
+                    date: data["date"],
+                    performance: {
+                  "correct_attempt": condition,
+                  "correct_output": label,
+                  "time": DateTime.now().toString(),
                 });
           }
         }
@@ -486,28 +487,45 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                   child:
                       OptionButton(type: ButtonType.Change, onPressed: () {}),
                   isCorrect: () {
-                    List<double> total_length = _childKey.currentState!.lengths;
+                    // Add null safety check
+                    if (_childKey.currentState == null) {
+                      return false;
+                    }
+              
+                    // Check if AudioWidget is properly initialized
+                    if (!_childKey.currentState!.isInitialized) {
+                      return false;
+                    }
+              
+                    List<double> total_length =
+                        _childKey.currentState!.lengths;
+              
+                    // Check if lengths are properly initialized
+                    if (total_length.isEmpty || total_length.length < 2) {
+                      return false;
+                    }
+              
                     double ans =
                         total_length[0] / (total_length[1] + total_length[0]);
-                    var condition =
-                        _childKey.currentState!.progress.value > ans &&
-                            _childKey.currentState!.progress.value < ans + 0.4;
-
+                    var condition = _childKey.currentState!.progress.value >
+                            ans &&
+                        _childKey.currentState!.progress.value < ans + 0.4;
+              
                     if (condition) {
                       data_pro.incrementLevel(startExerciseIndex);
                       if (data["completedAt"] == null) {
                         UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                             .updateExerciseData(
-                          euid: data["uid"],
-                          date: data["date"],
-                          performance: {
+                                euid: data["uid"],
+                                date: data["date"],
+                                performance: {
                               "progress":
                                   _childKey.currentState!.progress.value,
-                            "total_length": total_length,
+                              "total_length": total_length,
                             });
                       }
                     }
-
+              
                     return condition;
                   },
                 ),
@@ -534,89 +552,90 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Improved audio player
-              Container(
-                width: constraints.maxWidth * 0.9,
-                height: constraints.maxHeight * 0.1,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 15,
-                      offset: Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: AudioWidget(
+              children: [
+                // Improved audio player
+                Container(
+                  width: constraints.maxWidth,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 15,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: AudioWidget(
                     audioLinks: diffSounds.getVideoUrls(),
                   ),
                 ),
 
                 SizedBox(height: 40.v),
 
-              // Button row with improved styling
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                // Button row with improved styling
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     ScaleTransition(
-                scale: _scaleAnimation,
-                child: OptionWidget(
-                  triggerAnimation: _triggerAnimation,
+                      scale: _scaleAnimation,
+                      child: OptionWidget(
+                        triggerAnimation: _triggerAnimation,
                         child: OptionButton(
                             type: ButtonType.Same, onPressed: () {}),
-                  isCorrect: () {
-                    var condition = !diffSounds.getSame();
-                      if (condition) {
-                        data_pro.incrementLevel(startExerciseIndex);
-                        if (data["completedAt"] == null) {
+                        isCorrect: () {
+                          var condition = !diffSounds.getSame();
+                          if (condition) {
+                            data_pro.incrementLevel(startExerciseIndex);
+                            if (data["completedAt"] == null) {
                               UserData(
                                       uid: FirebaseAuth
                                           .instance.currentUser!.uid)
-                              .updateExerciseData(
-                            euid: data["uid"],
-                            date: data["date"],
-                            performance: {
-                            "correct_attempt": condition,
-                            "time": DateTime.now().toString(),
+                                  .updateExerciseData(
+                                      euid: data["uid"],
+                                      date: data["date"],
+                                      performance: {
+                                    "correct_attempt": condition,
+                                    "time": DateTime.now().toString(),
                                   });
-                        }
-                      }
-                      return condition;
-                  },
-                ),
+                            }
+                          }
+                          return condition;
+                        },
+                      ),
                     ),
+                    SizedBox(height: 20.v),
                     ScaleTransition(
-                scale: _scaleAnimation,
-                child: OptionWidget(
-                  triggerAnimation: _triggerAnimation,
+                      scale: _scaleAnimation,
+                      child: OptionWidget(
+                        triggerAnimation: _triggerAnimation,
                         child: OptionButton(
                             type: ButtonType.Diff, onPressed: () {}),
-                  isCorrect: () {
-                      var condition = diffSounds.getSame();
-                      if (condition) {
-                        data_pro.incrementLevel(startExerciseIndex);
-                        if (data["completedAt"] == null) {
+                        isCorrect: () {
+                          var condition = diffSounds.getSame();
+                          if (condition) {
+                            data_pro.incrementLevel(startExerciseIndex);
+                            if (data["completedAt"] == null) {
                               UserData(
                                       uid: FirebaseAuth
                                           .instance.currentUser!.uid)
-                              .updateExerciseData(
-                            euid: data["uid"],
-                            date: data["date"],
-                            performance: {
-                              "correct_attempt": condition,
-                              "time": DateTime.now().toString(),
+                                  .updateExerciseData(
+                                      euid: data["uid"],
+                                      date: data["date"],
+                                      performance: {
+                                    "correct_attempt": condition,
+                                    "time": DateTime.now().toString(),
                                   });
-                        }
-                      }
-                      return condition;
-                  },
+                            }
+                          }
+                          return condition;
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-                ],
-              ),
-            ],
+              ],
             ),
           );
         },
@@ -727,11 +746,11 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
             if (data["completedAt"] == null) {
               UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                   .updateExerciseData(
-                euid: data["uid"],
-                date: data["date"],
-                performance: {
-                  "correct_attempt": condition,
-                  "time": DateTime.now().toString(),
+                      euid: data["uid"],
+                      date: data["date"],
+                      performance: {
+                    "correct_attempt": condition,
+                    "time": DateTime.now().toString(),
                   });
             }
           }
@@ -777,19 +796,6 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
         );
       },
     );
-  }
-}
-
-// Assume AudioWidget class with required functionality exists somewhere in your codebase
-// The implementation should match your actual AudioWidget class
-class AudioWidgetState extends State<AudioWidget> {
-  ValueNotifier<double> progress = ValueNotifier<double>(0.0);
-  List<double> lengths = [0.5, 0.5]; // Default mocked lengths
-
-  @override
-  Widget build(BuildContext context) {
-    // This is a placeholder - your actual implementation will be different
-    return Container();
   }
 }
 
