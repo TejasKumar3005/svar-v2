@@ -581,7 +581,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                         child: OptionButton(
                             type: ButtonType.Same, onPressed: () {}),
                         isCorrect: () {
-                          var condition = !diffSounds.getSame();
+                          var condition = diffSounds.getSame();
                           if (condition) {
                             data_pro.incrementLevel(startExerciseIndex);
                             if (data["completedAt"] == null) {

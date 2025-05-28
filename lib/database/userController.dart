@@ -81,72 +81,74 @@ class UserData {
     required String date,
     required String euid,
     bool isCompleted = true,
-  dynamic performance,
+    dynamic performance,
   }) async {
+
     try {
+    
       final userDoc = userCollection.doc(uid);
 
       // Get the current user document data
       final docSnapshot = await userDoc.get();
 
-      if (docSnapshot.exists) {
-        final userData = docSnapshot.data() as Map<String, dynamic>;
-        final exercises = userData['exercises'] as Map<String, dynamic>? ?? {};
-
-        // Check if the date exists
-        if (exercises.containsKey(date)) {
-          final exercisesForDate = exercises[date] as List<dynamic>;
-
-          // Find the exercise with the matching eid
-          final exerciseIndex = exercisesForDate.indexWhere(
-              (exercise) => exercise is Map && exercise['uid'] == euid);
-
-          if (exerciseIndex != -1) {
-            int views = 0;
-            Map<String, dynamic> exerciseData = exercisesForDate[exerciseIndex];
-            if (exercisesForDate[exerciseIndex]['views'] != null) {
-              views = exercisesForDate[exerciseIndex]['views'];
-            }
-            if (exercisesForDate[exerciseIndex]['subtype'] == "video") {
-              exerciseData['views'] = views + 1;
-            }
-            if (performance != null) {
-              if (exerciseData['performance'] != null) {
-                exerciseData['performance'].add(performance);
-              } else {
-                exerciseData['performance'] = [performance];
-              }
-            }
-            if (exerciseData["completedAt"] == null && isCompleted) {
-              exerciseData["completedAt"] = DateTime.now().toString();
-              exercisesForDate[exerciseIndex] = exerciseData;
-              await userDoc.update({
-                'exercises.$date': exercisesForDate,
-                'completedTillDate': date
-              });
-            } else {
-              if (isCompleted) {
-                exerciseData["completedAt"] = DateTime.now().toString();
-                exercisesForDate[exerciseIndex] = exerciseData;
-              }
-
-              await userDoc.update({
-                'exercises.$date': exercisesForDate,
-              });
-            }
-
-            print('Exercise data updated successfully!');
-          } else {
-            print('Exercise with eid $euid not found for date $date.');
-          }
-        } else {
-          print('No exercises found for date $date.');
-        }
-      } else {
+      if (!docSnapshot.exists) {
         print('User document with ID $uid not found.');
+        return;
       }
+
+      var userData = docSnapshot.data() as Map<String, dynamic>;
+      var exercises = userData['exercises'] as Map<String, dynamic>? ?? {};
+
+      if (!exercises.containsKey(date)) {
+        print('No exercises found for date $date.');
+        return;
+      }
+
+      var exercisesForDate = exercises[date] as List<dynamic>;
+      var exerciseIndex = exercisesForDate.indexWhere(
+          (exercise) => exercise is Map && exercise['uid'] == euid);
+
+      if (exerciseIndex == -1) {
+        print('Exercise with eid $euid not found for date $date.');
+        return;
+      }
+
+      Map<String, dynamic> exerciseData = Map<String, dynamic>.from(exercisesForDate[exerciseIndex]);
+      int views = exerciseData['views'] ?? 0;
+
+      if (exerciseData['subtype'] == "video") {
+        exerciseData['views'] = views + 1;
+      }
+
+      if (performance != null) {
+        if (exerciseData['performance'] != null) {
+          exerciseData['performance'].add(performance);
+        } else {
+          exerciseData['performance'] = [performance];
+        }
+      }
+
+      if (exerciseData["completedAt"] == null) {
+        exerciseData["completedAt"] = DateTime.now().toIso8601String();
+        exercisesForDate[exerciseIndex] = exerciseData;
+        await userDoc.update({
+          'exercises.$date': exercisesForDate,
+          'completedTillDate': date,
+      
+        });
+      } else {
+        exerciseData["completedAt"] = DateTime.now().toIso8601String();
+        exercisesForDate[exerciseIndex] = exerciseData;
+        await userDoc.update({
+          'exercises.$date': exercisesForDate,
+        });
+      }
+
+
+      print('Exercise data updated successfully!');
     } catch (e) {
       print('Error updating exercise data: $e');
+      rethrow; // Rethrow the error to handle it in the calling code
     }
   }
 
