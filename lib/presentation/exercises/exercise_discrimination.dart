@@ -238,6 +238,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
   }
 
   Widget discriminationOptions(String type, Object d, dynamic dtcontainer) {
+
+    print("Type: $type");
+    print("Data: $d");
+    print("dtcontainer: $dtcontainer");
     switch (type) {
       case "DiffSounds":
         return DiffSoundsW(d as DiffSounds, dtcontainer);
