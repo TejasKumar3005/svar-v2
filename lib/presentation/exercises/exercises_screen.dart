@@ -781,8 +781,16 @@ class ExercisesScreen extends StatefulWidget {
 class _ExercisesScreenState extends State<ExercisesScreen>
     with TickerProviderStateMixin {
   PageController _pageController = PageController();
+  ScrollController _tabScrollController = ScrollController(); // Controller for date tabs
   List<String> _dateKeys = [];
   int _selectedDateTabIndex = 0;
+
+  // Estimated width of a single tab item. Adjust this based on your UI.
+  // Factors: padding, margin, average text length.
+  // Horizontal padding: 18*2=36, Horizontal margin: 4*2=8. Text: ~50-100px.
+  // Total ~ 36 + 8 + 75 = 119. Let's use 130 for some buffer.
+  static const double _kEstimatedTabWidth = 130.0;
+
 
   @override
   void initState() {
@@ -792,8 +800,6 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       DeviceOrientation.portraitDown,
     ]);
 
-    // Initialize _pageController after the first frame to ensure context is available
-    // and provider data might be loaded.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeDateTabsAndPage();
     });
@@ -807,7 +813,6 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     setState(() {
       _dateKeys = grouped.keys.toList();
       if (_dateKeys.isNotEmpty) {
-        // Try to find the date of the current exercise
         int currentExerciseGlobalIndex = data_pro.currentExerciseIndex;
         String? currentDateKey;
         if (currentExerciseGlobalIndex >= 0 &&
@@ -826,12 +831,26 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           _selectedDateTabIndex = 0; // Default to the first (most recent) date
         }
 
-        // Ensure PageController is initialized only once or correctly updated
         if (_pageController.hasClients) {
           _pageController.jumpToPage(_selectedDateTabIndex);
         } else {
           _pageController = PageController(initialPage: _selectedDateTabIndex);
         }
+
+        // Schedule tab scroll after this build cycle and layout
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _tabScrollController.hasClients) {
+            _scrollToSelectedTab(_selectedDateTabIndex);
+          }
+        });
+
+      } else {
+         _selectedDateTabIndex = 0;
+         if (!_pageController.hasClients) {
+            _pageController = PageController(initialPage: 0);
+         } else if (_pageController.page != 0) {
+            _pageController.jumpToPage(0);
+         }
       }
     });
   }
@@ -839,7 +858,31 @@ class _ExercisesScreenState extends State<ExercisesScreen>
   @override
   void dispose() {
     _pageController.dispose();
+    _tabScrollController.dispose(); // Dispose the tab scroll controller
     super.dispose();
+  }
+
+  void _scrollToSelectedTab(int index) {
+    if (!_tabScrollController.hasClients || _dateKeys.isEmpty || index < 0 || index >= _dateKeys.length) return;
+
+    double targetOffset = index * _kEstimatedTabWidth;
+
+    double viewportWidth = _tabScrollController.position.hasViewportDimension
+        ? _tabScrollController.position.viewportDimension
+        : MediaQuery.of(context).size.width; // Fallback
+
+    double desiredScrollPosition = targetOffset - (viewportWidth / 2) + (_kEstimatedTabWidth / 2);
+
+    double clampedScrollPosition = desiredScrollPosition.clamp(
+      _tabScrollController.position.minScrollExtent,
+      _tabScrollController.position.maxScrollExtent,
+    );
+
+    _tabScrollController.animateTo(
+      clampedScrollPosition,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   Map<String, List<Map<String, dynamic>>> _groupExercisesByDate(
@@ -859,16 +902,15 @@ class _ExercisesScreenState extends State<ExercisesScreen>
   String formatDateForTabDisplay(String dateString) {
     try {
       DateTime date = DateTime.parse(dateString);
-      // Show "Today", "Yesterday" or "Day, dd MMM"
       DateTime now = DateTime.now();
       DateTime today = DateTime(now.year, now.month, now.day);
       DateTime yesterday = today.subtract(Duration(days: 1));
 
       if (date == today) return "Today";
       if (date == yesterday) return "Yesterday";
-      return DateFormat('EEE, dd MMM').format(date); // e.g., "Mon, 16 Apr"
+      return DateFormat('EEE, dd MMM').format(date);
     } catch (e) {
-      return dateString; // Fallback
+      return dateString;
     }
   }
 
@@ -879,9 +921,10 @@ class _ExercisesScreenState extends State<ExercisesScreen>
 
     return Container(
       height: 50,
-      color: Theme.of(context).scaffoldBackgroundColor, // Or a subtle color
+      color: Theme.of(context).scaffoldBackgroundColor,
       padding: EdgeInsets.symmetric(vertical: 6.0),
       child: ListView.builder(
+        controller: _tabScrollController, // Assign the scroll controller
         scrollDirection: Axis.horizontal,
         itemCount: _dateKeys.length,
         padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -896,7 +939,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                   curve: Curves.easeInOut,
                 );
               }
-              // PageView's onPageChanged will update _selectedDateTabIndex
+              // PageView's onPageChanged will update _selectedDateTabIndex and call _scrollToSelectedTab
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 8.0),
@@ -945,7 +988,6 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     Color bgColor;
     IconData statusIconData;
     Widget leftIconWidget;
-
     bool isLocked = status == ExerciseStatus.locked;
 
     print("status: $status");
@@ -1040,8 +1082,6 @@ class _ExercisesScreenState extends State<ExercisesScreen>
   Widget build(BuildContext context) {
     var data_pro = context.watch<ExerciseProvider>();
     final groupedExercises = _groupExercisesByDate(data_pro.todaysExercises);
-    // _dateKeys is updated in initState and _initializeDateTabsAndPage
-
     int currentExerciseOverallIndex = data_pro.currentExerciseIndex;
 
     return Scaffold(
@@ -1100,9 +1140,11 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                     controller: _pageController,
                     itemCount: _dateKeys.length,
                     onPageChanged: (index) {
+                      if (!mounted) return;
                       setState(() {
                         _selectedDateTabIndex = index;
                       });
+                      _scrollToSelectedTab(index); // Scroll tabs when page view changes
                     },
                     itemBuilder: (context, pageIndex) {
                       String dateKey = _dateKeys[pageIndex];
@@ -1291,12 +1333,6 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       debugPrint("Fetched type for Pronunciation: $type");
       debugPrint("Data is: $data");
 
-      // final Object dtcontainer = retrieveObject(type, data);
-      // if (dtcontainer is String && dtcontainer == "unexpected value") {
-      //    _showErrorSnackbar('Could not process exercise data for $type.');
-      //    return;
-      // }
-
       List<dynamic> argumentsList = [
         type,
         "NULL",
@@ -1309,7 +1345,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
 
       debugPrint("Arguments list is: $argumentsList");
 
-      await Future.delayed(Duration.zero);
+      await Future.delayed(Duration.zero); // Ensure build context is stable before navigation
+      if (!mounted) return; // Check mounted status before navigating
       NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
           arguments: argumentsList);
     } catch (e) {
@@ -1338,6 +1375,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           _showErrorSnackbar('Video link is missing.');
           return;
         }
+        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -1401,6 +1439,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           _showErrorSnackbar('Media link is missing.');
           return;
         }
+        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -1464,6 +1503,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           _showErrorSnackbar('Video link is missing.');
           return;
         }
+        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -1527,6 +1567,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           _showErrorSnackbar('Video link is missing for this level.');
           return;
         }
+        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -1557,6 +1598,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           _showErrorSnackbar('Incomplete data for speech exercise.');
           return;
         }
+        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(
