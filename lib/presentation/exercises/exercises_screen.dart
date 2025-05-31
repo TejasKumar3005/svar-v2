@@ -993,6 +993,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     print("status: $status");
 
     switch (status) {
+      
       case ExerciseStatus.completed:
         itemColor = Colors.green.shade100;
         iconColor = Colors.green.shade600;
@@ -1288,6 +1289,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         case 'Pronunciation':
           _handlePronunciation(context, "notcompleted", exerciseIndex);
           break;
+        case "Vocabulary":
+          _handleVocabulary(context, "notcompleted", exerciseIndex);
         default:
           debugPrint("Unknown exercise type: $exerciseType");
           _showErrorSnackbar('Unknown exercise type: $exerciseType.');
@@ -1351,6 +1354,39 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           arguments: argumentsList);
     } catch (e) {
       debugPrint("Error in Pronunciation handling: $e");
+    }
+  }
+
+  void _handleVocabulary(
+      BuildContext context, String params, int startExerciseIndex) async {
+    try {
+      var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+      Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+      if (data.isEmpty) return;
+      String? type = data["type"];
+      if (type == null) {
+        debugPrint("Type is null in Vocabulary data.");
+        _showErrorSnackbar('Exercise data is incomplete.');
+        return;
+      }
+        List<dynamic> argumentsList = [
+        type,
+        "NULL",
+        params,
+        startExerciseIndex,
+        data["uid"],
+        data["date"],
+        data,
+      ];
+
+      debugPrint("Arguments list is: $argumentsList");
+
+      await Future.delayed(Duration.zero); // Ensure build context is stable before navigation
+      if (!mounted) return; // Check mounted status before navigating
+      NavigatorService.pushNamed(AppRoutes.exerciseVocabulary,
+          arguments: argumentsList);
+    } catch (e) {
+      debugPrint("Error in Vocabulary handling: $e");
     }
   }
 
