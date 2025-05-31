@@ -38,6 +38,7 @@ class ExerciseVocabulary extends StatefulWidget {
 class ExerciseVocabularyState extends State<ExerciseVocabulary> {
   FlutterTts flutterTts = FlutterTts();
   bool isSpeaking = false;
+  bool? userAnswer; // null = not answered, true = right, false = wrong
 
   @override
   void initState() {
@@ -104,6 +105,41 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(snackBar);
+  }
+
+  void handleAnswer(bool isCorrect) {
+    setState(() {
+      userAnswer = isCorrect;
+    });
+
+    // Get exercise data
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    int startExerciseIndex = obj[3] as int;
+    Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+
+    // Update exercise data with user's performance
+    UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
+      euid: data["uid"],
+      date: data["date"],
+      performance: {
+        "correct": isCorrect,
+        "completed": true,
+        "time": DateTime.now().toString(),
+      },
+    );
+
+    // If user marked it as correct, increment level
+    if (isCorrect) {
+      data_pro.incrementLevel(startExerciseIndex);
+    }
+
+    // Navigate back after a short delay to show the selection
+    Future.delayed(Duration(milliseconds: 1000), () {
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    });
   }
 
   @override
@@ -215,9 +251,11 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
 
                   // Listen Again Button
                   ElevatedButton.icon(
-                    onPressed: () async {
-                      await speakHindi(widget.word);
-                    },
+                    onPressed: userAnswer == null
+                        ? () async {
+                            await speakHindi(widget.word);
+                          }
+                        : null,
                     icon: Icon(
                       isSpeaking ? Icons.stop : Icons.volume_up,
                       color: Colors.white,
@@ -242,53 +280,129 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                     ),
                   ),
 
+                  SizedBox(height: 40),
+
+                  // Instructions
+                  if (userAnswer == null)
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.blue[200]!, width: 1),
+                      ),
+                      child: Text(
+                        "Did you understand the word correctly?",
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blue[800],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+
                   SizedBox(height: 20),
 
-                  // Next Button
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      // Get exercise data
-                      var obj = ModalRoute.of(context)?.settings.arguments
-                          as List<dynamic>;
-                      var data_pro =
-                          Provider.of<ExerciseProvider>(context, listen: false);
-                      int startExerciseIndex = obj[3] as int;
-                      Map<String, dynamic> data =
-                          data_pro.todaysExercises[startExerciseIndex];
+                  // Right/Wrong Buttons
+                  if (userAnswer == null)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Wrong Button
+                        ElevatedButton.icon(
+                          onPressed: () => handleAnswer(false),
+                          icon:
+                              Icon(Icons.close, color: Colors.white, size: 24),
+                          label: Text(
+                            "WRONG",
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red[600],
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
 
-                      // Update exercise data
-                      UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                          .updateExerciseData(
-                        euid: data["uid"],
-                        date: data["date"],
-                        performance: {
-                          "completed": true,
-                          "time": DateTime.now().toString(),
-                        },
-                      );
+                        // Right Button
+                        ElevatedButton.icon(
+                          onPressed: () => handleAnswer(true),
+                          icon:
+                              Icon(Icons.check, color: Colors.white, size: 24),
+                          label: Text(
+                            "RIGHT",
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green[600],
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
 
-                      // Increment level and navigate back
-                      data_pro.incrementLevel(startExerciseIndex);
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(Icons.arrow_forward, color: Colors.white),
-                    label: Text(
-                      "NEXT",
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                  // Show result after user selects
+                  if (userAnswer != null)
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: userAnswer! ? Colors.green[50] : Colors.red[50],
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                          color: userAnswer!
+                              ? Colors.green[300]!
+                              : Colors.red[300]!,
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            userAnswer! ? Icons.check_circle : Icons.cancel,
+                            color: userAnswer!
+                                ? Colors.green[600]
+                                : Colors.red[600],
+                            size: 48,
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            userAnswer! ? "Great job!" : "Keep practicing!",
+                            style: GoogleFonts.inter(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: userAnswer!
+                                  ? Colors.green[700]
+                                  : Colors.red[700],
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            "Moving to next exercise...",
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
