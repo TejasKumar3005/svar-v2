@@ -24,13 +24,37 @@ class ExerciseVocabulary extends StatefulWidget {
   ExerciseVocabularyState createState() => ExerciseVocabularyState();
 
   static Widget builder(BuildContext context) {
-    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>?;
+    if (obj == null || obj.length <= 3) {
+      // Return error widget if arguments are invalid
+      return Scaffold(
+        body: Center(
+          child: Text(
+            'Invalid exercise data',
+            style: TextStyle(fontSize: 18, color: Colors.red),
+          ),
+        ),
+      );
+    }
+
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = obj[3] as int;
+
+    if (startExerciseIndex >= data_pro.todaysExercises.length) {
+      return Scaffold(
+        body: Center(
+          child: Text(
+            'Exercise not found',
+            style: TextStyle(fontSize: 18, color: Colors.red),
+          ),
+        ),
+      );
+    }
+
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
     return ExerciseVocabulary(
-      word: data["word"],
-      imageUrl: data["url"],
+      word: data["word"] ?? "Unknown Word",
+      imageUrl: data["url"] ?? "",
     );
   }
 }
@@ -65,12 +89,16 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
     }
 
     flutterTts.setCompletionHandler(() {
-      setState(() => isSpeaking = false);
+      if (mounted) {
+        setState(() => isSpeaking = false);
+      }
     });
 
-    flutterTts.setErrorHandler((message) {
-      setState(() => isSpeaking = false);
-      print("TTS Error: $message");
+    flutterTts.setErrorHandler((dynamic message) {
+      if (mounted) {
+        setState(() => isSpeaking = false);
+        print("TTS Error: $message");
+      }
     });
   }
 
@@ -78,16 +106,22 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
     if (text.isEmpty) return;
     if (isSpeaking) {
       await flutterTts.stop();
-      setState(() => isSpeaking = false);
+      if (mounted) {
+        setState(() => isSpeaking = false);
+      }
       return;
     }
     try {
-      setState(() => isSpeaking = true);
+      if (mounted) {
+        setState(() => isSpeaking = true);
+      }
       await flutterTts.speak(text);
     } catch (e) {
       print("Error speaking: $e");
-      setState(() => isSpeaking = false);
-      showErrorSnackBar("Error in text to speech: $e");
+      if (mounted) {
+        setState(() => isSpeaking = false);
+        showErrorSnackBar("Error in text to speech: $e");
+      }
     }
   }
 
@@ -108,30 +142,55 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
   }
 
   void handleAnswer(bool isCorrect) {
+    if (!mounted) return;
+
     setState(() {
       userAnswer = isCorrect;
     });
 
-    // Get exercise data
-    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    // Get exercise data with null safety
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>?;
+    if (obj == null || obj.length <= 3) {
+      showErrorSnackBar("Invalid exercise data");
+      return;
+    }
+
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = obj[3] as int;
+
+    if (startExerciseIndex >= data_pro.todaysExercises.length) {
+      showErrorSnackBar("Exercise index out of range");
+      return;
+    }
+
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
-    // Update exercise data with user's performance
-    UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
-      euid: data["uid"],
-      date: data["date"],
-      performance: {
-        "correct": isCorrect,
-        "completed": true,
-        "time": DateTime.now().toString(),
-      },
-    );
+    // Check if user is still authenticated
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      showErrorSnackBar("User not authenticated");
+      return;
+    }
 
-    // If user marked it as correct, increment level
-    if (isCorrect) {
-      data_pro.incrementLevel(startExerciseIndex);
+    // Update exercise data with user's performance
+    try {
+      UserData(uid: currentUser.uid).updateExerciseData(
+        euid: data["uid"],
+        date: data["date"],
+        performance: {
+          "correct": isCorrect,
+          "completed": true,
+          "time": DateTime.now().toString(),
+        },
+      );
+
+      // If user marked it as correct, increment level
+      if (isCorrect) {
+        data_pro.incrementLevel(startExerciseIndex);
+      }
+    } catch (e) {
+      print("Error updating exercise data: $e");
+      showErrorSnackBar("Failed to save progress: $e");
     }
 
     // Navigate back after a short delay to show the selection
@@ -414,7 +473,10 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
 
   @override
   void dispose() {
+    // Clean up TTS properly
     flutterTts.stop();
+    flutterTts.setCompletionHandler(() {});
+    flutterTts.setErrorHandler((dynamic message) {});
     super.dispose();
   }
 }
