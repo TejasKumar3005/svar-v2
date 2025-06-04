@@ -178,7 +178,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
         euid: data["uid"],
         date: data["date"],
         performance: {
-          "correct": isCorrect,
+          "correct_attempt": isCorrect,
           "completed": true,
           "time": DateTime.now().toString(),
         },
