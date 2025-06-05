@@ -906,6 +906,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
               return true;
             }
             return true;
+          }else{
+            await _audioPlayer.play(AssetSource('assets/audio/wrong_answer.mp3'));
+            await Future.delayed(Duration(milliseconds: 1000));
           }
         }
 
