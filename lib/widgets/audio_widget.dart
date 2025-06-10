@@ -110,6 +110,9 @@ class AudioWidgetState extends State<AudioWidget> {
 
         _playerStateSubscription =
             _audioPlayer.playerStateStream.listen((state) {
+          // Update playing state
+          _isPlaying.value = state.playing;
+
           if (state.processingState == ProcessingState.completed) {
             if (currentIndex < widget.audioLinks.length - 1) {
               currentIndex++;
@@ -118,6 +121,7 @@ class AudioWidgetState extends State<AudioWidget> {
               currentIndex = 0;
               _progress.value = 0.0; // Reset progress
               _audioPlayer.stop();
+              _isPlaying.value = false; // Ensure playing state is false
             }
           }
         });
@@ -157,14 +161,19 @@ class AudioWidgetState extends State<AudioWidget> {
                 ValueListenableBuilder<bool>(
                   valueListenable: _isPlaying,
                   builder: (context, isPlayingValue, child) {
+                    print("value is " + isPlayingValue.toString());
                     return CustomButton(
-                      type:   _audioPlayer.playing
+                      key: ValueKey(isPlayingValue),
+                      type: isPlayingValue
                           ? ButtonType.ImagePause
                           : ButtonType.ImagePlay,
-                      onPressed: () {
-                        _audioPlayer.playing
-                            ? _audioPlayer.pause()
-                            : playNext();
+                      onPressed: () async {
+                        if (isPlayingValue) {
+                          await _audioPlayer.pause();
+                          _isPlaying.value = false;
+                        } else {
+                          playNext();
+                        }
                       },
                     );
                   },
@@ -200,17 +209,18 @@ class AudioWidgetState extends State<AudioWidget> {
                 ValueListenableBuilder<bool>(
                   valueListenable: _isPlaying,
                   builder: (context, isPlayingValue, child) {
-                    return isPlayingValue ? CustomButton(
+                    return CustomButton(
+                      key: ValueKey(isPlayingValue),
                       type: isPlayingValue
                           ? ButtonType.ImagePause
                           : ButtonType.ImagePlay,
-                      onPressed: () {
-                      _audioPlayer.pause();
-                      },
-                    ) : CustomButton(
-                      type: ButtonType.ImagePlay,
-                      onPressed: () {
-                        _audioPlayer.play();
+                      onPressed: () async {
+                        if (isPlayingValue) {
+                          await _audioPlayer.pause();
+                          _isPlaying.value = false;
+                        } else {
+                          playNext();
+                        }
                       },
                     );
                   },
@@ -226,7 +236,7 @@ class AudioWidgetState extends State<AudioWidget> {
                           type: ButtonType.Spectrum,
                           clippingStyle: ClippingStyle.leftToRight,
                           animationCurve: Curves.linear,
-                        
+
                           onPressed: () {
                             if (click != null) {
                               click();

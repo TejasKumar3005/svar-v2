@@ -43,6 +43,7 @@
  *   - etc.
  */
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -390,7 +391,7 @@ class _CustomButtonState extends State<CustomButton>
             SizedBox(width: 8),
             Icon(Icons.circle, size: 30),
             SizedBox(width: 8),
-            Icon(Icons.rectangle, size: 30),
+            Icon(CupertinoIcons.arrowtriangle_up_fill, size: 35),
           ],
         );
         break;

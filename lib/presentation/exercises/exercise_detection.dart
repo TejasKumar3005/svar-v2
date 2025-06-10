@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -746,10 +747,23 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   StateMachineController? riveController;
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
+  late bool _muteFirstHalf; // Randomized muting configuration
+  late String _instructionText; // Dynamic instruction text
 
   @override
   void initState() {
     super.initState();
+    // Randomly determine which half to mute
+    _muteFirstHalf = Random().nextBool();
+
+    // Set instruction text based on muting configuration
+    _instructionText = _muteFirstHalf
+        ? "Wait quietly. Sound will play in the second half. Tap stop when you hear it."
+        : "Listen carefully. Sound will stop halfway. Tap stop when the sound stops.";
+
+    print(
+        "Muting configuration: ${_muteFirstHalf ? 'First half muted' : 'Second half muted'}");
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startVolumeControl();
     });
@@ -779,12 +793,27 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   }
 
   void _startVolumeControl() {
+    // Create a periodic timer that runs every 500ms
     _volumeTimer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+      // Check if the audio widget state is available and widget is still mounted
       if (_childKey.currentState != null && mounted) {
         try {
+          // Get the current progress value from the audio widget
           double progress = _childKey.currentState!.progress.value;
-          globalAudioPlayer.setVolume(progress < 0.5 ? 0.0 : 1.0);
+
+          // Set volume based on randomized muting configuration:
+          double volume;
+          if (_muteFirstHalf) {
+            // Mute first half, play second half
+            volume = progress < 0.5 ? 0.0 : 1.0;
+          } else {
+            // Play first half, mute second half
+            volume = progress < 0.5 ? 1.0 : 0.0;
+          }
+
+          globalAudioPlayer.setVolume(volume);
         } catch (e) {
+          // Log any errors that occur during volume control
           print('Error in volume control: $e');
         }
       }
@@ -819,7 +848,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
                   // Remove decoration to make it transparent over the placeholder
                   child: Text(
-                    "Wait quietly. Tap the stop button as soon as you hear the sound.",
+                    _instructionText,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
@@ -900,9 +929,21 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
                             double currentProgress =
                                 _childKey.currentState!.progress.value;
-                            const double tolerance = 0.2;
-                            bool condition = currentProgress > 0.5 &&
-                                currentProgress < 0.5 + tolerance;
+                            const double tolerance = 0.15;
+
+                            bool condition;
+                            if (_muteFirstHalf) {
+                              // User should tap when sound starts (around 50% mark)
+                              condition = currentProgress > 0.5 &&
+                                  currentProgress < 0.5 + tolerance;
+                            } else {
+                              // User should tap when sound stops (around 50% mark)
+                              condition = currentProgress > 0.5 &&
+                                  currentProgress < 0.5 + tolerance;
+                            }
+
+                            print(
+                                "Progress: $currentProgress, Condition: $condition, Mute first half: $_muteFirstHalf");
 
                             if (condition) {
                               data_pro.incrementLevel(startExerciseIndex);
@@ -916,6 +957,10 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                                       performance: {
                                     "correct_attempt": condition,
                                     "time": DateTime.now().toString(),
+                                    "mute_configuration": _muteFirstHalf
+                                        ? "first_half_muted"
+                                        : "second_half_muted",
+                                    "progress_when_stopped": currentProgress,
                                   });
                             }
                             return condition;
