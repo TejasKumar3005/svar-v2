@@ -781,7 +781,8 @@ class ExercisesScreen extends StatefulWidget {
 class _ExercisesScreenState extends State<ExercisesScreen>
     with TickerProviderStateMixin {
   PageController _pageController = PageController();
-  ScrollController _tabScrollController = ScrollController(); // Controller for date tabs
+  ScrollController _tabScrollController =
+      ScrollController(); // Controller for date tabs
   List<String> _dateKeys = [];
   int _selectedDateTabIndex = 0;
 
@@ -790,7 +791,6 @@ class _ExercisesScreenState extends State<ExercisesScreen>
   // Horizontal padding: 18*2=36, Horizontal margin: 4*2=8. Text: ~50-100px.
   // Total ~ 36 + 8 + 75 = 119. Let's use 130 for some buffer.
   static const double _kEstimatedTabWidth = 130.0;
-
 
   @override
   void initState() {
@@ -843,14 +843,13 @@ class _ExercisesScreenState extends State<ExercisesScreen>
             _scrollToSelectedTab(_selectedDateTabIndex);
           }
         });
-
       } else {
-         _selectedDateTabIndex = 0;
-         if (!_pageController.hasClients) {
-            _pageController = PageController(initialPage: 0);
-         } else if (_pageController.page != 0) {
-            _pageController.jumpToPage(0);
-         }
+        _selectedDateTabIndex = 0;
+        if (!_pageController.hasClients) {
+          _pageController = PageController(initialPage: 0);
+        } else if (_pageController.page != 0) {
+          _pageController.jumpToPage(0);
+        }
       }
     });
   }
@@ -863,7 +862,10 @@ class _ExercisesScreenState extends State<ExercisesScreen>
   }
 
   void _scrollToSelectedTab(int index) {
-    if (!_tabScrollController.hasClients || _dateKeys.isEmpty || index < 0 || index >= _dateKeys.length) return;
+    if (!_tabScrollController.hasClients ||
+        _dateKeys.isEmpty ||
+        index < 0 ||
+        index >= _dateKeys.length) return;
 
     double targetOffset = index * _kEstimatedTabWidth;
 
@@ -871,7 +873,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         ? _tabScrollController.position.viewportDimension
         : MediaQuery.of(context).size.width; // Fallback
 
-    double desiredScrollPosition = targetOffset - (viewportWidth / 2) + (_kEstimatedTabWidth / 2);
+    double desiredScrollPosition =
+        targetOffset - (viewportWidth / 2) + (_kEstimatedTabWidth / 2);
 
     double clampedScrollPosition = desiredScrollPosition.clamp(
       _tabScrollController.position.minScrollExtent,
@@ -993,7 +996,6 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     print("status: $status");
 
     switch (status) {
-      
       case ExerciseStatus.completed:
         itemColor = Colors.green.shade100;
         iconColor = Colors.green.shade600;
@@ -1012,7 +1014,16 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         leftIconWidget = Icon(Icons.local_fire_department_outlined,
             color: Colors.orange.shade600.withOpacity(0.8), size: 36);
         break;
-      case ExerciseStatus.pending: // Not current, not completed, but accessible
+      case ExerciseStatus.pending:
+        itemColor = Color(0xFFBBBBBB);
+        iconColor = Color(0xFFAEAEAE);
+        bgColor = Color(0xFFE5E5E5);
+        textColor = Color(0xFFAEAEAE);
+        statusIconData = Icons.pending_actions;
+        leftIconWidget =
+            Icon(Icons.school_outlined, color: Color(0xFFAEAEAE), size: 36);
+        break; // Not yet accessible
+      // Not current, not completed, but accessible
       case ExerciseStatus.locked:
         itemColor = Color(0xFFBBBBBB);
         iconColor = Color(0xFFAEAEAE);
@@ -1021,7 +1032,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         statusIconData = Icons.lock;
         leftIconWidget =
             Icon(Icons.school_outlined, color: Color(0xFFAEAEAE), size: 36);
-        break; // Not yet accessible
+        break;
+      // Not yet accessible
       default:
         itemColor = Colors.black;
         iconColor = Colors.grey.shade600;
@@ -1145,7 +1157,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                       setState(() {
                         _selectedDateTabIndex = index;
                       });
-                      _scrollToSelectedTab(index); // Scroll tabs when page view changes
+                      _scrollToSelectedTab(
+                          index); // Scroll tabs when page view changes
                     },
                     itemBuilder: (context, pageIndex) {
                       String dateKey = _dateKeys[pageIndex];
@@ -1172,62 +1185,14 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                           bool isCompleted = exercise["completedAt"] != null;
                           ExerciseStatus status;
 
-                          // Determine lock status: an exercise is locked if a *previous* one (in overall list) isn't complete.
-                          // The very first exercise is never locked by this rule.
-                          bool isLogicallyLocked = false;
-                          if (originalIndexOfThisExercise > 0) {
-                            // Check if *any* exercise before this one (in the global list) is incomplete.
-                            // A simpler rule: if the *immediately* previous global exercise is not complete, this one is locked.
-                            // For a more Duolingo-like sequence, you usually unlock one by one.
-                            Map<String, dynamic>? previousExercise =
-                                (originalIndexOfThisExercise - 1 <
-                                            data_pro.todaysExercises.length &&
-                                        originalIndexOfThisExercise - 1 >= 0)
-                                    ? data_pro.todaysExercises[
-                                        originalIndexOfThisExercise - 1]
-                                    : null;
-                            if (previousExercise != null &&
-                                previousExercise["completedAt"] == null) {
-                              isLogicallyLocked = true;
-                            }
-                          }
-
-                          // The "current" one should not be locked by previous incomplete, but by game flow.
+                          // Simplified status logic - no locking
                           if (isCompleted) {
                             status = ExerciseStatus.completed;
                           } else if (originalIndexOfThisExercise ==
                               currentExerciseOverallIndex) {
                             status = ExerciseStatus.current;
-                          } else if (isLogicallyLocked &&
-                              originalIndexOfThisExercise >
-                                  currentExerciseOverallIndex) {
-                            // If it's after current and something before it is incomplete
-                            status = ExerciseStatus.locked;
                           } else {
-                            status = ExerciseStatus
-                                .pending; // Available but not current, or before current and not done
-                            // If it's before current and not done, it's pending.
-                            // If it's after current but the one before it is done, it's pending (next up)
-                            if (originalIndexOfThisExercise >
-                                currentExerciseOverallIndex)
-                              status = ExerciseStatus
-                                  .locked; // Simplified: lock all after current if not current.
-                          }
-
-                          // Refined status logic:
-                          if (isCompleted) {
-                            status = ExerciseStatus.completed;
-                          } else if (originalIndexOfThisExercise ==
-                              currentExerciseOverallIndex) {
-                            status = ExerciseStatus.current;
-                          } else if (originalIndexOfThisExercise >
-                              currentExerciseOverallIndex) {
-                            // Any exercise after the current one is considered locked until current is done.
-                            status = ExerciseStatus.locked;
-                          } else {
-                            // originalIndexOfThisExercise < currentExerciseOverallIndex && !isCompleted
-                            status = ExerciseStatus
-                                .pending; // An older exercise that wasn't completed
+                            status = ExerciseStatus.pending;
                           }
 
                           return _buildExerciseListItem(
@@ -1348,7 +1313,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
 
       debugPrint("Arguments list is: $argumentsList");
 
-      await Future.delayed(Duration.zero); // Ensure build context is stable before navigation
+      await Future.delayed(
+          Duration.zero); // Ensure build context is stable before navigation
       if (!mounted) return; // Check mounted status before navigating
       NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
           arguments: argumentsList);
@@ -1369,7 +1335,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         _showErrorSnackbar('Exercise data is incomplete.');
         return;
       }
-        List<dynamic> argumentsList = [
+      List<dynamic> argumentsList = [
         type,
         "NULL",
         params,
@@ -1381,7 +1347,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
 
       debugPrint("Arguments list is: $argumentsList");
 
-      await Future.delayed(Duration.zero); // Ensure build context is stable before navigation
+      await Future.delayed(
+          Duration.zero); // Ensure build context is stable before navigation
       if (!mounted) return; // Check mounted status before navigating
       NavigatorService.pushNamed(AppRoutes.exerciseVocabulary,
           arguments: argumentsList);
@@ -1685,6 +1652,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       if (type == "OddOne") return OddOne.fromJson(data);
       if (type == "DiffHalf") return DiffHalf.fromJson(data);
       if (type == "MaleFemale") return MaleFemale.fromJson(data);
+      if (type == "DiffImageToAudio") return ImageToAudio.fromJson(data);
+      if (type == "DiffAudioToImage") return AudioToImage.fromJson(data);
 
       debugPrint(
           "Unexpected object type to retrieve: $type. Returning 'unexpected value'.");

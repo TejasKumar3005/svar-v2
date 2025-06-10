@@ -14,6 +14,7 @@ import 'package:video_player/video_player.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:svar_new/presentation/settings_screen/setting.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ExerciseDetection extends StatefulWidget {
   const ExerciseDetection({
@@ -49,6 +50,11 @@ class _DetectionState extends State<ExerciseDetection> {
   StateMachineController? riveController;
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
+
+  // New state variables for next exercise functionality
+  bool exerciseCompleted = false;
+  bool hasMoreExercises = false;
+  int currentExerciseIndex = 0;
 
   @override
   void initState() {
@@ -87,9 +93,18 @@ class _DetectionState extends State<ExerciseDetection> {
     if (isCorrect) {
       if (_correctTrigger != null) {
         _correctTrigger!.fire();
-        Future.delayed(const Duration(seconds: 5), () {
-          Navigator.pop(context);
+        setState(() {
+          exerciseCompleted = true;
         });
+
+        // Only auto-navigate if there are no more exercises for today
+        if (!hasMoreExercises) {
+          Future.delayed(const Duration(seconds: 5), () {
+            if (mounted) {
+              Navigator.pop(context);
+            }
+          });
+        }
       }
     } else {
       if (_incorrectTrigger != null) {
@@ -109,6 +124,11 @@ class _DetectionState extends State<ExerciseDetection> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    currentExerciseIndex = obj[3] as int;
+
+    // Check if there are more exercises left for today
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    _checkForMoreExercises(data_pro);
 
     String type = obj[0] as String;
     print("Type: $type");
@@ -117,6 +137,37 @@ class _DetectionState extends State<ExerciseDetection> {
         : "Watch the videos. Tap the one that has sound.";
 
     String audioFile = type == "HalfMuted" ? "v6.wav" : "v7.wav";
+  }
+
+  void _checkForMoreExercises(ExerciseProvider data_pro) {
+    // Get the current exercise's date
+    if (currentExerciseIndex >= data_pro.todaysExercises.length) return;
+
+    Map<String, dynamic> currentExercise =
+        data_pro.todaysExercises[currentExerciseIndex];
+    String exerciseDate = currentExercise['date'] ?? '';
+
+    if (exerciseDate.isEmpty) return;
+
+    // Filter exercises to only include exercises from the same date as current exercise
+    List<Map<String, dynamic>> sameDateExercises = data_pro.todaysExercises
+        .where((exercise) => exercise['date'] == exerciseDate)
+        .toList();
+
+    // Find the current exercise's position in the same date filtered list
+    int currentIndexInSameDateExercises = sameDateExercises.indexWhere(
+        (exercise) =>
+            data_pro.todaysExercises.indexOf(exercise) == currentExerciseIndex);
+
+    if (currentIndexInSameDateExercises != -1) {
+      // Check if any exercises after current one are incomplete (completedAt is null)
+      hasMoreExercises = sameDateExercises
+          .skip(currentIndexInSameDateExercises + 1)
+          .any((exercise) => exercise['completedAt'] == null);
+    }
+
+    print("Exercise date: $exerciseDate");
+    print("Has more exercises for this date: $hasMoreExercises");
   }
 
   @override
@@ -252,6 +303,71 @@ class _DetectionState extends State<ExerciseDetection> {
                                 ),
                               ),
                             ),
+
+                            // Next button - positioned on the right side of Rive animation
+                            if (exerciseCompleted && hasMoreExercises)
+                              Positioned(
+                                bottom:
+                                    MediaQuery.of(context).size.height * 0.15,
+                                right: 20.h,
+                                child: AnimatedScale(
+                                  scale: exerciseCompleted ? 1.0 : 0.0,
+                                  duration: Duration(milliseconds: 500),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Color(0xFF4CAF50),
+                                          Color(0xFF45A049)
+                                        ],
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                      ),
+                                      borderRadius: BorderRadius.circular(25),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.green.withOpacity(0.3),
+                                          blurRadius: 8,
+                                          spreadRadius: 1,
+                                          offset: Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(25),
+                                        onTap: _moveToNextExercise,
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 20.h,
+                                            vertical: 15.v,
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                "Next",
+                                                style: GoogleFonts.inter(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                              SizedBox(width: 8.h),
+                                              Icon(
+                                                Icons.arrow_forward,
+                                                color: Colors.white,
+                                                size: 20,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ],
@@ -420,16 +536,15 @@ class _DetectionState extends State<ExerciseDetection> {
                   Provider.of<ExerciseProvider>(context, listen: false);
               if (condition) {
                 data_pro.incrementLevel(startExerciseIndex);
-                if (data["completedAt"] == null) {
-                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                      .updateExerciseData(
-                          euid: data["uid"],
-                          date: data["date"],
-                          performance: {
-                        "correct_attempt": condition,
-                        "time": DateTime.now().toString(),
-                      }).then((value) => print("Exercise data updated"));
-                }
+
+                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                    .updateExerciseData(
+                        euid: data["uid"],
+                        date: data["date"],
+                        performance: {
+                      "correct_attempt": condition,
+                      "time": DateTime.now().toString(),
+                    }).then((value) => print("Exercise data updated"));
               }
               return condition;
             },
@@ -437,6 +552,179 @@ class _DetectionState extends State<ExerciseDetection> {
         ],
       ),
     );
+  }
+
+  void _moveToNextExercise() {
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+
+    // Get the current exercise's date
+    if (currentExerciseIndex >= data_pro.todaysExercises.length) return;
+
+    Map<String, dynamic> currentExercise =
+        data_pro.todaysExercises[currentExerciseIndex];
+    String exerciseDate = currentExercise['date'] ?? '';
+
+    if (exerciseDate.isEmpty) return;
+
+    // Find next incomplete exercise for the same date
+    int nextExerciseIndex = -1;
+    for (int i = currentExerciseIndex + 1;
+        i < data_pro.todaysExercises.length;
+        i++) {
+      if (data_pro.todaysExercises[i]['date'] == exerciseDate &&
+          data_pro.todaysExercises[i]['completedAt'] == null) {
+        nextExerciseIndex = i;
+        break;
+      }
+    }
+
+    if (nextExerciseIndex != -1) {
+      // Navigate to the next exercise
+      Map<String, dynamic> nextExercise =
+          data_pro.todaysExercises[nextExerciseIndex];
+      String exerciseType = nextExercise["exerciseType"];
+
+      // Pop current screen first
+      Navigator.pop(context);
+
+      // Navigate to appropriate exercise type
+      _navigateToExerciseType(exerciseType, nextExerciseIndex);
+    } else {
+      // No more exercises, just pop
+      Navigator.pop(context);
+    }
+  }
+
+  void _navigateToExerciseType(String exerciseType, int exerciseIndex) {
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    Map<String, dynamic> data = data_pro.todaysExercises[exerciseIndex];
+
+    switch (exerciseType) {
+      case "Detection":
+        _handleDetection(exerciseIndex, data);
+        break;
+      case "Discrimination":
+        _handleDiscrimination(exerciseIndex, data);
+        break;
+      case "Identification":
+        _handleIdentification(exerciseIndex, data);
+        break;
+      case "Level":
+        _handleLevel(exerciseIndex, data);
+        break;
+      case 'Pronunciation':
+        _handlePronunciation(exerciseIndex, data);
+        break;
+      case "Vocabulary":
+        _handleVocabulary(exerciseIndex, data);
+        break;
+      default:
+        print("Unknown exercise type: $exerciseType");
+    }
+  }
+
+  // Helper methods for navigation
+  void _handleDetection(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    if (type == "video") {
+      // Handle video type if needed
+    } else {
+      final Object dtcontainer = _retrieveObject(type!, data);
+      List<dynamic> argumentsList = [
+        type,
+        dtcontainer,
+        "notcompleted",
+        exerciseIndex,
+        data["uid"],
+        data["date"]
+      ];
+      NavigatorService.pushNamed(AppRoutes.exerciseDetection,
+          arguments: argumentsList);
+    }
+  }
+
+  void _handleDiscrimination(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    if (type == "sound" || type == "video") {
+      // Handle video/sound type if needed
+    } else {
+      final Object dtcontainer = _retrieveObject(type!, data);
+      List<dynamic> argumentsList = [
+        type,
+        dtcontainer,
+        "notcompleted",
+        exerciseIndex,
+        data["uid"],
+        data["date"]
+      ];
+      NavigatorService.pushNamed(AppRoutes.exerciseDiscrimination,
+          arguments: argumentsList);
+    }
+  }
+
+  void _handleIdentification(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    final Object dtcontainer = _retrieveObject(type!, data);
+    List<dynamic> argumentsList = [
+      type,
+      dtcontainer,
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"],
+      data
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
+        arguments: argumentsList);
+  }
+
+  void _handleLevel(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    final Object dtcontainer = _retrieveObject(type!, data);
+    List<dynamic> argumentsList = [
+      type,
+      dtcontainer,
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"]
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
+        arguments: argumentsList);
+  }
+
+  void _handlePronunciation(int exerciseIndex, Map<String, dynamic> data) {
+    List<dynamic> argumentsList = [
+      data["type"],
+      "NULL",
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"],
+      data,
+    ];
+    NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
+        arguments: argumentsList);
+  }
+
+  void _handleVocabulary(int exerciseIndex, Map<String, dynamic> data) {
+    List<dynamic> argumentsList = [
+      data["type"],
+      "NULL",
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"],
+      data,
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseVocabulary,
+        arguments: argumentsList);
+  }
+
+  Object _retrieveObject(String type, Map<String, dynamic> data) {
+    // Simplified version - return the data as is for now
+    // The actual object creation should be handled in the target exercise screen
+    return data;
   }
 }
 
@@ -612,24 +900,23 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
 
                             double currentProgress =
                                 _childKey.currentState!.progress.value;
-                            const double tolerance = 0.4;
+                            const double tolerance = 0.2;
                             bool condition = currentProgress > 0.5 &&
                                 currentProgress < 0.5 + tolerance;
 
                             if (condition) {
                               data_pro.incrementLevel(startExerciseIndex);
-                              if (data["completedAt"] == null) {
-                                UserData(
-                                        uid: FirebaseAuth
-                                            .instance.currentUser!.uid)
-                                    .updateExerciseData(
-                                        euid: data["uid"],
-                                        date: data["date"],
-                                        performance: {
-                                      "correct_attempt": condition,
-                                      "time": DateTime.now().toString(),
-                                    });
-                              }
+
+                              UserData(
+                                      uid: FirebaseAuth
+                                          .instance.currentUser!.uid)
+                                  .updateExerciseData(
+                                      euid: data["uid"],
+                                      date: data["date"],
+                                      performance: {
+                                    "correct_attempt": condition,
+                                    "time": DateTime.now().toString(),
+                                  });
                             }
                             return condition;
                           },

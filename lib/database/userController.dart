@@ -83,9 +83,7 @@ class UserData {
     bool isCompleted = true,
     dynamic performance,
   }) async {
-
     try {
-    
       final userDoc = userCollection.doc(uid);
 
       // Get the current user document data
@@ -105,15 +103,16 @@ class UserData {
       }
 
       var exercisesForDate = exercises[date] as List<dynamic>;
-      var exerciseIndex = exercisesForDate.indexWhere(
-          (exercise) => exercise is Map && exercise['uid'] == euid);
+      var exerciseIndex = exercisesForDate
+          .indexWhere((exercise) => exercise is Map && exercise['uid'] == euid);
 
       if (exerciseIndex == -1) {
         print('Exercise with eid $euid not found for date $date.');
         return;
       }
 
-      Map<String, dynamic> exerciseData = Map<String, dynamic>.from(exercisesForDate[exerciseIndex]);
+      Map<String, dynamic> exerciseData =
+          Map<String, dynamic>.from(exercisesForDate[exerciseIndex]);
       int views = exerciseData['views'] ?? 0;
 
       if (exerciseData['subtype'] == "video") {
@@ -134,7 +133,6 @@ class UserData {
         await userDoc.update({
           'exercises.$date': exercisesForDate,
           'completedTillDate': date,
-      
         });
       } else {
         exerciseData["completedAt"] = DateTime.now().toIso8601String();
@@ -143,7 +141,6 @@ class UserData {
           'exercises.$date': exercisesForDate,
         });
       }
-
 
       print('Exercise data updated successfully!');
     } catch (e) {
@@ -154,6 +151,8 @@ class UserData {
 
   Future<List<dynamic>> getfortnightExercises(
       Map<String, dynamic> exercises) async {
+    // FIX: Now preserves all original exercise data including completedAt, views, performance
+    // to maintain exercise completion status and user progress tracking
     var finaldata = [];
     try {
       // Calculate dates
@@ -173,8 +172,13 @@ class UserData {
           List<Map<String, dynamic>> updatedData = [];
 
           await Future.wait(data.map((exercise) async {
+            // Preserve all original exercise data including completedAt, views, performance, etc.
+            Map<String, dynamic> baseExercise =
+                Map<String, dynamic>.from(exercise);
+
             if (exercise["subtype"].toString() == "custom") {
               updatedData.add({
+                ...baseExercise, // Preserve original data
                 "subtype": "video",
                 "description": exercise["description"],
                 "type": "video",
@@ -184,13 +188,13 @@ class UserData {
               });
             } else if (exercise["subtype"].toString() != "Pronunciation") {
               updatedData.add({
-                ...exercise,
+                ...baseExercise, // Preserve original data
                 "exerciseType": exercise["subtype"],
                 "date": formattedDate
               });
             } else {
               updatedData.add({
-                ...exercise,
+                ...baseExercise, // Preserve original data
                 "date": formattedDate,
                 "exerciseType": "Pronunciation",
               });
@@ -256,18 +260,19 @@ class UserData {
     }
   }
 
-
-  Future<void> updateUserFields(Map<String, dynamic> fieldsToUpdate,Map<String, dynamic> oldData) async {
+  Future<void> updateUserFields(
+      Map<String, dynamic> fieldsToUpdate, Map<String, dynamic> oldData) async {
     try {
       // Only update the specified fields in Firestore
       await userCollection.doc(uid).update(fieldsToUpdate);
-      
+
       Map<String, dynamic> updatedData = {...oldData};
       fieldsToUpdate.forEach((key, value) {
         updatedData[key] = value;
       });
       UserModel updatedUser = UserModel.fromJson(updatedData);
-      Provider.of<UserDataProvider>(buildContext!, listen: false).setUser(updatedUser);
+      Provider.of<UserDataProvider>(buildContext!, listen: false)
+          .setUser(updatedUser);
     } on FirebaseException catch (e) {
       showErrorSnackBar(e.toString());
     }

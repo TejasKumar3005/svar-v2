@@ -1,21 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:rive/rive.dart' as rive;
-import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/practice_screen.dart';
 import 'package:svar_new/presentation/patient_report/patient_assessment_page.dart';
 import 'package:svar_new/presentation/patient_report/patient_exercises_page.dart';
-import 'package:svar_new/presentation/quit_screen/quit_game_screen_dialog.dart';
 import 'package:svar_new/widgets/fees_page.dart';
-import 'package:svar_new/widgets/game_stats_header.dart';
 import 'provider/main_interaction_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:svar_new/widgets/game_stats_header.dart';
 import 'package:svar_new/presentation/user_profile_screen/user_profile_screen.dart';
 import 'package:flutter/services.dart';
-import 'dart:math' as math;
 import 'package:svar_new/presentation/patient_report/buildBottomNavigationBar.dart';
 import 'package:svar_new/presentation/home/provider/streak_provider.dart';
 

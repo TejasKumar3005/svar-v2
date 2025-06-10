@@ -158,7 +158,7 @@ class AudioWidgetState extends State<AudioWidget> {
                   valueListenable: _isPlaying,
                   builder: (context, isPlayingValue, child) {
                     return CustomButton(
-                      type: isPlayingValue
+                      type:   _audioPlayer.playing
                           ? ButtonType.ImagePause
                           : ButtonType.ImagePlay,
                       onPressed: () {
@@ -176,6 +176,9 @@ class AudioWidgetState extends State<AudioWidget> {
                     builder: (context, progressValue, child) {
                       return CustomButton(
                         type: ButtonType.Spectrum,
+                        clippingStyle: ClippingStyle.leftToRight,
+                        animationCurve: Curves.linear,
+                        // animationDuration: Duration(seconds: _lengths[currentIndex].toInt()),
                         onPressed: () {
                           if (click != null) {
                             click();
@@ -197,14 +200,17 @@ class AudioWidgetState extends State<AudioWidget> {
                 ValueListenableBuilder<bool>(
                   valueListenable: _isPlaying,
                   builder: (context, isPlayingValue, child) {
-                    return CustomButton(
+                    return isPlayingValue ? CustomButton(
                       type: isPlayingValue
                           ? ButtonType.ImagePause
                           : ButtonType.ImagePlay,
                       onPressed: () {
-                        _audioPlayer.playing
-                            ? _audioPlayer.pause()
-                            : playNext();
+                      _audioPlayer.pause();
+                      },
+                    ) : CustomButton(
+                      type: ButtonType.ImagePlay,
+                      onPressed: () {
+                        _audioPlayer.play();
                       },
                     );
                   },
@@ -218,6 +224,9 @@ class AudioWidgetState extends State<AudioWidget> {
                       builder: (context, progressValue, child) {
                         return CustomButton(
                           type: ButtonType.Spectrum,
+                          clippingStyle: ClippingStyle.leftToRight,
+                          animationCurve: Curves.linear,
+                        
                           onPressed: () {
                             if (click != null) {
                               click();

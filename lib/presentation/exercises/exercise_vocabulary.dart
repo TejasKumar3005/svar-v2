@@ -9,6 +9,7 @@ import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:svar_new/core/app_export.dart';
 
 class ExerciseVocabulary extends StatefulWidget {
   final String word;
@@ -64,16 +65,69 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
   bool isSpeaking = false;
   bool? userAnswer; // null = not answered, true = right, false = wrong
 
+  // New state variables for next exercise functionality
+  bool exerciseCompleted = false;
+  bool hasMoreExercises = false;
+  int currentExerciseIndex = 0;
+
   @override
   void initState() {
     super.initState();
     initTTS();
+
+    // Initialize exercise data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeExerciseData();
+    });
+
     // Play TTS automatically when page loads
     Future.delayed(Duration(milliseconds: 500), () {
       if (mounted) {
         speakHindi(widget.word);
       }
     });
+  }
+
+  void _initializeExerciseData() {
+    var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>?;
+    if (obj == null || obj.length <= 3) return;
+
+    currentExerciseIndex = obj[3] as int;
+
+    // Check if there are more exercises left for today
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    _checkForMoreExercises(data_pro);
+  }
+
+  void _checkForMoreExercises(ExerciseProvider data_pro) {
+    // Get the current exercise's date
+    if (currentExerciseIndex >= data_pro.todaysExercises.length) return;
+
+    Map<String, dynamic> currentExercise =
+        data_pro.todaysExercises[currentExerciseIndex];
+    String exerciseDate = currentExercise['date'] ?? '';
+
+    if (exerciseDate.isEmpty) return;
+
+    // Filter exercises to only include exercises from the same date as current exercise
+    List<Map<String, dynamic>> sameDateExercises = data_pro.todaysExercises
+        .where((exercise) => exercise['date'] == exerciseDate)
+        .toList();
+
+    // Find the current exercise's position in the same date filtered list
+    int currentIndexInSameDateExercises = sameDateExercises.indexWhere(
+        (exercise) =>
+            data_pro.todaysExercises.indexOf(exercise) == currentExerciseIndex);
+
+    if (currentIndexInSameDateExercises != -1) {
+      // Check if any exercises after current one are incomplete (completedAt is null)
+      hasMoreExercises = sameDateExercises
+          .skip(currentIndexInSameDateExercises + 1)
+          .any((exercise) => exercise['completedAt'] == null);
+    }
+
+    print("Exercise date: $exerciseDate");
+    print("Has more exercises for this date: $hasMoreExercises");
   }
 
   Future<void> initTTS() async {
@@ -146,6 +200,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
 
     setState(() {
       userAnswer = isCorrect;
+      exerciseCompleted = true;
     });
 
     // Get exercise data with null safety
@@ -193,12 +248,169 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
       showErrorSnackBar("Failed to save progress: $e");
     }
 
-    // Navigate back after a short delay to show the selection
-    Future.delayed(Duration(milliseconds: 1000), () {
-      if (mounted) {
-        Navigator.pop(context);
+    // Only auto-navigate if there are no more exercises for today
+    if (!hasMoreExercises) {
+      Future.delayed(Duration(milliseconds: 1000), () {
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      });
+    }
+  }
+
+  void _moveToNextExercise() {
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+
+    // Get the current exercise's date
+    if (currentExerciseIndex >= data_pro.todaysExercises.length) return;
+
+    Map<String, dynamic> currentExercise =
+        data_pro.todaysExercises[currentExerciseIndex];
+    String exerciseDate = currentExercise['date'] ?? '';
+
+    if (exerciseDate.isEmpty) return;
+
+    // Find next incomplete exercise for the same date
+    int nextExerciseIndex = -1;
+    for (int i = currentExerciseIndex + 1;
+        i < data_pro.todaysExercises.length;
+        i++) {
+      if (data_pro.todaysExercises[i]['date'] == exerciseDate &&
+          data_pro.todaysExercises[i]['completedAt'] == null) {
+        nextExerciseIndex = i;
+        break;
       }
-    });
+    }
+
+    if (nextExerciseIndex != -1) {
+      // Navigate to the next exercise
+      Map<String, dynamic> nextExercise =
+          data_pro.todaysExercises[nextExerciseIndex];
+      String exerciseType = nextExercise["exerciseType"];
+
+      // Pop current screen first
+      Navigator.pop(context);
+
+      // Navigate to appropriate exercise type
+      _navigateToExerciseType(exerciseType, nextExerciseIndex);
+    } else {
+      // No more exercises, just pop
+      Navigator.pop(context);
+    }
+  }
+
+  void _navigateToExerciseType(String exerciseType, int exerciseIndex) {
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    Map<String, dynamic> data = data_pro.todaysExercises[exerciseIndex];
+
+    switch (exerciseType) {
+      case "Detection":
+        _handleDetection(exerciseIndex, data);
+        break;
+      case "Discrimination":
+        _handleDiscrimination(exerciseIndex, data);
+        break;
+      case "Identification":
+        _handleIdentification(exerciseIndex, data);
+        break;
+      case "Level":
+        _handleLevel(exerciseIndex, data);
+        break;
+      case 'Pronunciation':
+        _handlePronunciation(exerciseIndex, data);
+        break;
+      case "Vocabulary":
+        _handleVocabulary(exerciseIndex, data);
+        break;
+      default:
+        print("Unknown exercise type: $exerciseType");
+    }
+  }
+
+  // Helper methods for navigation
+  void _handleDetection(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    List<dynamic> argumentsList = [
+      type,
+      data,
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"]
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseDetection,
+        arguments: argumentsList);
+  }
+
+  void _handleDiscrimination(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    List<dynamic> argumentsList = [
+      type,
+      data,
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"]
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseDiscrimination,
+        arguments: argumentsList);
+  }
+
+  void _handleIdentification(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    List<dynamic> argumentsList = [
+      type,
+      data,
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"],
+      data
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
+        arguments: argumentsList);
+  }
+
+  void _handleLevel(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    List<dynamic> argumentsList = [
+      type,
+      data,
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"]
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
+        arguments: argumentsList);
+  }
+
+  void _handlePronunciation(int exerciseIndex, Map<String, dynamic> data) {
+    List<dynamic> argumentsList = [
+      data["type"],
+      "NULL",
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"],
+      data,
+    ];
+    NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
+        arguments: argumentsList);
+  }
+
+  void _handleVocabulary(int exerciseIndex, Map<String, dynamic> data) {
+    List<dynamic> argumentsList = [
+      data["type"],
+      "NULL",
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"],
+      data,
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseVocabulary,
+        arguments: argumentsList);
   }
 
   @override
@@ -453,7 +665,9 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                           ),
                           SizedBox(height: 5),
                           Text(
-                            "Moving to next exercise...",
+                            hasMoreExercises
+                                ? "Tap Next to continue"
+                                : "Moving to next exercise...",
                             style: GoogleFonts.inter(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -465,6 +679,67 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                 ],
               ),
             ),
+
+            // Next button - positioned on the right side when exercise is completed and there are more exercises
+            if (exerciseCompleted && hasMoreExercises)
+              Positioned(
+                bottom: size.height * 0.15,
+                right: 20,
+                child: AnimatedScale(
+                  scale: exerciseCompleted ? 1.0 : 0.0,
+                  duration: Duration(milliseconds: 500),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF4CAF50), Color(0xFF45A049)],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.withOpacity(0.3),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(25),
+                        onTap: _moveToNextExercise,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 15,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "Next",
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Icon(
+                                Icons.arrow_forward,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

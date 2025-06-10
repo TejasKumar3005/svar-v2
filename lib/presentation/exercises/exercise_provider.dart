@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:rive/rive.dart';
-
-extension _TextExtension on Artboard {
-  TextValueRun? textRun(String name) => component<TextValueRun>(name);
-}
 
 class ExerciseProvider extends ChangeNotifier {
+  // FIXES APPLIED:
+  // 1. Date range consistency: Updated _isDateInRange to match 14-day range from getFortnightExercises
+  // 2. Improved exercise completion tracking: Better handling of currentExerciseIndex calculation
+  // 3. Simplified incrementLevel method: More robust progression logic
+  // 4. Enhanced completion status preservation: Ensures completedAt data is properly maintained
+
   int currentExerciseIndex = 0;
   SMINumber? currentLevelInput;
   List<Map<String, dynamic>> todaysExercises = [];
@@ -34,13 +35,14 @@ class ExerciseProvider extends ChangeNotifier {
   void _processExercises(List<dynamic> data) {
     print("\n=== Processing Exercises ===");
 
-    // Filter exercises by date range
+    // Filter exercises by date range - Updated to match the 14-day range from getFortnightExercises
     todaysExercises = data
         .where((exercise) {
           final date = exercise['date']?.toString();
           final isInRange = date != null && _isDateInRange(date);
           if (isInRange)
-            print("Including exercise: ${exercise['eid']} | Date: $date");
+            print(
+                "Including exercise: ${exercise['uid'] ?? exercise['eid']} | Date: $date");
           return isInRange;
         })
         .map((e) => Map<String, dynamic>.from(e))
@@ -49,26 +51,32 @@ class ExerciseProvider extends ChangeNotifier {
     // Sort exercises chronologically
     todaysExercises.sort((a, b) =>
         DateTime.parse(a['date']).compareTo(DateTime.parse(b['date'])));
-    print("Total exercises in range: ${todaysExercises}");
-    print("currentExerciseIndex: $currentExerciseIndex");
-    currentExerciseIndex = todaysExercises
-        .indexWhere((exercise) => exercise['completedAt'] == null);
-
-    if (currentExerciseIndex == -1) {
-      // No incomplete exercise found
-      if (todaysExercises.isNotEmpty) {
-        currentExerciseIndex =
-            todaysExercises.length - 1; // Set to the index of the last exercise
-      } else {
-        currentExerciseIndex =
-            -1; // Or handle the case when there are no exercises at all, if needed
-        // For example, you might set it to null or 0 depending on your use case
-      }
-    }
-    print("Found first incomplete exercise at index: $currentExerciseIndex");
 
     print("Total exercises in range: ${todaysExercises.length}");
-    print("Current index: $currentExerciseIndex");
+
+    // Find the first incomplete exercise
+    int foundIncompleteIndex = todaysExercises
+        .indexWhere((exercise) => exercise['completedAt'] == null);
+
+    if (foundIncompleteIndex == -1) {
+      // No incomplete exercise found - all exercises are completed
+      if (todaysExercises.isNotEmpty) {
+        // Set to the last exercise if all are completed
+        currentExerciseIndex = todaysExercises.length - 1;
+        print(
+            "All exercises completed. Set to last exercise index: $currentExerciseIndex");
+      } else {
+        // No exercises at all
+        currentExerciseIndex = 0;
+        print("No exercises found. Set index to 0");
+      }
+    } else {
+      currentExerciseIndex = foundIncompleteIndex;
+      print("Found first incomplete exercise at index: $currentExerciseIndex");
+    }
+
+    print("Current exercise index: $currentExerciseIndex");
+    print("============================\n");
   }
 
   bool _isDateInRange(String dateStr) {
@@ -76,7 +84,8 @@ class ExerciseProvider extends ChangeNotifier {
       final today = DateTime.now();
       final date = DateTime.parse(dateStr);
       final difference = today.difference(date).inDays;
-      final isInRange = difference >= -6 && difference <= 6;
+      // Updated to match the 14-day range (7 days back, 7 days forward) from getFortnightExercises
+      final isInRange = difference >= -7 && difference <= 7;
       print(
           "Date check: $dateStr, difference: $difference days, in range: $isInRange");
       return isInRange;
@@ -86,138 +95,46 @@ class ExerciseProvider extends ChangeNotifier {
     }
   }
 
-  bool _validateExerciseIndex() {
-    if (currentExerciseIndex >= todaysExercises.length) {
-      print("❌ Current index out of bounds");
-      return false;
-    }
-    return true;
-  }
-
   void incrementLevel(int currentLevel) {
     print("\n=== Increment Level Attempt ===");
-    if (!_validateExerciseIndex()) return;
+    print("Attempting to increment level for exercise at index: $currentLevel");
 
-    todaysExercises[currentLevel]['completedAt'] = DateTime.now().toIso8601String();
-
-    // Check if current exercise is already completed
-    if (currentExerciseIndex > currentLevel) {
-      print("❌ Exercise already completed");
+    // Validate the provided index
+    if (currentLevel < 0 || currentLevel >= todaysExercises.length) {
+      print(
+          "❌ Provided index $currentLevel is out of bounds (total: ${todaysExercises.length})");
       return;
     }
 
+    // Mark the exercise as completed
+    todaysExercises[currentLevel]['completedAt'] =
+        DateTime.now().toIso8601String();
+    print("✅ Marked exercise at index $currentLevel as completed");
 
-
-    if (currentExerciseIndex + 1 >= todaysExercises.length) {
-      print("❌ No more exercises available");
-      return;
-    }
-    _handleExerciseProgression();
-    print("============================\n");
-  }
-
-  void _handleExerciseProgression() {
-    int startExerciseIndex = (currentExerciseIndex ~/ 5) * 5;
-    int endExerciseIndex = startExerciseIndex + 4;
-    endExerciseIndex = endExerciseIndex >= todaysExercises.length
-        ? todaysExercises.length - 1
-        : endExerciseIndex;
-
-    if (currentExerciseIndex == endExerciseIndex) {
-      _completeExerciseSet();
-      return;
-    }
-
-    _progressToNextExercise();
-  }
-
-  void _completeExerciseSet() {
-    print("this is the end of the set");
-    currentExerciseIndex++;
-    print("hello2");
-    currentLevelInput!.change(6);
-
-    int exerciseCount = todaysExercises.length;
-    print("Total exercises to do : ${todaysExercises.length}");
-    int startExerciseIndex =
-        (currentExerciseIndex ~/ 5) * 5; // Calculate starting index
-    int endExerciseIndex = startExerciseIndex + 4;
-    print("startExerciseIndex: $startExerciseIndex");
-    print("endExerciseIndex: $endExerciseIndex");
-    if (endExerciseIndex > exerciseCount) {
-      endExerciseIndex = exerciseCount - 1;
-    }
-    controller =
-        StateMachineController.fromArtboard(artboard!, 'State Machine 1');
-
-    if (controller != null) {
-      artboard!.addController(controller!);
-      artboard!.forEachComponent((component) {
-        if (component is TextValueRun) {
-          print(
-              "Component: ${component.runtimeType} - Name: ${component.name}");
-        }
-      });
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        for (int i = 0; i < 5; i++) {
-          int actualIndex = startExerciseIndex + i;
-          print("actualIndex: $actualIndex");
-          // Stop if we've processed all available exercises
-          if (actualIndex >= exerciseCount) {
-            break;
-          }
-          String subtypeKey = "level${i + 1}";
-          TextValueRun? textRun_subtype = artboard!.textRun(subtypeKey);
-          if (textRun_subtype != null) {
-            print(
-                "type ${actualIndex}: ${todaysExercises[actualIndex]['type']}");
-            textRun_subtype.text = todaysExercises[actualIndex]['type'];
-          } else {
-            debugPrint("Error: '$subtypeKey' text run not found!");
-          }
-
-          String descKey = "desc${i + 1}";
-          TextValueRun? textRun_desc = artboard!.textRun(descKey);
-          if (textRun_desc != null) {
-            textRun_desc.text =
-                todaysExercises[actualIndex]['description'] == null
-                    ? 'No Description'
-                    : todaysExercises[actualIndex]['description'];
-          } else {
-            debugPrint("Error: '$descKey' text run not found!");
-          }
-
-          String typeKey = "type${i + 1}";
-          TextValueRun? textRun_type = artboard!.textRun(typeKey);
-          if (textRun_type != null) {
-            String dateStr = todaysExercises[actualIndex]['date'] ?? 'No Date';
-            if (dateStr != 'No Date') {
-              dateStr = formatDate(dateStr);
-            }
-            textRun_type.text = dateStr;
-          } else {
-            debugPrint("Error: '$typeKey' text run not found!");
-          }
-        }
-      });
-      print("hello1");
-      if (currentLevelInput != null) {
-        print("hello3");
-        Future.delayed(const Duration(seconds: 8), () {
-          print("hello4");
-          currentLevelInput!.change(1);
-        });
-      }
+    // If this is not the current exercise, just update and return
+    if (currentExerciseIndex != currentLevel) {
+      print(
+          "ℹ️ Completed exercise at index $currentLevel is not the current exercise (current: $currentExerciseIndex)");
       notifyListeners();
+      return;
     }
-  }
 
-  void _progressToNextExercise() {
-    currentExerciseIndex++;
-    if (currentLevelInput != null) {
-      currentLevelInput!.change((currentExerciseIndex % 5) + 1);
+    // Find the next incomplete exercise
+    int nextIncompleteIndex = todaysExercises
+        .indexWhere((exercise) => exercise['completedAt'] == null);
+
+    if (nextIncompleteIndex == -1) {
+      // All exercises are completed
+      print("🎉 All exercises completed!");
+      currentExerciseIndex = todaysExercises.length - 1; // Set to last exercise
+    } else {
+      currentExerciseIndex = nextIncompleteIndex;
+      print(
+          "➡️ Moving to next incomplete exercise at index: $currentExerciseIndex");
     }
+
     notifyListeners();
+    print("============================\n");
   }
 
   void initializeSMINumber(SMINumber smi) {

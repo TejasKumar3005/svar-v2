@@ -1,3 +1,48 @@
+/*
+ * Enhanced CustomButton with Smooth Progress Transitions
+ * 
+ * Usage Examples:
+ * 
+ * 1. Basic progress with smooth animation:
+ * CustomButton(
+ *   type: ButtonType.Spectrum,
+ *   progress: 0.7,
+ *   color: Colors.green,
+ *   animationDuration: Duration(milliseconds: 800),
+ *   animationCurve: Curves.easeInOut,
+ *   clippingStyle: ClippingStyle.leftToRight,
+ *   autoAnimate: true,
+ *   onPressed: () => print('Button pressed'),
+ * )
+ * 
+ * 2. Radial progress with bouncy animation:
+ * CustomButton(
+ *   type: ButtonType.Spectrum,
+ *   progress: progressValue,
+ *   color: Colors.blue,
+ *   animationDuration: Duration(seconds: 1),
+ *   animationCurve: Curves.bounceOut,
+ *   clippingStyle: ClippingStyle.radial,
+ *   onPressed: () => updateProgress(),
+ * )
+ * 
+ * 3. Different clipping styles available:
+ *   - ClippingStyle.leftToRight
+ *   - ClippingStyle.rightToLeft
+ *   - ClippingStyle.topToBottom
+ *   - ClippingStyle.bottomToTop
+ *   - ClippingStyle.radial
+ *   - ClippingStyle.diagonal
+ * 
+ * 4. Animation curves available:
+ *   - Curves.easeInOut (default)
+ *   - Curves.bounceOut
+ *   - Curves.elasticOut
+ *   - Curves.fastOutSlowIn
+ *   - Curves.linear
+ *   - etc.
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +52,7 @@ import 'package:svar_new/core/utils/playBgm.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:chiclet/chiclet.dart';
 import 'package:chiclet/src/enums/button_types.dart';
+import 'dart:math' as math;
 
 enum ButtonType {
   Play,
@@ -43,6 +89,15 @@ enum ButtonType {
   Practice
 }
 
+enum ClippingStyle {
+  leftToRight,
+  rightToLeft,
+  topToBottom,
+  bottomToTop,
+  radial,
+  diagonal
+}
+
 class CustomButton extends StatefulWidget {
   final ButtonType type;
   final VoidCallback onPressed;
@@ -50,6 +105,12 @@ class CustomButton extends StatefulWidget {
   final Color? color; // Only used for Spectrum
   final dynamic child;
   final double? width;
+  final Duration?
+      animationDuration; // Animation duration for smooth transitions
+  final Curve? animationCurve; // Easing curve for animations
+  final ClippingStyle? clippingStyle; // Style of progress clipping
+  final bool? autoAnimate; // Whether to auto-animate progress from 0 to target
+
   const CustomButton({
     Key? key,
     required this.type,
@@ -58,13 +119,18 @@ class CustomButton extends StatefulWidget {
     this.color,
     this.child,
     this.width,
+    this.animationDuration,
+    this.animationCurve,
+    this.clippingStyle,
+    this.autoAnimate,
   }) : super(key: key);
 
   @override
   _CustomButtonState createState() => _CustomButtonState();
 }
 
-class _CustomButtonState extends State<CustomButton> {
+class _CustomButtonState extends State<CustomButton>
+    with SingleTickerProviderStateMixin {
   String imagePath = '';
   double height = 0;
   double width = 0;
@@ -75,9 +141,37 @@ class _CustomButtonState extends State<CustomButton> {
   late VoidCallback onPressed_state;
   Color? color;
 
+  // Animation properties
+  late AnimationController _animationController;
+  late Animation<double> _progressAnimation;
+  double _currentProgress = 0.0;
+
   @override
   void initState() {
     super.initState();
+
+    // Initialize animation controller
+    _animationController = AnimationController(
+      duration: widget.animationDuration ?? Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    // Setup progress animation with easing curve
+    _progressAnimation = Tween<double>(
+      begin: 0.0,
+      end: widget.progress ?? 0.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: widget.animationCurve ?? Curves.easeInOut,
+    ));
+
+    // Listen to animation changes
+    _progressAnimation.addListener(() {
+      setState(() {
+        _currentProgress = _progressAnimation.value;
+      });
+    });
+
     onPressed_state = widget.onPressed;
     switch (widget.type) {
       case ButtonType.Play:
@@ -95,7 +189,7 @@ class _CustomButtonState extends State<CustomButton> {
         defaultChild = const Icon(Icons.settings);
         break;
       case ButtonType.ImagePlay:
-        imagePath = ImageConstant.imgPlayBtn;
+        // imagePath = ImageConstant.imgPlayBtn;
         width = 50;
         height = 50;
 
@@ -103,10 +197,10 @@ class _CustomButtonState extends State<CustomButton> {
         defaultChild = const Icon(Icons.play_arrow);
         break;
       case ButtonType.ImagePause:
-        imagePath = ImageConstant.imgPauseBtn;
+        // imagePath = ImageConstant.imgPauseBtn;
         width = 50;
         height = 50;
-  
+
         buttontype = ChicletButtonTypes.oval;
         defaultChild = const Icon(Icons.pause);
         break;
@@ -127,8 +221,6 @@ class _CustomButtonState extends State<CustomButton> {
           style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
         );
         break;
-
-
 
       case ButtonType.ArrowLeftYellow:
         imagePath = ImageConstant.imgArrowLeftYellow;
@@ -291,9 +383,15 @@ class _CustomButtonState extends State<CustomButton> {
         width = 200;
         height = 70;
 
-        defaultChild = Text(
-          "Diff",
-          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        defaultChild = Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Different", style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(width: 8),
+            Icon(Icons.circle, size: 30),
+            SizedBox(width: 8),
+            Icon(Icons.rectangle, size: 30),
+          ],
         );
         break;
       case ButtonType.Tip2:
@@ -308,10 +406,17 @@ class _CustomButtonState extends State<CustomButton> {
         width = 200;
         height = 70;
 
-        defaultChild = Text(
-          "Same",
-          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        defaultChild = Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Same", style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(width: 8),
+            Icon(Icons.circle, size: 30),
+            SizedBox(width: 8),
+            Icon(Icons.circle, size: 30),
+          ],
         );
+
         break;
       case ButtonType.Video1:
         imagePath = ImageConstant.imgVideo1btn;
@@ -322,6 +427,7 @@ class _CustomButtonState extends State<CustomButton> {
           "Video 1",
           style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
         );
+
         break;
       case ButtonType.Video2:
         imagePath = ImageConstant.imgVideo2btn;
@@ -353,6 +459,79 @@ class _CustomButtonState extends State<CustomButton> {
   }
 
   @override
+  void didUpdateWidget(CustomButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Handle progress changes with smooth animation
+    if (widget.progress != oldWidget.progress && widget.progress != null) {
+      _progressAnimation = Tween<double>(
+        begin: _currentProgress,
+        end: widget.progress!,
+      ).animate(CurvedAnimation(
+        parent: _animationController,
+        curve: widget.animationCurve ?? Curves.easeInOut,
+      ));
+
+      // Reset and start animation
+      _animationController.reset();
+      _animationController.forward();
+    }
+
+    // Auto-animate if enabled
+    if (widget.autoAnimate == true &&
+        widget.progress != null &&
+        !_animationController.isAnimating) {
+      _animationController.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  // Helper methods for animation control
+  void startAnimation() {
+    if (widget.progress != null) {
+      _animationController.forward();
+    }
+  }
+
+  void resetAnimation() {
+    _animationController.reset();
+    setState(() {
+      _currentProgress = 0.0;
+    });
+  }
+
+  void reverseAnimation() {
+    _animationController.reverse();
+  }
+
+  void stopAnimation() {
+    _animationController.stop();
+  }
+
+  void setProgress(double progress, {bool animate = true}) {
+    if (animate) {
+      _progressAnimation = Tween<double>(
+        begin: _currentProgress,
+        end: progress.clamp(0.0, 1.0),
+      ).animate(CurvedAnimation(
+        parent: _animationController,
+        curve: widget.animationCurve ?? Curves.easeInOut,
+      ));
+      _animationController.reset();
+      _animationController.forward();
+    } else {
+      setState(() {
+        _currentProgress = progress.clamp(0.0, 1.0);
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Adjust width for certain button types dynamically
     if (widget.type == ButtonType.Play ||
@@ -361,7 +540,6 @@ class _CustomButtonState extends State<CustomButton> {
         widget.type == ButtonType.SignUp ||
         widget.type == ButtonType.Next ||
         widget.type == ButtonType.Video1 ||
-      
         widget.type == ButtonType.Video2) {
       width = widget.width ?? MediaQuery.of(context).size.width * 0.9;
       color = null;
@@ -389,7 +567,7 @@ class _CustomButtonState extends State<CustomButton> {
       color = null;
     }
 
-    if(widget.type == ButtonType.Logout){
+    if (widget.type == ButtonType.Logout) {
       color = Color(0xFFff4b4b);
     }
 
@@ -416,11 +594,12 @@ class _CustomButtonState extends State<CustomButton> {
                 width: MediaQuery.of(context).size.width * 0.7,
                 height: MediaQuery.of(context).size.height * 0.7,
               ),
-              // Overlay with progress
+              // Overlay with animated progress
               if (widget.progress != null)
-                ClipRect(
+                ClipPath(
                   clipper: _ProgressClipper(
-                    progress: widget.progress!,
+                    progress: _currentProgress,
+                    style: widget.clippingStyle ?? ClippingStyle.leftToRight,
                   ),
                   child: SvgPicture.asset(
                     imagePath,
@@ -472,20 +651,69 @@ class _CustomButtonState extends State<CustomButton> {
   }
 }
 
-// Custom clipper for progress overlay
-class _ProgressClipper extends CustomClipper<Rect> {
+// Enhanced progress clipper with multiple clipping styles
+class _ProgressClipper extends CustomClipper<Path> {
   final double progress;
+  final ClippingStyle style;
 
-  _ProgressClipper({required this.progress});
+  _ProgressClipper({required this.progress, required this.style});
 
   @override
-  Rect getClip(Size size) {
-    return Rect.fromLTRB(0, 0, size.width * progress, size.height);
+  Path getClip(Size size) {
+    Path path = Path();
+
+    switch (style) {
+      case ClippingStyle.leftToRight:
+        path.addRect(Rect.fromLTRB(0, 0, size.width * progress, size.height));
+        break;
+
+      case ClippingStyle.rightToLeft:
+        path.addRect(Rect.fromLTRB(
+            size.width * (1 - progress), 0, size.width, size.height));
+        break;
+
+      case ClippingStyle.topToBottom:
+        path.addRect(Rect.fromLTRB(0, 0, size.width, size.height * progress));
+        break;
+
+      case ClippingStyle.bottomToTop:
+        path.addRect(Rect.fromLTRB(
+            0, size.height * (1 - progress), size.width, size.height));
+        break;
+
+      case ClippingStyle.radial:
+        double radius = math.min(size.width, size.height) / 2 * progress;
+        Offset center = Offset(size.width / 2, size.height / 2);
+        path.addOval(Rect.fromCircle(center: center, radius: radius));
+        break;
+
+      case ClippingStyle.diagonal:
+        if (progress <= 0.5) {
+          // First half - diagonal from top-left
+          double diagProgress = progress * 2;
+          path.moveTo(0, 0);
+          path.lineTo(size.width * diagProgress, 0);
+          path.lineTo(0, size.height * diagProgress);
+          path.close();
+        } else {
+          // Second half - complete the fill
+          double diagProgress = (progress - 0.5) * 2;
+          path.moveTo(0, 0);
+          path.lineTo(size.width, 0);
+          path.lineTo(size.width, size.height * diagProgress);
+          path.lineTo(size.width * (1 - diagProgress), size.height);
+          path.lineTo(0, size.height);
+          path.close();
+        }
+        break;
+    }
+
+    return path;
   }
 
   @override
   bool shouldReclip(_ProgressClipper oldClipper) {
-    return oldClipper.progress != progress;
+    return oldClipper.progress != progress || oldClipper.style != style;
   }
 }
 
