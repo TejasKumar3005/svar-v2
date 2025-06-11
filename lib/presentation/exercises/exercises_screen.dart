@@ -1086,9 +1086,10 @@ class _ExercisesScreenState extends State<ExercisesScreen>
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(130.0),
+        preferredSize: Size.fromHeight(220.0),
         child: AppBar(
           backgroundColor: Colors.lightBlue,
+          actionsIconTheme: IconThemeData(color: Colors.white),
           elevation: 0,
           flexibleSpace: SafeArea(
             child: Padding(
