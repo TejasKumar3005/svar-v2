@@ -1,17 +1,22 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
+import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/audioToImage.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/presentation/exercises/identification_provider.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:rive/rive.dart';
+import 'package:rive/rive.dart' hide LinearGradient;
+import 'package:google_fonts/google_fonts.dart';
 
 class ExerciseIdentification extends StatefulWidget {
   const ExerciseIdentification({Key? key})
@@ -41,6 +46,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   StateMachineController? riveController;
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
+  bool show_next_button = false;
+
+  // New state variables for next exercise functionality
+  bool exerciseCompleted = false;
+  bool hasMoreExercises = false;
+  int currentExerciseIndex = 0;
 
   @override
   void dispose() {
@@ -71,6 +82,11 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    currentExerciseIndex = obj[3] as int;
+
+    // Check if there are more exercises left for today
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    _checkForMoreExercises(data_pro);
 
     String type = obj[0] as String;
     print("Type: $type");
@@ -86,9 +102,40 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                     ? "v4.wav"
                     : "v5.wav";
 
-    Future.delayed(const Duration(seconds: 3), () async {
-      await _player.play(AssetSource("assets/audio/bgm/$audioFile"));
-    });
+    // Future.delayed(const Duration(seconds: 3), () async {
+    //   await _player.play(AssetSource("assets/audio/bgm/$audioFile"));
+    // });
+  }
+
+  void _checkForMoreExercises(ExerciseProvider data_pro) {
+    // Get the current exercise's date
+    if (currentExerciseIndex >= data_pro.todaysExercises.length) return;
+
+    Map<String, dynamic> currentExercise =
+        data_pro.todaysExercises[currentExerciseIndex];
+    String exerciseDate = currentExercise['date'] ?? '';
+
+    if (exerciseDate.isEmpty) return;
+
+    // Filter exercises to only include exercises from the same date as current exercise
+    List<Map<String, dynamic>> sameDateExercises = data_pro.todaysExercises
+        .where((exercise) => exercise['date'] == exerciseDate)
+        .toList();
+
+    // Find the current exercise's position in the same date filtered list
+    int currentIndexInSameDateExercises = sameDateExercises.indexWhere(
+        (exercise) =>
+            data_pro.todaysExercises.indexOf(exercise) == currentExerciseIndex);
+
+    if (currentIndexInSameDateExercises != -1) {
+      // Check if any exercises after current one are incomplete (completedAt is null)
+      hasMoreExercises = sameDateExercises
+          .skip(currentIndexInSameDateExercises + 1)
+          .any((exercise) => exercise['completedAt'] == null);
+    }
+
+    print("Exercise date: $exerciseDate");
+    print("Has more exercises for this date: $hasMoreExercises");
   }
 
   int sel = 0;
@@ -117,13 +164,22 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
 
     if (isCorrect) {
-      if (_correctTrigger != null) {
-        print("Firing correct trigger");
-        _correctTrigger!.fire();
-        print("Correct trigger fired");
-        Future.delayed(const Duration(seconds: 5), () {
-          Navigator.pop(context);
-        });
+      setState(() {
+        exerciseCompleted = true;
+      });
+
+      // Only auto-navigate if there are no more exercises for today
+      if (!hasMoreExercises) {
+        if (_correctTrigger != null) {
+          print("Firing correct trigger");
+          _correctTrigger!.fire();
+          print("Correct trigger fired");
+          Future.delayed(const Duration(seconds: 3), () {
+            if (mounted) {
+              Navigator.pop(context);
+            }
+          });
+        }
       }
     } else {
       if (_incorrectTrigger != null) {
@@ -142,7 +198,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     dynamic dtcontainer = obj[1] as dynamic;
     String params = obj[2] as String;
 
-    return type != "AudioToImage"
+    return type != "AudioToImage" && type != "DiffAudioToImage"
         ? (type == "AudioToAudio"
             ? Container()
             : SafeArea(
@@ -186,7 +242,8 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     vertical: 15.v, horizontal: 20.h),
                                 // Remove decoration to make it transparent over the placeholder
                                 child: Text(
-                                  type == "ImageToAudio"
+                                  type == "ImageToAudio" ||
+                                          type == "DiffImageToAudio"
                                       ? "Look at the image. Can you tell what sound it makes?"
                                       : type == "MaleFemale"
                                           ? "Listen to the voice carefully. Can you tell which one is male and which one is female?"
@@ -240,24 +297,98 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                           ),
                                         ),
                                       ),
+                                      if (exerciseCompleted && hasMoreExercises)
+                                        Positioned(
+                                          bottom: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.15,
+                                          right: 20,
+                                          child: AnimatedScale(
+                                            scale:
+                                                exerciseCompleted ? 1.0 : 0.0,
+                                            duration:
+                                                Duration(milliseconds: 500),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    Color(0xFF4CAF50),
+                                                    Color(0xFF45A049)
+                                                  ],
+                                                  begin: Alignment.topCenter,
+                                                  end: Alignment.bottomCenter,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(25),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.green
+                                                        .withOpacity(0.3),
+                                                    blurRadius: 8,
+                                                    spreadRadius: 1,
+                                                    offset: Offset(0, 4),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
+                                                  borderRadius:
+                                                      BorderRadius.circular(25),
+                                                  onTap: _moveToNextExercise,
+                                                  child: Container(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                      horizontal: 20,
+                                                      vertical: 15,
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Text(
+                                                          "Next",
+                                                          style:
+                                                              GoogleFonts.inter(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        Icon(
+                                                          Icons.arrow_forward,
+                                                          color: Colors.white,
+                                                          size: 20,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
                                     ],
                                   ),
                                   // Tip button
-                                  Positioned(
-                                    bottom: 0,
-                                    right: 0,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        // Add tip button functionality
-                                      },
-                                      child: CustomImageView(
-                                        imagePath: ImageConstant.imgTipbtn,
-                                        height: 60.v,
-                                        width: 60.h,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                  ),
+                                  // Positioned(
+                                  //   bottom: 0,
+                                  //   right: 0,
+                                  //   child: GestureDetector(
+                                  //     onTap: () {
+                                  //       // Add tip button functionality
+                                  //     },
+                                  //     child: CustomImageView(
+                                  //       imagePath: ImageConstant.imgTipbtn,
+                                  //       height: 60.v,
+                                  //       width: 60.h,
+                                  //       fit: BoxFit.contain,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ),
@@ -275,6 +406,178 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   }
 
   /// Section Widget
+  void _showErrorSnackbar(String message) {
+    if (!mounted) return;
+    final snackBar = SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: 'On Snap!',
+        message: message,
+        contentType: ContentType.failure,
+      ),
+    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(snackBar);
+  }
+
+  void _moveToNextExercise() {
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+
+    // Get the current exercise's date
+    if (currentExerciseIndex >= data_pro.todaysExercises.length) return;
+
+    Map<String, dynamic> currentExercise =
+        data_pro.todaysExercises[currentExerciseIndex];
+    String exerciseDate = currentExercise['date'] ?? '';
+
+    if (exerciseDate.isEmpty) return;
+
+    // Find next incomplete exercise for the same date
+    int nextExerciseIndex = -1;
+    for (int i = currentExerciseIndex + 1;
+        i < data_pro.todaysExercises.length;
+        i++) {
+      if (data_pro.todaysExercises[i]['date'] == exerciseDate &&
+          data_pro.todaysExercises[i]['completedAt'] == null) {
+        nextExerciseIndex = i;
+        break;
+      }
+    }
+
+    if (nextExerciseIndex != -1) {
+      // Navigate to the next exercise
+      Map<String, dynamic> nextExercise =
+          data_pro.todaysExercises[nextExerciseIndex];
+      String exerciseType = nextExercise["exerciseType"];
+
+      // Pop current screen first
+      Navigator.pop(context);
+
+      // Navigate to appropriate exercise type
+      _navigateToExerciseType(exerciseType, nextExerciseIndex);
+    } else {
+      // No more exercises, just pop
+      Navigator.pop(context);
+    }
+  }
+
+  void _navigateToExerciseType(String exerciseType, int exerciseIndex) {
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    Map<String, dynamic> data = data_pro.todaysExercises[exerciseIndex];
+
+    switch (exerciseType) {
+      case "Detection":
+        _handleDetection(exerciseIndex, data);
+        break;
+      case "Discrimination":
+        _handleDiscrimination(exerciseIndex, data);
+        break;
+      case "Identification":
+        _handleIdentificationNext(exerciseIndex, data);
+        break;
+      case "Level":
+        _handleLevel(exerciseIndex, data);
+        break;
+      case 'Pronunciation':
+        _handlePronunciation(exerciseIndex, data);
+        break;
+      case "Vocabulary":
+        _handleVocabulary(exerciseIndex, data);
+        break;
+      default:
+        print("Unknown exercise type: $exerciseType");
+    }
+  }
+
+  // Helper methods for navigation
+  void _handleDetection(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    List<dynamic> argumentsList = [
+      type,
+      data,
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"]
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseDetection,
+        arguments: argumentsList);
+  }
+
+  void _handleDiscrimination(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    List<dynamic> argumentsList = [
+      type,
+      data,
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"]
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseDiscrimination,
+        arguments: argumentsList);
+  }
+
+  void _handleIdentificationNext(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    List<dynamic> argumentsList = [
+      type,
+      data,
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"],
+      data
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
+        arguments: argumentsList);
+  }
+
+  void _handleLevel(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    List<dynamic> argumentsList = [
+      type,
+      data,
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"]
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
+        arguments: argumentsList);
+  }
+
+  void _handlePronunciation(int exerciseIndex, Map<String, dynamic> data) {
+    List<dynamic> argumentsList = [
+      data["type"],
+      "NULL",
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"],
+      data,
+    ];
+    NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
+        arguments: argumentsList);
+  }
+
+  void _handleVocabulary(int exerciseIndex, Map<String, dynamic> data) {
+    List<dynamic> argumentsList = [
+      data["type"],
+      "NULL",
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"],
+      data,
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseVocabulary,
+        arguments: argumentsList);
+  }
+
   Widget _buildOptionGRP(BuildContext context, IdentificationProvider provider,
       String type, dynamic dtcontainer, String params) {
     return Padding(
@@ -331,7 +634,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     dynamic dtcontainer = obj[1] as dynamic;
 
     switch (quizType) {
-      case "ImageToAudio":
+      case "ImageToAudio" || "DiffImageToAudio":
         return dtcontainer.getAudioList().length <= 4
             ? Center(
                 child: Container(
@@ -365,6 +668,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                   var data_pro = Provider.of<ExerciseProvider>(
                                       context,
                                       listen: false);
+
                                   if (isCorrect) {
                                     data_pro
                                         .incrementLevel(currentExerciseIndex);

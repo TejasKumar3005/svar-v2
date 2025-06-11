@@ -9,6 +9,8 @@ dependencies:
     sdk: flutter
   flutter_localizations: 
     sdk: flutter
+
+  cupertino_icons: ^1.0.8
   app_settings: ^5.1.1
   audioplayers: ^6.1.0 
   auto_size_text: ^3.0.0

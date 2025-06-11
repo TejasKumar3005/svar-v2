@@ -1,7 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
@@ -10,10 +9,8 @@ import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/Options.dart';
-import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart' hide LinearGradient, Image;
-import 'package:svar_new/presentation/settings_screen/setting.dart';
 
 class ExerciseDiscrimination extends StatefulWidget {
   const ExerciseDiscrimination({
@@ -47,6 +44,11 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
   int currentIndex = 0;
   double currentProgress = 0.0;
   List<double> total_length = [];
+
+  // New state variables for next exercise functionality
+  bool exerciseCompleted = false;
+  bool hasMoreExercises = false;
+  int currentExerciseIndex = 0;
 
   @override
   void initState() {
@@ -94,9 +96,18 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
     if (isCorrect) {
       if (_correctTrigger != null) {
         _correctTrigger!.fire();
-        Future.delayed(const Duration(seconds: 5), () {
-          Navigator.pop(context);
+        setState(() {
+          exerciseCompleted = true;
         });
+
+        // Only auto-navigate if there are no more exercises for today
+        if (!hasMoreExercises) {
+          Future.delayed(const Duration(seconds: 5), () {
+            if (mounted) {
+              Navigator.pop(context);
+            }
+          });
+        }
       }
     } else {
       if (_incorrectTrigger != null) {
@@ -109,6 +120,11 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
   void didChangeDependencies() async {
     super.didChangeDependencies();
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+    currentExerciseIndex = obj[3] as int;
+
+    // Check if there are more exercises left for today
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    _checkForMoreExercises(data_pro);
 
     String type = obj[0] as String;
     print("Type: $type");
@@ -126,9 +142,49 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
             : type == "DiffHalf"
                 ? "v3.wav"
                 : "v5.wav";
-    Future.delayed(const Duration(seconds: 3), () async {
-      await _player.play(AssetSource("assets/audio/bgm/$audioFile"));
-    });
+    // Future.delayed(const Duration(seconds: 3), () async {
+    //   await _player.play(AssetSource("assets/audio/bgm/$audioFile"));
+    // });
+  }
+
+  /// Checks if there are any remaining incomplete exercises for today after the current exercise
+  ///
+  /// This method:
+  /// 1. Gets today's date in YYYY-MM-DD format
+  /// 2. Filters the exercise list to only include today's exercises
+  /// 3. Finds the current exercise's position in today's filtered list
+  /// 4. Checks if there are any incomplete exercises after the current one
+  /// 5. Updates the hasMoreExercises flag accordingly
+  ///
+  void _checkForMoreExercises(ExerciseProvider data_pro) {
+    // Get the current exercise's date
+    if (currentExerciseIndex >= data_pro.todaysExercises.length) return;
+
+    Map<String, dynamic> currentExercise =
+        data_pro.todaysExercises[currentExerciseIndex];
+    String exerciseDate = currentExercise['date'] ?? '';
+
+    if (exerciseDate.isEmpty) return;
+
+    // Filter exercises to only include exercises from the same date as current exercise
+    List<Map<String, dynamic>> sameDateExercises = data_pro.todaysExercises
+        .where((exercise) => exercise['date'] == exerciseDate)
+        .toList();
+
+    // Find the current exercise's position in the same date filtered list
+    int currentIndexInSameDateExercises = sameDateExercises.indexWhere(
+        (exercise) =>
+            data_pro.todaysExercises.indexOf(exercise) == currentExerciseIndex);
+
+    if (currentIndexInSameDateExercises != -1) {
+      // Check if any exercises after current one are incomplete (completedAt is null)
+      hasMoreExercises = sameDateExercises
+          .skip(currentIndexInSameDateExercises + 1)
+          .any((exercise) => exercise['completedAt'] == null);
+    }
+
+    print("Exercise date: $exerciseDate");
+    print("Has more exercises for this date: $hasMoreExercises");
   }
 
   @override
@@ -226,6 +282,70 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                             ),
                           ),
                         ),
+
+                        // Next button - positioned on the right side of Rive animation
+                        if (exerciseCompleted && hasMoreExercises)
+                          Positioned(
+                            bottom: MediaQuery.of(context).size.height * 0.15,
+                            right: 20.h,
+                            child: AnimatedScale(
+                              scale: exerciseCompleted ? 1.0 : 0.0,
+                              duration: Duration(milliseconds: 500),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Color(0xFF4CAF50),
+                                      Color(0xFF45A049)
+                                    ],
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                  ),
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.green.withOpacity(0.3),
+                                      blurRadius: 8,
+                                      spreadRadius: 1,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(25),
+                                    onTap: _moveToNextExercise,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 20.h,
+                                        vertical: 15.v,
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            "Next",
+                                            style: GoogleFonts.inter(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          SizedBox(width: 8.h),
+                                          Icon(
+                                            Icons.arrow_forward,
+                                            color: Colors.white,
+                                            size: 20,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ],
@@ -239,7 +359,6 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
   }
 
   Widget discriminationOptions(String type, Object d, dynamic dtcontainer) {
-
     print("Type: $type");
     print("Data: $d");
     print("dtcontainer: $dtcontainer");
@@ -419,17 +538,16 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
         if (condition) {
           var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
           data_pro.incrementLevel(startExerciseIndex);
-          if (data["completedAt"] == null) {
-            UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                .updateExerciseData(
-                    euid: data["uid"],
-                    date: data["date"],
-                    performance: {
-                  "correct_attempt": condition,
-                  "correct_output": label,
-                  "time": DateTime.now().toString(),
-                });
-          }
+
+          UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+              .updateExerciseData(
+                  euid: data["uid"],
+                  date: data["date"],
+                  performance: {
+                "correct_attempt": condition,
+                "correct_output": label,
+                "time": DateTime.now().toString(),
+              });
         }
         return condition;
       },
@@ -492,41 +610,38 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                     if (_childKey.currentState == null) {
                       return false;
                     }
-              
+
                     // Check if AudioWidget is properly initialized
                     if (!_childKey.currentState!.isInitialized) {
                       return false;
                     }
-              
-                    List<double> total_length =
-                        _childKey.currentState!.lengths;
-              
+
+                    List<double> total_length = _childKey.currentState!.lengths;
+
                     // Check if lengths are properly initialized
                     if (total_length.isEmpty || total_length.length < 2) {
                       return false;
                     }
-              
+
                     double ans =
                         total_length[0] / (total_length[1] + total_length[0]);
-                    var condition = _childKey.currentState!.progress.value >
-                            ans &&
-                        _childKey.currentState!.progress.value < ans + 0.4;
-              
+                    var condition =
+                        _childKey.currentState!.progress.value > ans &&
+                            _childKey.currentState!.progress.value < ans + 0.4;
+
                     if (condition) {
                       data_pro.incrementLevel(startExerciseIndex);
-                      if (data["completedAt"] == null) {
-                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                            .updateExerciseData(
-                                euid: data["uid"],
-                                date: data["date"],
-                                performance: {
-                              "progress":
-                                  _childKey.currentState!.progress.value,
-                              "total_length": total_length,
-                            });
-                      }
+
+                      UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                          .updateExerciseData(
+                              euid: data["uid"],
+                              date: data["date"],
+                              performance: {
+                            "progress": _childKey.currentState!.progress.value,
+                            "total_length": total_length,
+                          });
                     }
-              
+
                     return condition;
                   },
                 ),
@@ -589,19 +704,18 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                           var condition = diffSounds.getSame();
                           if (condition) {
                             data_pro.incrementLevel(startExerciseIndex);
-                            if (data["completedAt"] == null) {
-                              UserData(
-                                      uid: FirebaseAuth
-                                          .instance.currentUser!.uid)
-                                  .updateExerciseData(
-                                      euid: data["uid"],
-                                      date: data["date"],
-                                      performance: {
-                                    "correct_attempt": condition,
-                                    "time": DateTime.now().toString(),
-                                  });
-                            }
+
+                            UserData(
+                                    uid: FirebaseAuth.instance.currentUser!.uid)
+                                .updateExerciseData(
+                                    euid: data["uid"],
+                                    date: data["date"],
+                                    performance: {
+                                  "correct_attempt": condition,
+                                  "time": DateTime.now().toString(),
+                                });
                           }
+
                           return condition;
                         },
                       ),
@@ -614,21 +728,19 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                         child: OptionButton(
                             type: ButtonType.Diff, onPressed: () {}),
                         isCorrect: () {
-                          var condition = diffSounds.getSame();
+                          var condition = !diffSounds.getSame();
                           if (condition) {
                             data_pro.incrementLevel(startExerciseIndex);
-                            if (data["completedAt"] == null) {
-                              UserData(
-                                      uid: FirebaseAuth
-                                          .instance.currentUser!.uid)
-                                  .updateExerciseData(
-                                      euid: data["uid"],
-                                      date: data["date"],
-                                      performance: {
-                                    "correct_attempt": condition,
-                                    "time": DateTime.now().toString(),
-                                  });
-                            }
+
+                            UserData(
+                                    uid: FirebaseAuth.instance.currentUser!.uid)
+                                .updateExerciseData(
+                                    euid: data["uid"],
+                                    date: data["date"],
+                                    performance: {
+                                  "correct_attempt": condition,
+                                  "time": DateTime.now().toString(),
+                                });
                           }
                           return condition;
                         },
@@ -744,16 +856,15 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
 
           if (condition) {
             data_pro.incrementLevel(startExerciseIndex);
-            if (data["completedAt"] == null) {
-              UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                  .updateExerciseData(
-                      euid: data["uid"],
-                      date: data["date"],
-                      performance: {
-                    "correct_attempt": condition,
-                    "time": DateTime.now().toString(),
-                  });
-            }
+
+            UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                .updateExerciseData(
+                    euid: data["uid"],
+                    date: data["date"],
+                    performance: {
+                  "correct_attempt": condition,
+                  "time": DateTime.now().toString(),
+                });
           }
 
           return condition;
@@ -797,6 +908,194 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
         );
       },
     );
+  }
+
+  void _moveToNextExercise() {
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+
+    // Get the current exercise's date
+    if (currentExerciseIndex >= data_pro.todaysExercises.length) return;
+
+    Map<String, dynamic> currentExercise =
+        data_pro.todaysExercises[currentExerciseIndex];
+    String exerciseDate = currentExercise['date'] ?? '';
+
+    if (exerciseDate.isEmpty) return;
+
+    // Find next incomplete exercise for the same date
+    int nextExerciseIndex = -1;
+    for (int i = currentExerciseIndex + 1;
+        i < data_pro.todaysExercises.length;
+        i++) {
+      if (data_pro.todaysExercises[i]['date'] == exerciseDate &&
+          data_pro.todaysExercises[i]['completedAt'] == null) {
+        nextExerciseIndex = i;
+        break;
+      }
+    }
+
+    if (nextExerciseIndex != -1) {
+      // Navigate to the next exercise
+      Map<String, dynamic> nextExercise =
+          data_pro.todaysExercises[nextExerciseIndex];
+      String exerciseType = nextExercise["exerciseType"];
+
+      // Pop current screen first
+      Navigator.pop(context);
+
+      // Navigate to appropriate exercise type
+      _navigateToExerciseType(exerciseType, nextExerciseIndex);
+    } else {
+      // No more exercises, just pop
+      Navigator.pop(context);
+    }
+  }
+
+  void _navigateToExerciseType(String exerciseType, int exerciseIndex) {
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    Map<String, dynamic> data = data_pro.todaysExercises[exerciseIndex];
+
+    switch (exerciseType) {
+      case "Detection":
+        _handleDetection(exerciseIndex, data);
+        break;
+      case "Discrimination":
+        _handleDiscrimination(exerciseIndex, data);
+        break;
+      case "Identification":
+        _handleIdentification(exerciseIndex, data);
+        break;
+      case "Level":
+        _handleLevel(exerciseIndex, data);
+        break;
+      case 'Pronunciation':
+        _handlePronunciation(exerciseIndex, data);
+        break;
+      case "Vocabulary":
+        _handleVocabulary(exerciseIndex, data);
+        break;
+      default:
+        print("Unknown exercise type: $exerciseType");
+    }
+  }
+
+  // Helper methods for navigation (simplified versions from exercises_screen.dart)
+  void _handleDetection(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    if (type == "video") {
+      // Handle video type if needed
+    } else {
+      final Object dtcontainer = _retrieveObject(type!, data);
+      List<dynamic> argumentsList = [
+        type,
+        dtcontainer,
+        "notcompleted",
+        exerciseIndex,
+        data["uid"],
+        data["date"]
+      ];
+      NavigatorService.pushNamed(AppRoutes.exerciseDetection,
+          arguments: argumentsList);
+    }
+  }
+
+  void _handleDiscrimination(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    if (type == "sound" || type == "video") {
+      // Handle video/sound type if needed
+    } else {
+      final Object dtcontainer = _retrieveObject(type!, data);
+      List<dynamic> argumentsList = [
+        type,
+        dtcontainer,
+        "notcompleted",
+        exerciseIndex,
+        data["uid"],
+        data["date"]
+      ];
+      NavigatorService.pushNamed(AppRoutes.exerciseDiscrimination,
+          arguments: argumentsList);
+    }
+  }
+
+  void _handleIdentification(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    final Object dtcontainer = _retrieveObject(type!, data);
+    List<dynamic> argumentsList = [
+      type,
+      dtcontainer,
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"],
+      data
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
+        arguments: argumentsList);
+  }
+
+  void _handleLevel(int exerciseIndex, Map<String, dynamic> data) {
+    String? type = data["type"];
+    final Object dtcontainer = _retrieveObject(type!, data);
+    List<dynamic> argumentsList = [
+      type,
+      dtcontainer,
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"]
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
+        arguments: argumentsList);
+  }
+
+  void _handlePronunciation(int exerciseIndex, Map<String, dynamic> data) {
+    List<dynamic> argumentsList = [
+      data["type"],
+      "NULL",
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"],
+      data,
+    ];
+    NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
+        arguments: argumentsList);
+  }
+
+  void _handleVocabulary(int exerciseIndex, Map<String, dynamic> data) {
+    List<dynamic> argumentsList = [
+      data["type"],
+      "NULL",
+      "notcompleted",
+      exerciseIndex,
+      data["uid"],
+      data["date"],
+      data,
+    ];
+    NavigatorService.pushNamed(AppRoutes.exerciseVocabulary,
+        arguments: argumentsList);
+  }
+
+  Object _retrieveObject(String type, Map<String, dynamic> data) {
+    try {
+      if (type == "ImageToAudio") return ImageToAudio.fromJson(data);
+      if (type == "WordToFig") return WordToFiG.fromJson(data);
+      if (type == "FigToWord") return FigToWord.fromJson(data);
+      if (type == "AudioToImage") return AudioToImage.fromJson(data);
+      if (type == "AudioToAudio") return AudioToAudio.fromJson(data);
+      if (type == "MutedUnmuted") return MutedUnmuted.fromJson(data);
+      if (type == "HalfMuted") return HalfMuted.fromJson(data);
+      if (type == "DiffSounds") return DiffSounds.fromJson(data);
+      if (type == "OddOne") return OddOne.fromJson(data);
+      if (type == "DiffHalf") return DiffHalf.fromJson(data);
+      if (type == "MaleFemale") return MaleFemale.fromJson(data);
+      if (type == "DiffImageToAudio") return ImageToAudio.fromJson(data);
+      if (type == "DiffAudioToImage") return AudioToImage.fromJson(data);
+      return "unexpected value";
+    } catch (e) {
+      return "unexpected value";
+    }
   }
 }
 

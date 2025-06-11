@@ -117,9 +117,9 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     String audioFile = "v4.wav";
 
 
-    Future.delayed(const Duration(seconds: 3), () async {
-      await _player.play(AssetSource("assets/audio/bgm/$audioFile"));
-    });
+    // Future.delayed(const Duration(seconds: 3), () async {
+    //   await _player.play(AssetSource("assets/audio/bgm/$audioFile"));
+    // });
   }
   @override
   Widget build(BuildContext context) {
@@ -268,14 +268,14 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                         widget.dtcontainer.getImageUrlList()[index]) {
                       data_pro.incrementLevel(currentExerciseIndex);
 
-                      if (data["completedAt"] == null) {
+                    
                         UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                             .updateExerciseData(
                               euid: data["uid"],
                               date: data["date"],
                             )
                             .then((value) => print("Exercise data updated"));
-                      }
+                      
                     }
                     return widget.dtcontainer.getCorrectOutput() ==
                         widget.dtcontainer.getImageUrlList()[index];
@@ -316,14 +316,14 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                 widget.dtcontainer.getImageUrlList()[index]) {
                               data_pro.incrementLevel(currentExerciseIndex);
 
-                              if (data["completedAt"] == null) {
+                            
                                 UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                                     .updateExerciseData(
                                       euid: data["uid"],
                                       date: data["date"],
                                     )
                                     .then((value) => print("Exercise data updated"));
-                              }
+                              
                             }
                             return widget.dtcontainer.getCorrectOutput() ==
                                 widget.dtcontainer.getImageUrlList()[index];

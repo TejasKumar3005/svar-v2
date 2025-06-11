@@ -16,8 +16,6 @@ import 'package:svar_new/core/utils/image_constant.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
-import 'package:svar_new/routes/app_routes.dart';
-import 'package:svar_new/widgets/custom_button.dart';
 import 'package:vad/vad.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -869,8 +867,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
       // Extract just the first Hindi word if there are multiple parts
       String targetWord = correctPhoneme.split(" ")[0];
 
-      dynamic apiResult = await sendWavFile(tempPath, widget.character);
-      print("API Response: $apiResult");
+      dynamic fullResponse = await sendWavFile(tempPath, widget.character);
+      dynamic apiResult = fullResponse["result"];
+      print("API Response: $fullResponse");
       // find target word in apiResult
       apiResult = apiResult is List
           ? apiResult.firstWhere(
@@ -878,8 +877,12 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
               orElse: () => null)
           : null;
 
+
       print("Filtered API Response: $apiResult");
       if (apiResult != null) {
+        if(apiResult is List && apiResult.isNotEmpty){
+        apiResult[0]["url"]=fullResponse["url"];
+        }
         intermediateResults.add(apiResult is List ? apiResult : [apiResult]);
 
         List<dynamic> results = apiResult is List ? apiResult : [apiResult];
@@ -903,6 +906,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
               return true;
             }
             return true;
+          }else{
+            await _audioPlayer.play(AssetSource('assets/audio/wrong_answer.mp3'));
+            await Future.delayed(Duration(milliseconds: 1000));
           }
         }
 
@@ -1327,7 +1333,7 @@ Future<dynamic> sendWavFile(String wavFile, String word) async {
     if (response.statusCode == 200) {
       var jsonResponse = json.decode(body);
       print("API response result: ${jsonResponse['result']}");
-      return jsonResponse['result'];
+      return jsonResponse;
     } else {
       print("API error response: $body");
       throw Exception("API Error ${response.statusCode}: $body");

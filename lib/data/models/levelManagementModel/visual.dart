@@ -1,5 +1,7 @@
 import 'dart:core';
 
+import 'package:flutter/foundation.dart';
+
 class ImageToAudio {
   final String image_url;
   final List<String> audio_list;
@@ -275,3 +277,29 @@ class MaleFemale {
     return correct_output;
   }
 }
+
+  Object retrieveObject(String type, Map<String, dynamic> data) {
+    try {
+      if (type == "ImageToAudio") return ImageToAudio.fromJson(data);
+      if (type == "WordToFig") return WordToFiG.fromJson(data);
+      if (type == "FigToWord") return FigToWord.fromJson(data);
+      if (type == "AudioToImage") return AudioToImage.fromJson(data);
+      if (type == "AudioToAudio") return AudioToAudio.fromJson(data);
+      if (type == "MutedUnmuted") return MutedUnmuted.fromJson(data);
+      if (type == "HalfMuted") return HalfMuted.fromJson(data);
+      if (type == "DiffSounds") return DiffSounds.fromJson(data);
+      if (type == "OddOne") return OddOne.fromJson(data);
+      if (type == "DiffHalf") return DiffHalf.fromJson(data);
+      if (type == "MaleFemale") return MaleFemale.fromJson(data);
+      if (type =="DiffImageToAudio") return ImageToAudio.fromJson(data);
+      if (type =="DiffAudioToImage") return AudioToImage.fromJson(data);
+
+      debugPrint(
+          "Unexpected object type to retrieve: $type. Returning 'unexpected value'.");
+      return "unexpected value";
+    } catch (e) {
+      debugPrint(
+          "Error in retrieveObject for type $type: $e. Returning 'unexpected value'.");
+      return "unexpected value";
+    }
+  }
