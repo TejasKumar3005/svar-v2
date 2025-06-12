@@ -87,7 +87,8 @@ enum ButtonType {
   ResetPassword,
   Cancel,
   Save,
-  Practice
+  Practice,
+  ParentMode
 }
 
 enum ClippingStyle {
@@ -293,7 +294,7 @@ class _CustomButtonState extends State<CustomButton>
         );
         break;
       case ButtonType.Continue:
-        height = 60;
+        height = 50;
         defaultChild = Text(
           "CONTINUE",
           style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
@@ -387,7 +388,9 @@ class _CustomButtonState extends State<CustomButton>
         defaultChild = Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Different", style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("Different",
+                style: GoogleFonts.inter(
+                    fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(width: 8),
             Icon(Icons.circle, size: 30),
             SizedBox(width: 8),
@@ -410,7 +413,9 @@ class _CustomButtonState extends State<CustomButton>
         defaultChild = Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Same", style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("Same",
+                style: GoogleFonts.inter(
+                    fontSize: 18, fontWeight: FontWeight.bold)),
             SizedBox(width: 8),
             Icon(Icons.circle, size: 30),
             SizedBox(width: 8),
@@ -455,6 +460,19 @@ class _CustomButtonState extends State<CustomButton>
         width = 60;
         height = 60;
         isSvg = true;
+        break;
+
+      case ButtonType.ParentMode:
+        height = 50;
+        width = 150;
+        buttontype = ChicletButtonTypes.roundedRectangle;
+        color = Color(0xFF1cb0f6);
+        defaultChild = Center(
+            child: Text(
+          "Parent Mode",
+          style: GoogleFonts.inter(
+              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+        ));
         break;
     }
   }
@@ -550,7 +568,7 @@ class _CustomButtonState extends State<CustomButton>
         widget.type == ButtonType.ResetPassword ||
         widget.type == ButtonType.CreateAccount ||
         widget.type == ButtonType.Practice) {
-      width = MediaQuery.of(context).size.width * 0.9;
+      width = widget.width ?? MediaQuery.of(context).size.width * 0.9;
       color = Color(0xFFF47C37);
     }
 

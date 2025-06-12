@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/core/app_export.dart'; // Make sure this import is correct
+import 'package:svar_new/presentation/patient_report/app_theme.dart';
 import 'package:svar_new/widgets/custom_button.dart'; // And this one too
 import 'package:svar_new/presentation/settings_screen/setting.dart'; // Import SettingsScreen
 
-Widget DisciAppBar(BuildContext context) {
+Widget DisciAppBar(BuildContext context,{bool parent_mode = false}) {
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 10),
     child: Row(
@@ -18,9 +20,12 @@ Widget DisciAppBar(BuildContext context) {
           ),
         ),
         Spacer(),
-        SizedBox(
-          width: 10.h,
-        ),
+    if(parent_mode)
+      CustomButton(type: ButtonType.ParentMode, onPressed: (){
+      
+      }),
+      Spacer(),
+      
         CustomButton(
   type: ButtonType.Menu,
   onPressed: () {

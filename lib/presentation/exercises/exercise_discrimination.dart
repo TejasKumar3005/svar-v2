@@ -50,6 +50,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
   bool hasMoreExercises = false;
   int currentExerciseIndex = 0;
 
+  bool parent_mode = true;
+
   @override
   void initState() {
     super.initState();
@@ -93,8 +95,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
   }
 
   void _triggerAnimation(bool isCorrect) {
+    print("isCorrect: $isCorrect");
     if (isCorrect) {
       if (_correctTrigger != null) {
+        print("correctTrigger: is fired");
         _correctTrigger!.fire();
         setState(() {
           exerciseCompleted = true;
@@ -103,7 +107,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
         // Only auto-navigate if there are no more exercises for today
         if (!hasMoreExercises) {
           Future.delayed(const Duration(seconds: 5), () {
-            if (mounted) {
+            if (mounted && !parent_mode) {
               Navigator.pop(context);
             }
           });
@@ -222,7 +226,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
               // App Bar with padding
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 10.v),
-                child: DisciAppBar(context),
+                child: DisciAppBar(context,parent_mode: parent_mode),
               ),
 
               // Title section positioned over the placeholder
@@ -346,6 +350,27 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                               ),
                             ),
                           ),
+
+                          if (parent_mode) ...[
+                                        Positioned(
+                                          bottom: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.1,
+                                          right: 20,
+                                          child: AnimatedScale(
+                                            scale: 1.0,
+                                            duration:
+                                                Duration(milliseconds: 500),
+                                            child: CustomButton(
+                                              width: 150.h,
+                                              type: ButtonType.Continue, onPressed: (){
+                                              setState(() {
+                                                parent_mode = false;
+                                              });
+                                            }),
+                                          ),
+                                        )]
                       ],
                     ),
                   ],
@@ -535,7 +560,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
       ),
       isCorrect: () {
         var condition = isCorrectFn();
-        if (condition) {
+        if (condition && !parent_mode) {
           var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
           data_pro.incrementLevel(startExerciseIndex);
 
@@ -629,7 +654,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                         _childKey.currentState!.progress.value > ans &&
                             _childKey.currentState!.progress.value < ans + 0.4;
 
-                    if (condition) {
+                    if (condition && !parent_mode) {
                       data_pro.incrementLevel(startExerciseIndex);
 
                       UserData(uid: FirebaseAuth.instance.currentUser!.uid)
@@ -702,7 +727,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                             type: ButtonType.Same, onPressed: () {}),
                         isCorrect: () {
                           var condition = diffSounds.getSame();
-                          if (condition) {
+                          if (condition && !parent_mode) {
                             data_pro.incrementLevel(startExerciseIndex);
 
                             UserData(
@@ -729,7 +754,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                             type: ButtonType.Diff, onPressed: () {}),
                         isCorrect: () {
                           var condition = !diffSounds.getSame();
-                          if (condition) {
+                          if (condition && !parent_mode ) {
                             data_pro.incrementLevel(startExerciseIndex);
 
                             UserData(
@@ -854,7 +879,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
           var condition =
               oddOne.getVideoUrls()[index] == oddOne.getCorrectOutput();
 
-          if (condition) {
+          if (condition && !parent_mode ) {
             data_pro.incrementLevel(startExerciseIndex);
 
             UserData(uid: FirebaseAuth.instance.currentUser!.uid)

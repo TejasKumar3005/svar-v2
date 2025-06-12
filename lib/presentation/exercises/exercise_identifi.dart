@@ -38,6 +38,7 @@ class ExerciseIdentification extends StatefulWidget {
 class AuditoryScreenState extends State<ExerciseIdentification> {
   late AudioPlayer _player;
   late int leveltracker;
+  bool parent_mode = true;
   VideoPlayerController? _videoPlayerController;
   ChewieController? _chewieController;
 
@@ -175,7 +176,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
           _correctTrigger!.fire();
           print("Correct trigger fired");
           Future.delayed(const Duration(seconds: 3), () {
-            if (mounted) {
+            if (mounted && !parent_mode) {
               Navigator.pop(context);
             }
           });
@@ -201,45 +202,38 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     return type != "AudioToImage" && type != "DiffAudioToImage"
         ? (type == "AudioToAudio"
             ? Container()
-            : SafeArea(
-                child: Scaffold(
-                  extendBody: true,
-                  extendBodyBehindAppBar: true,
-                  backgroundColor: appTheme.gray300,
-                  body: Stack(
+            : Scaffold(
+                extendBody: true,
+                extendBodyBehindAppBar: true,
+                backgroundColor: appTheme.gray300,
+                body: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  // Replace gradient with background image
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(
+                          'assets/images/quiz_bg.jpeg'), // Update with your actual image path
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  child: Stack(
                     children: [
-                      Positioned.fill(
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height,
-                          // Replace gradient with background image
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage(
-                                  'assets/images/quiz_bg.jpeg'), // Update with your actual image path
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      ),
                       Container(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 15.h,
-                          vertical: 10.v,
-                        ),
+                        padding:
+                            EdgeInsets.only(left: 10.h, right: 10.h, top: 40.v),
                         child: Column(
                           children: [
-                            DisciAppBar(
-                                context), // No need for any callbacks now,
+                            DisciAppBar(context,
+                                parent_mode:
+                                    parent_mode), // No need for any callbacks now,
                             Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 15.h, vertical: 5.v),
+                              padding: EdgeInsets.symmetric(horizontal: 15.h),
                               child: Container(
                                 width: double.infinity,
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 15.v, horizontal: 20.h),
+                                padding: EdgeInsets.symmetric(horizontal: 20.h),
                                 // Remove decoration to make it transparent over the placeholder
                                 child: Text(
                                   type == "ImageToAudio" ||
@@ -370,7 +364,27 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                               ),
                                             ),
                                           ),
+                                        ),
+                                      if (parent_mode) ...[
+                                        Positioned(
+                                          bottom: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.1,
+                                          right: 20,
+                                          child: AnimatedScale(
+                                            scale: 1.0,
+                                            duration:
+                                                Duration(milliseconds: 500),
+                                            child: CustomButton(
+                                              type: ButtonType.Continue, onPressed: (){
+                                              setState(() {
+                                                parent_mode = false;
+                                              });
+                                            }),
+                                          ),
                                         )
+                                      ]
                                     ],
                                   ),
                                   // Tip button
@@ -457,126 +471,13 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
       Navigator.pop(context);
 
       // Navigate to appropriate exercise type
-      _navigateToExerciseType(exerciseType, nextExerciseIndex);
+      navigateToExerciseType(exerciseType, nextExerciseIndex,context);
     } else {
       // No more exercises, just pop
       Navigator.pop(context);
     }
   }
 
-  void _navigateToExerciseType(String exerciseType, int exerciseIndex) {
-    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    Map<String, dynamic> data = data_pro.todaysExercises[exerciseIndex];
-
-    switch (exerciseType) {
-      case "Detection":
-        _handleDetection(exerciseIndex, data);
-        break;
-      case "Discrimination":
-        _handleDiscrimination(exerciseIndex, data);
-        break;
-      case "Identification":
-        _handleIdentificationNext(exerciseIndex, data);
-        break;
-      case "Level":
-        _handleLevel(exerciseIndex, data);
-        break;
-      case 'Pronunciation':
-        _handlePronunciation(exerciseIndex, data);
-        break;
-      case "Vocabulary":
-        _handleVocabulary(exerciseIndex, data);
-        break;
-      default:
-        print("Unknown exercise type: $exerciseType");
-    }
-  }
-
-  // Helper methods for navigation
-  void _handleDetection(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    List<dynamic> argumentsList = [
-      type,
-      data,
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"]
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseDetection,
-        arguments: argumentsList);
-  }
-
-  void _handleDiscrimination(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    List<dynamic> argumentsList = [
-      type,
-      data,
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"]
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseDiscrimination,
-        arguments: argumentsList);
-  }
-
-  void _handleIdentificationNext(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    List<dynamic> argumentsList = [
-      type,
-      data,
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"],
-      data
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
-        arguments: argumentsList);
-  }
-
-  void _handleLevel(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    List<dynamic> argumentsList = [
-      type,
-      data,
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"]
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
-        arguments: argumentsList);
-  }
-
-  void _handlePronunciation(int exerciseIndex, Map<String, dynamic> data) {
-    List<dynamic> argumentsList = [
-      data["type"],
-      "NULL",
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"],
-      data,
-    ];
-    NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
-        arguments: argumentsList);
-  }
-
-  void _handleVocabulary(int exerciseIndex, Map<String, dynamic> data) {
-    List<dynamic> argumentsList = [
-      data["type"],
-      "NULL",
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"],
-      data,
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseVocabulary,
-        arguments: argumentsList);
-  }
 
   Widget _buildOptionGRP(BuildContext context, IdentificationProvider provider,
       String type, dynamic dtcontainer, String params) {
@@ -669,11 +570,11 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                       context,
                                       listen: false);
 
-                                  if (isCorrect) {
+                                  if (isCorrect && !parent_mode) {
                                     data_pro
                                         .incrementLevel(currentExerciseIndex);
 
-                                    if (data["completedAt"] == null) {
+                                  
                                       UserData(
                                               uid: FirebaseAuth
                                                   .instance.currentUser!.uid)
@@ -686,7 +587,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                           }).then((value) =>
                                               print("Exercise data updated"));
                                     }
-                                  }
+                                  
 
                                   return isCorrect;
                                 },
@@ -748,11 +649,10 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                   Provider.of<ExerciseProvider>(
                                                       context,
                                                       listen: false);
-                                              if (isCorrect) {
+                                              if (isCorrect && !parent_mode) {
                                                 data_pro.incrementLevel(
                                                     currentExerciseIndex);
-                                                if (data["completedAt"] ==
-                                                    null) {
+                                            
                                                   UserData(
                                                           uid: FirebaseAuth
                                                               .instance
@@ -769,7 +669,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                       }).then((value) => print(
                                                           "Exercise data updated"));
                                                 }
-                                              }
+                                              
 
                                               return isCorrect;
                                             },
@@ -839,10 +739,10 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                               Provider.of<ExerciseProvider>(
                                                   context,
                                                   listen: false);
-                                          if (isCorrect) {
+                                          if (isCorrect && !parent_mode) {
                                             data_pro.incrementLevel(
                                                 currentExerciseIndex);
-                                            if (data["completedAt"] == null) {
+                                          
                                               UserData(
                                                       uid: FirebaseAuth.instance
                                                           .currentUser!.uid)
@@ -857,7 +757,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                                   }).then((value) => print(
                                                       "Exercise data updated"));
                                             }
-                                          }
+                                          
 
                                           return isCorrect;
                                         },

@@ -43,7 +43,7 @@ final globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   if (kIsWeb) {
     await Firebase.initializeApp(options: Options().options);

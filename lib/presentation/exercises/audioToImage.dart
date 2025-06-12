@@ -1,12 +1,13 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:rive/rive.dart';
+import 'package:rive/rive.dart' hide LinearGradient;
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 
 
@@ -32,6 +33,7 @@ class AudiotoimageScreen extends StatefulWidget {
 }
 
 class AudiotoimageScreenState extends State<AudiotoimageScreen> {
+  bool parent_mode = true;
   late AudioPlayer _player;
   late UserData userData;
   late int leveltracker;
@@ -41,6 +43,10 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   StateMachineController? riveController;
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
+
+    bool exerciseCompleted = false;
+  bool hasMoreExercises = false;
+  int currentExerciseIndex = 0;
   // Variable to store the correct answer
 
   @override
@@ -82,20 +88,103 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
 
     if (isCorrect) {
-      if (_correctTrigger != null) {
-        print("Firing correct trigger");
-        _correctTrigger!.fire();
-        print("Correct trigger fired");
+      setState(() {
+        exerciseCompleted = true;
+      });
 
-        Future.delayed(const Duration(seconds: 5), () {
-          Navigator.pop(context);
-        });
+      // Only auto-navigate if there are no more exercises for today
+      if (!hasMoreExercises) {
+        if (_correctTrigger != null) {
+          print("Firing correct trigger");
+          _correctTrigger!.fire();
+          print("Correct trigger fired");
+          Future.delayed(const Duration(seconds: 3), () {
+            if (mounted) {
+              Navigator.pop(context);
+            }
+          });
+        }
       }
     } else {
       if (_incorrectTrigger != null) {
         _incorrectTrigger!.fire();
         print("Incorrect trigger fired");
       }
+    }
+  }
+
+
+
+  void _checkForMoreExercises(ExerciseProvider data_pro) {
+    // Get the current exercise's date
+    if (currentExerciseIndex >= data_pro.todaysExercises.length) return;
+
+    Map<String, dynamic> currentExercise =
+        data_pro.todaysExercises[currentExerciseIndex];
+    String exerciseDate = currentExercise['date'] ?? '';
+
+    if (exerciseDate.isEmpty) return;
+
+    // Filter exercises to only include exercises from the same date as current exercise
+    List<Map<String, dynamic>> sameDateExercises = data_pro.todaysExercises
+        .where((exercise) => exercise['date'] == exerciseDate)
+        .toList();
+
+    // Find the current exercise's position in the same date filtered list
+    int currentIndexInSameDateExercises = sameDateExercises.indexWhere(
+        (exercise) =>
+            data_pro.todaysExercises.indexOf(exercise) == currentExerciseIndex);
+
+    if (currentIndexInSameDateExercises != -1) {
+      // Check if any exercises after current one are incomplete (completedAt is null)
+      hasMoreExercises = sameDateExercises
+          .skip(currentIndexInSameDateExercises + 1)
+          .any((exercise) => exercise['completedAt'] == null);
+    }
+
+    print("Exercise date: $exerciseDate");
+    print("Has more exercises for this date: $hasMoreExercises");
+  }
+
+
+  void moveToNextExercise() {
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+
+    // Get the current exercise's date
+    if (currentExerciseIndex >= data_pro.todaysExercises.length) return;
+
+    Map<String, dynamic> currentExercise =
+        data_pro.todaysExercises[currentExerciseIndex];
+    String exerciseDate = currentExercise['date'] ?? '';
+
+    if (exerciseDate.isEmpty) return;
+
+    // Find next incomplete exercise for the same date
+    int nextExerciseIndex = -1;
+    for (int i = currentExerciseIndex + 1;
+        i < data_pro.todaysExercises.length;
+        i++) {
+      if (data_pro.todaysExercises[i]['date'] == exerciseDate &&
+          data_pro.todaysExercises[i]['completedAt'] == null) {
+        nextExerciseIndex = i;
+        break;
+      }
+    }
+
+    if (nextExerciseIndex != -1) {
+      // Navigate to the next exercise
+      Map<String, dynamic> nextExercise =
+          data_pro.todaysExercises[nextExerciseIndex];
+      String exerciseType = nextExercise["exerciseType"];
+
+      // Pop current screen first
+      Navigator.pop(context);
+
+      // Navigate to appropriate exercise type
+      navigateToExerciseType(exerciseType, nextExerciseIndex,context);
+    } else {
+      // No more exercises, just pop
+      Navigator.pop(context);
     }
   }
 
@@ -109,6 +198,12 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+
+    currentExerciseIndex = obj[3] as int;
+
+    // Check if there are more exercises left for today
+    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+    _checkForMoreExercises(data_pro);
 
     String type = obj[0] as String;
     print("Type: $type");
@@ -132,108 +227,254 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     
-    return SafeArea(
-      child: Scaffold(
-      extendBody: true,
-      extendBodyBehindAppBar: true,
-      backgroundColor: appTheme.gray300,
-      body: Container(
-        width: screenWidth,
-        height: screenHeight,
-        child: Stack(
+    return Scaffold(
+    extendBody: true,
+    extendBodyBehindAppBar: true,
+    backgroundColor: appTheme.gray300,
+    body: Container(
+      width: screenWidth,
+      height: screenHeight,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/quiz_bg.jpeg'),
+            fit: BoxFit.fill,
+          ),
+          ),
+      child: Stack(
+      children: [
+        // Background image
+    
+        Column(
         children: [
-          // Background image
-          Positioned.fill(
-          child: Container(
-            width: screenWidth,
-            height: screenHeight,
-            decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/quiz_bg.jpeg'),
-              fit: BoxFit.fill,
+          // App bar
+          Padding(
+          padding: EdgeInsets.only(left: 10.h, right: 10.h, top: 40.v),
+          child: DisciAppBar(context,parent_mode: parent_mode),
+          ),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 20.h),
+            child: Text(
+            "Listen to the sound. Which image matches this sound?",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 24,
+              fontFamily: "Comic Sans MS",
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+              color: Color.fromARGB(255, 132, 140, 74),
             ),
             ),
           ),
-          ),
-          Column(
-          children: [
-            // App bar
-            Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 8.v),
-            child: DisciAppBar(context),
-            ),
-            Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 5.v),
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 15.v, horizontal: 20.h),
-              child: Text(
-              "Listen to the sound. Which image matches this sound?",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontFamily: "Comic Sans MS",
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-                color: Color.fromARGB(255, 132, 140, 74),
-              ),
-              ),
-            ),
-            ),
-            // Center the main content
-            Expanded(
-            child: Center(
-              child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.h),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                // Audio player
-                Container(
-                  width: screenWidth * 0.85,
-                  height: 70,
-                  decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: AudioWidget(
-                  audioLinks: widget.dtcontainer.getAudioUrl(),
-                  ),
+          // Center the main content
+          Expanded(
+          child: Center(
+            child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.h),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              // Audio player
+              Container(
+                width: screenWidth * 0.85,
+                height: 70,
+                decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
                 ),
-                // Small gap between audio and images
-                SizedBox(height: 20),
-                // Image options
-                Container(
-                  height: screenHeight * 0.3,
-                  child: _buildImageOptions(data_pro, currentExerciseIndex, data),
+                child: AudioWidget(
+                audioLinks: widget.dtcontainer.getAudioUrl(),
                 ),
-                ],
               ),
+              // Small gap between audio and images
+              SizedBox(height: 20),
+              // Image options
+              Container(
+                height: screenHeight * 0.3,
+                child: _buildImageOptions(data_pro, currentExerciseIndex, data),
               ),
-            ),
-            ),
-          ],
-          ),
-          // Animation
-          Positioned(
-          bottom: 0,
-          left: 0,
-          child: IgnorePointer(
-            child: SizedBox(
-            height: screenHeight * 0.4,
-            width: screenWidth,
-            child: RiveAnimation.asset(
-              'assets/rive/Celebration_animation.riv',
-              onInit: _onRiveInit,
-              fit: BoxFit.fitHeight,
-              alignment: Alignment.centerLeft,
+              ],
             ),
             ),
           ),
           ),
         ],
         ),
+        // Animation
+        Stack(
+          children: [
+            Positioned(
+            bottom: 0,
+            left: 0,
+            child: IgnorePointer(
+              child: SizedBox(
+              height: screenHeight * 0.4,
+              width: screenWidth,
+              child: RiveAnimation.asset(
+                'assets/rive/Celebration_animation.riv',
+                onInit: _onRiveInit,
+                fit: BoxFit.fitHeight,
+                alignment: Alignment.centerLeft,
+              ),
+              ),
+            ),
+            ),
+  if (exerciseCompleted && hasMoreExercises)
+                                        Positioned(
+                                          bottom: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.15,
+                                          right: 20,
+                                          child: AnimatedScale(
+                                            scale:
+                                                exerciseCompleted ? 1.0 : 0.0,
+                                            duration:
+                                                Duration(milliseconds: 500),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    Color(0xFF4CAF50),
+                                                    Color(0xFF45A049)
+                                                  ],
+                                                  begin: Alignment.topCenter,
+                                                  end: Alignment.bottomCenter,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(25),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.green
+                                                        .withOpacity(0.3),
+                                                    blurRadius: 8,
+                                                    spreadRadius: 1,
+                                                    offset: Offset(0, 4),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
+                                                  borderRadius:
+                                                      BorderRadius.circular(25),
+                                                  onTap: moveToNextExercise,
+                                                  child: Container(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                      horizontal: 20,
+                                                      vertical: 15,
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Text(
+                                                          "Next",
+                                                          style:
+                                                              GoogleFonts.inter(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        Icon(
+                                                          Icons.arrow_forward,
+                                                          color: Colors.white,
+                                                          size: 20,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+              if (parent_mode) ...[
+                                        Positioned(
+                                          bottom: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.1,
+                                          right: 20,
+                                          child: AnimatedScale(
+                                            scale: 1.0,
+                                            duration:
+                                                Duration(milliseconds: 500),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    Color(0xFF4CAF50),
+                                                    Color(0xFF45A049)
+                                                  ],
+                                                  begin: Alignment.topCenter,
+                                                  end: Alignment.bottomCenter,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(25),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.green
+                                                        .withOpacity(0.3),
+                                                    blurRadius: 8,
+                                                    spreadRadius: 1,
+                                                    offset: Offset(0, 4),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
+                                                  borderRadius:
+                                                      BorderRadius.circular(25),
+                                                  onTap: () {
+                                                    setState(() {
+                                                      parent_mode = false;
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                      horizontal: 20,
+                                                      vertical: 15,
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        Text(
+                                                          "Continue",
+                                                          style:
+                                                              GoogleFonts.inter(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        Icon(
+                                                          Icons.arrow_forward,
+                                                          color: Colors.white,
+                                                          size: 20,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ]
+          ],
+        ),
+      ],
       ),
-      ),
+    ),
     );
   }
 
@@ -265,7 +506,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                   ),
                   isCorrect: () {
                     if (widget.dtcontainer.getCorrectOutput() ==
-                        widget.dtcontainer.getImageUrlList()[index]) {
+                        widget.dtcontainer.getImageUrlList()[index] && !parent_mode) {
                       data_pro.incrementLevel(currentExerciseIndex);
 
                     
@@ -313,7 +554,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                           ),
                           isCorrect: () {
                             if (widget.dtcontainer.getCorrectOutput() ==
-                                widget.dtcontainer.getImageUrlList()[index]) {
+                                widget.dtcontainer.getImageUrlList()[index] && !parent_mode) {
                               data_pro.incrementLevel(currentExerciseIndex);
 
                             

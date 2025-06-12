@@ -57,6 +57,8 @@ class _DetectionState extends State<ExerciseDetection> {
   bool hasMoreExercises = false;
   int currentExerciseIndex = 0;
 
+  bool parent_mode = true;
+
   @override
   void initState() {
     super.initState();
@@ -101,7 +103,7 @@ class _DetectionState extends State<ExerciseDetection> {
         // Only auto-navigate if there are no more exercises for today
         if (!hasMoreExercises) {
           Future.delayed(const Duration(seconds: 5), () {
-            if (mounted) {
+            if (mounted && !parent_mode) {
               Navigator.pop(context);
             }
           });
@@ -279,7 +281,7 @@ class _DetectionState extends State<ExerciseDetection> {
                     padding: EdgeInsets.symmetric(
                       horizontal: 16.h,
                     ),
-                    child: DisciAppBar(context),
+                    child: DisciAppBar(context,parent_mode: parent_mode),
                   ),
                   Expanded(
                     child: Stack(
@@ -369,6 +371,28 @@ class _DetectionState extends State<ExerciseDetection> {
                                   ),
                                 ),
                               ),
+
+                              if (parent_mode) ...[
+                                        Positioned(
+                                          bottom: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.1,
+                                          right: 20,
+                                          child: AnimatedScale(
+                                            scale: 1.0,
+                                            duration:
+                                                Duration(milliseconds: 500),
+                                            child: CustomButton(
+                                              width: 150.h,
+                                            
+                                              type: ButtonType.Continue, onPressed: (){
+                                              setState(() {
+                                                parent_mode = false;
+                                              });
+                                            }),
+                                          ),
+                                        )]
                           ],
                         ),
                       ],

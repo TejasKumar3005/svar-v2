@@ -111,7 +111,7 @@ class LoginSignUpScreenState extends State<LoginSignUpScreen> {
           // Mascot animation centered in the same position on both pages
           Container(
             width: screenWidth,
-            height: screenHeight * 0.6,
+            height: screenHeight * 0.5,
             child: Stack(
               children: [
                 Center(

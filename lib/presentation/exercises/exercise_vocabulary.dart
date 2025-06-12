@@ -10,6 +10,7 @@ import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/widgets/custom_button.dart';
 
 class ExerciseVocabulary extends StatefulWidget {
   final String word;
@@ -69,6 +70,8 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
   bool exerciseCompleted = false;
   bool hasMoreExercises = false;
   int currentExerciseIndex = 0;
+
+  bool parent_mode = true;
 
   @override
   void initState() {
@@ -229,6 +232,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
 
     // Update exercise data with user's performance
     try {
+      if(!parent_mode){
       UserData(uid: currentUser.uid).updateExerciseData(
         euid: data["uid"],
         date: data["date"],
@@ -238,9 +242,9 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
           "time": DateTime.now().toString(),
         },
       );
-
+    }
       // If user marked it as correct, increment level
-      if (isCorrect) {
+      if (isCorrect && !parent_mode) {
         data_pro.incrementLevel(startExerciseIndex);
       }
     } catch (e) {
@@ -433,7 +437,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
             // App Bar
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
-              child: DisciAppBar(context),
+              child: DisciAppBar(context,parent_mode: parent_mode),
             ),
 
             // Main Content
@@ -740,7 +744,30 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                   ),
                 ),
               ),
+
+          
+                              if (parent_mode) ...[
+                                        Positioned(
+                                          bottom: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.1,
+                                          right: 20,
+                                          child: AnimatedScale(
+                                            scale: 1.0,
+                                            duration:
+                                                Duration(milliseconds: 500),
+                                            child: CustomButton(
+                                              type: ButtonType.Continue, onPressed: (){
+                                              setState(() {
+                                                parent_mode = false;
+                                              });
+                                            }),
+                                          ),
+                                        )]     
           ],
+
+          
         ),
       ),
     );
