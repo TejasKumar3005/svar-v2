@@ -1257,6 +1257,10 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           break;
         case "Vocabulary":
           _handleVocabulary(context, "notcompleted", exerciseIndex);
+        case "Custom":
+          debugPrint("Custom exercise type: $exerciseType");
+          _handleCustomNonVideo(context , "notcompleted" , exerciseIndex);
+          break;
         default:
           debugPrint("Unknown exercise type: $exerciseType");
           _showErrorSnackbar('Unknown exercise type: $exerciseType.');
@@ -1353,6 +1357,42 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       if (!mounted) return; // Check mounted status before navigating
       NavigatorService.pushNamed(AppRoutes.exerciseVocabulary,
           arguments: argumentsList);
+    } catch (e) {
+      debugPrint("Error in Vocabulary handling: $e");
+    }
+  }
+
+
+  void _handleCustomNonVideo(
+      BuildContext context, String params, int startExerciseIndex) async {
+    try {
+      var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+      Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+      if (data.isEmpty) return;
+      String? type = data["type"];
+      if (type == null) {
+        debugPrint("Type is null in Custom Exercise data.");
+        _showErrorSnackbar('Exercise data is incomplete.');
+        return;
+      }
+      List<dynamic> argumentsList = [
+        type,
+        "NULL",
+        params,
+        startExerciseIndex,
+        data["uid"],
+        data["date"],
+        data,
+      ];
+
+      debugPrint("Arguments list is: $argumentsList");
+
+      await Future.delayed(
+          Duration.zero); // Ensure build context is stable before navigation
+      if (!mounted) return; // Check mounted status before navigating
+      NavigatorService.pushNamed(AppRoutes.exerciseCustomNonVideo,
+          arguments: argumentsList);
+
     } catch (e) {
       debugPrint("Error in Vocabulary handling: $e");
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/presentation/app_navigation_screen/svar_intro.dart';
+import 'package:svar_new/presentation/exercises/exerciseCustomNonVideo.dart';
 import 'package:svar_new/presentation/exercises/exercise_detection.dart';
 import 'package:svar_new/presentation/exercises/exercise_discrimination.dart';
 import 'package:svar_new/presentation/exercises/exercise_identifi.dart';
@@ -84,6 +85,7 @@ class AppRoutes {
 
   static const String practiceScreen = '/practice_screen';
   static const String exerciseVocabulary = '/exercise_vocabulary';
+  static const String exerciseCustomNonVideo = "/exercise_customNonVideo";
 
   static Map<String, WidgetBuilder> get routes => {
         welcomeScreenPotraitScreen: WelcomeScreenPotraitScreen.builder,
@@ -118,5 +120,6 @@ class AppRoutes {
         mascotIntro: MascotIntro.builder,
         practiceScreen: (context) => const PracticeScreen(),
         exerciseVocabulary: ExerciseVocabulary.builder,
+        exerciseCustomNonVideo: ExerciseCustomNonVideo.builder,
       };
 }
