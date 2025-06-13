@@ -1367,7 +1367,9 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       BuildContext context, String params, int startExerciseIndex) async {
     try {
       var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+
       Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+      debugPrint("data is : $data");
       if (data.isEmpty) return;
       String? type = data["type"];
       if (type == null) {

@@ -63,6 +63,14 @@ dev_dependencies:
   flutter_test: 
     sdk: flutter
 
+dependency_overrides:
+  flare_flutter:		
+    git:
+      url: https://github.com/mbfakourii/Flare-Flutter.git
+      path: flare_flutter
+      ref: remove_hashValues
+
+
 flutter: 
   uses-material-design: true
   assets: 
