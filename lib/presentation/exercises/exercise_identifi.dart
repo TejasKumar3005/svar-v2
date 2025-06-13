@@ -199,6 +199,22 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     dynamic dtcontainer = obj[1] as dynamic;
     String params = obj[2] as String;
 
+    // Use sample data when parent_mode is true
+    if (parent_mode) {
+      switch (type) {
+        case "ImageToAudio":
+          dtcontainer = sampleImageToAudio;
+          break;
+        case "DiffImageToAudio":
+          dtcontainer = sampleDiffImageToAudio;
+          break;
+      
+        default:
+          // Keep original dtcontainer if no sample available
+          break;
+      }
+    }
+
     return type != "AudioToImage" && type != "DiffAudioToImage"
         ? (type == "AudioToAudio"
             ? Container()
@@ -377,11 +393,13 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                             duration:
                                                 Duration(milliseconds: 500),
                                             child: CustomButton(
-                                              type: ButtonType.Continue, onPressed: (){
-                                              setState(() {
-                                                parent_mode = false;
-                                              });
-                                            }),
+                                              width: 150,
+                                                type: ButtonType.Continue,
+                                                onPressed: () {
+                                                  setState(() {
+                                                    parent_mode = false;
+                                                  });
+                                                }),
                                           ),
                                         )
                                       ]
@@ -415,7 +433,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
               ))
         : AudiotoimageScreen(
             dtcontainer: dtcontainer,
-            params: params,
+            params: type,
           );
   }
 
@@ -471,13 +489,12 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
       Navigator.pop(context);
 
       // Navigate to appropriate exercise type
-      navigateToExerciseType(exerciseType, nextExerciseIndex,context);
+      navigateToExerciseType(exerciseType, nextExerciseIndex, context);
     } else {
       // No more exercises, just pop
       Navigator.pop(context);
     }
   }
-
 
   Widget _buildOptionGRP(BuildContext context, IdentificationProvider provider,
       String type, dynamic dtcontainer, String params) {
@@ -532,11 +549,40 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int currentExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[currentExerciseIndex];
-    dynamic dtcontainer = obj[1] as dynamic;
+
+    // Use sample data when parent_mode is true
+    if (parent_mode) {
+      switch (quizType) {
+        case "ImageToAudio":
+          dtcontainer = sampleImageToAudio;
+          break;
+        case "DiffImageToAudio":
+          dtcontainer = sampleDiffImageToAudio;
+          break;
+        case "WordToFig":
+          // dtcontainer = sampleWordToFig; // Uncomment when sample is available
+          break;
+        case "FigToWord":
+          // dtcontainer = sampleFigToWord; // Uncomment when sample is available
+          break;
+        case "AudioToImage":
+          dtcontainer = sampleAudioToImage;
+          break;
+        case "DiffAudioToImage":
+          dtcontainer = sampleDiffAudioToImage;
+          break;
+        default:
+          // Keep original dtcontainer if no sample available
+          dtcontainer = obj[1] as dynamic;
+          break;
+      }
+    } else {
+      dtcontainer = obj[1] as dynamic;
+    }
 
     switch (quizType) {
       case "ImageToAudio" || "DiffImageToAudio":
-        return dtcontainer.getAudioList().length <= 4
+        return (dtcontainer as ImageToAudio).getAudioList().length <= 4
             ? Center(
                 child: Container(
                     height: MediaQuery.of(context).size.height *
@@ -574,20 +620,18 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     data_pro
                                         .incrementLevel(currentExerciseIndex);
 
-                                  
-                                      UserData(
-                                              uid: FirebaseAuth
-                                                  .instance.currentUser!.uid)
-                                          .updateExerciseData(
-                                              euid: data["uid"],
-                                              date: data["date"],
-                                              performance: {
-                                            "correct_attempt": isCorrect,
-                                            "time": DateTime.now().toString(),
-                                          }).then((value) =>
-                                              print("Exercise data updated"));
-                                    }
-                                  
+                                    UserData(
+                                            uid: FirebaseAuth
+                                                .instance.currentUser!.uid)
+                                        .updateExerciseData(
+                                            euid: data["uid"],
+                                            date: data["date"],
+                                            performance: {
+                                          "correct_attempt": isCorrect,
+                                          "time": DateTime.now().toString(),
+                                        }).then((value) =>
+                                            print("Exercise data updated"));
+                                  }
 
                                   return isCorrect;
                                 },
@@ -599,183 +643,181 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
               )
             : SizedBox();
 
-      case "FigToWord":
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Center(
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.3,
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (dtcontainer.getTextList().length <= 4)
-                      ...List.generate(
-                        dtcontainer.getTextList().length ~/ 2 +
-                            dtcontainer.getTextList().length %
-                                2, // Calculate rows needed
-                        (rowIndex) {
-                          return Padding(
-                            padding: EdgeInsets.only(bottom: 2.v),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // Create 2 items per row (if available)
-                                ...List.generate(
-                                  2,
-                                  (colIndex) {
-                                    final index = rowIndex * 2 + colIndex;
-                                    if (index <
-                                        dtcontainer.getTextList().length) {
-                                      return Expanded(
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 5.h),
-                                          child: OptionWidget(
-                                            triggerAnimation: (value) {
-                                              _triggerAnimation(value);
-                                            },
-                                            child: TextContainer(
-                                              text: dtcontainer
-                                                  .getTextList()[index],
-                                            ),
-                                            isCorrect: () {
-                                              bool isCorrect = dtcontainer
-                                                      .getCorrectOutput() ==
-                                                  dtcontainer
-                                                      .getTextList()[index];
+      // case "FigToWord":
+      //   return StatefulBuilder(
+      //     builder: (context, setState) {
+      //       return Center(
+      //         child: Container(
+      //           height: MediaQuery.of(context).size.height * 0.3,
+      //           width: MediaQuery.of(context).size.width,
+      //           child: Column(
+      //             mainAxisAlignment: MainAxisAlignment.center,
+      //             children: [
+      //               if (dtcontainer.getTextList().length <= 4)
+      //                 ...List.generate(
+      //                   dtcontainer.getTextList().length ~/ 2 +
+      //                       dtcontainer.getTextList().length %
+      //                           2, // Calculate rows needed
+      //                   (rowIndex) {
+      //                     return Padding(
+      //                       padding: EdgeInsets.only(bottom: 2.v),
+      //                       child: Row(
+      //                         mainAxisAlignment: MainAxisAlignment.center,
+      //                         children: [
+      //                           // Create 2 items per row (if available)
+      //                           ...List.generate(
+      //                             2,
+      //                             (colIndex) {
+      //                               final index = rowIndex * 2 + colIndex;
+      //                               if (index <
+      //                                   dtcontainer.getTextList().length) {
+      //                                 return Expanded(
+      //                                   child: Padding(
+      //                                     padding: EdgeInsets.symmetric(
+      //                                         horizontal: 5.h),
+      //                                     child: OptionWidget(
+      //                                       triggerAnimation: (value) {
+      //                                         _triggerAnimation(value);
+      //                                       },
+      //                                       child: TextContainer(
+      //                                         text: dtcontainer
+      //                                             .getTextList()[index],
+      //                                       ),
+      //                                       isCorrect: () {
+      //                                         bool isCorrect = dtcontainer
+      //                                                 .getCorrectOutput() ==
+      //                                             dtcontainer
+      //                                                 .getTextList()[index];
 
-                                              var data_pro =
-                                                  Provider.of<ExerciseProvider>(
-                                                      context,
-                                                      listen: false);
-                                              if (isCorrect && !parent_mode) {
-                                                data_pro.incrementLevel(
-                                                    currentExerciseIndex);
-                                            
-                                                  UserData(
-                                                          uid: FirebaseAuth
-                                                              .instance
-                                                              .currentUser!
-                                                              .uid)
-                                                      .updateExerciseData(
-                                                          euid: data["uid"],
-                                                          date: data["date"],
-                                                          performance: {
-                                                        "correct_attempt":
-                                                            isCorrect,
-                                                        "time": DateTime.now()
-                                                            .toString(),
-                                                      }).then((value) => print(
-                                                          "Exercise data updated"));
-                                                }
-                                              
+      //                                         var data_pro =
+      //                                             Provider.of<ExerciseProvider>(
+      //                                                 context,
+      //                                                 listen: false);
+      //                                         if (isCorrect && !parent_mode) {
+      //                                           data_pro.incrementLevel(
+      //                                               currentExerciseIndex);
 
-                                              return isCorrect;
-                                            },
-                                          ),
-                                        ),
-                                      );
-                                    } else {
-                                      return Expanded(child: SizedBox());
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
+      //                                             UserData(
+      //                                                     uid: FirebaseAuth
+      //                                                         .instance
+      //                                                         .currentUser!
+      //                                                         .uid)
+      //                                                 .updateExerciseData(
+      //                                                     euid: data["uid"],
+      //                                                     date: data["date"],
+      //                                                     performance: {
+      //                                                   "correct_attempt":
+      //                                                       isCorrect,
+      //                                                   "time": DateTime.now()
+      //                                                       .toString(),
+      //                                                 }).then((value) => print(
+      //                                                     "Exercise data updated"));
+      //                                           }
 
-      case "WordToFig":
-        debugPrint("entering in the word to fig section");
-        return Center(
-          child: Container(
-              height: MediaQuery.of(context).size.height * 0.4,
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (dtcontainer.getImageUrlList().length <= 4)
-                    ...List.generate(
-                      dtcontainer.getImageUrlList().length ~/ 2 +
-                          dtcontainer.getImageUrlList().length %
-                              2, // Calculate rows needed
-                      (rowIndex) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            // Create 2 items per row (if available)
-                            ...List.generate(
-                              2,
-                              (colIndex) {
-                                final index = rowIndex * 2 + colIndex;
-                                if (index <
-                                    dtcontainer.getImageUrlList().length) {
-                                  return Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(5.h),
-                                      child: OptionWidget(
-                                        triggerAnimation: (value) {
-                                          _triggerAnimation(value);
-                                        },
-                                        child: ImageWidget(
-                                          imagePath: dtcontainer
-                                              .getImageUrlList()[index],
-                                        ),
-                                        isCorrect: () {
-                                          bool isCorrect =
-                                              dtcontainer.getCorrectOutput() ==
-                                                  dtcontainer
-                                                      .getImageUrlList()[index];
+      //                                         return isCorrect;
+      //                                       },
+      //                                     ),
+      //                                   ),
+      //                                 );
+      //                               } else {
+      //                                 return Expanded(child: SizedBox());
+      //                               }
+      //                             },
+      //                           ),
+      //                         ],
+      //                       ),
+      //                     );
+      //                   },
+      //                 ),
+      //             ],
+      //           ),
+      //         ),
+      //       );
+      //     },
+      //   );
 
-                                          var data_pro =
-                                              Provider.of<ExerciseProvider>(
-                                                  context,
-                                                  listen: false);
-                                          if (isCorrect && !parent_mode) {
-                                            data_pro.incrementLevel(
-                                                currentExerciseIndex);
-                                          
-                                              UserData(
-                                                      uid: FirebaseAuth.instance
-                                                          .currentUser!.uid)
-                                                  .updateExerciseData(
-                                                      euid: data["uid"],
-                                                      date: data["date"],
-                                                      performance: {
-                                                    "correct_attempt":
-                                                        isCorrect,
-                                                    "time": DateTime.now()
-                                                        .toString(),
-                                                  }).then((value) => print(
-                                                      "Exercise data updated"));
-                                            }
-                                          
+      // case "WordToFig":
+      //   debugPrint("entering in the word to fig section");
+      //   return Center(
+      //   child: Container(
+      //       height: MediaQuery.of(context).size.height * 0.4,
+      //       width: MediaQuery.of(context).size.width,
+      //       child: Column(
+      //         mainAxisAlignment: MainAxisAlignment.center,
+      //         children: [
+      //           if (dtcontainer.getImageUrlList().length <= 4)
+      //             ...List.generate(
+      //               dtcontainer.getImageUrlList().length ~/ 2 +
+      //                   dtcontainer.getImageUrlList().length %
+      //                       2, // Calculate rows needed
+      //               (rowIndex) {
+      //                 return Row(
+      //                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //                   children: [
+      //                     // Create 2 items per row (if available)
+      //                     ...List.generate(
+      //                       2,
+      //                       (colIndex) {
+      //                         final index = rowIndex * 2 + colIndex;
+      //                         if (index <
+      //                             dtcontainer.getImageUrlList().length) {
+      //                           return Expanded(
+      //                             child: Padding(
+      //                               padding: EdgeInsets.all(5.h),
+      //                               child: OptionWidget(
+      //                                 triggerAnimation: (value) {
+      //                                   _triggerAnimation(value);
+      //                                 },
+      //                                 child: ImageWidget(
+      //                                   imagePath: dtcontainer
+      //                                       .getImageUrlList()[index],
+      //                                 ),
+      //                                 isCorrect: () {
+      //                                   bool isCorrect =
+      //                                       dtcontainer.getCorrectOutput() ==
+      //                                           dtcontainer
+      //                                               .getImageUrlList()[index];
 
-                                          return isCorrect;
-                                        },
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  return Expanded(child: SizedBox());
-                                }
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                ],
-              )),
-        );
+      //                                   var data_pro =
+      //                                       Provider.of<ExerciseProvider>(
+      //                                           context,
+      //                                           listen: false);
+      //                                   if (isCorrect && !parent_mode) {
+      //                                     data_pro.incrementLevel(
+      //                                         currentExerciseIndex);
+
+      //                                       UserData(
+      //                                               uid: FirebaseAuth.instance
+      //                                                   .currentUser!.uid)
+      //                                           .updateExerciseData(
+      //                                               euid: data["uid"],
+      //                                               date: data["date"],
+      //                                               performance: {
+      //                                             "correct_attempt":
+      //                                                 isCorrect,
+      //                                             "time": DateTime.now()
+      //                                                 .toString(),
+      //                                           }).then((value) => print(
+      //                                               "Exercise data updated"));
+      //                                     }
+
+      //                                   return isCorrect;
+      //                                 },
+      //                               ),
+      //                             ),
+      //                           );
+      //                         } else {
+      //                           return Expanded(child: SizedBox());
+      //                         }
+      //                       },
+      //                     ),
+      //                   ],
+      //                 );
+      //               },
+      //             ),
+      //         ],
+      //       )),
+      // );
 
       default:
         return Container();

@@ -70,9 +70,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(height: 25),
+                                
                                   Text(
-                                    'Hey ${streakProvider.getPatientDetails()["fathersName"].contains(' ') ? streakProvider.getPatientDetails()["fathersName"].split(' ')[0] : streakProvider.getPatientDetails()["fathersName"]}!',
+                                    'Hey ${streakProvider.getPatientDetails()["fathersName"].contains(' ') 
+                                    ? streakProvider.getPatientDetails()["fathersName"].split(' ')[0]
+                                     : streakProvider.getPatientDetails()["fathersName"]}!',
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineLarge
@@ -80,7 +82,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                      'Ready to help\n ${streakProvider.patientName.contains(' ') ? streakProvider.patientName.split(' ')[0] : streakProvider.patientName} today?',
+                                      'Ready to help\n ${streakProvider.patientName.contains(' ')
+                                       ? streakProvider.patientName.split(' ')[0] 
+                                       : streakProvider.patientName} today?',
 
                                     style: Theme.of(context)
                                         .textTheme

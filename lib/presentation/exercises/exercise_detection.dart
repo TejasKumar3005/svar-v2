@@ -16,6 +16,7 @@ import 'package:svar_new/widgets/Options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:svar_new/presentation/settings_screen/setting.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 
 class ExerciseDetection extends StatefulWidget {
   const ExerciseDetection({
@@ -70,6 +71,23 @@ class _DetectionState extends State<ExerciseDetection> {
       var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
       String type = obj[0] as String;
       dynamic dtcontainer = obj[1] as dynamic;
+
+      // Use sample data when parent_mode is true
+      if (parent_mode) {
+        switch (type) {
+          case "MutedUnmuted":
+            dtcontainer = sampleMutedUnmuted;
+            break;
+          case "HalfMuted":
+            dtcontainer = sampleHalfMuted;
+            break;
+          default:
+            // Keep original dtcontainer if no sample available
+            dtcontainer = obj[1] as dynamic;
+            break;
+        }
+      }
+
       print(dtcontainer.getVideoUrls().toString());
       if (type == "MutedUnmuted") {
         int mutedVideoIndex = dtcontainer.getMuted();
@@ -254,6 +272,23 @@ class _DetectionState extends State<ExerciseDetection> {
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     String type = obj[0] as String;
+    dynamic dtcontainer = obj[1] as dynamic;
+
+    // Use sample data when parent_mode is true
+    if (parent_mode) {
+      switch (type) {
+        case "MutedUnmuted":
+          dtcontainer = sampleMutedUnmuted;
+          break;
+        case "HalfMuted":
+          dtcontainer = sampleHalfMuted;
+          break;
+        default:
+          // Keep original dtcontainer if no sample available
+          dtcontainer = obj[1] as dynamic;
+          break;
+      }
+    }
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -281,12 +316,12 @@ class _DetectionState extends State<ExerciseDetection> {
                     padding: EdgeInsets.symmetric(
                       horizontal: 16.h,
                     ),
-                    child: DisciAppBar(context,parent_mode: parent_mode),
+                    child: DisciAppBar(context, parent_mode: parent_mode),
                   ),
                   Expanded(
                     child: Stack(
                       children: [
-                        detectionQuiz(context, type),
+                        detectionQuiz(context, type, dtcontainer),
                         Stack(
                           children: [
                             Positioned(
@@ -372,27 +407,25 @@ class _DetectionState extends State<ExerciseDetection> {
                                 ),
                               ),
 
-                              if (parent_mode) ...[
-                                        Positioned(
-                                          bottom: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.1,
-                                          right: 20,
-                                          child: AnimatedScale(
-                                            scale: 1.0,
-                                            duration:
-                                                Duration(milliseconds: 500),
-                                            child: CustomButton(
-                                              width: 150.h,
-                                            
-                                              type: ButtonType.Continue, onPressed: (){
-                                              setState(() {
-                                                parent_mode = false;
-                                              });
-                                            }),
-                                          ),
-                                        )]
+                            if (parent_mode) ...[
+                              Positioned(
+                                bottom:
+                                    MediaQuery.of(context).size.height * 0.1,
+                                right: 20,
+                                child: AnimatedScale(
+                                  scale: 1.0,
+                                  duration: Duration(milliseconds: 500),
+                                  child: CustomButton(
+                                      width: 150.h,
+                                      type: ButtonType.Continue,
+                                      onPressed: () {
+                                        setState(() {
+                                          parent_mode = false;
+                                        });
+                                      }),
+                                ),
+                              )
+                            ]
                           ],
                         ),
                       ],
@@ -407,23 +440,22 @@ class _DetectionState extends State<ExerciseDetection> {
     );
   }
 
-  Widget detectionQuiz(BuildContext context, String quizType) {
+  Widget detectionQuiz(
+      BuildContext context, String quizType, dynamic dtcontainer) {
     switch (quizType) {
       case "HalfMuted":
         return HalfMutedWidget(
           key: _audioWidgetKey,
-          audioLinks:
-              (ModalRoute.of(context)?.settings.arguments as List<dynamic>)[1]
-                  .getVideoUrls(),
+          audioLinks: dtcontainer.getVideoUrls(),
         );
       case "MutedUnmuted":
-        return MutedUnmuted(context);
+        return MutedUnmuted(context, dtcontainer);
       default:
         return Container();
     }
   }
 
-  Widget MutedUnmuted(BuildContext context) {
+  Widget MutedUnmuted(BuildContext context, dynamic dtcontainer) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = obj[3] as int;
@@ -470,6 +502,7 @@ class _DetectionState extends State<ExerciseDetection> {
                     obj: obj,
                     startExerciseIndex: startExerciseIndex,
                     data: data,
+                    dtcontainer: dtcontainer,
                   ),
 
                   SizedBox(height: 20.v),
@@ -484,6 +517,7 @@ class _DetectionState extends State<ExerciseDetection> {
                     obj: obj,
                     startExerciseIndex: startExerciseIndex,
                     data: data,
+                    dtcontainer: dtcontainer,
                   ),
                 ],
               ),
@@ -503,6 +537,7 @@ class _DetectionState extends State<ExerciseDetection> {
     required List<dynamic> obj,
     required int startExerciseIndex,
     required Map<String, dynamic> data,
+    required dynamic dtcontainer,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -554,8 +589,8 @@ class _DetectionState extends State<ExerciseDetection> {
             ),
             isCorrect: () {
               var condition = (index == 1)
-                  ? (obj[1] as dynamic).getMuted() == 1
-                  : (obj[1] as dynamic).getMuted() == 0;
+                  ? dtcontainer.getMuted() == 1
+                  : dtcontainer.getMuted() == 0;
 
               var data_pro =
                   Provider.of<ExerciseProvider>(context, listen: false);

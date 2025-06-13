@@ -208,6 +208,28 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
     Object data = obj[1] as Object;
     dynamic dtcontainer = obj[2] as dynamic;
 
+    // Use sample data when parent_mode is true
+    if (parent_mode) {
+      switch (type) {
+        case "DiffSounds":
+          data = sampleDiffSounds;
+          break;
+        case "OddOne":
+          data = sampleOddOne;
+          break;
+        case "DiffHalf":
+          data = sampleDiffHalf;
+          break;
+        case "MaleFemale":
+          data = sampleMaleFemale;
+          break;
+        default:
+          // Keep original data if no sample available
+          data = obj[1] as Object;
+          break;
+      }
+    }
+
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -220,22 +242,20 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
             fit: BoxFit.fill,
           ),
         ),
-        child: SafeArea(
+        child: Container(
+          padding:   EdgeInsets.only(left: 10.h, right: 10.h, top: 40.v),
           child: Column(
             children: [
               // App Bar with padding
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 10.v),
-                child: DisciAppBar(context,parent_mode: parent_mode),
-              ),
-
+              DisciAppBar(context, parent_mode: parent_mode),
+          
               // Title section positioned over the placeholder
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 5.v),
                 child: Container(
                   width: double.infinity,
                   padding:
-                      EdgeInsets.symmetric(vertical: 15.v, horizontal: 20.h),
+                      EdgeInsets.symmetric( horizontal: 20.h),
                   // Remove decoration to make it transparent over the placeholder
                   child: Text(
                     type == "OddOne"
@@ -256,7 +276,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                   ),
                 ),
               ),
-
+          
               // Main content area
               Expanded(
                 child: Stack(
@@ -266,7 +286,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                       padding: EdgeInsets.fromLTRB(15.h, 10.v, 15.h, 60.v),
                       child: discriminationOptions(type, data, dtcontainer),
                     ),
-
+          
                     // Animation overlay at bottom
                     Stack(
                       children: [
@@ -286,7 +306,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                             ),
                           ),
                         ),
-
+          
                         // Next button - positioned on the right side of Rive animation
                         if (exerciseCompleted && hasMoreExercises)
                           Positioned(
@@ -350,27 +370,25 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                               ),
                             ),
                           ),
-
-                          if (parent_mode) ...[
-                                        Positioned(
-                                          bottom: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.1,
-                                          right: 20,
-                                          child: AnimatedScale(
-                                            scale: 1.0,
-                                            duration:
-                                                Duration(milliseconds: 500),
-                                            child: CustomButton(
-                                              width: 150.h,
-                                              type: ButtonType.Continue, onPressed: (){
-                                              setState(() {
-                                                parent_mode = false;
-                                              });
-                                            }),
-                                          ),
-                                        )]
+          
+                        if (parent_mode) ...[
+                          Positioned(
+                            bottom: MediaQuery.of(context).size.height * 0.1,
+                            right: 20,
+                            child: AnimatedScale(
+                              scale: 1.0,
+                              duration: Duration(milliseconds: 500),
+                              child: CustomButton(
+                                  width: 150.h,
+                                  type: ButtonType.Continue,
+                                  onPressed: () {
+                                    setState(() {
+                                      parent_mode = false;
+                                    });
+                                  }),
+                            ),
+                          )
+                        ]
                       ],
                     ),
                   ],
@@ -754,7 +772,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                             type: ButtonType.Diff, onPressed: () {}),
                         isCorrect: () {
                           var condition = !diffSounds.getSame();
-                          if (condition && !parent_mode ) {
+                          if (condition && !parent_mode) {
                             data_pro.incrementLevel(startExerciseIndex);
 
                             UserData(
@@ -879,7 +897,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
           var condition =
               oddOne.getVideoUrls()[index] == oddOne.getCorrectOutput();
 
-          if (condition && !parent_mode ) {
+          if (condition && !parent_mode) {
             data_pro.incrementLevel(startExerciseIndex);
 
             UserData(uid: FirebaseAuth.instance.currentUser!.uid)
@@ -969,157 +987,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
       Navigator.pop(context);
 
       // Navigate to appropriate exercise type
-      _navigateToExerciseType(exerciseType, nextExerciseIndex);
+      navigateToExerciseType(exerciseType, nextExerciseIndex, context);
     } else {
       // No more exercises, just pop
       Navigator.pop(context);
-    }
-  }
-
-  void _navigateToExerciseType(String exerciseType, int exerciseIndex) {
-    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    Map<String, dynamic> data = data_pro.todaysExercises[exerciseIndex];
-
-    switch (exerciseType) {
-      case "Detection":
-        _handleDetection(exerciseIndex, data);
-        break;
-      case "Discrimination":
-        _handleDiscrimination(exerciseIndex, data);
-        break;
-      case "Identification":
-        _handleIdentification(exerciseIndex, data);
-        break;
-      case "Level":
-        _handleLevel(exerciseIndex, data);
-        break;
-      case 'Pronunciation':
-        _handlePronunciation(exerciseIndex, data);
-        break;
-      case "Vocabulary":
-        _handleVocabulary(exerciseIndex, data);
-        break;
-      default:
-        print("Unknown exercise type: $exerciseType");
-    }
-  }
-
-  // Helper methods for navigation (simplified versions from exercises_screen.dart)
-  void _handleDetection(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    if (type == "video") {
-      // Handle video type if needed
-    } else {
-      final Object dtcontainer = _retrieveObject(type!, data);
-      List<dynamic> argumentsList = [
-        type,
-        dtcontainer,
-        "notcompleted",
-        exerciseIndex,
-        data["uid"],
-        data["date"]
-      ];
-      NavigatorService.pushNamed(AppRoutes.exerciseDetection,
-          arguments: argumentsList);
-    }
-  }
-
-  void _handleDiscrimination(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    if (type == "sound" || type == "video") {
-      // Handle video/sound type if needed
-    } else {
-      final Object dtcontainer = _retrieveObject(type!, data);
-      List<dynamic> argumentsList = [
-        type,
-        dtcontainer,
-        "notcompleted",
-        exerciseIndex,
-        data["uid"],
-        data["date"]
-      ];
-      NavigatorService.pushNamed(AppRoutes.exerciseDiscrimination,
-          arguments: argumentsList);
-    }
-  }
-
-  void _handleIdentification(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    final Object dtcontainer = _retrieveObject(type!, data);
-    List<dynamic> argumentsList = [
-      type,
-      dtcontainer,
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"],
-      data
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
-        arguments: argumentsList);
-  }
-
-  void _handleLevel(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    final Object dtcontainer = _retrieveObject(type!, data);
-    List<dynamic> argumentsList = [
-      type,
-      dtcontainer,
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"]
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
-        arguments: argumentsList);
-  }
-
-  void _handlePronunciation(int exerciseIndex, Map<String, dynamic> data) {
-    List<dynamic> argumentsList = [
-      data["type"],
-      "NULL",
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"],
-      data,
-    ];
-    NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
-        arguments: argumentsList);
-  }
-
-  void _handleVocabulary(int exerciseIndex, Map<String, dynamic> data) {
-    List<dynamic> argumentsList = [
-      data["type"],
-      "NULL",
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"],
-      data,
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseVocabulary,
-        arguments: argumentsList);
-  }
-
-  Object _retrieveObject(String type, Map<String, dynamic> data) {
-    try {
-      if (type == "ImageToAudio") return ImageToAudio.fromJson(data);
-      if (type == "WordToFig") return WordToFiG.fromJson(data);
-      if (type == "FigToWord") return FigToWord.fromJson(data);
-      if (type == "AudioToImage") return AudioToImage.fromJson(data);
-      if (type == "AudioToAudio") return AudioToAudio.fromJson(data);
-      if (type == "MutedUnmuted") return MutedUnmuted.fromJson(data);
-      if (type == "HalfMuted") return HalfMuted.fromJson(data);
-      if (type == "DiffSounds") return DiffSounds.fromJson(data);
-      if (type == "OddOne") return OddOne.fromJson(data);
-      if (type == "DiffHalf") return DiffHalf.fromJson(data);
-      if (type == "MaleFemale") return MaleFemale.fromJson(data);
-      if (type == "DiffImageToAudio") return ImageToAudio.fromJson(data);
-      if (type == "DiffAudioToImage") return AudioToImage.fromJson(data);
-      return "unexpected value";
-    } catch (e) {
-      return "unexpected value";
     }
   }
 }

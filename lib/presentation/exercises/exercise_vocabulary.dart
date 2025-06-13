@@ -54,9 +54,18 @@ class ExerciseVocabulary extends StatefulWidget {
     }
 
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+
+    // Use sample data when parent_mode is true (default state)
+    String word = data["word"] ?? "Unknown Word";
+    String imageUrl = data["url"] ?? "";
+
+    // For parent mode preview, use sample data
+    // Since parent_mode is initially true in the widget, we use sample data by default
+    // The actual data will be used when parent_mode becomes false
+
     return ExerciseVocabulary(
-      word: data["word"] ?? "Unknown Word",
-      imageUrl: data["url"] ?? "",
+      word: word,
+      imageUrl: imageUrl,
     );
   }
 }
@@ -86,7 +95,8 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
     // Play TTS automatically when page loads
     Future.delayed(Duration(milliseconds: 500), () {
       if (mounted) {
-        speakHindi(widget.word);
+        String wordToSpeak = parent_mode ? "clothes" : widget.word;
+        speakHindi(wordToSpeak);
       }
     });
   }
@@ -232,21 +242,22 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
 
     // Update exercise data with user's performance
     try {
-      if(!parent_mode){
-      UserData(uid: currentUser.uid).updateExerciseData(
-        euid: data["uid"],
-        date: data["date"],
-        performance: {
-          "correct_attempt": isCorrect,
-          "completed": true,
-          "time": DateTime.now().toString(),
-        },
-      );
-    }
+      if (!parent_mode) {
+        UserData(uid: currentUser.uid).updateExerciseData(
+          euid: data["uid"],
+          date: data["date"],
+          performance: {
+            "correct_attempt": isCorrect,
+            "completed": true,
+            "time": DateTime.now().toString(),
+          },
+        );
+      }
       // If user marked it as correct, increment level
       if (isCorrect && !parent_mode) {
         data_pro.incrementLevel(startExerciseIndex);
       }
+
     } catch (e) {
       print("Error updating exercise data: $e");
       showErrorSnackBar("Failed to save progress: $e");
@@ -255,7 +266,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
     // Only auto-navigate if there are no more exercises for today
     if (!hasMoreExercises) {
       Future.delayed(Duration(milliseconds: 1000), () {
-        if (mounted) {
+        if (mounted && !parent_mode)  {
           Navigator.pop(context);
         }
       });
@@ -296,131 +307,27 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
       Navigator.pop(context);
 
       // Navigate to appropriate exercise type
-      _navigateToExerciseType(exerciseType, nextExerciseIndex);
+      navigateToExerciseType(exerciseType, nextExerciseIndex, context);
     } else {
       // No more exercises, just pop
       Navigator.pop(context);
     }
   }
 
-  void _navigateToExerciseType(String exerciseType, int exerciseIndex) {
-    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    Map<String, dynamic> data = data_pro.todaysExercises[exerciseIndex];
-
-    switch (exerciseType) {
-      case "Detection":
-        _handleDetection(exerciseIndex, data);
-        break;
-      case "Discrimination":
-        _handleDiscrimination(exerciseIndex, data);
-        break;
-      case "Identification":
-        _handleIdentification(exerciseIndex, data);
-        break;
-      case "Level":
-        _handleLevel(exerciseIndex, data);
-        break;
-      case 'Pronunciation':
-        _handlePronunciation(exerciseIndex, data);
-        break;
-      case "Vocabulary":
-        _handleVocabulary(exerciseIndex, data);
-        break;
-      default:
-        print("Unknown exercise type: $exerciseType");
-    }
-  }
-
-  // Helper methods for navigation
-  void _handleDetection(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    List<dynamic> argumentsList = [
-      type,
-      data,
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"]
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseDetection,
-        arguments: argumentsList);
-  }
-
-  void _handleDiscrimination(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    List<dynamic> argumentsList = [
-      type,
-      data,
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"]
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseDiscrimination,
-        arguments: argumentsList);
-  }
-
-  void _handleIdentification(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    List<dynamic> argumentsList = [
-      type,
-      data,
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"],
-      data
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
-        arguments: argumentsList);
-  }
-
-  void _handleLevel(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    List<dynamic> argumentsList = [
-      type,
-      data,
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"]
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
-        arguments: argumentsList);
-  }
-
-  void _handlePronunciation(int exerciseIndex, Map<String, dynamic> data) {
-    List<dynamic> argumentsList = [
-      data["type"],
-      "NULL",
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"],
-      data,
-    ];
-    NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
-        arguments: argumentsList);
-  }
-
-  void _handleVocabulary(int exerciseIndex, Map<String, dynamic> data) {
-    List<dynamic> argumentsList = [
-      data["type"],
-      "NULL",
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"],
-      data,
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseVocabulary,
-        arguments: argumentsList);
-  }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isSmallScreen = size.width < 600;
+
+    // Use sample data when parent_mode is true
+    String displayWord = widget.word;
+    String displayImageUrl = widget.imageUrl;
+
+    if (parent_mode) {
+      displayWord = "clothes";
+      displayImageUrl =
+          "https://svarbucket.s3.amazonaws.com/new_clothes/images/akg_20250606_053303_5f49e6ce.png";
+    }
 
     return Scaffold(
       body: Container(
@@ -437,7 +344,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
             // App Bar
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
-              child: DisciAppBar(context,parent_mode: parent_mode),
+              child: DisciAppBar(context, parent_mode: parent_mode),
             ),
 
             // Main Content
@@ -448,7 +355,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                   // Image Container
                   GestureDetector(
                     onTap: () async {
-                      await speakHindi(widget.word);
+                      await speakHindi(displayWord);
                     },
                     child: Container(
                       width:
@@ -470,7 +377,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: Image.network(
-                          widget.imageUrl,
+                          displayImageUrl,
                           fit: BoxFit.cover,
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) return child;
@@ -513,7 +420,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                       ],
                     ),
                     child: Text(
-                      widget.word,
+                      displayWord,
                       style: GoogleFonts.inter(
                         fontSize: isSmallScreen ? 32 : 48,
                         fontWeight: FontWeight.bold,
@@ -528,7 +435,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                   ElevatedButton.icon(
                     onPressed: userAnswer == null
                         ? () async {
-                            await speakHindi(widget.word);
+                            await speakHindi(displayWord);
                           }
                         : null,
                     icon: Icon(
@@ -687,7 +594,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
             // Next button - positioned on the right side when exercise is completed and there are more exercises
             if (exerciseCompleted && hasMoreExercises)
               Positioned(
-                bottom: size.height * 0.15,
+                bottom: size.height * 0.05,
                 right: 20,
                 child: AnimatedScale(
                   scale: exerciseCompleted ? 1.0 : 0.0,
@@ -745,29 +652,25 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                 ),
               ),
 
-          
-                              if (parent_mode) ...[
-                                        Positioned(
-                                          bottom: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.1,
-                                          right: 20,
-                                          child: AnimatedScale(
-                                            scale: 1.0,
-                                            duration:
-                                                Duration(milliseconds: 500),
-                                            child: CustomButton(
-                                              type: ButtonType.Continue, onPressed: (){
-                                              setState(() {
-                                                parent_mode = false;
-                                              });
-                                            }),
-                                          ),
-                                        )]     
+            if (parent_mode) ...[
+              Positioned(
+                bottom: MediaQuery.of(context).size.height * 0.05,
+                right: 20,
+                child: AnimatedScale(
+                  scale: 1.0,
+                  duration: Duration(milliseconds: 500),
+                  child: CustomButton(
+                      width: 150,
+                      type: ButtonType.Continue,
+                      onPressed: () {
+                        setState(() {
+                          parent_mode = false;
+                        });
+                      }),
+                ),
+              )
+            ]
           ],
-
-          
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
@@ -9,7 +10,8 @@ import 'package:svar_new/widgets/Options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart' hide LinearGradient;
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
-
+import 'package:svar_new/widgets/custom_button.dart';
+import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 
 class AudiotoimageScreen extends StatefulWidget {
   final dynamic dtcontainer;
@@ -44,7 +46,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
   SMITrigger? _correctTrigger;
   SMITrigger? _incorrectTrigger;
 
-    bool exerciseCompleted = false;
+  bool exerciseCompleted = false;
   bool hasMoreExercises = false;
   int currentExerciseIndex = 0;
   // Variable to store the correct answer
@@ -99,7 +101,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
           _correctTrigger!.fire();
           print("Correct trigger fired");
           Future.delayed(const Duration(seconds: 3), () {
-            if (mounted) {
+            if (mounted && !parent_mode) {
               Navigator.pop(context);
             }
           });
@@ -112,8 +114,6 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
       }
     }
   }
-
-
 
   void _checkForMoreExercises(ExerciseProvider data_pro) {
     // Get the current exercise's date
@@ -145,7 +145,6 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     print("Exercise date: $exerciseDate");
     print("Has more exercises for this date: $hasMoreExercises");
   }
-
 
   void moveToNextExercise() {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
@@ -181,7 +180,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
       Navigator.pop(context);
 
       // Navigate to appropriate exercise type
-      navigateToExerciseType(exerciseType, nextExerciseIndex,context);
+      navigateToExerciseType(exerciseType, nextExerciseIndex, context);
     } else {
       // No more exercises, just pop
       Navigator.pop(context);
@@ -211,282 +210,225 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     // Play background music based on exercise type
     String audioFile = "v4.wav";
 
-
     // Future.delayed(const Duration(seconds: 3), () async {
     //   await _player.play(AssetSource("assets/audio/bgm/$audioFile"));
     // });
   }
+
   @override
   Widget build(BuildContext context) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int currentExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[currentExerciseIndex];
-    
+
+    // Use sample data when parent_mode is true
+    dynamic dtcontainer = widget.dtcontainer;
+    if (parent_mode) {
+      switch (widget.params) {
+        case "AudioToImage":
+          dtcontainer = sampleAudioToImage;
+          break;
+        case "DiffAudioToImage":
+          dtcontainer = sampleDiffAudioToImage;
+          break;
+        default:
+          // Keep original dtcontainer if no sample available
+          dtcontainer = widget.dtcontainer;
+          break;
+      }
+    }
+
     // Calculate screen dimensions
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
-    extendBody: true,
-    extendBodyBehindAppBar: true,
-    backgroundColor: appTheme.gray300,
-    body: Container(
-      width: screenWidth,
-      height: screenHeight,
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      backgroundColor: appTheme.gray300,
+      body: Container(
+        width: screenWidth,
+        height: screenHeight,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/quiz_bg.jpeg'),
             fit: BoxFit.fill,
           ),
-          ),
-      child: Stack(
-      children: [
-        // Background image
-    
-        Column(
-        children: [
-          // App bar
-          Padding(
-          padding: EdgeInsets.only(left: 10.h, right: 10.h, top: 40.v),
-          child: DisciAppBar(context,parent_mode: parent_mode),
-          ),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 20.h),
-            child: Text(
-            "Listen to the sound. Which image matches this sound?",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 24,
-              fontFamily: "Comic Sans MS",
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-              color: Color.fromARGB(255, 132, 140, 74),
-            ),
-            ),
-          ),
-          // Center the main content
-          Expanded(
-          child: Center(
-            child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.h),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+        ),
+        child: Stack(
+          children: [
+            // Background image
+
+            Column(
               children: [
-              // Audio player
-              Container(
-                width: screenWidth * 0.85,
-                height: 70,
-                decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
+                // App bar
+                Padding(
+                  padding: EdgeInsets.only(left: 10.h, right: 10.h, top: 40.v),
+                  child: DisciAppBar(context, parent_mode: parent_mode),
                 ),
-                child: AudioWidget(
-                audioLinks: widget.dtcontainer.getAudioUrl(),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 20.h),
+                  child: Text(
+                    "Listen to the sound. Which image matches this sound?",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontFamily: "Comic Sans MS",
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                      color: Color.fromARGB(255, 132, 140, 74),
+                    ),
+                  ),
                 ),
-              ),
-              // Small gap between audio and images
-              SizedBox(height: 20),
-              // Image options
-              Container(
-                height: screenHeight * 0.3,
-                child: _buildImageOptions(data_pro, currentExerciseIndex, data),
-              ),
+                // Center the main content
+                Expanded(
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.h),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Audio player
+                          Container(
+                            width: screenWidth * 0.85,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: AudioWidget(
+                              audioLinks: dtcontainer.getAudioUrl(),
+                            ),
+                          ),
+                          // Small gap between audio and images
+                          SizedBox(height: 20),
+                          // Image options
+                          Container(
+                            height: screenHeight * 0.3,
+                            child: _buildImageOptions(data_pro,
+                                currentExerciseIndex, data, dtcontainer),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
+            // Animation
+            Stack(
+              children: [
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: IgnorePointer(
+                    child: SizedBox(
+                      height: screenHeight * 0.4,
+                      width: screenWidth,
+                      child: RiveAnimation.asset(
+                        'assets/rive/Celebration_animation.riv',
+                        onInit: _onRiveInit,
+                        fit: BoxFit.fitHeight,
+                        alignment: Alignment.centerLeft,
+                      ),
+                    ),
+                  ),
+                ),
+                if (exerciseCompleted && hasMoreExercises)
+                  Positioned(
+                    bottom: MediaQuery.of(context).size.height * 0.15,
+                    right: 20,
+                    child: AnimatedScale(
+                      scale: exerciseCompleted ? 1.0 : 0.0,
+                      duration: Duration(milliseconds: 500),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xFF4CAF50), Color(0xFF45A049)],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.green.withOpacity(0.3),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(25),
+                            onTap: moveToNextExercise,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 15,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    "Next",
+                                    style: GoogleFonts.inter(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                if (parent_mode) ...[
+                  Positioned(
+                    bottom: MediaQuery.of(context).size.height * 0.1,
+                    right: 20,
+                    child: AnimatedScale(
+                        scale: 1.0,
+                        duration: Duration(milliseconds: 500),
+                        child: CustomButton(
+                            width: 150,
+                            type: ButtonType.Continue,
+                            onPressed: () {
+                              setState(() {
+                                parent_mode = false;
+                              });
+                            })),
+                  )
+                ]
+              ],
             ),
-          ),
-          ),
-        ],
-        ),
-        // Animation
-        Stack(
-          children: [
-            Positioned(
-            bottom: 0,
-            left: 0,
-            child: IgnorePointer(
-              child: SizedBox(
-              height: screenHeight * 0.4,
-              width: screenWidth,
-              child: RiveAnimation.asset(
-                'assets/rive/Celebration_animation.riv',
-                onInit: _onRiveInit,
-                fit: BoxFit.fitHeight,
-                alignment: Alignment.centerLeft,
-              ),
-              ),
-            ),
-            ),
-  if (exerciseCompleted && hasMoreExercises)
-                                        Positioned(
-                                          bottom: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.15,
-                                          right: 20,
-                                          child: AnimatedScale(
-                                            scale:
-                                                exerciseCompleted ? 1.0 : 0.0,
-                                            duration:
-                                                Duration(milliseconds: 500),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Color(0xFF4CAF50),
-                                                    Color(0xFF45A049)
-                                                  ],
-                                                  begin: Alignment.topCenter,
-                                                  end: Alignment.bottomCenter,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(25),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.green
-                                                        .withOpacity(0.3),
-                                                    blurRadius: 8,
-                                                    spreadRadius: 1,
-                                                    offset: Offset(0, 4),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Material(
-                                                color: Colors.transparent,
-                                                child: InkWell(
-                                                  borderRadius:
-                                                      BorderRadius.circular(25),
-                                                  onTap: moveToNextExercise,
-                                                  child: Container(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                      horizontal: 20,
-                                                      vertical: 15,
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Text(
-                                                          "Next",
-                                                          style:
-                                                              GoogleFonts.inter(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 16,
-                                                          ),
-                                                        ),
-                                                        SizedBox(width: 8),
-                                                        Icon(
-                                                          Icons.arrow_forward,
-                                                          color: Colors.white,
-                                                          size: 20,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-              if (parent_mode) ...[
-                                        Positioned(
-                                          bottom: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.1,
-                                          right: 20,
-                                          child: AnimatedScale(
-                                            scale: 1.0,
-                                            duration:
-                                                Duration(milliseconds: 500),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Color(0xFF4CAF50),
-                                                    Color(0xFF45A049)
-                                                  ],
-                                                  begin: Alignment.topCenter,
-                                                  end: Alignment.bottomCenter,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(25),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.green
-                                                        .withOpacity(0.3),
-                                                    blurRadius: 8,
-                                                    spreadRadius: 1,
-                                                    offset: Offset(0, 4),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Material(
-                                                color: Colors.transparent,
-                                                child: InkWell(
-                                                  borderRadius:
-                                                      BorderRadius.circular(25),
-                                                  onTap: () {
-                                                    setState(() {
-                                                      parent_mode = false;
-                                                    });
-                                                  },
-                                                  child: Container(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                      horizontal: 20,
-                                                      vertical: 15,
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Text(
-                                                          "Continue",
-                                                          style:
-                                                              GoogleFonts.inter(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 16,
-                                                          ),
-                                                        ),
-                                                        SizedBox(width: 8),
-                                                        Icon(
-                                                          Icons.arrow_forward,
-                                                          color: Colors.white,
-                                                          size: 20,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      ]
           ],
         ),
-      ],
       ),
-    ),
     );
   }
 
   // Method to build image options in a grid layout for portrait mode
-  Widget _buildImageOptions(ExerciseProvider data_pro, int currentExerciseIndex, Map<String, dynamic> data) {
-    int itemCount = widget.dtcontainer.getImageUrlList().length;
-    
+  Widget _buildImageOptions(ExerciseProvider data_pro, int currentExerciseIndex,
+      Map<String, dynamic> data, dynamic dtcontainer) {
+    int itemCount = dtcontainer.getImageUrlList().length;
+
     if (itemCount <= 0) return Container();
-    
+
     // For portrait mode, organize images in a grid with fixed heights
     int columns = itemCount <= 2 ? itemCount : 2;
-    
+
     if (itemCount <= 2) {
       // For one or two images, display in a single row
       return Row(
@@ -502,24 +444,23 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                     _triggerAnimation(value);
                   },
                   child: ImageWidget(
-                    imagePath: widget.dtcontainer.getImageUrlList()[index],
+                    imagePath: dtcontainer.getImageUrlList()[index],
                   ),
                   isCorrect: () {
-                    if (widget.dtcontainer.getCorrectOutput() ==
-                        widget.dtcontainer.getImageUrlList()[index] && !parent_mode) {
+                    if (dtcontainer.getCorrectOutput() ==
+                            dtcontainer.getImageUrlList()[index] &&
+                        !parent_mode) {
                       data_pro.incrementLevel(currentExerciseIndex);
 
-                    
-                        UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                            .updateExerciseData(
-                              euid: data["uid"],
-                              date: data["date"],
-                            )
-                            .then((value) => print("Exercise data updated"));
-                      
+                      UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                          .updateExerciseData(
+                            euid: data["uid"],
+                            date: data["date"],
+                          )
+                          .then((value) => print("Exercise data updated"));
                     }
-                    return widget.dtcontainer.getCorrectOutput() ==
-                        widget.dtcontainer.getImageUrlList()[index];
+                    return dtcontainer.getCorrectOutput() ==
+                        dtcontainer.getImageUrlList()[index];
                   },
                 ),
               ),
@@ -530,7 +471,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     } else {
       // For more than two images, use a grid layout
       int rows = (itemCount / columns).ceil();
-      
+
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(rows, (rowIndex) {
@@ -550,24 +491,26 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                             _triggerAnimation(value);
                           },
                           child: ImageWidget(
-                            imagePath: widget.dtcontainer.getImageUrlList()[index],
+                            imagePath: dtcontainer.getImageUrlList()[index],
                           ),
                           isCorrect: () {
-                            if (widget.dtcontainer.getCorrectOutput() ==
-                                widget.dtcontainer.getImageUrlList()[index] && !parent_mode) {
+                            if (dtcontainer.getCorrectOutput() ==
+                                    dtcontainer.getImageUrlList()[index] &&
+                                !parent_mode) {
                               data_pro.incrementLevel(currentExerciseIndex);
 
-                            
-                                UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                                    .updateExerciseData(
-                                      euid: data["uid"],
-                                      date: data["date"],
-                                    )
-                                    .then((value) => print("Exercise data updated"));
-                              
+                              UserData(
+                                      uid: FirebaseAuth
+                                          .instance.currentUser!.uid)
+                                  .updateExerciseData(
+                                    euid: data["uid"],
+                                    date: data["date"],
+                                  )
+                                  .then((value) =>
+                                      print("Exercise data updated"));
                             }
-                            return widget.dtcontainer.getCorrectOutput() ==
-                                widget.dtcontainer.getImageUrlList()[index];
+                            return dtcontainer.getCorrectOutput() ==
+                                dtcontainer.getImageUrlList()[index];
                           },
                         ),
                       ),

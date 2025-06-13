@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'transition.dart';
 import 'dart:async';
@@ -67,7 +68,7 @@ static Future<dynamic> pushNamed(String routeName, {dynamic arguments, String? r
     String? type = data["type"];
     List<dynamic> argumentsList = [
       type,
-      data,
+      retrieveObject(type!, data),
       "notcompleted",
       exerciseIndex,
       data["uid"],
@@ -81,7 +82,7 @@ static Future<dynamic> pushNamed(String routeName, {dynamic arguments, String? r
     String? type = data["type"];
     List<dynamic> argumentsList = [
       type,
-      data,
+        retrieveObject(type!, data),
       "notcompleted",
       exerciseIndex,
       data["uid"],
@@ -95,7 +96,7 @@ static Future<dynamic> pushNamed(String routeName, {dynamic arguments, String? r
     String? type = data["type"];
     List<dynamic> argumentsList = [
       type,
-      data,
+        retrieveObject(type!, data),
       "notcompleted",
       exerciseIndex,
       data["uid"],
@@ -110,7 +111,7 @@ static Future<dynamic> pushNamed(String routeName, {dynamic arguments, String? r
     String? type = data["type"];
     List<dynamic> argumentsList = [
       type,
-      data,
+        retrieveObject(type!, data),
       "notcompleted",
       exerciseIndex,
       data["uid"],
