@@ -592,69 +592,31 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
             ),
 
             // Next button - positioned on the right side when exercise is completed and there are more exercises
-            if (exerciseCompleted && hasMoreExercises)
+            if (exerciseCompleted && hasMoreExercises && !parent_mode)
               Positioned(
-                bottom: size.height * 0.05,
-                right: 20,
-                child: AnimatedScale(
-                  scale: exerciseCompleted ? 1.0 : 0.0,
-                  duration: Duration(milliseconds: 500),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFF4CAF50), Color(0xFF45A049)],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.green.withOpacity(0.3),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(25),
-                        onTap: _moveToNextExercise,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 15,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                "Next",
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              SizedBox(width: 8),
-                              Icon(
-                                Icons.arrow_forward,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+                                      bottom: MediaQuery.of(context)
+                                              .size
+                                              .height *
+                                          0.03,
+                                      right: 20,
+                                      child: AnimatedScale(
+                                        scale:
+                                          1,
+                                        duration:
+                                            Duration(milliseconds: 500),
+                                        child: CustomButton(
+                                          width: 150,
+                                          child:  Text(
+          "Next",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+                                          type: ButtonType.Next, onPressed: _moveToNextExercise)
+                                      ),
+                                    ),
 
             if (parent_mode) ...[
               Positioned(
-                bottom: MediaQuery.of(context).size.height * 0.05,
+                bottom: MediaQuery.of(context).size.height * 0.03,
                 right: 20,
                 child: AnimatedScale(
                   scale: 1.0,

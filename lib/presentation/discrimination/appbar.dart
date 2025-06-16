@@ -24,16 +24,18 @@ Widget DisciAppBar(BuildContext context,{bool parent_mode = false}) {
       CustomButton(type: ButtonType.ParentMode, onPressed: (){
       
       }),
-      Spacer(),
+
+
+    Spacer(),
       
-        CustomButton(
-  type: ButtonType.Menu,
-  onPressed: () {
-    showDialog(
+    CustomButton(
+      type: ButtonType.Menu,
+    onPressed: () {
+      showDialog(
       context: context,
       // barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
+        builder: (BuildContext context) {
+            return Dialog(
           child: SettingsScreen(),
           insetPadding: EdgeInsets.symmetric(horizontal: 1),
           elevation: 0,

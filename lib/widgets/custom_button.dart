@@ -326,7 +326,7 @@ class _CustomButtonState extends State<CustomButton>
         );
         break;
       case ButtonType.Next:
-        imagePath = ImageConstant.imgNextBtn;
+      
         height = 60;
         width = widget.width ?? 0;
         defaultChild = Text(
@@ -373,7 +373,7 @@ class _CustomButtonState extends State<CustomButton>
       case ButtonType.Change:
         imagePath = ImageConstant.imgChangebtn;
         width = 170;
-        height = 80;
+        height = 60;
 
         defaultChild = Text(
           "Stop",
@@ -463,7 +463,7 @@ class _CustomButtonState extends State<CustomButton>
         break;
 
       case ButtonType.ParentMode:
-        height = 50;
+        height = 40;
         width = 150;
         buttontype = ChicletButtonTypes.roundedRectangle;
         color = Color(0xFF1cb0f6);
@@ -471,7 +471,7 @@ class _CustomButtonState extends State<CustomButton>
             child: Text(
           "Parent Mode",
           style: GoogleFonts.inter(
-              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+              fontSize: 19, fontWeight: FontWeight.bold, color: Colors.white),
         ));
         break;
     }
@@ -557,10 +557,14 @@ class _CustomButtonState extends State<CustomButton>
         widget.type == ButtonType.Settings ||
         widget.type == ButtonType.Login ||
         widget.type == ButtonType.SignUp ||
-        widget.type == ButtonType.Next ||
-        widget.type == ButtonType.Video1 ||
-        widget.type == ButtonType.Video2) {
+        widget.type == ButtonType.Next 
+      ) {
       width = widget.width ?? MediaQuery.of(context).size.width * 0.9;
+      color = null;
+    }
+    if (widget.type == ButtonType.Video1 ||
+        widget.type == ButtonType.Video2) {
+      width = widget.width ?? 190;
       color = null;
     }
     if (widget.type == ButtonType.AlreadyHaveAccount ||
@@ -572,7 +576,7 @@ class _CustomButtonState extends State<CustomButton>
       color = Color(0xFFF47C37);
     }
 
-    if (widget.type == ButtonType.ResetPassword) {
+    if (widget.type == ButtonType.ResetPassword ) {
       width = 190;
       color = Color(0xFFF47C37);
     }
@@ -741,6 +745,7 @@ class OptionButton extends CustomButton {
     Key? key,
     required ButtonType type,
     required VoidCallback onPressed,
+    
   }) : super(key: key, type: type, onPressed: onPressed);
 
   @override

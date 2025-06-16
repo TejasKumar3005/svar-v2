@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
+import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
+import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'transition.dart';
 import 'dart:async';
 
@@ -38,6 +41,29 @@ static Future<dynamic> pushNamed(String routeName, {dynamic arguments, String? r
   void navigateToExerciseType(String exerciseType, int exerciseIndex,BuildContext context) {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     Map<String, dynamic> data = data_pro.todaysExercises[exerciseIndex];
+    if(data["type"]=="video"){
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ExerciseVideo(
+              videoUrl: data["video_url"],
+              onVideoComplete: () {
+                if (!context.mounted) return;
+                data_pro.incrementLevel(exerciseIndex);
+                if (data["completedAt"] == null) {
+                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                      .updateExerciseData(euid: data["uid"], date: data["date"])
+                      .then((value) =>
+                          print("Exercise data updated for ${data["uid"]}"))
+                      .catchError(
+                          (e) => print("Error updating exercise data: $e"));
+                }
+              },
+            ),
+          ),
+        );
+        return;
+      }
 
     switch (exerciseType) {
       case "Detection":

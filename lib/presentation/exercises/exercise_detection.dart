@@ -114,9 +114,11 @@ class _DetectionState extends State<ExerciseDetection> {
     if (isCorrect) {
       if (_correctTrigger != null) {
         _correctTrigger!.fire();
-        setState(() {
-          exerciseCompleted = true;
-        });
+        if (!parent_mode) {
+          setState(() {
+            exerciseCompleted = true;
+          });
+        }
 
         // Only auto-navigate if there are no more exercises for today
         if (!hasMoreExercises) {
@@ -290,152 +292,103 @@ class _DetectionState extends State<ExerciseDetection> {
       }
     }
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                // Replace gradient with background image
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(
-                        'assets/images/quiz_bg.jpeg'), // Update with your actual image path
-                    fit: BoxFit.fill,
-                  ),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              // Replace gradient with background image
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                      'assets/images/quiz_bg.jpeg'), // Update with your actual image path
+                  fit: BoxFit.fill,
                 ),
               ),
             ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.h,
-                    ),
-                    child: DisciAppBar(context, parent_mode: parent_mode),
-                  ),
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        detectionQuiz(context, type, dtcontainer),
-                        Stack(
-                          children: [
-                            Positioned(
-                              bottom: 0.h,
-                              left: 0.h,
-                              child: IgnorePointer(
-                                child: SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.4,
-                                  width: MediaQuery.of(context).size.width,
-                                  child: RiveAnimation.asset(
-                                    'assets/rive/Celebration_animation.riv',
-                                    onInit: _onRiveInit,
-                                    fit: BoxFit.fitHeight,
-                                    alignment: Alignment.centerLeft,
-                                  ),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            padding: const EdgeInsets.only(
+                left: 10, right: 10, top: 30.0, bottom: 20),
+            child: Column(
+              children: [
+                DisciAppBar(context, parent_mode: parent_mode),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      detectionQuiz(context, type, dtcontainer),
+                      Stack(
+                        children: [
+                          Positioned(
+                            bottom: 0.h,
+                            left: -30.h,
+                            child: IgnorePointer(
+                              child: SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.4,
+                                width: MediaQuery.of(context).size.width,
+                                child: RiveAnimation.asset(
+                                  'assets/rive/Celebration_animation.riv',
+                                  onInit: _onRiveInit,
+                                  fit: BoxFit.fitHeight,
+                                  alignment: Alignment.centerLeft,
                                 ),
                               ),
                             ),
+                          ),
 
-                            // Next button - positioned on the right side of Rive animation
-                            if (exerciseCompleted && hasMoreExercises)
-                              Positioned(
-                                bottom:
-                                    MediaQuery.of(context).size.height * 0.15,
-                                right: 20.h,
-                                child: AnimatedScale(
-                                  scale: exerciseCompleted ? 1.0 : 0.0,
-                                  duration: Duration(milliseconds: 500),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Color(0xFF4CAF50),
-                                          Color(0xFF45A049)
-                                        ],
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                      ),
-                                      borderRadius: BorderRadius.circular(25),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.green.withOpacity(0.3),
-                                          blurRadius: 8,
-                                          spreadRadius: 1,
-                                          offset: Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Material(
-                                      color: Colors.transparent,
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(25),
-                                        onTap: _moveToNextExercise,
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 20.h,
-                                            vertical: 15.v,
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                "Next",
-                                                style: GoogleFonts.inter(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                              SizedBox(width: 8.h),
-                                              Icon(
-                                                Icons.arrow_forward,
-                                                color: Colors.white,
-                                                size: 20,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-
-                            if (parent_mode) ...[
-                              Positioned(
-                                bottom:
-                                    MediaQuery.of(context).size.height * 0.1,
-                                right: 20,
-                                child: AnimatedScale(
-                                  scale: 1.0,
+                          // Next button - positioned on the right side of Rive animation
+                          if (exerciseCompleted &&
+                              hasMoreExercises &&
+                              !parent_mode)
+                            Positioned(
+                              bottom: MediaQuery.of(context).size.height * 0.01,
+                              right: 20,
+                              child: AnimatedScale(
+                                  scale: 1,
                                   duration: Duration(milliseconds: 500),
                                   child: CustomButton(
-                                      width: 150.h,
-                                      type: ButtonType.Continue,
-                                      onPressed: () {
-                                        setState(() {
-                                          parent_mode = false;
-                                        });
-                                      }),
-                                ),
-                              )
-                            ]
-                          ],
-                        ),
-                      ],
-                    ),
+                                      width: 150,
+                                      child: Text(
+                                        "Next",
+                                        style: GoogleFonts.inter(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      type: ButtonType.Next,
+                                      onPressed: _moveToNextExercise)),
+                            ),
+
+                          if (parent_mode) ...[
+                            Positioned(
+                              bottom: MediaQuery.of(context).size.height * 0.01,
+                              right: 20,
+                              child: AnimatedScale(
+                                scale: 1.0,
+                                duration: Duration(milliseconds: 500),
+                                child: CustomButton(
+                                    width: 150,
+                                    type: ButtonType.Continue,
+                                    onPressed: () {
+                                      setState(() {
+                                        parent_mode = false;
+                                      });
+                                    }),
+                              ),
+                            )
+                          ]
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -447,6 +400,8 @@ class _DetectionState extends State<ExerciseDetection> {
         return HalfMutedWidget(
           key: _audioWidgetKey,
           audioLinks: dtcontainer.getVideoUrls(),
+          triggerAnimation: _triggerAnimation,
+          parentMode: parent_mode,
         );
       case "MutedUnmuted":
         return MutedUnmuted(context, dtcontainer);
@@ -462,7 +417,7 @@ class _DetectionState extends State<ExerciseDetection> {
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 35.v),
+      padding: EdgeInsets.symmetric(horizontal: 10.h),
       child: Column(
         children: [
           // Instruction Card
@@ -648,152 +603,24 @@ class _DetectionState extends State<ExerciseDetection> {
       Navigator.pop(context);
 
       // Navigate to appropriate exercise type
-      _navigateToExerciseType(exerciseType, nextExerciseIndex);
+      navigateToExerciseType(exerciseType, nextExerciseIndex, context);
     } else {
       // No more exercises, just pop
       Navigator.pop(context);
     }
   }
-
-  void _navigateToExerciseType(String exerciseType, int exerciseIndex) {
-    var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-    Map<String, dynamic> data = data_pro.todaysExercises[exerciseIndex];
-
-    switch (exerciseType) {
-      case "Detection":
-        _handleDetection(exerciseIndex, data);
-        break;
-      case "Discrimination":
-        _handleDiscrimination(exerciseIndex, data);
-        break;
-      case "Identification":
-        _handleIdentification(exerciseIndex, data);
-        break;
-      case "Level":
-        _handleLevel(exerciseIndex, data);
-        break;
-      case 'Pronunciation':
-        _handlePronunciation(exerciseIndex, data);
-        break;
-      case "Vocabulary":
-        _handleVocabulary(exerciseIndex, data);
-        break;
-      default:
-        print("Unknown exercise type: $exerciseType");
-    }
-  }
-
-  // Helper methods for navigation
-  void _handleDetection(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    if (type == "video") {
-      // Handle video type if needed
-    } else {
-      final Object dtcontainer = _retrieveObject(type!, data);
-      List<dynamic> argumentsList = [
-        type,
-        dtcontainer,
-        "notcompleted",
-        exerciseIndex,
-        data["uid"],
-        data["date"]
-      ];
-      NavigatorService.pushNamed(AppRoutes.exerciseDetection,
-          arguments: argumentsList);
-    }
-  }
-
-  void _handleDiscrimination(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    if (type == "sound" || type == "video") {
-      // Handle video/sound type if needed
-    } else {
-      final Object dtcontainer = _retrieveObject(type!, data);
-      List<dynamic> argumentsList = [
-        type,
-        dtcontainer,
-        "notcompleted",
-        exerciseIndex,
-        data["uid"],
-        data["date"]
-      ];
-      NavigatorService.pushNamed(AppRoutes.exerciseDiscrimination,
-          arguments: argumentsList);
-    }
-  }
-
-  void _handleIdentification(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    final Object dtcontainer = _retrieveObject(type!, data);
-    List<dynamic> argumentsList = [
-      type,
-      dtcontainer,
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"],
-      data
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
-        arguments: argumentsList);
-  }
-
-  void _handleLevel(int exerciseIndex, Map<String, dynamic> data) {
-    String? type = data["type"];
-    final Object dtcontainer = _retrieveObject(type!, data);
-    List<dynamic> argumentsList = [
-      type,
-      dtcontainer,
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"]
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseIdentification,
-        arguments: argumentsList);
-  }
-
-  void _handlePronunciation(int exerciseIndex, Map<String, dynamic> data) {
-    List<dynamic> argumentsList = [
-      data["type"],
-      "NULL",
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"],
-      data,
-    ];
-    NavigatorService.pushNamed(AppRoutes.exercisePronunciation,
-        arguments: argumentsList);
-  }
-
-  void _handleVocabulary(int exerciseIndex, Map<String, dynamic> data) {
-    List<dynamic> argumentsList = [
-      data["type"],
-      "NULL",
-      "notcompleted",
-      exerciseIndex,
-      data["uid"],
-      data["date"],
-      data,
-    ];
-    NavigatorService.pushNamed(AppRoutes.exerciseVocabulary,
-        arguments: argumentsList);
-  }
-
-  Object _retrieveObject(String type, Map<String, dynamic> data) {
-    // Simplified version - return the data as is for now
-    // The actual object creation should be handled in the target exercise screen
-    return data;
-  }
 }
 
 class HalfMutedWidget extends StatefulWidget {
   final List<String> audioLinks;
+  void Function(bool) triggerAnimation;
+  final bool parentMode;
 
-  const HalfMutedWidget({
+  HalfMutedWidget({
     Key? key,
     required this.audioLinks,
+    required this.triggerAnimation,
+    required this.parentMode,
   }) : super(key: key);
 
   @override
@@ -808,10 +635,14 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
   SMITrigger? _incorrectTrigger;
   late bool _muteFirstHalf; // Randomized muting configuration
   late String _instructionText; // Dynamic instruction text
+  late bool parentMode; // Access to parent mode variable
 
   @override
   void initState() {
     super.initState();
+    // Initialize parent mode from widget
+    parentMode = widget.parentMode;
+
     // Randomly determine which half to mute
     _muteFirstHalf = Random().nextBool();
 
@@ -840,16 +671,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
     }
   }
 
-  void _triggerAnimation(bool isCorrect) {
-    if (isCorrect && _correctTrigger != null) {
-      _correctTrigger!.fire();
-      Future.delayed(const Duration(seconds: 5), () {
-        if (mounted) Navigator.pop(context);
-      });
-    } else if (!isCorrect && _incorrectTrigger != null) {
-      _incorrectTrigger!.fire();
-    }
-  }
+
 
   void _startVolumeControl() {
     // Create a periodic timer that runs every 500ms
@@ -895,7 +717,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.h, vertical: 35.v),
+      padding: EdgeInsets.symmetric(horizontal: 20.h),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Column(
@@ -972,7 +794,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                           ],
                         ),
                         child: OptionWidget(
-                          triggerAnimation: _triggerAnimation,
+                          triggerAnimation: widget.triggerAnimation,
                           child: OptionButton(
                             type: ButtonType.Stop,
                             onPressed: () {
@@ -1004,7 +826,7 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                             print(
                                 "Progress: $currentProgress, Condition: $condition, Mute first half: $_muteFirstHalf");
 
-                            if (condition) {
+                            if (condition && !parentMode) {
                               data_pro.incrementLevel(startExerciseIndex);
 
                               UserData(

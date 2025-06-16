@@ -7,6 +7,7 @@ import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
+import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -100,9 +101,11 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
       if (_correctTrigger != null) {
         print("correctTrigger: is fired");
         _correctTrigger!.fire();
-        setState(() {
-          exerciseCompleted = true;
-        });
+        if (!parent_mode) {
+          setState(() {
+            exerciseCompleted = true;
+          });
+        }
 
         // Only auto-navigate if there are no more exercises for today
         if (!hasMoreExercises) {
@@ -243,19 +246,19 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
           ),
         ),
         child: Container(
-          padding:   EdgeInsets.only(left: 10.h, right: 10.h, top: 40.v),
+          padding:
+              const EdgeInsets.only(left: 10, right: 10, top: 30.0, bottom: 20),
           child: Column(
             children: [
               // App Bar with padding
               DisciAppBar(context, parent_mode: parent_mode),
-          
+
               // Title section positioned over the placeholder
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15.h, vertical: 5.v),
                 child: Container(
                   width: double.infinity,
-                  padding:
-                      EdgeInsets.symmetric( horizontal: 20.h),
+                  padding: EdgeInsets.symmetric(horizontal: 20.h),
                   // Remove decoration to make it transparent over the placeholder
                   child: Text(
                     type == "OddOne"
@@ -276,7 +279,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                   ),
                 ),
               ),
-          
+
               // Main content area
               Expanded(
                 child: Stack(
@@ -286,7 +289,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                       padding: EdgeInsets.fromLTRB(15.h, 10.v, 15.h, 60.v),
                       child: discriminationOptions(type, data, dtcontainer),
                     ),
-          
+
                     // Animation overlay at bottom
                     Stack(
                       children: [
@@ -306,80 +309,38 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                             ),
                           ),
                         ),
-          
+
                         // Next button - positioned on the right side of Rive animation
-                        if (exerciseCompleted && hasMoreExercises)
+                        if (exerciseCompleted &&
+                            hasMoreExercises &&
+                            !parent_mode)
                           Positioned(
-                            bottom: MediaQuery.of(context).size.height * 0.15,
-                            right: 20.h,
+                            bottom: MediaQuery.of(context).size.height * 0.03,
+                            right: 20,
                             child: AnimatedScale(
-                              scale: exerciseCompleted ? 1.0 : 0.0,
-                              duration: Duration(milliseconds: 500),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color(0xFF4CAF50),
-                                      Color(0xFF45A049)
-                                    ],
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                  ),
-                                  borderRadius: BorderRadius.circular(25),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.green.withOpacity(0.3),
-                                      blurRadius: 8,
-                                      spreadRadius: 1,
-                                      offset: Offset(0, 4),
+                                scale: 1,
+                                duration: Duration(milliseconds: 500),
+                                child: CustomButton(
+                                    width: 150,
+                                    child: Text(
+                                      "Next",
+                                      style: GoogleFonts.inter(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold),
                                     ),
-                                  ],
-                                ),
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(25),
-                                    onTap: _moveToNextExercise,
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 20.h,
-                                        vertical: 15.v,
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            "Next",
-                                            style: GoogleFonts.inter(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16,
-                                            ),
-                                          ),
-                                          SizedBox(width: 8.h),
-                                          Icon(
-                                            Icons.arrow_forward,
-                                            color: Colors.white,
-                                            size: 20,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                                    type: ButtonType.Next,
+                                    onPressed: _moveToNextExercise)),
                           ),
-          
+
                         if (parent_mode) ...[
                           Positioned(
-                            bottom: MediaQuery.of(context).size.height * 0.1,
+                            bottom: MediaQuery.of(context).size.height * 0.03,
                             right: 20,
                             child: AnimatedScale(
                               scale: 1.0,
                               duration: Duration(milliseconds: 500),
                               child: CustomButton(
-                                  width: 150.h,
+                                  width: 150,
                                   type: ButtonType.Continue,
                                   onPressed: () {
                                     setState(() {
@@ -982,6 +943,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
       Map<String, dynamic> nextExercise =
           data_pro.todaysExercises[nextExerciseIndex];
       String exerciseType = nextExercise["exerciseType"];
+
+      print("nextExercise: $nextExercise");
 
       // Pop current screen first
       Navigator.pop(context);

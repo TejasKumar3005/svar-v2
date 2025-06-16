@@ -335,7 +335,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                     ),
                   ),
                 ),
-                if (exerciseCompleted && hasMoreExercises)
+                if (exerciseCompleted && hasMoreExercises && !parent_mode)
                   Positioned(
                     bottom: MediaQuery.of(context).size.height * 0.15,
                     right: 20,

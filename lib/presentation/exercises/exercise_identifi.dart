@@ -165,9 +165,11 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
 
     if (isCorrect) {
-      setState(() {
-        exerciseCompleted = true;
-      });
+        if (!parent_mode) {
+          setState(() {
+            exerciseCompleted = true;
+          });
+        }
 
       // Only auto-navigate if there are no more exercises for today
       if (!hasMoreExercises) {
@@ -233,201 +235,144 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                       fit: BoxFit.fill,
                     ),
                   ),
-                  child: Stack(
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height,
-                        padding:
-                            EdgeInsets.only(left: 10.h, right: 10.h, top: 40.v),
-                        child: Column(
-                          children: [
-                            DisciAppBar(context,
-                                parent_mode:
-                                    parent_mode), // No need for any callbacks now,
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 15.h),
-                              child: Container(
-                                width: double.infinity,
-                                padding: EdgeInsets.symmetric(horizontal: 20.h),
-                                // Remove decoration to make it transparent over the placeholder
-                                child: Text(
-                                  type == "ImageToAudio" ||
-                                          type == "DiffImageToAudio"
-                                      ? "Look at the image. Can you tell what sound it makes?"
-                                      : type == "MaleFemale"
-                                          ? "Listen to the voice carefully. Can you tell which one is male and which one is female?"
-                                          : type == "DiffHalf"
-                                              ? "Listen closely. Tap the button as soon as the sound changes."
-                                              : "You will hear two sounds. Are they the same or different?",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontFamily:
-                                        "Comic Sans MS", // Child-friendly font
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.5,
-                                    color: Color.fromARGB(255, 132, 140, 74),
-                                  ),
-                                ),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    padding: const EdgeInsets.only(left: 10, right: 10, top: 30.0,bottom: 20),
+                    child: Column(
+                      children: [
+                        DisciAppBar(context,
+                            parent_mode:
+                                parent_mode), // No need for any callbacks now,
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15.h),
+                          child: Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(horizontal: 20.h),
+                            // Remove decoration to make it transparent over the placeholder
+                            child: Text(
+                              type == "ImageToAudio" ||
+                                      type == "DiffImageToAudio"
+                                  ? "Look at the image. Can you tell what sound it makes?"
+                                  : type == "MaleFemale"
+                                      ? "Listen to the voice carefully. Can you tell which one is male and which one is female?"
+                                      : type == "DiffHalf"
+                                          ? "Listen closely. Tap the button as soon as the sound changes."
+                                          : "You will hear two sounds. Are they the same or different?",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontFamily:
+                                    "Comic Sans MS", // Child-friendly font
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                                color: Color.fromARGB(255, 132, 140, 74),
                               ),
                             ),
-
-                            Expanded(
-                              child: Stack(
+                          ),
+                        ),
+                  
+                        Expanded(
+                          child: Stack(
+                            children: [
+                              _buildOptionGRP(
+                                context,
+                                provider,
+                                type,
+                                dtcontainer,
+                                params,
+                              ),
+                              // Rive animation positioned at bottom left
+                              Stack(
                                 children: [
-                                  _buildOptionGRP(
-                                    context,
-                                    provider,
-                                    type,
-                                    dtcontainer,
-                                    params,
-                                  ),
-                                  // Rive animation positioned at bottom left
-                                  Stack(
-                                    children: [
-                                      Positioned(
-                                        bottom: 0,
-                                        left: 0,
-                                        child: IgnorePointer(
-                                          child: SizedBox(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.4,
-                                            width: MediaQuery.of(context)
+                                  Positioned(
+                                    bottom: 0,
+                                    left: 0,
+                                    child: IgnorePointer(
+                                      child: SizedBox(
+                                        height: MediaQuery.of(context)
                                                 .size
-                                                .width,
-                                            child: RiveAnimation.asset(
-                                              'assets/rive/Celebration_animation.riv',
-                                              onInit: _onRiveInit,
-                                              fit: BoxFit.fitHeight,
-                                              alignment: Alignment.centerLeft,
-                                            ),
-                                          ),
+                                                .height *
+                                            0.4,
+                                        width: MediaQuery.of(context)
+                                            .size
+                                            .width,
+                                        child: RiveAnimation.asset(
+                                          'assets/rive/Celebration_animation.riv',
+                                          onInit: _onRiveInit,
+                                          fit: BoxFit.fitHeight,
+                                          alignment: Alignment.centerLeft,
                                         ),
                                       ),
-                                      if (exerciseCompleted && hasMoreExercises)
-                                        Positioned(
-                                          bottom: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.15,
-                                          right: 20,
-                                          child: AnimatedScale(
-                                            scale:
-                                                exerciseCompleted ? 1.0 : 0.0,
-                                            duration:
-                                                Duration(milliseconds: 500),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  colors: [
-                                                    Color(0xFF4CAF50),
-                                                    Color(0xFF45A049)
-                                                  ],
-                                                  begin: Alignment.topCenter,
-                                                  end: Alignment.bottomCenter,
-                                                ),
-                                                borderRadius:
-                                                    BorderRadius.circular(25),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.green
-                                                        .withOpacity(0.3),
-                                                    blurRadius: 8,
-                                                    spreadRadius: 1,
-                                                    offset: Offset(0, 4),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Material(
-                                                color: Colors.transparent,
-                                                child: InkWell(
-                                                  borderRadius:
-                                                      BorderRadius.circular(25),
-                                                  onTap: _moveToNextExercise,
-                                                  child: Container(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                      horizontal: 20,
-                                                      vertical: 15,
-                                                    ),
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Text(
-                                                          "Next",
-                                                          style:
-                                                              GoogleFonts.inter(
-                                                            color: Colors.white,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 16,
-                                                          ),
-                                                        ),
-                                                        SizedBox(width: 8),
-                                                        Icon(
-                                                          Icons.arrow_forward,
-                                                          color: Colors.white,
-                                                          size: 20,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      if (parent_mode) ...[
-                                        Positioned(
-                                          bottom: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.1,
-                                          right: 20,
-                                          child: AnimatedScale(
-                                            scale: 1.0,
-                                            duration:
-                                                Duration(milliseconds: 500),
-                                            child: CustomButton(
-                                              width: 150,
-                                                type: ButtonType.Continue,
-                                                onPressed: () {
-                                                  setState(() {
-                                                    parent_mode = false;
-                                                  });
-                                                }),
-                                          ),
-                                        )
-                                      ]
-                                    ],
+                                    ),
                                   ),
-                                  // Tip button
-                                  // Positioned(
-                                  //   bottom: 0,
-                                  //   right: 0,
-                                  //   child: GestureDetector(
-                                  //     onTap: () {
-                                  //       // Add tip button functionality
-                                  //     },
-                                  //     child: CustomImageView(
-                                  //       imagePath: ImageConstant.imgTipbtn,
-                                  //       height: 60.v,
-                                  //       width: 60.h,
-                                  //       fit: BoxFit.contain,
-                                  //     ),
-                                  //   ),
-                                  // ),
+                                  if (exerciseCompleted && hasMoreExercises && !parent_mode)
+                                    Positioned(
+                                      bottom: MediaQuery.of(context)
+                                              .size
+                                              .height *
+                                          0.03,
+                                      right: 20,
+                                      child: AnimatedScale(
+                                        scale:
+                                          1,
+                                        duration:
+                                            Duration(milliseconds: 500),
+                                        child: CustomButton(
+                                          width: 150,
+                                          child:  Text(
+          "Next",
+          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+                                          type: ButtonType.Next, onPressed: _moveToNextExercise)
+                                      ),
+                                    ),
+                                    
+                                  if (parent_mode) ...[
+                                    Positioned(
+                                      bottom: MediaQuery.of(context)
+                                              .size
+                                              .height *
+                                          0.03,
+                                      right: 20,
+                                      child: AnimatedScale(
+                                        scale: 1.0,
+                                        duration:
+                                            Duration(milliseconds: 500),
+                                        child: CustomButton(
+                                          width: 150,
+                                            type: ButtonType.Continue,
+                                            onPressed: () {
+                                              setState(() {
+                                                parent_mode = false;
+                                              });
+                                            }),
+                                      ),
+                                    )
+                                  ]
                                 ],
                               ),
-                            ),
-                          ],
+                              // Tip button
+                              // Positioned(
+                              //   bottom: 0,
+                              //   right: 0,
+                              //   child: GestureDetector(
+                              //     onTap: () {
+                              //       // Add tip button functionality
+                              //     },
+                              //     child: CustomImageView(
+                              //       imagePath: ImageConstant.imgTipbtn,
+                              //       height: 60.v,
+                              //       width: 60.h,
+                              //       fit: BoxFit.contain,
+                              //     ),
+                              //   ),
+                              // ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ))

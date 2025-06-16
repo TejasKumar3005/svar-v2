@@ -61,7 +61,7 @@ class CachingManager {
       if (type == "video") {
         if (exercise["video"] != null) urls.add(exercise["video"]);
         if (exercise["video_url"] != null) urls.add(exercise["video_url"]);
-      } else if (type == "ImageToAudio") {
+      } else if (type == "ImageToAudio" || type=="DiffImageToAudio") {
         ImageToAudio imageToAudio = ImageToAudio.fromJson(exercise);
         urls.add(imageToAudio.image_url);
         urls.addAll(imageToAudio.audio_list);
@@ -72,7 +72,7 @@ class CachingManager {
       } else if (type == "FigToWord") {
         FigToWord figToWord = FigToWord.fromJson(exercise);
         urls.add(figToWord.image_url);
-      } else if (type == "AudioToImage") {
+      } else if (type == "AudioToImage" || type=="DiffAudioToImage") {
         AudioToImage audioToImage = AudioToImage.fromJson(exercise);
         urls.addAll(audioToImage.audio_url);
         urls.addAll(audioToImage.image_list);
@@ -94,7 +94,10 @@ class CachingManager {
       } else if (type == "DiffHalf") {
         DiffHalf diffHalf = DiffHalf.fromJson(exercise);
         urls.addAll(diffHalf.video_url);
-      } else {}
+      } else if (type == "Vocabulary") {
+        urls.add(exercise["url"]);
+      }else{
+      }
     }
   
     print("returning urls $urls");
