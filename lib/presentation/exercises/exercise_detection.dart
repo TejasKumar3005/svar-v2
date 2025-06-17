@@ -428,25 +428,27 @@ class _DetectionState extends State<ExerciseDetection> {
     switch (quizType) {
       case "HalfMuted":
         return HalfMutedWidget(
-          key: _audioWidgetKey,
+          key: Key(parent_mode.toString()),
           audioLinks: dtcontainer.getVideoUrls(),
           triggerAnimation: _triggerAnimation,
           parentMode: parent_mode,
         );
       case "MutedUnmuted":
-        return MutedUnmuted(context, dtcontainer);
+        return MutedUnmuted(
+          context, dtcontainer, Key(parent_mode.toString()));
       default:
         return Container();
     }
   }
 
-  Widget MutedUnmuted(BuildContext context, dynamic dtcontainer) {
+  Widget MutedUnmuted(BuildContext context, dynamic dtcontainer,Key key) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
     return Padding(
+      key: key,
       padding: EdgeInsets.symmetric(horizontal: 10.h),
       child: Column(
         children: [

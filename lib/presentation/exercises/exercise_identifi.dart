@@ -507,6 +507,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
       case "ImageToAudio" || "DiffImageToAudio":
         return (dtcontainer as ImageToAudio).getAudioList().length <= 4
             ? Center(
+                key: Key(parent_mode.toString()),
                 child: Container(
                     height: MediaQuery.of(context).size.height *
                         0.4, // Adjust height as needed

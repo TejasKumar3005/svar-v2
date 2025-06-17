@@ -391,6 +391,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
 
     // Use LayoutBuilder to ensure responsiveness
     return LayoutBuilder(
+      key: Key(parent_mode.toString()),
       builder: (context, constraints) {
         // Calculate responsive sizes
         double maxWidth = constraints.maxWidth;
@@ -569,6 +570,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
 
     // Using LayoutBuilder for responsive layout
     return Center(
+      key: Key(parent_mode.toString()),
       child: LayoutBuilder(
         builder: (context, constraints) {
           // Calculate responsive sizes
@@ -669,6 +671,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
     return Container(
+      key: Key(parent_mode.toString()),
       padding: EdgeInsets.symmetric(vertical: 35.v, horizontal: 20.h),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -836,6 +839,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
     // Function to build each audio option
     Widget buildAudioOption(int index) {
       return OptionWidget(
+        key: Key(parent_mode.toString()),
         triggerAnimation: (value) => _triggerAnimation(value),
         child: Container(
           width:
