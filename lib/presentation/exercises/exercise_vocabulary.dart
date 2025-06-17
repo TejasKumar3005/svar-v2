@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -386,30 +387,18 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: Image.network(
-                          displayImageUrl,
+                        child: CachedNetworkImage(
+                          imageUrl: displayImageUrl,
                           fit: BoxFit.cover,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                    : null,
-                              ),
-                            );
-                          },
-                          errorBuilder: (context, error, stackTrace) {
-                            return Center(
-                              child: Icon(
-                                Icons.error_outline,
-                                size: 50,
-                                color: Colors.red[300],
-                              ),
-                            );
-                          },
+                          placeholder: (context, url) => Container(
+                            height: 30,
+                            width: 30,
+                            child: LinearProgressIndicator(
+                              color: Colors.grey.shade200,
+                              backgroundColor: Colors.grey.shade100,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Icon(Icons.error_outline, size: 50, color: Colors.red[300]),
                         ),
                       ),
                     ),
