@@ -205,27 +205,25 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: isLoading
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFF1cb0f6),
-                ),
-              )
-            : errorMessage.isNotEmpty
-                ? _buildErrorState()
-                : FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          _buildHeader(),
-                          _buildReportsList(),
-                        ],
-                      ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFF1cb0f6),
+              ),
+            )
+          : errorMessage.isNotEmpty
+              ? _buildErrorState()
+              : FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _buildHeader(),
+                        _buildReportsList(),
+                      ],
                     ),
                   ),
-      ),
+                ),
     );
   }
 
@@ -268,6 +266,7 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
   Widget _buildHeader() {
     return Container(
       height: 200,
+      
       decoration: BoxDecoration(
         color: Color(0xFF1cb0f6),
         borderRadius: const BorderRadius.only(
@@ -279,6 +278,7 @@ class _PatientAssessmentPageState extends State<PatientAssessmentPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(height: 30),
             Icon(
               Icons.assessment,
               color: Colors.white,

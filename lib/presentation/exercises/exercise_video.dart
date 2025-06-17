@@ -106,12 +106,33 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
               "ExerciseVideo: cachedFile exists: ${cachedFile?.existsSync() ?? false}");
 
           if (cachedFile != null && cachedFile.existsSync()) {
-            // Use cached file if available and exists
-            final fileSize = await cachedFile.length();
-            print(
-                'ExerciseVideo: Using cached file for video playback: ${cachedFile.path}');
-            print('ExerciseVideo: Cached file size: $fileSize bytes');
-            _videoPlayerController = VideoPlayerController.file(cachedFile);
+            // Check if cached file has a proper video extension
+            final fileName = cachedFile.path.toLowerCase();
+            final hasValidVideoExtension = fileName.endsWith('.mp4') ||
+                fileName.endsWith('.mov') ||
+                fileName.endsWith('.avi') ||
+                fileName.endsWith('.mkv') ||
+                fileName.endsWith('.webm');
+
+            if (hasValidVideoExtension) {
+              // Use cached file if available, exists, and has proper extension
+              final fileSize = await cachedFile.length();
+              print(
+                  'ExerciseVideo: Using cached file for video playback: ${cachedFile.path}');
+              print('ExerciseVideo: Cached file size: $fileSize bytes');
+              _videoPlayerController = VideoPlayerController.file(cachedFile);
+            } else {
+              print(
+                  'ExerciseVideo: Cached file has invalid extension (.octet-stream), falling back to network URL');
+              // Fall back to network URL if cached file doesn't have proper video extension
+              final hasNetwork = await _checkNetworkConnectivity();
+              if (!hasNetwork) {
+                throw Exception(
+                    'No internet connection available and cached file has invalid format');
+              }
+              _videoPlayerController =
+                  VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+            }
           } else {
             print('ExerciseVideo: Cached file not available or does not exist');
             // Fallback to network URL if cached file is not found

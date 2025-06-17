@@ -303,72 +303,159 @@ Object retrieveObject(String type, Map<String, dynamic> data) {
   }
 }
 
-MutedUnmuted sampleMutedUnmuted = MutedUnmuted(video_url: [
-  "https://svarbucket.s3.amazonaws.com/videos/cat_loop.mp4",
-  "https://svarbucket.s3.amazonaws.com/videos/car_honking.mp4"
-], muted: 0);
+List<MutedUnmuted> sampleMutedUnmuted = [
+  MutedUnmuted(video_url: [
+    "https://svarbucket.s3.amazonaws.com/videos/cat_loop.mp4",
+    "https://svarbucket.s3.amazonaws.com/videos/car_honking.mp4"
+  ], muted: 0),
+  MutedUnmuted(video_url: [
+  "https://svarbucket.s3.amazonaws.com/videos/cooker_loop.mp4",
+    "https://svarbucket.s3.amazonaws.com/videos/drum_loop.mp4"
+  ], muted: 1),
+  MutedUnmuted(video_url: [
+    "https://svarbucket.s3.amazonaws.com/videos/clap.mp4",
+    "https://svarbucket.s3.amazonaws.com/videos/coughing_loop.mp4"
+  ], muted: 0)
+];
 
-HalfMuted sampleHalfMuted = HalfMuted(video_url: [
-  "https://svarbucket.s3.amazonaws.com/audios/drum_loop.mp3"
-      "https://svarbucket.s3.amazonaws.com/audios/drum_loop.mp3"
-]);
+List<dynamic> sampleVocabulary = [
+  {"word": "boat", "url": "https://svarbucket.s3.amazonaws.com/new_vehicles/images/akg_20250606_052714_adf3fb26.png"},
+  {"word": "airplane", "url": "https://svarbucket.s3.amazonaws.com/new_vehicles/images/akg_20250606_052716_9b74238a.png"},
+  {"word": "stars", "url": "https://svarbucket.s3.amazonaws.com/new_environment/images/akg_20250606_052742_2be51053.png"},
+  {"word": "mountain", "url": "https://svarbucket.s3.amazonaws.com/new_environment/images/akg_20250606_052744_411dae16.png"}
+];
 
-DiffSounds sampleDiffSounds = DiffSounds(video_url: [
-  "https://svarbucket.s3.amazonaws.com/audios/snap.mp3",
-  "https://svarbucket.s3.amazonaws.com/audios/clap.mp3"
-], same: true);
 
-OddOne sampleOddOne = OddOne(video_url: [
-  "https://svarbucket.s3.amazonaws.com/audios/phone_loop.mp3",
-  "https://svarbucket.s3.amazonaws.com/audios/clap.mp3",
-  "https://svarbucket.s3.amazonaws.com/audios/clap.mp3"
-], correct_output: "https://svarbucket.s3.amazonaws.com/audios/phone_loop.mp3");
+List<HalfMuted> sampleHalfMuted = [
+  HalfMuted(
+      video_url: ["https://svarbucket.s3.amazonaws.com/videos/drum_loop.mp4"]),
+  HalfMuted(
+      video_url: ["https://svarbucket.s3.amazonaws.com/videos/clapping.mp4"]),
+  HalfMuted(video_url: ["https://svarbucket.s3.amazonaws.com/videos/cat.mp4"])
+];
 
-DiffHalf sampleDiffHalf = DiffHalf(video_url: [
-  "https://svarbucket.s3.amazonaws.com/audios/whistle.mp3",
-  "https://svarbucket.s3.amazonaws.com/audios/cat_loop.mp3"
-]);
+List<DiffSounds> sampleDiffSounds = [
+  DiffSounds(video_url: [
+    "https://svarbucket.s3.amazonaws.com/audios/whistle.mp3",
+    "https://svarbucket.s3.amazonaws.com/audios/coughing_loop.mp3"
+  ], same: false),
+  DiffSounds(video_url: [
+    "https://svarbucket.s3.amazonaws.com/audios/cat_loop.mp3",
+    "https://svarbucket.s3.amazonaws.com/audios/clapping.mp3"
+  ], same: false),
+  DiffSounds(video_url: [
+    "https://svarbucket.s3.amazonaws.com/audios/clapping.mp3",
+    "https://svarbucket.s3.amazonaws.com/audios/clapping.mp3"
+  ], same: true)
+];
 
-MaleFemale sampleMaleFemale = MaleFemale(video_url: [
-  "https://svarbucket.s3.amazonaws.com/audios/male_voice_sample.mp3",
-  "https://svarbucket.s3.amazonaws.com/audios/female_voice_sample.mp3"
-], correct_output: "male");
+List<OddOne> sampleOddOne = [
+  OddOne(
+      video_url: [
+        "https://svarbucket.s3.amazonaws.com/audios/cooker_loop.mp3",
+        "https://svarbucket.s3.amazonaws.com/audios/whistle.mp3",
+        "https://svarbucket.s3.amazonaws.com/audios/whistle.mp3"
+      ],
+      correct_output:
+          "https://svarbucket.s3.amazonaws.com/audios/cooker_loop.mp3"),
+  OddOne(video_url: [
+    "https://svarbucket.s3.amazonaws.com/audios/cat_loop.mp3",
+    "https://svarbucket.s3.amazonaws.com/audios/clapping.mp3",
+    "https://svarbucket.s3.amazonaws.com/audios/clapping.mp3"
+  ], correct_output: "https://svarbucket.s3.amazonaws.com/audios/cat_loop.mp3"),
+  OddOne(
+      video_url: [
+        "https://svarbucket.s3.amazonaws.com/audios/phone_loop.mp3",
+        "https://svarbucket.s3.amazonaws.com/audios/drum_loop.mp3",
+        "https://svarbucket.s3.amazonaws.com/audios/drum_loop.mp3"
+      ],
+      correct_output:
+          "https://svarbucket.s3.amazonaws.com/audios/phone_loop.mp3")
+];
 
-ImageToAudio sampleImageToAudio = ImageToAudio(
-    image_url: "https://svarbucket.s3.amazonaws.com/imgs/Whistle.png",
-    audio_list: [
-      "https://svarbucket.s3.amazonaws.com/audios/whistle.mp3",
-      "https://svarbucket.s3.amazonaws.com/audios/akg_20250609_115930_81dd59ad.mp3"
-    ],
-    correct_output: "https://svarbucket.s3.amazonaws.com/audios/whistle.mp3");
+List<DiffHalf> sampleDiffHalf = [
+  DiffHalf(video_url: [
+    "https://svarbucket.s3.amazonaws.com/audios/whistle.mp3",
+    "https://svarbucket.s3.amazonaws.com/audios/phone_loop.mp3"
+  ]),
+  DiffHalf(video_url: [
+    "https://svarbucket.s3.amazonaws.com/audios/cat_loop.mp3",
+    "https://svarbucket.s3.amazonaws.com/audios/drum_loop.mp3"
+  ]),
+  DiffHalf(video_url: [
+    "https://svarbucket.s3.amazonaws.com/audios/clapping.mp3",
+    "https://svarbucket.s3.amazonaws.com/audios/coughing_loop.mp3"
+  ])
+];
 
-ImageToAudio sampleDiffImageToAudio = ImageToAudio(
-    image_url:
-        "https://svarbucket.s3.amazonaws.com/images/akg_20250531_081701_ef0a2300.png",
-    audio_list: [
-      "https://svarbucket.s3.amazonaws.com/audios/akg_20250531_081659_83528d97.mp3",
-      "https://svarbucket.s3.amazonaws.com/audios/akg_20250531_081657_594a1544.mp3"
-    ],
-    correct_output:
-        "https://svarbucket.s3.amazonaws.com/audios/akg_20250531_081659_83528d97.mp3");
+List<MaleFemale> sampleMaleFemale = [
+  MaleFemale(video_url: [
+    "https://svarbucket.s3.amazonaws.com/audios/male_voice_sample.mp3",
+    "https://svarbucket.s3.amazonaws.com/audios/female_voice_sample.mp3"
+  ], correct_output: "male"),
+  MaleFemale(video_url: [
+    "https://svarbucket.s3.amazonaws.com/audios/female_voice_sample.mp3",
+    "https://svarbucket.s3.amazonaws.com/audios/male_voice_sample.mp3",
+  ], correct_output: "female")
+];
 
-AudioToImage sampleAudioToImage = AudioToImage(
-    audio_url: [
-      "https://svarbucket.s3.amazonaws.com/audios/akg_20250609_120713_975a917b.mp3"
-    ],
-    correct_output:
-        "https://svarbucket.s3.amazonaws.com/images/akg_20250609_120721_b6eb7a7d.png",
-    image_list: [
-      "https://svarbucket.s3.amazonaws.com/imgs/car.png",
-      "https://svarbucket.s3.amazonaws.com/images/akg_20250609_120721_b6eb7a7d.png"
-    ]);
-AudioToImage sampleDiffAudioToImage = AudioToImage(
-    audio_url: [
-      "https://svarbucket.s3.amazonaws.com/audios/akg_20250528_112523_1e5afea3.mp3"
-    ],
-    correct_output:
+List<ImageToAudio> sampleImageToAudio = [
+  ImageToAudio(
+      image_url: "https://svarbucket.s3.amazonaws.com/imgs/Whistle.png",
+      audio_list: [
+        "https://svarbucket.s3.amazonaws.com/audios/whistle.mp3",
+        "https://svarbucket.s3.amazonaws.com/audios/akg_20250609_115930_81dd59ad.mp3"
+      ],
+      correct_output: "https://svarbucket.s3.amazonaws.com/audios/whistle.mp3")
+];
+
+List<ImageToAudio> sampleDiffImageToAudio = [
+  ImageToAudio(
+      image_url:
+          "https://svarbucket.s3.amazonaws.com/images/akg_20250531_081701_ef0a2300.png",
+      audio_list: [
+        "https://svarbucket.s3.amazonaws.com/audios/akg_20250531_081659_83528d97.mp3",
+        "https://svarbucket.s3.amazonaws.com/audios/akg_20250531_081657_594a1544.mp3"
+      ],
+      correct_output:
+          "https://svarbucket.s3.amazonaws.com/audios/akg_20250531_081659_83528d97.mp3")
+];
+
+List<AudioToImage> sampleAudioToImage = [
+  AudioToImage(
+      audio_url: ["https://svarbucket.s3.amazonaws.com/audios/drum_loop.mp3"],
+      correct_output: "https://svarbucket.s3.amazonaws.com/imgs/Drum.png",
+      image_list: [
+        "https://svarbucket.s3.amazonaws.com/imgs/coughing.png",
+        "https://svarbucket.s3.amazonaws.com/imgs/Drum.png"
+      ]),
+  AudioToImage(
+      audio_url: ["https://svarbucket.s3.amazonaws.com/audios/cat_loop.mp3"],
+      correct_output: "https://svarbucket.s3.amazonaws.com/imgs/cat.png",
+      image_list: [
+        "https://svarbucket.s3.amazonaws.com/imgs/cat.png",
+        "https://svarbucket.s3.amazonaws.com/imgs/phone.png"
+      ]),
+  AudioToImage(
+      audio_url: [
+        "https://svarbucket.s3.amazonaws.com/audios/car_honking_loop.mp3"
+      ],
+      correct_output: "https://svarbucket.s3.amazonaws.com/imgs/car.png",
+      image_list: [
+        "https://svarbucket.s3.amazonaws.com/imgs/car.png",
+        "https://svarbucket.s3.amazonaws.com/imgs/cooker.png"
+      ])
+];
+
+List<AudioToImage> sampleDiffAudioToImage = [
+  AudioToImage(
+      audio_url: [
+        "https://svarbucket.s3.amazonaws.com/audios/akg_20250528_112523_1e5afea3.mp3"
+      ],
+      correct_output:
+          "https://svarbucket.s3.amazonaws.com/images/akg_20250528_112530_fb2c839d.png",
+      image_list: [
         "https://svarbucket.s3.amazonaws.com/images/akg_20250528_112530_fb2c839d.png",
-    image_list: [
-      "https://svarbucket.s3.amazonaws.com/images/akg_20250528_112530_fb2c839d.png",
-      "https://svarbucket.s3.amazonaws.com/images/akg_20250528_112529_3df8a0a6.png"
-    ]);
+        "https://svarbucket.s3.amazonaws.com/images/akg_20250528_112529_3df8a0a6.png"
+      ])
+];

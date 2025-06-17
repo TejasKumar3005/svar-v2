@@ -12,6 +12,7 @@ import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart' hide LinearGradient, Image;
+import 'dart:math';
 
 class ExerciseDiscrimination extends StatefulWidget {
   const ExerciseDiscrimination({
@@ -213,18 +214,19 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
 
     // Use sample data when parent_mode is true
     if (parent_mode) {
+      final random = Random();
       switch (type) {
         case "DiffSounds":
-          data = sampleDiffSounds;
+          data = sampleDiffSounds[random.nextInt(sampleDiffSounds.length)];
           break;
         case "OddOne":
-          data = sampleOddOne;
+          data = sampleOddOne[random.nextInt(sampleOddOne.length)];
           break;
         case "DiffHalf":
-          data = sampleDiffHalf;
+          data = sampleDiffHalf[random.nextInt(sampleDiffHalf.length)];
           break;
         case "MaleFemale":
-          data = sampleMaleFemale;
+          data = sampleMaleFemale[random.nextInt(sampleMaleFemale.length)];
           break;
         default:
           // Keep original data if no sample available
@@ -301,6 +303,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                               height: MediaQuery.of(context).size.height * 0.4,
                               width: MediaQuery.of(context).size.width,
                               child: RiveAnimation.asset(
+                                  key: Key(parent_mode.toString()),
                                 'assets/rive/Celebration_animation.riv',
                                 onInit: _onRiveInit,
                                 fit: BoxFit.fitHeight,

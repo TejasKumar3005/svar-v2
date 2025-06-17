@@ -60,6 +60,9 @@ class _DetectionState extends State<ExerciseDetection> {
 
   bool parent_mode = true;
 
+  // Variable to store the selected sample data for consistency
+  dynamic selectedSampleData;
+
   @override
   void initState() {
     super.initState();
@@ -74,12 +77,17 @@ class _DetectionState extends State<ExerciseDetection> {
 
       // Use sample data when parent_mode is true
       if (parent_mode) {
+        final random = Random();
         switch (type) {
           case "MutedUnmuted":
-            dtcontainer = sampleMutedUnmuted;
+            dtcontainer =
+                sampleMutedUnmuted[random.nextInt(sampleMutedUnmuted.length)];
+            selectedSampleData = dtcontainer; // Store for later use
             break;
           case "HalfMuted":
-            dtcontainer = sampleHalfMuted;
+            dtcontainer =
+                sampleHalfMuted[random.nextInt(sampleHalfMuted.length)];
+            selectedSampleData = dtcontainer; // Store for later use
             break;
           default:
             // Keep original dtcontainer if no sample available
@@ -276,20 +284,9 @@ class _DetectionState extends State<ExerciseDetection> {
     String type = obj[0] as String;
     dynamic dtcontainer = obj[1] as dynamic;
 
-    // Use sample data when parent_mode is true
-    if (parent_mode) {
-      switch (type) {
-        case "MutedUnmuted":
-          dtcontainer = sampleMutedUnmuted;
-          break;
-        case "HalfMuted":
-          dtcontainer = sampleHalfMuted;
-          break;
-        default:
-          // Keep original dtcontainer if no sample available
-          dtcontainer = obj[1] as dynamic;
-          break;
-      }
+    // Use stored sample data when parent_mode is true
+    if (parent_mode && selectedSampleData != null) {
+      dtcontainer = selectedSampleData;
     }
     return Scaffold(
       body: Stack(
@@ -331,6 +328,7 @@ class _DetectionState extends State<ExerciseDetection> {
                                     MediaQuery.of(context).size.height * 0.4,
                                 width: MediaQuery.of(context).size.width,
                                 child: RiveAnimation.asset(
+                                  key: Key(parent_mode.toString()),
                                   'assets/rive/Celebration_animation.riv',
                                   onInit: _onRiveInit,
                                   fit: BoxFit.fitHeight,
@@ -373,9 +371,41 @@ class _DetectionState extends State<ExerciseDetection> {
                                     width: 150,
                                     type: ButtonType.Continue,
                                     onPressed: () {
+                                      // Get original data from route arguments
+                                      var obj = ModalRoute.of(context)
+                                          ?.settings
+                                          .arguments as List<dynamic>;
+                                      String type = obj[0] as String;
+                                      dynamic originalDtcontainer =
+                                          obj[1] as dynamic;
+
                                       setState(() {
                                         parent_mode = false;
+                                        selectedSampleData =
+                                            null; // Clear sample data
+                                        // Reset video states for reinitialization
+                                        isVideoReady1 = false;
+                                        isVideoReady2 = false;
                                       });
+
+                                      // Dispose existing video controllers
+                                      _videoPlayerController1?.dispose();
+                                      _chewieController1?.dispose();
+                                      _videoPlayerController2?.dispose();
+                                      _chewieController2?.dispose();
+
+                                      // Reset controllers to null
+                                      _videoPlayerController1 = null;
+                                      _chewieController1 = null;
+                                      _videoPlayerController2 = null;
+                                      _chewieController2 = null;
+
+                                      // Initialize video with original data
+                                      if (type == "MutedUnmuted") {
+                                        _initializeVideoFlow(
+                                            originalDtcontainer.getVideoUrls(),
+                                            originalDtcontainer.getMuted());
+                                      }
                                     }),
                               ),
                             )
@@ -670,8 +700,6 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
       _incorrectTrigger = controller.findInput<bool>('incorrect') as SMITrigger;
     }
   }
-
-
 
   void _startVolumeControl() {
     // Create a periodic timer that runs every 500ms

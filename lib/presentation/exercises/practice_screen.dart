@@ -70,7 +70,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                
+                                SizedBox(height: 20),
                                   Text(
                                     'Hey ${streakProvider.getPatientDetails()["fathersName"].contains(' ') 
                                     ? streakProvider.getPatientDetails()["fathersName"].split(' ')[0]

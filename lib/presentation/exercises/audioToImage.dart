@@ -12,6 +12,7 @@ import 'package:rive/rive.dart' hide LinearGradient;
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
+import 'dart:math';
 
 class AudiotoimageScreen extends StatefulWidget {
   final dynamic dtcontainer;
@@ -225,12 +226,15 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     // Use sample data when parent_mode is true
     dynamic dtcontainer = widget.dtcontainer;
     if (parent_mode) {
+      final random = Random();
       switch (widget.params) {
         case "AudioToImage":
-          dtcontainer = sampleAudioToImage;
+          dtcontainer =
+              sampleAudioToImage[random.nextInt(sampleAudioToImage.length)];
           break;
         case "DiffAudioToImage":
-          dtcontainer = sampleDiffAudioToImage;
+          dtcontainer = sampleDiffAudioToImage[
+              random.nextInt(sampleDiffAudioToImage.length)];
           break;
         default:
           // Keep original dtcontainer if no sample available
@@ -327,6 +331,7 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                       height: screenHeight * 0.4,
                       width: screenWidth,
                       child: RiveAnimation.asset(
+                          key: Key(parent_mode.toString()),
                         'assets/rive/Celebration_animation.riv',
                         onInit: _onRiveInit,
                         fit: BoxFit.fitHeight,

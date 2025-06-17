@@ -3,14 +3,14 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import 'package:svar_new/core/utils/image_constant.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/widgets/custom_button.dart';
+import 'package:svar_new/data/models/levelManagementModel/visual.dart';
+import 'dart:math';
 
 class ExerciseVocabulary extends StatefulWidget {
   final String word;
@@ -82,10 +82,20 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
 
   bool parent_mode = true;
 
+  // Variables to store randomly selected sample data
+  late Map<String, dynamic> selectedSample;
+
   @override
   void initState() {
     super.initState();
     initTTS();
+
+    // Initialize random sample data for parent mode
+    if (parent_mode) {
+      final random = Random();
+      selectedSample =
+          sampleVocabulary[random.nextInt(sampleVocabulary.length)];
+    }
 
     // Initialize exercise data
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -95,7 +105,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
     // Play TTS automatically when page loads
     Future.delayed(Duration(milliseconds: 500), () {
       if (mounted) {
-        String wordToSpeak = parent_mode ? "clothes" : widget.word;
+        String wordToSpeak = parent_mode ? selectedSample["word"] : widget.word;
         speakHindi(wordToSpeak);
       }
     });
@@ -213,7 +223,9 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
 
     setState(() {
       userAnswer = isCorrect;
-      exerciseCompleted = true;
+      if (!parent_mode) {
+        exerciseCompleted = true;
+      }
     });
 
     // Get exercise data with null safety
@@ -257,7 +269,6 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
       if (isCorrect && !parent_mode) {
         data_pro.incrementLevel(startExerciseIndex);
       }
-
     } catch (e) {
       print("Error updating exercise data: $e");
       showErrorSnackBar("Failed to save progress: $e");
@@ -266,7 +277,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
     // Only auto-navigate if there are no more exercises for today
     if (!hasMoreExercises) {
       Future.delayed(Duration(milliseconds: 1000), () {
-        if (mounted && !parent_mode)  {
+        if (mounted && !parent_mode) {
           Navigator.pop(context);
         }
       });
@@ -324,9 +335,8 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
     String displayImageUrl = widget.imageUrl;
 
     if (parent_mode) {
-      displayWord = "clothes";
-      displayImageUrl =
-          "https://svarbucket.s3.amazonaws.com/new_clothes/images/akg_20250606_053303_5f49e6ce.png";
+      displayWord = selectedSample["word"];
+      displayImageUrl = selectedSample["url"];
     }
 
     return Scaffold(
@@ -594,25 +604,21 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
             // Next button - positioned on the right side when exercise is completed and there are more exercises
             if (exerciseCompleted && hasMoreExercises && !parent_mode)
               Positioned(
-                                      bottom: MediaQuery.of(context)
-                                              .size
-                                              .height *
-                                          0.03,
-                                      right: 20,
-                                      child: AnimatedScale(
-                                        scale:
-                                          1,
-                                        duration:
-                                            Duration(milliseconds: 500),
-                                        child: CustomButton(
-                                          width: 150,
-                                          child:  Text(
-          "Next",
-          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
-        ),
-                                          type: ButtonType.Next, onPressed: _moveToNextExercise)
-                                      ),
-                                    ),
+                bottom: MediaQuery.of(context).size.height * 0.03,
+                right: 20,
+                child: AnimatedScale(
+                    scale: 1,
+                    duration: Duration(milliseconds: 500),
+                    child: CustomButton(
+                        width: 150,
+                        child: Text(
+                          "Next",
+                          style: GoogleFonts.inter(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
+                        type: ButtonType.Next,
+                        onPressed: _moveToNextExercise)),
+              ),
 
             if (parent_mode) ...[
               Positioned(
@@ -627,6 +633,8 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                       onPressed: () {
                         setState(() {
                           parent_mode = false;
+                          exerciseCompleted = false;
+                          userAnswer = null;
                         });
                       }),
                 ),

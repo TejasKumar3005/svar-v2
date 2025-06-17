@@ -7,7 +7,6 @@ import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/audioToImage.dart';
 import 'package:flutter/material.dart';
 import 'package:svar_new/core/app_export.dart';
-import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/presentation/exercises/identification_provider.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:video_player/video_player.dart';
@@ -17,6 +16,7 @@ import 'package:svar_new/database/userController.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rive/rive.dart' hide LinearGradient;
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:math';
 
 class ExerciseIdentification extends StatefulWidget {
   const ExerciseIdentification({Key? key})
@@ -165,11 +165,11 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
 
     if (isCorrect) {
-        if (!parent_mode) {
-          setState(() {
-            exerciseCompleted = true;
-          });
-        }
+      if (!parent_mode) {
+        setState(() {
+          exerciseCompleted = true;
+        });
+      }
 
       // Only auto-navigate if there are no more exercises for today
       if (!hasMoreExercises) {
@@ -203,14 +203,17 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
 
     // Use sample data when parent_mode is true
     if (parent_mode) {
+      final random = Random();
       switch (type) {
         case "ImageToAudio":
-          dtcontainer = sampleImageToAudio;
+          dtcontainer =
+              sampleImageToAudio[random.nextInt(sampleImageToAudio.length)];
           break;
         case "DiffImageToAudio":
-          dtcontainer = sampleDiffImageToAudio;
+          dtcontainer = sampleDiffImageToAudio[
+              random.nextInt(sampleDiffImageToAudio.length)];
           break;
-      
+
         default:
           // Keep original dtcontainer if no sample available
           break;
@@ -238,7 +241,8 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height,
-                    padding: const EdgeInsets.only(left: 10, right: 10, top: 30.0,bottom: 20),
+                    padding: const EdgeInsets.only(
+                        left: 10, right: 10, top: 30.0, bottom: 20),
                     child: Column(
                       children: [
                         DisciAppBar(context,
@@ -271,7 +275,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                             ),
                           ),
                         ),
-                  
+
                         Expanded(
                           child: Stack(
                             children: [
@@ -290,14 +294,13 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                     left: 0,
                                     child: IgnorePointer(
                                       child: SizedBox(
-                                        height: MediaQuery.of(context)
-                                                .size
-                                                .height *
-                                            0.4,
-                                        width: MediaQuery.of(context)
-                                            .size
-                                            .width,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.4,
+                                        width:
+                                            MediaQuery.of(context).size.width,
                                         child: RiveAnimation.asset(
+                                            key: Key(parent_mode.toString()),
                                           'assets/rive/Celebration_animation.riv',
                                           onInit: _onRiveInit,
                                           fit: BoxFit.fitHeight,
@@ -306,41 +309,40 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                       ),
                                     ),
                                   ),
-                                  if (exerciseCompleted && hasMoreExercises && !parent_mode)
+                                  if (exerciseCompleted &&
+                                      hasMoreExercises &&
+                                      !parent_mode)
                                     Positioned(
-                                      bottom: MediaQuery.of(context)
-                                              .size
-                                              .height *
-                                          0.03,
+                                      bottom:
+                                          MediaQuery.of(context).size.height *
+                                              0.03,
                                       right: 20,
                                       child: AnimatedScale(
-                                        scale:
-                                          1,
-                                        duration:
-                                            Duration(milliseconds: 500),
-                                        child: CustomButton(
-                                          width: 150,
-                                          child:  Text(
-          "Next",
-          style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold),
-        ),
-                                          type: ButtonType.Next, onPressed: _moveToNextExercise)
-                                      ),
+                                          scale: 1,
+                                          duration: Duration(milliseconds: 500),
+                                          child: CustomButton(
+                                              width: 150,
+                                              child: Text(
+                                                "Next",
+                                                style: GoogleFonts.inter(
+                                                    fontSize: 22,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              type: ButtonType.Next,
+                                              onPressed: _moveToNextExercise)),
                                     ),
-                                    
                                   if (parent_mode) ...[
                                     Positioned(
-                                      bottom: MediaQuery.of(context)
-                                              .size
-                                              .height *
-                                          0.03,
+                                      bottom:
+                                          MediaQuery.of(context).size.height *
+                                              0.03,
                                       right: 20,
                                       child: AnimatedScale(
                                         scale: 1.0,
-                                        duration:
-                                            Duration(milliseconds: 500),
+                                        duration: Duration(milliseconds: 500),
                                         child: CustomButton(
-                                          width: 150,
+                                            width: 150,
                                             type: ButtonType.Continue,
                                             onPressed: () {
                                               setState(() {
@@ -495,33 +497,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     int currentExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[currentExerciseIndex];
 
-    // Use sample data when parent_mode is true
-    if (parent_mode) {
-      switch (quizType) {
-        case "ImageToAudio":
-          dtcontainer = sampleImageToAudio;
-          break;
-        case "DiffImageToAudio":
-          dtcontainer = sampleDiffImageToAudio;
-          break;
-        case "WordToFig":
-          // dtcontainer = sampleWordToFig; // Uncomment when sample is available
-          break;
-        case "FigToWord":
-          // dtcontainer = sampleFigToWord; // Uncomment when sample is available
-          break;
-        case "AudioToImage":
-          dtcontainer = sampleAudioToImage;
-          break;
-        case "DiffAudioToImage":
-          dtcontainer = sampleDiffAudioToImage;
-          break;
-        default:
-          // Keep original dtcontainer if no sample available
-          dtcontainer = obj[1] as dynamic;
-          break;
-      }
-    } else {
+    // dtcontainer is already set correctly in build method when parent_mode is true
+    // Only override dtcontainer if not in parent_mode
+    if (!parent_mode) {
       dtcontainer = obj[1] as dynamic;
     }
 
