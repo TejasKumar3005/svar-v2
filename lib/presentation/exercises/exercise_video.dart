@@ -2,6 +2,7 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:svar_new/core/app_export.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -80,72 +81,37 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
         _chewieController = null;
       }
 
-      print(
-          'ExerciseVideo: Initializing video player for URL: ${widget.videoUrl}');
+      print('ExerciseVideo: Initializing video player for URL: ${widget.videoUrl}');
 
-      if (kIsWeb) {
-        // For web, use the network URL directly
+      if (kIsWeb || Platform.isIOS) {
+        // Web: always use network URL
         print('ExerciseVideo: Running on web, using network URL');
         _videoPlayerController =
             VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
-      } else {
-        // For non-web platforms, try to use cached file first
-        print(
-            'ExerciseVideo: Running on mobile, attempting to get cached file for URL: ${widget.videoUrl}');
+      }
+      else if (Platform.isAndroid) {
+        // Android: use cached file if present, else fallback to network URL (do not check file type)
+        print('ExerciseVideo: Running on Android, attempting to get cached file for URL: ${widget.videoUrl}');
         CachingManager cachingManager = CachingManager();
         print('ExerciseVideo: CachingManager instance created');
 
         try {
           print('ExerciseVideo: About to call getCachedFile()');
-          final cachedFile =
-              await cachingManager.getCachedFile(widget.videoUrl);
+          final cachedFile = await cachingManager.getCachedFile(widget.videoUrl);
           print('ExerciseVideo: getCachedFile() completed');
-
           print("ExerciseVideo: cachedFile result: ${cachedFile?.path}");
-          print(
-              "ExerciseVideo: cachedFile exists: ${cachedFile?.existsSync() ?? false}");
+          print("ExerciseVideo: cachedFile exists: ${cachedFile?.existsSync() ?? false}");
 
           if (cachedFile != null && cachedFile.existsSync()) {
-            // Check if cached file has a proper video extension
-            final fileName = cachedFile.path.toLowerCase();
-            final hasValidVideoExtension = fileName.endsWith('.mp4') ||
-                fileName.endsWith('.mov') ||
-                fileName.endsWith('.avi') ||
-                fileName.endsWith('.mkv') ||
-                fileName.endsWith('.webm');
-
-            if (hasValidVideoExtension) {
-              // Use cached file if available, exists, and has proper extension
-              final fileSize = await cachedFile.length();
-              print(
-                  'ExerciseVideo: Using cached file for video playback: ${cachedFile.path}');
-              print('ExerciseVideo: Cached file size: $fileSize bytes');
-              _videoPlayerController = VideoPlayerController.file(cachedFile);
-            } else {
-              print(
-                  'ExerciseVideo: Cached file has invalid extension (.octet-stream), falling back to network URL');
-              // Fall back to network URL if cached file doesn't have proper video extension
-              final hasNetwork = await _checkNetworkConnectivity();
-              if (!hasNetwork) {
-                throw Exception(
-                    'No internet connection available and cached file has invalid format');
-              }
-              _videoPlayerController =
-                  VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
-            }
+          
+            _videoPlayerController = VideoPlayerController.file(cachedFile);
           } else {
-            print('ExerciseVideo: Cached file not available or does not exist');
-            // Fallback to network URL if cached file is not found
-            print(
-                'ExerciseVideo: Cached file not found, falling back to network URL');
-
-            // Check network connectivity before falling back to network
+            
             final hasNetwork = await _checkNetworkConnectivity();
             if (!hasNetwork) {
-              throw Exception(
-                  'No internet connection available and video not cached');
+              showConnectivitySnackBar(false);
+              throw Exception('No internet connection available and video not cached');
             }
-
             _videoPlayerController =
                 VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
           }
@@ -153,17 +119,19 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
           print('ExerciseVideo: Error getting cached file: $cacheError');
           // Fallback to network on cache error
           print('ExerciseVideo: Cache error, falling back to network URL');
-
-          // Check network connectivity before falling back to network
           final hasNetwork = await _checkNetworkConnectivity();
           if (!hasNetwork) {
-            throw Exception(
-                'No internet connection available and cache failed');
+          showConnectivitySnackBar(false);
+          throw Exception('No internet connection available and video not cached');
           }
-
           _videoPlayerController =
               VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
         }
+      } else {
+        // Other platforms: fallback to network URL
+        print('ExerciseVideo: Unknown platform, using network URL');
+        _videoPlayerController =
+            VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
       }
 
       // Initialize the video controller with error handling
@@ -175,8 +143,7 @@ class _ExerciseVideoState extends State<ExerciseVideo> {
         throw Exception('Video controller failed to initialize');
       }
 
-      print(
-          'ExerciseVideo: Video initialized successfully. Duration: ${_videoPlayerController.value.duration}');
+      print('ExerciseVideo: Video initialized successfully. Duration: ${_videoPlayerController.value.duration}');
 
       // Add listener for video completion and errors
       _videoPlayerController.addListener(_videoListener);

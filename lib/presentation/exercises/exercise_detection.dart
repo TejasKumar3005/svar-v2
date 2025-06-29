@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'package:chewie/chewie.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:rive/rive.dart' hide LinearGradient, Image;
 import 'package:svar_new/core/app_export.dart';
+import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/utils/playAudio.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
@@ -131,7 +134,7 @@ class _DetectionState extends State<ExerciseDetection> {
         // Only auto-navigate if there are no more exercises for today
         if (!hasMoreExercises) {
           Future.delayed(const Duration(seconds: 5), () {
-            if (mounted && !parent_mode) {
+            if (mounted && !parent_mode && exerciseCompleted) {
               Navigator.pop(context);
             }
           });
@@ -215,18 +218,35 @@ class _DetectionState extends State<ExerciseDetection> {
 
   Future<void> initiliaseVideo(
       String videoUrl, int video, int mutedVideoIndex) async {
-    if (video == 1 && _videoPlayerController1 == null) {
-      _videoPlayerController1 =
-          VideoPlayerController.networkUrl(Uri.parse(videoUrl));
-
+    // Use CachingManager to get the cached file if available, else fallback to network
+    Future<VideoPlayerController> _getController(String url) async {
+      if (kIsWeb || Platform.isIOS) {
+        // On web, always use network URL
+        return VideoPlayerController.networkUrl(Uri.parse(url));
+      }
       try {
+        final cachingManager = CachingManager();
+        final cachedFile = await cachingManager.getCachedFile(url);
+
+        if (cachedFile != null && cachedFile.existsSync()) {
+          return VideoPlayerController.file(cachedFile);
+        }
+      } catch (e) {
+        print("Error using cache for video: $e");
+      }
+      // Fallback to network if cache fails or is invalid
+      return VideoPlayerController.networkUrl(Uri.parse(url));
+    }
+
+    if (video == 1 && _videoPlayerController1 == null) {
+      try {
+        _videoPlayerController1 = await _getController(videoUrl);
         await _videoPlayerController1!.initialize();
         if (mounted) {
           setState(() {
             isVideoReady1 = true;
           });
 
-          // Create the Chewie controller once the video is initialized
           _chewieController1 = ChewieController(
             videoPlayerController: _videoPlayerController1!,
             autoPlay: true,
@@ -238,7 +258,6 @@ class _DetectionState extends State<ExerciseDetection> {
             autoInitialize: true,
           );
 
-          // Set the volume after initialization
           bool isMuted = (mutedVideoIndex == 0);
           _videoPlayerController1?.setVolume(isMuted ? 0.0 : 1.0);
         }
@@ -246,17 +265,14 @@ class _DetectionState extends State<ExerciseDetection> {
         print("Error initializing video 1: $e");
       }
     } else if (video == 2 && _videoPlayerController2 == null) {
-      _videoPlayerController2 =
-          VideoPlayerController.networkUrl(Uri.parse(videoUrl));
-
       try {
+        _videoPlayerController2 = await _getController(videoUrl);
         await _videoPlayerController2!.initialize();
         if (mounted) {
           setState(() {
             isVideoReady2 = true;
           });
 
-          // Create the Chewie controller once the video is initialized
           _chewieController2 = ChewieController(
             videoPlayerController: _videoPlayerController2!,
             autoPlay: true,
@@ -268,7 +284,6 @@ class _DetectionState extends State<ExerciseDetection> {
             autoInitialize: true,
           );
 
-          // Set the volume after initialization
           bool isMuted = (mutedVideoIndex == 1);
           _videoPlayerController2?.setVolume(isMuted ? 0.0 : 1.0);
         }
@@ -367,46 +382,188 @@ class _DetectionState extends State<ExerciseDetection> {
                               child: AnimatedScale(
                                 scale: 1.0,
                                 duration: Duration(milliseconds: 500),
-                                child: CustomButton(
-                                    width: 150,
-                                    type: ButtonType.Continue,
-                                    onPressed: () {
-                                      // Get original data from route arguments
-                                      var obj = ModalRoute.of(context)
-                                          ?.settings
-                                          .arguments as List<dynamic>;
-                                      String type = obj[0] as String;
-                                      dynamic originalDtcontainer =
-                                          obj[1] as dynamic;
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.95),
+                                    borderRadius: BorderRadius.circular(25),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 8,
+                                        spreadRadius: 1,
+                                        offset: Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        "Preview",
+                                        style: GoogleFonts.inter(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: parent_mode
+                                              ? Colors.blue[600]
+                                              : Colors.grey[600],
+                                        ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Switch(
+                                        value: !parent_mode,
+                                        onChanged: (value) {
+                                          // Get original data from route arguments
+                                          var obj = ModalRoute.of(context)
+                                              ?.settings
+                                              .arguments as List<dynamic>;
+                                          String type = obj[0] as String;
+                                          dynamic originalDtcontainer =
+                                              obj[1] as dynamic;
 
-                                      setState(() {
-                                        parent_mode = false;
-                                        selectedSampleData =
-                                            null; // Clear sample data
-                                        // Reset video states for reinitialization
-                                        isVideoReady1 = false;
-                                        isVideoReady2 = false;
-                                      });
+                                          setState(() {
+                                            parent_mode = !value;
+                                            if (!parent_mode) {
+                                              selectedSampleData =
+                                                  null; // Clear sample data
+                                              // Reset video states for reinitialization
+                                              isVideoReady1 = false;
+                                              isVideoReady2 = false;
+                                              exerciseCompleted = false;
+                                            }
+                                          });
 
-                                      // Dispose existing video controllers
-                                      _videoPlayerController1?.dispose();
-                                      _chewieController1?.dispose();
-                                      _videoPlayerController2?.dispose();
-                                      _chewieController2?.dispose();
+                                          if (!parent_mode) {
+                                            // Dispose existing video controllers
+                                            _videoPlayerController1?.dispose();
+                                            _chewieController1?.dispose();
+                                            _videoPlayerController2?.dispose();
+                                            _chewieController2?.dispose();
 
-                                      // Reset controllers to null
-                                      _videoPlayerController1 = null;
-                                      _chewieController1 = null;
-                                      _videoPlayerController2 = null;
-                                      _chewieController2 = null;
+                                            // Reset controllers to null
+                                            _videoPlayerController1 = null;
+                                            _chewieController1 = null;
+                                            _videoPlayerController2 = null;
+                                            _chewieController2 = null;
 
-                                      // Initialize video with original data
-                                      if (type == "MutedUnmuted") {
-                                        _initializeVideoFlow(
-                                            originalDtcontainer.getVideoUrls(),
-                                            originalDtcontainer.getMuted());
-                                      }
-                                    }),
+                                            // Initialize video with original data
+                                            if (type == "MutedUnmuted") {
+                                              _initializeVideoFlow(
+                                                  originalDtcontainer
+                                                      .getVideoUrls(),
+                                                  originalDtcontainer
+                                                      .getMuted());
+                                            }
+                                          }
+                                        },
+                                        activeColor: Colors.green[600],
+                                        activeTrackColor: Colors.green[200],
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "Exercise",
+                                        style: GoogleFonts.inter(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: !parent_mode
+                                              ? Colors.green[600]
+                                              : Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          ] else ...[
+                            // Show toggle switch even in exercise mode
+                            Positioned(
+                              bottom: MediaQuery.of(context).size.height * 0.01,
+                              left: 20,
+                              child: AnimatedScale(
+                                scale: 1.0,
+                                duration: Duration(milliseconds: 500),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.95),
+                                    borderRadius: BorderRadius.circular(25),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 8,
+                                        spreadRadius: 1,
+                                        offset: Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        "Preview",
+                                        style: GoogleFonts.inter(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: parent_mode
+                                              ? Colors.blue[600]
+                                              : Colors.grey[600],
+                                        ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Switch(
+                                        value: !parent_mode,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            parent_mode = !value;
+                                            if (parent_mode) {
+                                              exerciseCompleted = false;
+                                              // Reset to sample data when switching back to preview
+                                              final random = Random();
+                                              String type =
+                                                  (ModalRoute.of(context)
+                                                              ?.settings
+                                                              .arguments
+                                                          as List<dynamic>)[0]
+                                                      as String;
+                                              switch (type) {
+                                                case "MutedUnmuted":
+                                                  selectedSampleData =
+                                                      sampleMutedUnmuted[
+                                                          random.nextInt(
+                                                              sampleMutedUnmuted
+                                                                  .length)];
+                                                  break;
+                                                case "HalfMuted":
+                                                  selectedSampleData =
+                                                      sampleHalfMuted[
+                                                          random.nextInt(
+                                                              sampleHalfMuted
+                                                                  .length)];
+                                                  break;
+                                              }
+                                            }
+                                          });
+                                        },
+                                        activeColor: Colors.green[600],
+                                        activeTrackColor: Colors.green[200],
+                                      ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "Exercise",
+                                        style: GoogleFonts.inter(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: !parent_mode
+                                              ? Colors.green[600]
+                                              : Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             )
                           ]
@@ -434,14 +591,13 @@ class _DetectionState extends State<ExerciseDetection> {
           parentMode: parent_mode,
         );
       case "MutedUnmuted":
-        return MutedUnmuted(
-          context, dtcontainer, Key(parent_mode.toString()));
+        return MutedUnmuted(context, dtcontainer, Key(parent_mode.toString()));
       default:
         return Container();
     }
   }
 
-  Widget MutedUnmuted(BuildContext context, dynamic dtcontainer,Key key) {
+  Widget MutedUnmuted(BuildContext context, dynamic dtcontainer, Key key) {
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = obj[3] as int;

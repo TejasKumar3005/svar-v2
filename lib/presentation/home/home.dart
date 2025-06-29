@@ -134,7 +134,7 @@ class _HomePageState extends State<HomePage>
                             child: [
                               PracticeScreen(),
                               PatientAssessmentPage(),
-                              FeesPage(), // Placeholder for the third tab
+                              Container(), // Placeholder for the third tab
                               UserProfileScreen(),
                               SizedBox(
                                 height: 20,

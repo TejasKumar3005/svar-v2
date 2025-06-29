@@ -54,6 +54,7 @@ import 'package:svar_new/widgets/Options.dart';
 import 'package:chiclet/chiclet.dart';
 import 'package:chiclet/src/enums/button_types.dart';
 import 'dart:math' as math;
+import 'dart:async';
 
 enum ButtonType {
   Play,
@@ -147,6 +148,10 @@ class _CustomButtonState extends State<CustomButton>
   late AnimationController _animationController;
   late Animation<double> _progressAnimation;
   double _currentProgress = 0.0;
+
+  // Spectrum animation properties
+  Timer? _spectrumTimer;
+  bool _isSpectrumAnimating = false;
 
   @override
   void initState() {
@@ -326,7 +331,6 @@ class _CustomButtonState extends State<CustomButton>
         );
         break;
       case ButtonType.Next:
-      
         height = 60;
         width = widget.width ?? 0;
         defaultChild = Text(
@@ -494,6 +498,16 @@ class _CustomButtonState extends State<CustomButton>
       // Reset and start animation
       _animationController.reset();
       _animationController.forward();
+
+      // Handle spectrum animation for playing state
+      if (widget.type == ButtonType.Spectrum) {
+        bool shouldAnimate = widget.progress! > 0 && widget.progress! < 1;
+        if (shouldAnimate && !_isSpectrumAnimating) {
+          _startSpectrumAnimation();
+        } else if (!shouldAnimate && _isSpectrumAnimating) {
+          _stopSpectrumAnimation();
+        }
+      }
     }
 
     // Auto-animate if enabled
@@ -504,9 +518,27 @@ class _CustomButtonState extends State<CustomButton>
     }
   }
 
+  void _startSpectrumAnimation() {
+    _isSpectrumAnimating = true;
+    _spectrumTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      if (mounted && widget.type == ButtonType.Spectrum) {
+        setState(() {
+          // This will trigger a repaint of the spectrum
+        });
+      }
+    });
+  }
+
+  void _stopSpectrumAnimation() {
+    _isSpectrumAnimating = false;
+    _spectrumTimer?.cancel();
+    _spectrumTimer = null;
+  }
+
   @override
   void dispose() {
     _animationController.dispose();
+    _stopSpectrumAnimation();
     super.dispose();
   }
 
@@ -557,13 +589,11 @@ class _CustomButtonState extends State<CustomButton>
         widget.type == ButtonType.Settings ||
         widget.type == ButtonType.Login ||
         widget.type == ButtonType.SignUp ||
-        widget.type == ButtonType.Next 
-      ) {
+        widget.type == ButtonType.Next) {
       width = widget.width ?? MediaQuery.of(context).size.width * 0.9;
       color = null;
     }
-    if (widget.type == ButtonType.Video1 ||
-        widget.type == ButtonType.Video2) {
+    if (widget.type == ButtonType.Video1 || widget.type == ButtonType.Video2) {
       width = widget.width ?? 190;
       color = null;
     }
@@ -576,7 +606,7 @@ class _CustomButtonState extends State<CustomButton>
       color = Color(0xFFF47C37);
     }
 
-    if (widget.type == ButtonType.ResetPassword ) {
+    if (widget.type == ButtonType.ResetPassword) {
       width = 190;
       color = Color(0xFFF47C37);
     }
@@ -608,34 +638,14 @@ class _CustomButtonState extends State<CustomButton>
         child: Container(
           height: height,
           width: width,
-          child: Stack(
-            children: [
-              // Original SVG
-              SvgPicture.asset(
-                imagePath,
-                fit: fit,
-                width: MediaQuery.of(context).size.width * 0.7,
-                height: MediaQuery.of(context).size.height * 0.7,
-              ),
-              // Overlay with animated progress
-              if (widget.progress != null)
-                ClipPath(
-                  clipper: _ProgressClipper(
-                    progress: _currentProgress,
-                    style: widget.clippingStyle ?? ClippingStyle.leftToRight,
-                  ),
-                  child: SvgPicture.asset(
-                    imagePath,
-                    fit: fit,
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    height: MediaQuery.of(context).size.height * 0.7,
-                    colorFilter: ColorFilter.mode(
-                      widget.color ?? Colors.green,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-            ],
+          color: Colors.transparent, // Explicitly transparent background
+          child: CustomPaint(
+            painter: SpectrumPainter(
+              progress: _currentProgress,
+              color: widget.color ?? Colors.orange,
+              isPlaying: _isSpectrumAnimating,
+            ),
+            size: Size(width, height),
           ),
         ),
       );
@@ -740,12 +750,74 @@ class _ProgressClipper extends CustomClipper<Path> {
   }
 }
 
+// Beautiful animated spectrum painter
+class SpectrumPainter extends CustomPainter {
+  final double progress;
+  final Color color;
+  final bool isPlaying;
+
+  SpectrumPainter({
+    required this.progress,
+    required this.color,
+    required this.isPlaying,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..style = PaintingStyle.fill;
+
+    const int barCount = 28;
+    const double barWidth = 4.0;
+    const double spacing = 3.0;
+    final double totalWidth = barCount * (barWidth + spacing) - spacing;
+    final double startX = (size.width - totalWidth) / 2;
+
+    final int activeBars = (barCount * progress).floor();
+    final random = math.Random();
+
+    for (int i = 0; i < barCount; i++) {
+      final double x = startX + i * (barWidth + spacing);
+
+      // A gentle descending curve for bar heights, matching the image.
+      final t = i / (barCount - 1);
+      final heightFactor = 0.4 + (0.5 * (math.cos(t * math.pi) + 1) * 0.5);
+
+      double barHeight = size.height * heightFactor;
+
+      if (isPlaying && i < activeBars) {
+        barHeight *= (0.85 + 0.15 * random.nextDouble());
+      }
+
+      // Active bars are colored, inactive are gray.
+      paint.color = i < activeBars ? color : const Color(0xFF4C4C4C);
+
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromCenter(
+            center: Offset(x + barWidth / 2, size.height / 2),
+            width: barWidth,
+            height: barHeight,
+          ),
+          Radius.circular(barWidth / 2),
+        ),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(SpectrumPainter oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.color != color ||
+        oldDelegate.isPlaying != isPlaying;
+  }
+}
+
 class OptionButton extends CustomButton {
   const OptionButton({
     Key? key,
     required ButtonType type,
     required VoidCallback onPressed,
-    
   }) : super(key: key, type: type, onPressed: onPressed);
 
   @override

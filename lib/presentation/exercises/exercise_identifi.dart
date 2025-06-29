@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
+import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/exercises/audioToImage.dart';
@@ -39,7 +42,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   late AudioPlayer _player;
   late int leveltracker;
   bool parent_mode = true;
-  VideoPlayerController? _videoPlayerController;
+
   ChewieController? _chewieController;
 
   late UserData userData;
@@ -58,7 +61,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
   void dispose() {
     super.dispose();
     _player.dispose();
-    _videoPlayerController?.dispose();
+
     _chewieController?.dispose();
   }
 
@@ -178,7 +181,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
           _correctTrigger!.fire();
           print("Correct trigger fired");
           Future.delayed(const Duration(seconds: 3), () {
-            if (mounted && !parent_mode) {
+            if (mounted && !parent_mode && exerciseCompleted) {
               Navigator.pop(context);
             }
           });
@@ -279,12 +282,19 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                         Expanded(
                           child: Stack(
                             children: [
-                              _buildOptionGRP(
-                                context,
-                                provider,
-                                type,
-                                dtcontainer,
-                                params,
+                              FutureBuilder(
+                                future: _buildOptionGRP(
+                                  context,
+                                  provider,
+                                  type,
+                                  dtcontainer,
+                                  params,
+                                ),
+                                builder: (context, snapshot) {
+                                  return snapshot.hasData
+                                      ? snapshot.data!
+                                      : SizedBox();
+                                },
                               ),
                               // Rive animation positioned at bottom left
                               Stack(
@@ -300,7 +310,7 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                         width:
                                             MediaQuery.of(context).size.width,
                                         child: RiveAnimation.asset(
-                                            key: Key(parent_mode.toString()),
+                                          key: Key(parent_mode.toString()),
                                           'assets/rive/Celebration_animation.riv',
                                           onInit: _onRiveInit,
                                           fit: BoxFit.fitHeight,
@@ -341,14 +351,134 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                       child: AnimatedScale(
                                         scale: 1.0,
                                         duration: Duration(milliseconds: 500),
-                                        child: CustomButton(
-                                            width: 150,
-                                            type: ButtonType.Continue,
-                                            onPressed: () {
-                                              setState(() {
-                                                parent_mode = false;
-                                              });
-                                            }),
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16, vertical: 8),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Colors.white.withOpacity(0.95),
+                                            borderRadius:
+                                                BorderRadius.circular(25),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withOpacity(0.1),
+                                                blurRadius: 8,
+                                                spreadRadius: 1,
+                                                offset: Offset(0, 4),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                "Preview",
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: parent_mode
+                                                      ? Colors.blue[600]
+                                                      : Colors.grey[600],
+                                                ),
+                                              ),
+                                              SizedBox(width: 8),
+                                              Switch(
+                                                value: !parent_mode,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    parent_mode = !value;
+                                                    exerciseCompleted = false;
+                                                  });
+                                                },
+                                                activeColor: Colors.green[600],
+                                                activeTrackColor:
+                                                    Colors.green[200],
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                "Exercise",
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: !parent_mode
+                                                      ? Colors.green[600]
+                                                      : Colors.grey[600],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ] else ...[
+                                    // Show toggle switch even in exercise mode
+                                    Positioned(
+                                      bottom:
+                                          MediaQuery.of(context).size.height *
+                                              0.03,
+                                      left: 20,
+                                      child: AnimatedScale(
+                                        scale: 1.0,
+                                        duration: Duration(milliseconds: 500),
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 16, vertical: 8),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Colors.white.withOpacity(0.95),
+                                            borderRadius:
+                                                BorderRadius.circular(25),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black
+                                                    .withOpacity(0.1),
+                                                blurRadius: 8,
+                                                spreadRadius: 1,
+                                                offset: Offset(0, 4),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                "Preview",
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: parent_mode
+                                                      ? Colors.blue[600]
+                                                      : Colors.grey[600],
+                                                ),
+                                              ),
+                                              SizedBox(width: 8),
+                                              Switch(
+                                                value: !parent_mode,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    parent_mode = !value;
+                                                    exerciseCompleted = false;
+                                                  });
+                                                },
+                                                activeColor: Colors.green[600],
+                                                activeTrackColor:
+                                                    Colors.green[200],
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                "Exercise",
+                                                style: GoogleFonts.inter(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: !parent_mode
+                                                      ? Colors.green[600]
+                                                      : Colors.grey[600],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
                                     )
                                   ]
@@ -443,8 +573,17 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     }
   }
 
-  Widget _buildOptionGRP(BuildContext context, IdentificationProvider provider,
-      String type, dynamic dtcontainer, String params) {
+  Future<Widget> _buildOptionGRP(
+      BuildContext context,
+      IdentificationProvider provider,
+      String type,
+      dynamic dtcontainer,
+      String params) async {
+    File? file =
+        await CachingManager().getCachedFile(dtcontainer.getImageUrl());
+
+    print("file: ${file?.path}");
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 5.h),
       child: Center(
@@ -470,7 +609,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                         )
                       else
                         CustomImageView(
-                          imagePath: dtcontainer.getImageUrl(),
+                          imagePath: file != null
+                              ? file.path
+                              : dtcontainer.getImageUrl(),
                           radius: BorderRadiusStyle.roundedBorder15,
                         ),
                     ],

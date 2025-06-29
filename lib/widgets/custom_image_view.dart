@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -155,7 +156,11 @@ extension ImageTypeExtension on String {
     } else if (this.startsWith('file://')) {
       return ImageType.file;
     } else {
-      return ImageType.png;
+      if (kIsWeb) {
+        return ImageType.png;
+      } else {
+        return ImageType.file;
+      }
     }
   }
 }

@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
@@ -278,7 +280,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
     // Only auto-navigate if there are no more exercises for today
     if (!hasMoreExercises) {
       Future.delayed(Duration(milliseconds: 1000), () {
-        if (mounted && !parent_mode) {
+        if (mounted && !parent_mode && exerciseCompleted) {
           Navigator.pop(context);
         }
       });
@@ -387,18 +389,26 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: CachedNetworkImage(
-                          imageUrl: displayImageUrl,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            height: 30,
-                            width: 30,
-                            child: LinearProgressIndicator(
-                              color: Colors.grey.shade200,
-                              backgroundColor: Colors.grey.shade100,
-                            ),
-                          ),
-                          errorWidget: (context, url, error) => Icon(Icons.error_outline, size: 50, color: Colors.red[300]),
+                        child: FutureBuilder<File?>(
+                          future:
+                              CachingManager().getCachedFile(displayImageUrl),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<File?> snapshot) {
+                            if (snapshot.connectionState ==
+                                    ConnectionState.done &&
+                                snapshot.hasData &&
+                                snapshot.data != null) {
+                              return CustomImageView(
+                                imagePath: snapshot.data!.path,
+                                fit: BoxFit.cover,
+                              );
+                            } else {
+                              return CustomImageView(
+                                imagePath: displayImageUrl,
+                                fit: BoxFit.cover,
+                              );
+                            }
+                          },
                         ),
                       ),
                     ),
@@ -616,16 +626,124 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                 child: AnimatedScale(
                   scale: 1.0,
                   duration: Duration(milliseconds: 500),
-                  child: CustomButton(
-                      width: 150,
-                      type: ButtonType.Continue,
-                      onPressed: () {
-                        setState(() {
-                          parent_mode = false;
-                          exerciseCompleted = false;
-                          userAnswer = null;
-                        });
-                      }),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.95),
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Preview",
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: parent_mode
+                                ? Colors.blue[600]
+                                : Colors.grey[600],
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Switch(
+                          value: !parent_mode,
+                          onChanged: (value) {
+                            setState(() {
+                              parent_mode = !value;
+                              exerciseCompleted = false;
+                              userAnswer = null;
+                            });
+                          },
+                          activeColor: Colors.green[600],
+                          activeTrackColor: Colors.green[200],
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "Exercise",
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: !parent_mode
+                                ? Colors.green[600]
+                                : Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            ] else ...[
+              // Show toggle switch even in exercise mode
+              Positioned(
+                bottom: MediaQuery.of(context).size.height * 0.03,
+                left: 20,
+                child: AnimatedScale(
+                  scale: 1.0,
+                  duration: Duration(milliseconds: 500),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.95),
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          spreadRadius: 1,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Preview",
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: parent_mode
+                                ? Colors.blue[600]
+                                : Colors.grey[600],
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Switch(
+                          value: !parent_mode,
+                          onChanged: (value) {
+                            setState(() {
+                              parent_mode = !value;
+                              exerciseCompleted = false;
+                              userAnswer = null;
+                            });
+                          },
+                          activeColor: Colors.green[600],
+                          activeTrackColor: Colors.green[200],
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "Exercise",
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: !parent_mode
+                                ? Colors.green[600]
+                                : Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               )
             ]
