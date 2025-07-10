@@ -12,17 +12,7 @@ import 'exercise_provider.dart';
 import '../../database/userController.dart';
 
 
-/*
 
-  in pubspec.yaml 
-  dependency_overrides:
-  flare_flutter:		
-    git:
-      url: https://github.com/mbfakourii/Flare-Flutter.git
-      path: flare_flutter
-      ref: remove_hashValues
-
-*/
 
 class ExerciseCustomNonVideo extends StatefulWidget {
   const ExerciseCustomNonVideo({

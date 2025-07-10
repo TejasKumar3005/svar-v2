@@ -192,6 +192,12 @@ class UserData {
                 "exerciseType": exercise["subtype"],
                 "date": formattedDate
               });
+            } else if (exercise["type"].toString() == "DiffHalf") {
+              updatedData.add({
+                ...baseExercise, // Preserve original data
+                "date": formattedDate,
+                "exerciseType": "DiffHalf",
+              });
             } else {
               updatedData.add({
                 ...baseExercise, // Preserve original data

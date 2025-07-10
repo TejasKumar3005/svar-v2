@@ -55,7 +55,44 @@ class CachingManager {
   }
 
   static List<String> urlsFromExercises(List<dynamic> exercises)  {
-    List<String> urls = [];
+    List<String> urls = [
+      "https://svarbucket.s3.amazonaws.com/videos/cat_loop.mp4",
+      "https://svarbucket.s3.amazonaws.com/videos/car_honking.mp4",
+      "https://svarbucket.s3.amazonaws.com/videos/cooker_loop.mp4",
+      "https://svarbucket.s3.amazonaws.com/videos/drum_loop.mp4",
+      "https://svarbucket.s3.amazonaws.com/videos/clap.mp4",
+      "https://svarbucket.s3.amazonaws.com/videos/coughing_loop.mp4",
+      "https://svarbucket.s3.amazonaws.com/new_vehicles/images/akg_20250606_052714_adf3fb26.png",
+      "https://svarbucket.s3.amazonaws.com/new_vehicles/images/akg_20250606_052716_9b74238a.png",
+      "https://svarbucket.s3.amazonaws.com/new_environment/images/akg_20250606_052742_2be51053.png",
+      "https://svarbucket.s3.amazonaws.com/new_environment/images/akg_20250606_052744_411dae16.png",
+      "https://svarbucket.s3.amazonaws.com/videos/clapping.mp4",
+      "https://svarbucket.s3.amazonaws.com/videos/cat.mp4",
+      "https://svarbucket.s3.amazonaws.com/audios/whistle.mp3",
+      "https://svarbucket.s3.amazonaws.com/audios/coughing_loop.mp3",
+      "https://svarbucket.s3.amazonaws.com/audios/cat_loop.mp3",
+      "https://svarbucket.s3.amazonaws.com/audios/clapping.mp3",
+      "https://svarbucket.s3.amazonaws.com/audios/cooker_loop.mp3",
+      "https://svarbucket.s3.amazonaws.com/audios/phone_loop.mp3",
+      "https://svarbucket.s3.amazonaws.com/audios/drum_loop.mp3",
+      "https://svarbucket.s3.amazonaws.com/audios/akg_20250609_115930_81dd59ad.mp3",
+      "https://svarbucket.s3.amazonaws.com/images/akg_20250531_081701_ef0a2300.png",
+      "https://svarbucket.s3.amazonaws.com/audios/akg_20250531_081659_83528d97.mp3",
+      "https://svarbucket.s3.amazonaws.com/audios/akg_20250531_081657_594a1544.mp3",
+      "https://svarbucket.s3.amazonaws.com/imgs/Whistle.png",
+      "https://svarbucket.s3.amazonaws.com/imgs/Drum.png",
+      "https://svarbucket.s3.amazonaws.com/imgs/coughing.png",
+      "https://svarbucket.s3.amazonaws.com/imgs/cat.png",
+      "https://svarbucket.s3.amazonaws.com/imgs/phone.png",
+      "https://svarbucket.s3.amazonaws.com/audios/car_honking_loop.mp3",
+      "https://svarbucket.s3.amazonaws.com/imgs/car.png",
+      "https://svarbucket.s3.amazonaws.com/imgs/cooker.png",
+      "https://svarbucket.s3.amazonaws.com/audios/akg_20250528_112523_1e5afea3.mp3",
+      "https://svarbucket.s3.amazonaws.com/images/akg_20250528_112530_fb2c839d.png",
+      "https://svarbucket.s3.amazonaws.com/images/akg_20250528_112529_3df8a0a6.png",
+      "https://svarbucket.s3.amazonaws.com/audios/male_voice_sample.mp3",
+      "https://svarbucket.s3.amazonaws.com/audios/female_voice_sample.mp3",
+    ];
     for (var exercise in exercises) {
       var type = exercise["type"];
       if (type == "video") {
@@ -94,9 +131,11 @@ class CachingManager {
       } else if (type == "DiffHalf") {
         DiffHalf diffHalf = DiffHalf.fromJson(exercise);
         urls.addAll(diffHalf.video_url);
-      } else if (type == "Vocabulary") {
+      }else if (type == "Vocabulary") {
         urls.add(exercise["url"]);
+
       }else{
+        
       }
     }
   

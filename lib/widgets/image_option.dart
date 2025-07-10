@@ -6,9 +6,11 @@ import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/core/app_export.dart';
 
 class ImageWidget extends StatefulWidget {
+
   final String imagePath;
 
   ImageWidget({
+    Key? key,
     required this.imagePath,
   });
 
@@ -45,6 +47,7 @@ class _ImageWidgetState extends State<ImageWidget> {
     final click = ClickProvider.of(context)?.click;
 
     return ChicletAnimatedButton(
+      key: Key(widget.imagePath),
        width: MediaQuery.of(context).size.width * 0.75,
         height: MediaQuery.of(context).size.height * 0.45,
       buttonType: ChicletButtonTypes.roundedRectangle,

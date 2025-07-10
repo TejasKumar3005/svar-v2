@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'dart:async';
@@ -84,7 +87,15 @@ class AudioWidgetState extends State<AudioWidget> {
 
   Future<double> _getAudioLength(String link) async {
     try {
-      await _audioPlayer.setUrl(link);
+      File? file;
+      file =
+          await CachingManager().getCachedFile(widget.audioLinks[currentIndex]);
+      if (file != null) {
+        await _audioPlayer.setAudioSource(AudioSource.file(file.path));
+      } else {
+        await _audioPlayer.setUrl(widget.audioLinks[currentIndex]);
+      }
+
       var duration = await _audioPlayer.load();
       return duration?.inSeconds.toDouble() ?? 5.0; // Null check
     } catch (e) {
@@ -102,7 +113,14 @@ class AudioWidgetState extends State<AudioWidget> {
 
     if (currentIndex < widget.audioLinks.length) {
       try {
-        await _audioPlayer.setUrl(widget.audioLinks[currentIndex]);
+        File? file;
+        file = await CachingManager()
+            .getCachedFile(widget.audioLinks[currentIndex]);
+        if (file != null) {
+          await _audioPlayer.setAudioSource(AudioSource.file(file.path));
+        } else {
+          await _audioPlayer.setUrl(widget.audioLinks[currentIndex]);
+        }
         await _audioPlayer.play();
 
         // Cancel previous subscription to prevent memory leaks
@@ -115,20 +133,35 @@ class AudioWidgetState extends State<AudioWidget> {
 
           if (state.processingState == ProcessingState.completed) {
             if (currentIndex < widget.audioLinks.length - 1) {
+              // Move to next audio
               currentIndex++;
               playNext();
             } else {
-              currentIndex = 0;
-              _progress.value = 0.0; // Reset progress
-              _audioPlayer.stop();
-              _isPlaying.value = false; // Ensure playing state is false
+              // All audio files have been played, stop completely
+              _resetToStart();
             }
           }
         });
       } catch (e) {
         print('Error playing audio: $e');
+        // Reset state on error
+        _resetToStart();
       }
     }
+  }
+
+  void _resetToStart() {
+    currentIndex = 0;
+    _progress.value = 1.0; // Set progress to complete briefly
+    _isPlaying.value = false; // Ensure playing state is false
+    _audioPlayer.stop();
+
+    // Reset progress after a short delay to show completion
+    Future.delayed(Duration(milliseconds: 500), () {
+      if (mounted) {
+        _progress.value = 0.0;
+      }
+    });
   }
 
   @override
@@ -172,6 +205,11 @@ class AudioWidgetState extends State<AudioWidget> {
                           await _audioPlayer.pause();
                           _isPlaying.value = false;
                         } else {
+                          // If we're at the end, reset to start
+                          if (currentIndex >= widget.audioLinks.length) {
+                            currentIndex = 0;
+                            _progress.value = 0.0;
+                          }
                           playNext();
                         }
                       },
@@ -219,6 +257,11 @@ class AudioWidgetState extends State<AudioWidget> {
                           await _audioPlayer.pause();
                           _isPlaying.value = false;
                         } else {
+                          // If we're at the end, reset to start
+                          if (currentIndex >= widget.audioLinks.length) {
+                            currentIndex = 0;
+                            _progress.value = 0.0;
+                          }
                           playNext();
                         }
                       },
