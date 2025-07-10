@@ -43,7 +43,7 @@ android {
         minSdkVersion 26
         targetSdkVersion 34 //flutter.targetSdkVersion
         multiDexEnabled true
-        versionCode 800
+        versionCode 802
         versionName "0.0.1"
         
     }
@@ -65,26 +65,26 @@ android {
 
     signingConfigs {
         debug {}
-    // release {
-    //     storeFile file('C:\\Users\\SOI\\upload-keystore.jks')
-    //     storePassword '30052003'
-    //     keyAlias 'upload'
-    //     keyPassword '30052003'
-    // }
+    release {
+        storeFile file('C:\\Users\\SOI\\upload-keystore.jks')
+        storePassword '30052003'
+        keyAlias 'upload'
+        keyPassword '30052003'
+    }
 }
 
 
     buildTypes {
         
-    //     release {
-    //     shrinkResources true
-    //     signingConfig signingConfigs.release
-    //     minifyEnabled true
-    //     proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-    // }
-    release{
-        signingConfig = signingConfigs.debug
+        release {
+        shrinkResources true
+        signingConfig signingConfigs.release
+        minifyEnabled true
+        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
     }
+    // release{
+    //     signingConfig = signingConfigs.debug
+    // }
 
     }
     //  splits {
