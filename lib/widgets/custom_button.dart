@@ -638,14 +638,21 @@ class _CustomButtonState extends State<CustomButton>
         child: Container(
           height: height,
           width: width,
-          color: Colors.transparent, // Explicitly transparent background
-          child: CustomPaint(
-            painter: SpectrumPainter(
-              progress: _currentProgress,
-              color: widget.color ?? Colors.orange,
-              isPlaying: _isSpectrumAnimating,
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.75),
+            borderRadius: BorderRadius.circular(12.0),
+            border: Border.all(color: Colors.white.withOpacity(0.1)),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12.0),
+            child: CustomPaint(
+              painter: SpectrumPainter(
+                progress: _currentProgress,
+                color: widget.color ?? Colors.green,
+                isPlaying: _isSpectrumAnimating,
+              ),
+              size: Size(width, height),
             ),
-            size: Size(width, height),
           ),
         ),
       );
@@ -764,40 +771,45 @@ class SpectrumPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.fill;
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..strokeCap = StrokeCap.round;
 
-    const int barCount = 28;
-    const double barWidth = 4.0;
-    const double spacing = 3.0;
-    final double totalWidth = barCount * (barWidth + spacing) - spacing;
-    final double startX = (size.width - totalWidth) / 2;
+    // Number of spectrum bars
+    const int barCount = 30;
+    // Add horizontal padding so bars don't touch the edges
+    final double horizontalPadding = 8.0;
+    final double drawableWidth = size.width - (horizontalPadding * 2);
+    final double barWidth = drawableWidth / (barCount * 1.5);
+    final double spacing = barWidth * 0.5;
 
-    final int activeBars = (barCount * progress).floor();
-    final random = math.Random();
+    final int activeBars = (barCount * progress).ceil();
 
     for (int i = 0; i < barCount; i++) {
-      final double x = startX + i * (barWidth + spacing);
+      final double x = horizontalPadding + i * (barWidth + spacing);
 
-      // A gentle descending curve for bar heights, matching the image.
-      final t = i / (barCount - 1);
-      final heightFactor = 0.4 + (0.5 * (math.cos(t * math.pi) + 1) * 0.5);
+      double baseHeight = size.height * 0.05;
+      double maxHeight = size.height * 0.95;
 
-      double barHeight = size.height * heightFactor;
+      double barHeight;
 
-      if (isPlaying && i < activeBars) {
-        barHeight *= (0.85 + 0.15 * random.nextDouble());
+      if (isPlaying) {
+        // Animate height with a sine wave based on time and position for a fluid look
+        double timeFactor = DateTime.now().millisecondsSinceEpoch * 0.005;
+        double posFactor = (i / barCount) * math.pi * 2;
+        double waveHeight = (math.sin(timeFactor + posFactor) * 0.5 + 0.5);
+        barHeight = baseHeight + (maxHeight - baseHeight) * waveHeight;
+      } else {
+        // When not playing, show a flat line representing progress
+        barHeight = size.height * 0.6; // A uniform height
       }
 
-      // Active bars are colored, inactive are gray.
-      paint.color = i < activeBars ? color : const Color(0xFF4C4C4C);
+      // Color based on progress
+      paint.color = (i < activeBars) ? color : Colors.grey.withOpacity(0.4);
 
       canvas.drawRRect(
         RRect.fromRectAndRadius(
-          Rect.fromCenter(
-            center: Offset(x + barWidth / 2, size.height / 2),
-            width: barWidth,
-            height: barHeight,
-          ),
+          Rect.fromLTWH(x, (size.height - barHeight) / 2, barWidth, barHeight),
           Radius.circular(barWidth / 2),
         ),
         paint,

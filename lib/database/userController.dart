@@ -192,12 +192,16 @@ class UserData {
                 "exerciseType": exercise["subtype"],
                 "date": formattedDate
               });
-            } else if (exercise["type"].toString() == "DiffHalf") {
+            }else if (exercise["type"].toString() == "HalfMuted"){
+            // do nothing..remove this exercise from the list
+            }
+             else if (exercise["type"].toString() == "DiffHalf") {
               updatedData.add({
                 ...baseExercise, // Preserve original data
                 "date": formattedDate,
                 "exerciseType": "DiffHalf",
               });
+              
             } else {
               updatedData.add({
                 ...baseExercise, // Preserve original data

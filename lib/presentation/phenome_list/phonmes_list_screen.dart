@@ -29,7 +29,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
   }
 
   void dispose() {
-  
+    
     super.dispose();
   } 
 
@@ -66,7 +66,7 @@ class PhonmesListScreenState extends State<PhonmesListScreen> {
                 Expanded(
                   child: Column(
                     children: [
-                   DisciAppBar(context), // No need for any callbacks now,
+                   DisciAppBar(context, parent_mode: false, onParentModeChanged: (value) {}), // No need for any callbacks now,
                       SizedBox(height: size.height * 0.02),
                       Container(
                         padding: EdgeInsets.symmetric(

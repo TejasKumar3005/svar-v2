@@ -248,9 +248,16 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                         left: 10, right: 10, top: 30.0, bottom: 20),
                     child: Column(
                       children: [
-                        DisciAppBar(context,
-                            parent_mode:
-                                parent_mode), // No need for any callbacks now,
+                        DisciAppBar(
+                          context,
+                          parent_mode: parent_mode,
+                          onParentModeChanged: (value) {
+                            setState(() {
+                              parent_mode = value;
+                              exerciseCompleted = false;
+                            });
+                          },
+                        ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 15.h),
                           child: Container(
@@ -278,7 +285,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                             ),
                           ),
                         ),
-
                         Expanded(
                           child: Stack(
                             children: [
@@ -342,146 +348,6 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                               type: ButtonType.Next,
                                               onPressed: _moveToNextExercise)),
                                     ),
-                                  if (parent_mode) ...[
-                                    Positioned(
-                                      bottom:
-                                          MediaQuery.of(context).size.height *
-                                              0.03,
-                                      right: 20,
-                                      child: AnimatedScale(
-                                        scale: 1.0,
-                                        duration: Duration(milliseconds: 500),
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 8),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                Colors.white.withOpacity(0.95),
-                                            borderRadius:
-                                                BorderRadius.circular(25),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.1),
-                                                blurRadius: 8,
-                                                spreadRadius: 1,
-                                                offset: Offset(0, 4),
-                                              ),
-                                            ],
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                "Preview",
-                                                style: GoogleFonts.inter(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: parent_mode
-                                                      ? Colors.blue[600]
-                                                      : Colors.grey[600],
-                                                ),
-                                              ),
-                                              SizedBox(width: 8),
-                                              Switch(
-                                                value: !parent_mode,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    parent_mode = !value;
-                                                    exerciseCompleted = false;
-                                                  });
-                                                },
-                                                activeColor: Colors.green[600],
-                                                activeTrackColor:
-                                                    Colors.green[200],
-                                              ),
-                                              SizedBox(width: 8),
-                                              Text(
-                                                "Exercise",
-                                                style: GoogleFonts.inter(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: !parent_mode
-                                                      ? Colors.green[600]
-                                                      : Colors.grey[600],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  ] else ...[
-                                    // Show toggle switch even in exercise mode
-                                    Positioned(
-                                      bottom:
-                                          MediaQuery.of(context).size.height *
-                                              0.03,
-                                      left: 20,
-                                      child: AnimatedScale(
-                                        scale: 1.0,
-                                        duration: Duration(milliseconds: 500),
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 8),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                Colors.white.withOpacity(0.95),
-                                            borderRadius:
-                                                BorderRadius.circular(25),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.1),
-                                                blurRadius: 8,
-                                                spreadRadius: 1,
-                                                offset: Offset(0, 4),
-                                              ),
-                                            ],
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                "Preview",
-                                                style: GoogleFonts.inter(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: parent_mode
-                                                      ? Colors.blue[600]
-                                                      : Colors.grey[600],
-                                                ),
-                                              ),
-                                              SizedBox(width: 8),
-                                              Switch(
-                                                value: !parent_mode,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    parent_mode = !value;
-                                                    exerciseCompleted = false;
-                                                  });
-                                                },
-                                                activeColor: Colors.green[600],
-                                                activeTrackColor:
-                                                    Colors.green[200],
-                                              ),
-                                              SizedBox(width: 8),
-                                              Text(
-                                                "Exercise",
-                                                style: GoogleFonts.inter(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: !parent_mode
-                                                      ? Colors.green[600]
-                                                      : Colors.grey[600],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  ]
                                 ],
                               ),
                               // Tip button

@@ -87,15 +87,15 @@ class AudioWidgetState extends State<AudioWidget> {
 
   Future<double> _getAudioLength(String link) async {
     try {
-      File? file;
+        File? file;
       file =
           await CachingManager().getCachedFile(widget.audioLinks[currentIndex]);
-      if (file != null) {
-        await _audioPlayer.setAudioSource(AudioSource.file(file.path));
-      } else {
-        await _audioPlayer.setUrl(widget.audioLinks[currentIndex]);
-      }
-
+        if (file != null) {
+          await _audioPlayer.setAudioSource(AudioSource.file(file.path));
+        } else {
+          await _audioPlayer.setUrl(widget.audioLinks[currentIndex]);
+        }
+    
       var duration = await _audioPlayer.load();
       return duration?.inSeconds.toDouble() ?? 5.0; // Null check
     } catch (e) {

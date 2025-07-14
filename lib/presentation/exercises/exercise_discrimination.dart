@@ -253,7 +253,17 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
           child: Column(
             children: [
               // App Bar with padding
-              DisciAppBar(context, parent_mode: parent_mode),
+              DisciAppBar(
+                context,
+                parent_mode: parent_mode,
+                onParentModeChanged: (value) {
+                  setState(() {
+                    parent_mode = value;
+                    // Reset completion state when toggling modes
+                    exerciseCompleted = false;
+                  });
+                },
+              ),
 
               // Title section positioned over the placeholder
               Padding(
@@ -334,159 +344,6 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                                     type: ButtonType.Next,
                                     onPressed: _moveToNextExercise)),
                           ),
-
-                        if (parent_mode) ...[
-                          Positioned(
-                            bottom: MediaQuery.of(context).size.height * 0.03,
-                            right: 20,
-                            child: AnimatedScale(
-                              scale: 1.0,
-                              duration: Duration(milliseconds: 500),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.95),
-                                  borderRadius: BorderRadius.circular(25),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 8,
-                                      spreadRadius: 1,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      "Preview",
-                                      style: GoogleFonts.inter(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: parent_mode
-                                            ? Colors.blue[600]
-                                            : Colors.grey[600],
-                                      ),
-                                    ),
-                                    SizedBox(width: 8),
-                                    Switch(
-                                      value: !parent_mode,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          parent_mode = !value;
-                                          if (!parent_mode) {
-                                            exerciseCompleted = false;
-                                          } else {
-                                            exerciseCompleted = false;
-                                            // Reset to sample data when switching back to preview
-                                            final random = Random();
-                                            var obj = ModalRoute.of(context)
-                                                ?.settings
-                                                .arguments as List<dynamic>;
-                                            String type = obj[0] as String;
-                                            switch (type) {
-                                              case "DiffSounds":
-                                                // No need to reassign, will be handled in build method
-                                                break;
-                                              case "OddOne":
-                                                // No need to reassign, will be handled in build method
-                                                break;
-                                              case "DiffHalf":
-                                                // No need to reassign, will be handled in build method
-                                                break;
-                                              case "MaleFemale":
-                                                // No need to reassign, will be handled in build method
-                                                break;
-                                            }
-                                          }
-                                        });
-                                      },
-                                      activeColor: Colors.green[600],
-                                      activeTrackColor: Colors.green[200],
-                                    ),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      "Exercise",
-                                      style: GoogleFonts.inter(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: !parent_mode
-                                            ? Colors.green[600]
-                                            : Colors.grey[600],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        ] else ...[
-                          // Show toggle switch even in exercise mode
-                          Positioned(
-                            bottom: MediaQuery.of(context).size.height * 0.03,
-                            left: 20,
-                            child: AnimatedScale(
-                              scale: 1.0,
-                              duration: Duration(milliseconds: 500),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.95),
-                                  borderRadius: BorderRadius.circular(25),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 8,
-                                      spreadRadius: 1,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      "Preview",
-                                      style: GoogleFonts.inter(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: parent_mode
-                                            ? Colors.blue[600]
-                                            : Colors.grey[600],
-                                      ),
-                                    ),
-                                    SizedBox(width: 8),
-                                    Switch(
-                                      value: !parent_mode,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          parent_mode = !value;
-                                          exerciseCompleted = false;
-                                        });
-                                      },
-                                      activeColor: Colors.green[600],
-                                      activeTrackColor: Colors.green[200],
-                                    ),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      "Exercise",
-                                      style: GoogleFonts.inter(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: !parent_mode
-                                            ? Colors.green[600]
-                                            : Colors.grey[600],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        ]
                       ],
                     ),
                   ],

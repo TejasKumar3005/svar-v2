@@ -109,7 +109,7 @@ class SpeakingPhonemeScreenState extends State<SpeakingPhonemeScreen> {
             children: [
               Column(
                 children: [
-                DisciAppBar(context), // No need for any callbacks now,
+                DisciAppBar(context, parent_mode: false, onParentModeChanged: (value) {}), // No need for any callbacks now,
                 ],
               ),
               _buildText(),

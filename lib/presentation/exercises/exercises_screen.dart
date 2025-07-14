@@ -1260,6 +1260,30 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           debugPrint("Custom exercise type: $exerciseType");
           _handleCustomNonVideo(context , "notcompleted" , exerciseIndex);
           break;
+        case "Introduction":
+          var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+      Map<String, dynamic> data = data_pro.todaysExercises[exerciseIndex];
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ExerciseVideo(
+              videoUrl: data["video_url"],
+              onVideoComplete: () {
+                if (!mounted) return;
+                data_pro.incrementLevel(exerciseIndex);
+                if (data["completedAt"] == null) {
+                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                      .updateExerciseData(euid: data["uid"], date: data["date"])
+                      .then((value) =>
+                          print("Exercise data updated for ${data["uid"]}"))
+                      .catchError(
+                          (e) => print("Error updating exercise data: $e"));
+                }
+              },
+            ),
+          ),
+        );
+          break;
         default:
           debugPrint("Unknown exercise type: $exerciseType");
           _showErrorSnackbar('Unknown exercise type: $exerciseType.');

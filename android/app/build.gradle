@@ -66,10 +66,10 @@ android {
     signingConfigs {
         debug {}
     release {
-        storeFile file('C:\\Users\\SOI\\upload-keystore.jks')
-        storePassword '30052003'
-        keyAlias 'upload'
-        keyPassword '30052003'
+        // storeFile file('C:\\Users\\SOI\\upload-keystore.jks')
+        // storePassword '30052003'
+        // keyAlias 'upload'
+        // keyPassword '30052003'
     }
 }
 

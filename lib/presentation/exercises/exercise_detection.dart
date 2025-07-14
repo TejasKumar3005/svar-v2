@@ -327,7 +327,66 @@ class _DetectionState extends State<ExerciseDetection> {
                 left: 10, right: 10, top: 30.0, bottom: 20),
             child: Column(
               children: [
-                DisciAppBar(context, parent_mode: parent_mode),
+                DisciAppBar(
+                  context,
+                  parent_mode: parent_mode,
+                  onParentModeChanged: (value) {
+                    // Get original data from route arguments
+                    var obj = ModalRoute.of(context)?.settings.arguments
+                        as List<dynamic>;
+                    String type = obj[0] as String;
+                    dynamic originalDtcontainer = obj[1] as dynamic;
+
+                    setState(() {
+                      parent_mode = value;
+                      if (!parent_mode) {
+                        // Switching to exercise mode
+                        selectedSampleData = null; // Clear sample data
+                        isVideoReady1 = false;
+                        isVideoReady2 = false;
+                        exerciseCompleted = false;
+                      } else {
+                        // Switching back to preview mode
+                        exerciseCompleted = false;
+                        // Reset to sample data when switching back to preview
+                        final random = Random();
+                        switch (type) {
+                          case "MutedUnmuted":
+                            selectedSampleData = sampleMutedUnmuted[
+                                random.nextInt(sampleMutedUnmuted.length)];
+                            break;
+                          case "HalfMuted":
+                            selectedSampleData = sampleHalfMuted[
+                                random.nextInt(sampleHalfMuted.length)];
+                            break;
+                        }
+                      }
+                    });
+
+                    // Dispose and re-initialize videos
+                    _videoPlayerController1?.dispose();
+                    _chewieController1?.dispose();
+                    _videoPlayerController2?.dispose();
+                    _chewieController2?.dispose();
+
+                    _videoPlayerController1 = null;
+                    _chewieController1 = null;
+                    _videoPlayerController2 = null;
+                    _chewieController2 = null;
+
+                    if (type == "MutedUnmuted") {
+                      if (parent_mode) {
+                        // Use new sample data for preview
+                        _initializeVideoFlow(selectedSampleData.getVideoUrls(),
+                            selectedSampleData.getMuted());
+                      } else {
+                        // Use original data for exercise
+                        _initializeVideoFlow(originalDtcontainer.getVideoUrls(),
+                            originalDtcontainer.getMuted());
+                      }
+                    }
+                  },
+                ),
                 Expanded(
                   child: Stack(
                     children: [
@@ -374,199 +433,6 @@ class _DetectionState extends State<ExerciseDetection> {
                                       type: ButtonType.Next,
                                       onPressed: _moveToNextExercise)),
                             ),
-
-                          if (parent_mode) ...[
-                            Positioned(
-                              bottom: MediaQuery.of(context).size.height * 0.01,
-                              right: 20,
-                              child: AnimatedScale(
-                                scale: 1.0,
-                                duration: Duration(milliseconds: 500),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.95),
-                                    borderRadius: BorderRadius.circular(25),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 8,
-                                        spreadRadius: 1,
-                                        offset: Offset(0, 4),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        "Preview",
-                                        style: GoogleFonts.inter(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: parent_mode
-                                              ? Colors.blue[600]
-                                              : Colors.grey[600],
-                                        ),
-                                      ),
-                                      SizedBox(width: 8),
-                                      Switch(
-                                        value: !parent_mode,
-                                        onChanged: (value) {
-                                          // Get original data from route arguments
-                                          var obj = ModalRoute.of(context)
-                                              ?.settings
-                                              .arguments as List<dynamic>;
-                                          String type = obj[0] as String;
-                                          dynamic originalDtcontainer =
-                                              obj[1] as dynamic;
-
-                                          setState(() {
-                                            parent_mode = !value;
-                                            if (!parent_mode) {
-                                              selectedSampleData =
-                                                  null; // Clear sample data
-                                              // Reset video states for reinitialization
-                                              isVideoReady1 = false;
-                                              isVideoReady2 = false;
-                                              exerciseCompleted = false;
-                                            }
-                                          });
-
-                                          if (!parent_mode) {
-                                            // Dispose existing video controllers
-                                            _videoPlayerController1?.dispose();
-                                            _chewieController1?.dispose();
-                                            _videoPlayerController2?.dispose();
-                                            _chewieController2?.dispose();
-
-                                            // Reset controllers to null
-                                            _videoPlayerController1 = null;
-                                            _chewieController1 = null;
-                                            _videoPlayerController2 = null;
-                                            _chewieController2 = null;
-
-                                            // Initialize video with original data
-                                            if (type == "MutedUnmuted") {
-                                              _initializeVideoFlow(
-                                                  originalDtcontainer
-                                                      .getVideoUrls(),
-                                                  originalDtcontainer
-                                                      .getMuted());
-                                            }
-                                          }
-                                        },
-                                        activeColor: Colors.green[600],
-                                        activeTrackColor: Colors.green[200],
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        "Exercise",
-                                        style: GoogleFonts.inter(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: !parent_mode
-                                              ? Colors.green[600]
-                                              : Colors.grey[600],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            )
-                          ] else ...[
-                            // Show toggle switch even in exercise mode
-                            Positioned(
-                              bottom: MediaQuery.of(context).size.height * 0.01,
-                              left: 20,
-                              child: AnimatedScale(
-                                scale: 1.0,
-                                duration: Duration(milliseconds: 500),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.95),
-                                    borderRadius: BorderRadius.circular(25),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 8,
-                                        spreadRadius: 1,
-                                        offset: Offset(0, 4),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        "Preview",
-                                        style: GoogleFonts.inter(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: parent_mode
-                                              ? Colors.blue[600]
-                                              : Colors.grey[600],
-                                        ),
-                                      ),
-                                      SizedBox(width: 8),
-                                      Switch(
-                                        value: !parent_mode,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            parent_mode = !value;
-                                            if (parent_mode) {
-                                              exerciseCompleted = false;
-                                              // Reset to sample data when switching back to preview
-                                              final random = Random();
-                                              String type =
-                                                  (ModalRoute.of(context)
-                                                              ?.settings
-                                                              .arguments
-                                                          as List<dynamic>)[0]
-                                                      as String;
-                                              switch (type) {
-                                                case "MutedUnmuted":
-                                                  selectedSampleData =
-                                                      sampleMutedUnmuted[
-                                                          random.nextInt(
-                                                              sampleMutedUnmuted
-                                                                  .length)];
-                                                  break;
-                                                case "HalfMuted":
-                                                  selectedSampleData =
-                                                      sampleHalfMuted[
-                                                          random.nextInt(
-                                                              sampleHalfMuted
-                                                                  .length)];
-                                                  break;
-                                              }
-                                            }
-                                          });
-                                        },
-                                        activeColor: Colors.green[600],
-                                        activeTrackColor: Colors.green[200],
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        "Exercise",
-                                        style: GoogleFonts.inter(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: !parent_mode
-                                              ? Colors.green[600]
-                                              : Colors.grey[600],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            )
-                          ]
                         ],
                       ),
                     ],

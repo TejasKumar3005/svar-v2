@@ -404,7 +404,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
             // Background elements
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
-              child: DisciAppBar(context),
+              child: DisciAppBar(context, parent_mode: false, onParentModeChanged: (value) {}),
             ), // App bar stays at the top
 
             // Rive animation container

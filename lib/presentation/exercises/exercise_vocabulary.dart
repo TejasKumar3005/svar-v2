@@ -54,7 +54,7 @@ class ExerciseVocabulary extends StatefulWidget {
           ),
         ),
       );
-    }
+    } 
 
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
@@ -83,7 +83,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
   bool hasMoreExercises = false;
   int currentExerciseIndex = 0;
 
-  bool parent_mode = true;
+  bool parent_mode = false;
 
   // Variables to store randomly selected sample data
   late Map<String, dynamic> selectedSample;
@@ -357,7 +357,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
             // App Bar
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
-              child: DisciAppBar(context, parent_mode: parent_mode),
+              child: DisciAppBar(context, parent_mode: parent_mode, onParentModeChanged: (value) {}),
             ),
 
             // Main Content
@@ -619,134 +619,134 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                         onPressed: _moveToNextExercise)),
               ),
 
-            if (parent_mode) ...[
-              Positioned(
-                bottom: MediaQuery.of(context).size.height * 0.03,
-                right: 20,
-                child: AnimatedScale(
-                  scale: 1.0,
-                  duration: Duration(milliseconds: 500),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.95),
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Preview",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: parent_mode
-                                ? Colors.blue[600]
-                                : Colors.grey[600],
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Switch(
-                          value: !parent_mode,
-                          onChanged: (value) {
-                            setState(() {
-                              parent_mode = !value;
-                              exerciseCompleted = false;
-                              userAnswer = null;
-                            });
-                          },
-                          activeColor: Colors.green[600],
-                          activeTrackColor: Colors.green[200],
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Exercise",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: !parent_mode
-                                ? Colors.green[600]
-                                : Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            ] else ...[
-              // Show toggle switch even in exercise mode
-              Positioned(
-                bottom: MediaQuery.of(context).size.height * 0.03,
-                left: 20,
-                child: AnimatedScale(
-                  scale: 1.0,
-                  duration: Duration(milliseconds: 500),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.95),
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          spreadRadius: 1,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Preview",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: parent_mode
-                                ? Colors.blue[600]
-                                : Colors.grey[600],
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Switch(
-                          value: !parent_mode,
-                          onChanged: (value) {
-                            setState(() {
-                              parent_mode = !value;
-                              exerciseCompleted = false;
-                              userAnswer = null;
-                            });
-                          },
-                          activeColor: Colors.green[600],
-                          activeTrackColor: Colors.green[200],
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          "Exercise",
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: !parent_mode
-                                ? Colors.green[600]
-                                : Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            ]
+            // if (parent_mode) ...[
+            //   Positioned(
+            //     bottom: MediaQuery.of(context).size.height * 0.03,
+            //     right: 20,
+            //     child: AnimatedScale(
+            //       scale: 1.0,
+            //       duration: Duration(milliseconds: 500),
+            //       child: Container(
+            //         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            //         decoration: BoxDecoration(
+            //           color: Colors.white.withOpacity(0.95),
+            //           borderRadius: BorderRadius.circular(25),
+            //           boxShadow: [
+            //             BoxShadow(
+            //               color: Colors.black.withOpacity(0.1),
+            //               blurRadius: 8,
+            //               spreadRadius: 1,
+            //               offset: Offset(0, 4),
+            //             ),
+            //           ],
+            //         ),
+            //         child: Row(
+            //           mainAxisSize: MainAxisSize.min,
+            //           children: [
+            //             Text(
+            //               "Preview",
+            //               style: GoogleFonts.inter(
+            //                 fontSize: 14,
+            //                 fontWeight: FontWeight.w600,
+            //                 color: parent_mode
+            //                     ? Colors.blue[600]
+            //                     : Colors.grey[600],
+            //               ),
+            //             ),
+            //             SizedBox(width: 8),
+            //             Switch(
+            //               value: !parent_mode,
+            //               onChanged: (value) {
+            //                 setState(() {
+            //                   parent_mode = !value;
+            //                   exerciseCompleted = false;
+            //                   userAnswer = null;
+            //                 });
+            //               },
+            //               activeColor: Colors.green[600],
+            //               activeTrackColor: Colors.green[200],
+            //             ),
+            //             SizedBox(width: 8),
+            //             Text(
+            //               "Exercise",
+            //               style: GoogleFonts.inter(
+            //                 fontSize: 14,
+            //                 fontWeight: FontWeight.w600,
+            //                 color: !parent_mode
+            //                     ? Colors.green[600]
+            //                     : Colors.grey[600],
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   )
+            // ] else ...[
+            //   // Show toggle switch even in exercise mode
+            //   Positioned(
+            //     bottom: MediaQuery.of(context).size.height * 0.03,
+            //     left: 20,
+            //     child: AnimatedScale(
+            //       scale: 1.0,
+            //       duration: Duration(milliseconds: 500),
+            //       child: Container(
+            //         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            //         decoration: BoxDecoration(
+            //           color: Colors.white.withOpacity(0.95),
+            //           borderRadius: BorderRadius.circular(25),
+            //           boxShadow: [
+            //             BoxShadow(
+            //               color: Colors.black.withOpacity(0.1),
+            //               blurRadius: 8,
+            //               spreadRadius: 1,
+            //               offset: Offset(0, 4),
+            //             ),
+            //           ],
+            //         ),
+            //         child: Row(
+            //           mainAxisSize: MainAxisSize.min,
+            //           children: [
+            //             Text(
+            //               "Preview",
+            //               style: GoogleFonts.inter(
+            //                 fontSize: 14,
+            //                 fontWeight: FontWeight.w600,
+            //                 color: parent_mode
+            //                     ? Colors.blue[600]
+            //                     : Colors.grey[600],
+            //               ),
+            //             ),
+            //             SizedBox(width: 8),
+            //             Switch(
+            //               value: !parent_mode,
+            //               onChanged: (value) {
+            //                 setState(() {
+            //                   parent_mode = !value;
+            //                   exerciseCompleted = false;
+            //                   userAnswer = null;
+            //                 });
+            //               },
+            //               activeColor: Colors.green[600],
+            //               activeTrackColor: Colors.green[200],
+            //             ),
+            //             SizedBox(width: 8),
+            //             Text(
+            //               "Exercise",
+            //               style: GoogleFonts.inter(
+            //                 fontSize: 14,
+            //                 fontWeight: FontWeight.w600,
+            //                 color: !parent_mode
+            //                     ? Colors.green[600]
+            //                     : Colors.grey[600],
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   )
+            // ]
           ],
         ),
       ),
