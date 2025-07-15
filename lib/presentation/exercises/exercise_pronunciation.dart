@@ -19,6 +19,8 @@ import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:vad/vad.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:svar_new/data/models/levelManagementModel/visual.dart';
+import 'dart:math';
 
 // import 'dart:html' as html;
 
@@ -84,6 +86,11 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
   bool _wasSpeakingBeforePause = false;
   bool _wasPlayingRecordingBeforePause = false;
 
+  // Parent mode state
+  bool parent_mode = false;
+  late String displayCharacter;
+  late String originalCharacter;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -91,7 +98,19 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    originalCharacter = widget.character;
+    _setDisplayCharacter();
     _initializeWithConnectivityCheck();
+  }
+
+  void _setDisplayCharacter() {
+    if (parent_mode) {
+      final random = Random();
+      displayCharacter =
+          samplePronunciations[random.nextInt(samplePronunciations.length)];
+    } else {
+      displayCharacter = originalCharacter;
+    }
   }
 
   @override
@@ -263,7 +282,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     // Only play TTS at start
     Future.delayed(Duration(milliseconds: 500), () {
       if (mounted) {
-        speakHindiWithoutRecording(widget.character);
+        speakHindiWithoutRecording(displayCharacter);
       }
     });
   }
@@ -404,7 +423,23 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
             // Background elements
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
-              child: DisciAppBar(context, parent_mode: false, onParentModeChanged: (value) {}),
+              child: DisciAppBar(
+                context,
+                show_switch: true,
+                parent_mode: parent_mode,
+                onParentModeChanged: (value) {
+                  setState(() {
+                    parent_mode = value;
+                    _setDisplayCharacter();
+                    // Reset state if needed
+                    result = [];
+                    intermediateResults = [];
+                    correctAttempts = 0;
+                    totalAttempts = 0;
+                    isRecordingComplete = false;
+                  });
+                },
+              ),
             ), // App bar stays at the top
 
             // Rive animation container
@@ -434,7 +469,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                 // Center the character horizontally and vertically
                 child: GestureDetector(
                   onTap: () async {
-                    await speakHindi(widget.character);
+                    await speakHindi(displayCharacter);
                   },
                   child: Container(
                     width: isSmallScreen ? size.width * 0.3 : size.width * 0.2,
@@ -445,7 +480,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Text(
-                        widget.character,
+                        displayCharacter,
                         style: TextStyle(
                           height: 1,
                           fontSize: isSmallScreen ? 60 : 80,
@@ -480,7 +515,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                               _vadHandler.stopListening();
                               _isVadListening = false;
                             }
-                            await speakHindiWithoutRecording(widget.character);
+                            await speakHindiWithoutRecording(displayCharacter);
                           },
                           style: ElevatedButton.styleFrom(
                             shape: const CircleBorder(),
@@ -529,13 +564,13 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                               return;
                             }
 
-                              if (_isVadListening) {
-                                print("Stopping VAD");
+                            if (_isVadListening) {
+                              print("Stopping VAD");
                               _safeStopVadListening();
-                              } else {
-                                print("Starting VAD");
+                            } else {
+                              print("Starting VAD");
                               _safeStartVadListening();
-                              }
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             shape: const CircleBorder(),
@@ -672,7 +707,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                         SizedBox(width: isSmallScreen ? 6 : 8),
                         Text(
                           "Recording attempt ${totalAttempts + 1}",
-                            style: GoogleFonts.inter(
+                          style: GoogleFonts.inter(
                             fontSize: isSmallScreen ? 14 : 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -753,7 +788,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
       } catch (e) {
         print("Error in speech end handler: $e");
         if (mounted) {
-        showErrorSnackBar("Error processing recording: $e");
+          showErrorSnackBar("Error processing recording: $e");
 
           if (correctAttempts < REQUIRED_CORRECT_ATTEMPTS && result.isEmpty) {
             _safeStartVadListening();
@@ -766,10 +801,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     _vadHandler.onSpeechStart.listen((_) {
       print('Speech detected.');
       if (mounted) {
-      setState(() {
-        isRecordingSegment = true;
-        receivedEvents.add('Speech detected - Attempt ${totalAttempts + 1}');
-      });
+        setState(() {
+          isRecordingSegment = true;
+          receivedEvents.add('Speech detected - Attempt ${totalAttempts + 1}');
+        });
       }
     });
 
@@ -777,9 +812,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     _vadHandler.onVADMisfire.listen((_) {
       print('VAD misfire detected.');
       if (mounted) {
-      setState(() {
-        receivedEvents.add('VAD misfire detected.');
-      });
+        setState(() {
+          receivedEvents.add('VAD misfire detected.');
+        });
       }
     });
 
@@ -787,12 +822,12 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     _vadHandler.onError.listen((String message) {
       print('VAD Error: $message');
       if (mounted) {
-      setState(() {
-        loading = false;
-        isRecordingSegment = false;
+        setState(() {
+          loading = false;
+          isRecordingSegment = false;
           _isVadListening = false;
-        receivedEvents.add('Error: $message');
-      });
+          receivedEvents.add('Error: $message');
+        });
         showErrorSnackBar("Recording error: $message");
       }
     });
@@ -877,11 +912,10 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
               orElse: () => null)
           : null;
 
-
       print("Filtered API Response: $apiResult");
       if (apiResult != null) {
-        if(apiResult is List && apiResult.isNotEmpty){
-        apiResult[0]["url"]=fullResponse["url"];
+        if (apiResult is List && apiResult.isNotEmpty) {
+          apiResult[0]["url"] = fullResponse["url"];
         }
         intermediateResults.add(apiResult is List ? apiResult : [apiResult]);
 
@@ -906,8 +940,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
               return true;
             }
             return true;
-          }else{
-            await _audioPlayer.play(AssetSource('assets/audio/wrong_answer.mp3'));
+          } else {
+            await _audioPlayer
+                .play(AssetSource('assets/audio/wrong_answer.mp3'));
             await Future.delayed(Duration(milliseconds: 1000));
           }
         }
@@ -1054,7 +1089,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                   const Icon(Icons.record_voice_over,
                       color: Colors.white, size: 24),
                   const SizedBox(width: 12),
-                   Text(
+                  Text(
                     "Pronunciation Results",
                     style: GoogleFonts.inter(
                       fontSize: 24.0,
@@ -1167,16 +1202,16 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton.icon(
                 onPressed: () {
-
                   UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                       .updateExerciseData(
                           euid: data_pro.todaysExercises[startExerciseIndex]
                               ["uid"],
                           date: data_pro.todaysExercises[startExerciseIndex]
                               ["date"],
-                              isCompleted: false,
+                          isCompleted: false,
                           performance: {
-                        "result": intermediateResults.expand((list) => list).toList(),
+                        "result":
+                            intermediateResults.expand((list) => list).toList(),
                         "time": DateTime.now().toIso8601String(),
                         "correctAttempts": correctAttempts,
                         "totalAttempts": totalAttempts,
@@ -1242,17 +1277,17 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
 
     // Stop all audio activities
     try {
-    if (_isVadListening) {
-      _vadHandler.stopListening();
+      if (_isVadListening) {
+        _vadHandler.stopListening();
         _isVadListening = false;
-    }
-    _vadHandler.dispose();
+      }
+      _vadHandler.dispose();
     } catch (e) {
       print('Error disposing VAD handler: $e');
     }
 
     try {
-    flutterTts.stop();
+      flutterTts.stop();
     } catch (e) {
       print('Error stopping TTS: $e');
     }
@@ -1270,15 +1305,15 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     }
 
     try {
-    riveController?.dispose();
+      riveController?.dispose();
     } catch (e) {
       print('Error disposing rive controller: $e');
     }
 
     // Clean up overlay
     try {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
+      _overlayEntry?.remove();
+      _overlayEntry = null;
     } catch (e) {
       print('Error removing overlay: $e');
     }
@@ -1323,7 +1358,7 @@ Future<dynamic> sendWavFile(String wavFile, String word) async {
       print("File size: ${File(wavFile).lengthSync()} bytes");
       request.files.add(await http.MultipartFile.fromPath('wav_file', wavFile));
     }
-    
+
     var response = await request.send();
     print("Received response status: ${response.statusCode}");
 

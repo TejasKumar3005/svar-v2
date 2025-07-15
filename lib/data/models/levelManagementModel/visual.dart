@@ -309,7 +309,7 @@ List<MutedUnmuted> sampleMutedUnmuted = [
     "https://svarbucket.s3.amazonaws.com/videos/car_honking.mp4"
   ], muted: 0),
   MutedUnmuted(video_url: [
-  "https://svarbucket.s3.amazonaws.com/videos/cooker_loop.mp4",
+    "https://svarbucket.s3.amazonaws.com/videos/cooker_loop.mp4",
     "https://svarbucket.s3.amazonaws.com/videos/drum_loop.mp4"
   ], muted: 1),
   MutedUnmuted(video_url: [
@@ -319,12 +319,35 @@ List<MutedUnmuted> sampleMutedUnmuted = [
 ];
 
 List<dynamic> sampleVocabulary = [
-  {"word": "boat", "url": "https://svarbucket.s3.amazonaws.com/new_vehicles/images/akg_20250606_052714_adf3fb26.png"},
-  {"word": "airplane", "url": "https://svarbucket.s3.amazonaws.com/new_vehicles/images/akg_20250606_052716_9b74238a.png"},
-  {"word": "stars", "url": "https://svarbucket.s3.amazonaws.com/new_environment/images/akg_20250606_052742_2be51053.png"},
-  {"word": "mountain", "url": "https://svarbucket.s3.amazonaws.com/new_environment/images/akg_20250606_052744_411dae16.png"}
+  {
+    "word": "boat",
+    "url":
+        "https://svarbucket.s3.amazonaws.com/new_vehicles/images/akg_20250606_052714_adf3fb26.png"
+  },
+  {
+    "word": "airplane",
+    "url":
+        "https://svarbucket.s3.amazonaws.com/new_vehicles/images/akg_20250606_052716_9b74238a.png"
+  },
+  {
+    "word": "stars",
+    "url":
+        "https://svarbucket.s3.amazonaws.com/new_environment/images/akg_20250606_052742_2be51053.png"
+  },
+  {
+    "word": "mountain",
+    "url":
+        "https://svarbucket.s3.amazonaws.com/new_environment/images/akg_20250606_052744_411dae16.png"
+  },
 ];
 
+List<dynamic> samplePronunciations = [
+  "काला",
+  "अलमारी",
+  "नापो",
+  "चाचा",
+  "माचिस"
+];
 
 List<HalfMuted> sampleHalfMuted = [
   HalfMuted(

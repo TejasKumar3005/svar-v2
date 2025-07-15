@@ -17,12 +17,14 @@ import 'dart:math';
 
 class ExerciseVocabulary extends StatefulWidget {
   final String word;
-  final String imageUrl;
+  final String? image1;
+  final String? image2;
 
   const ExerciseVocabulary({
     Key? key,
     required this.word,
-    required this.imageUrl,
+    this.image1,
+    this.image2,
   }) : super(key: key);
 
   @override
@@ -54,22 +56,33 @@ class ExerciseVocabulary extends StatefulWidget {
           ),
         ),
       );
-    } 
+    }
 
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
 
     // Use sample data when parent_mode is true (default state)
     String word = data["word"] ?? "Unknown Word";
-    String imageUrl = data["url"] ?? "";
+    String image1 = "";
+    String image2 = "";
+    if (data["category"] == "opposites") {
+      image1 = data[word.split("-")[0]] ?? "";
+      image2 = data[word.split("-")[1]] ?? "";
+      return ExerciseVocabulary(
+        word: word,
+        image1: image1,
+        image2: image2,
+      );
+    } else {
+      image1 = data["url"];
+      return ExerciseVocabulary(
+        word: word,
+        image1: image1,
+      );
+    }
 
     // For parent mode preview, use sample data
     // Since parent_mode is initially true in the widget, we use sample data by default
     // The actual data will be used when parent_mode becomes false
-
-    return ExerciseVocabulary(
-      word: word,
-      imageUrl: imageUrl,
-    );
   }
 }
 
@@ -84,21 +97,26 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
   int currentExerciseIndex = 0;
 
   bool parent_mode = false;
-
-  // Variables to store randomly selected sample data
-  late Map<String, dynamic> selectedSample;
+  late String displayWord;
+  String? displayImage1;
+  String? displayImage2;
+  late String originalWord;
+  String? originalImage1;
+  String? originalImage2;
+  Map<String, dynamic>? selectedSample;
 
   @override
   void initState() {
     super.initState();
     initTTS();
 
-    // Initialize random sample data for parent mode
-    if (parent_mode) {
-      final random = Random();
-      selectedSample =
-          sampleVocabulary[random.nextInt(sampleVocabulary.length)];
-    }
+    // Store original data
+    originalWord = widget.word;
+    originalImage1 = widget.image1;
+    originalImage2 = widget.image2;
+
+    // Set display data based on initial mode
+    _setDisplayData();
 
     // Initialize exercise data
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -108,10 +126,24 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
     // Play TTS automatically when page loads
     Future.delayed(Duration(milliseconds: 500), () {
       if (mounted) {
-        String wordToSpeak = parent_mode ? selectedSample["word"] : widget.word;
-        speakHindi(wordToSpeak);
+        speakHindi(displayWord);
       }
     });
+  }
+
+  void _setDisplayData() {
+    if (parent_mode) {
+      final random = Random();
+      selectedSample =
+          sampleVocabulary[random.nextInt(sampleVocabulary.length)];
+      displayWord = selectedSample!["word"] ?? "Unknown Word";
+      displayImage1 = selectedSample!["url"];
+      displayImage2 = null;
+    } else {
+      displayWord = originalWord;
+      displayImage1 = originalImage1;
+      displayImage2 = originalImage2;
+    }
   }
 
   void _initializeExerciseData() {
@@ -333,14 +365,10 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
     final size = MediaQuery.of(context).size;
     final isSmallScreen = size.width < 600;
 
-    // Use sample data when parent_mode is true
-    String displayWord = widget.word;
-    String displayImageUrl = widget.imageUrl;
-
-    if (parent_mode) {
-      displayWord = selectedSample["word"];
-      displayImageUrl = selectedSample["url"];
-    }
+    bool showBothImages = displayImage1 != null &&
+        displayImage1!.isNotEmpty &&
+        displayImage2 != null &&
+        displayImage2!.isNotEmpty;
 
     return Scaffold(
       body: Container(
@@ -357,7 +385,19 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
             // App Bar
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
-              child: DisciAppBar(context, parent_mode: parent_mode, onParentModeChanged: (value) {}),
+              child: DisciAppBar(
+                context,
+                show_switch: true,
+                parent_mode: parent_mode,
+                onParentModeChanged: (value) {
+                  setState(() {
+                    parent_mode = value;
+                    userAnswer = null;
+                    exerciseCompleted = false;
+                    _setDisplayData();
+                  });
+                },
+              ),
             ),
 
             // Main Content
@@ -366,53 +406,25 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Image Container
-                  GestureDetector(
-                    onTap: () async {
-                      await speakHindi(displayWord);
-                    },
-                    child: Container(
-                      width:
-                          isSmallScreen ? size.width * 0.7 : size.width * 0.4,
-                      height:
-                          isSmallScreen ? size.width * 0.7 : size.width * 0.4,
-                      margin: EdgeInsets.symmetric(vertical: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: FutureBuilder<File?>(
-                          future:
-                              CachingManager().getCachedFile(displayImageUrl),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<File?> snapshot) {
-                            if (snapshot.connectionState ==
-                                    ConnectionState.done &&
-                                snapshot.hasData &&
-                                snapshot.data != null) {
-                              return CustomImageView(
-                                imagePath: snapshot.data!.path,
-                                fit: BoxFit.cover,
-                              );
-                            } else {
-                              return CustomImageView(
-                                imagePath: displayImageUrl,
-                                fit: BoxFit.cover,
-                              );
-                            }
-                          },
-                        ),
-                      ),
+                  if (showBothImages)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildImageContainer(
+                            context, displayImage1!, isSmallScreen, size),
+                        SizedBox(width: 16),
+                        _buildImageContainer(
+                            context, displayImage2!, isSmallScreen, size),
+                      ],
+                    )
+                  else
+                    GestureDetector(
+                      onTap: () async {
+                        await speakHindi(displayWord);
+                      },
+                      child: _buildImageContainer(
+                          context, displayImage1 ?? '', isSmallScreen, size),
                     ),
-                  ),
 
                   // Word Display
                   Container(
@@ -748,6 +760,47 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
             //   )
             // ]
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageContainer(
+      BuildContext context, String imageUrl, bool isSmallScreen, Size size) {
+    return Container(
+      width: isSmallScreen ? size.width * 0.32 : size.width * 0.18,
+      height: isSmallScreen ? size.width * 0.32 : size.width * 0.18,
+      margin: EdgeInsets.symmetric(vertical: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: FutureBuilder<File?>(
+          future: CachingManager().getCachedFile(imageUrl),
+          builder: (BuildContext context, AsyncSnapshot<File?> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData &&
+                snapshot.data != null) {
+              return CustomImageView(
+                imagePath: snapshot.data!.path,
+                fit: BoxFit.cover,
+              );
+            } else {
+              return CustomImageView(
+                imagePath: imageUrl,
+                fit: BoxFit.cover,
+              );
+            }
+          },
         ),
       ),
     );

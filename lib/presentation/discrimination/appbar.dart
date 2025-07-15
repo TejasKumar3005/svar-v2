@@ -8,6 +8,7 @@ import 'package:svar_new/presentation/settings_screen/setting.dart'; // Import S
 Widget DisciAppBar(
   BuildContext context, {
   required bool parent_mode,
+  bool show_switch = true,
   required ValueChanged<bool> onParentModeChanged,
 }) {
   return Container(
@@ -49,9 +50,10 @@ Widget DisciAppBar(
                 ),
               ),
               SizedBox(width: 8),
-              Switch(
-                value: !parent_mode,
-                onChanged: (value) {
+              if (show_switch)
+                Switch(
+                  value: !parent_mode,
+                  onChanged: (value) {
                   onParentModeChanged(!value);
                 },
                 activeColor: Colors.green[600],
