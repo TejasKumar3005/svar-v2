@@ -61,7 +61,7 @@ class _DetectionState extends State<ExerciseDetection> {
   bool hasMoreExercises = false;
   int currentExerciseIndex = 0;
 
-  bool parent_mode = true;
+  bool parent_mode = false;
 
   // Variable to store the selected sample data for consistency
   dynamic selectedSampleData;
@@ -603,8 +603,10 @@ class _DetectionState extends State<ExerciseDetection> {
 
               var data_pro =
                   Provider.of<ExerciseProvider>(context, listen: false);
-              if (condition) {
-                data_pro.incrementLevel(startExerciseIndex);
+              if (!parent_mode) {
+                if (condition) {
+                  data_pro.incrementLevel(startExerciseIndex);
+                }
 
                 UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                     .updateExerciseData(
@@ -615,7 +617,7 @@ class _DetectionState extends State<ExerciseDetection> {
                       "time": DateTime.now().toString(),
                     }).then((value) => print("Exercise data updated"));
               }
-              return condition;
+              return condition;   
             },
           ),
         ],
@@ -878,8 +880,10 @@ class _HalfMutedWidgetState extends State<HalfMutedWidget> {
                             print(
                                 "Progress: $currentProgress, Condition: $condition, Mute first half: $_muteFirstHalf");
 
-                            if (condition && !parentMode) {
-                              data_pro.incrementLevel(startExerciseIndex);
+                            if (!parentMode) {
+                              if (condition) {
+                                data_pro.incrementLevel(startExerciseIndex);
+                              }
 
                               UserData(
                                       uid: FirebaseAuth

@@ -11,6 +11,9 @@ import 'package:chiclet/chiclet.dart';
 // Global audio player (keep this if you need only one instance)
 AudioPlayer globalAudioPlayer = AudioPlayer();
 
+// Global list to track all AudioWidget instances
+List<AudioWidgetState> _allAudioWidgets = [];
+
 class AudioWidget extends StatefulWidget {
   final List<String> audioLinks;
   final Color spectrumColor;
@@ -30,6 +33,7 @@ class AudioWidget extends StatefulWidget {
 class AudioWidgetState extends State<AudioWidget> {
   StreamSubscription<Duration>? _positionSubscription;
   StreamSubscription<PlayerState>? _playerStateSubscription;
+  Timer? _progressTimer;
   late AudioPlayer _audioPlayer;
   late int currentIndex;
   late List<double> _lengths;
@@ -53,12 +57,28 @@ class AudioWidgetState extends State<AudioWidget> {
     _audioPlayer = AudioPlayer();
     totalLength = 0.0;
     _lengths = [];
+
+    // Add this instance to the global list
+    _allAudioWidgets.add(this);
+
     _loadAudioLengths(); // Use _ to indicate private method
 
+    // Use a more frequent position stream for smoother animation
     _positionSubscription = _audioPlayer.positionStream.listen((position) {
       if (_audioPlayer.duration != null &&
-          _audioPlayer.duration!.inSeconds > 0) {
+          _audioPlayer.duration!.inMilliseconds > 0) {
         _progress.value = _calculateProgress(position);
+      }
+    });
+
+    // Add a high-frequency timer for ultra-smooth progress updates
+    _progressTimer = Timer.periodic(Duration(milliseconds: 50), (timer) {
+      if (_audioPlayer.playing && mounted) {
+        final position = _audioPlayer.position;
+        if (_audioPlayer.duration != null &&
+            _audioPlayer.duration!.inMilliseconds > 0) {
+          _progress.value = _calculateProgress(position);
+        }
       }
     });
 
@@ -73,7 +93,11 @@ class AudioWidgetState extends State<AudioWidget> {
     for (int i = 0; i < currentIndex; i++) {
       completedSeconds += _lengths[i];
     }
-    return (completedSeconds + position.inSeconds.toDouble()) / totalLength;
+    // Use milliseconds for smoother progress calculation
+    double currentPositionSeconds = position.inMilliseconds / 1000.0;
+    double progress = (completedSeconds + currentPositionSeconds) / totalLength;
+    // Clamp the progress between 0.0 and 1.0 to prevent overflow
+    return progress.clamp(0.0, 1.0);
   }
 
   Future<void> _loadAudioLengths() async {
@@ -87,17 +111,19 @@ class AudioWidgetState extends State<AudioWidget> {
 
   Future<double> _getAudioLength(String link) async {
     try {
-        File? file;
-      file =
-          await CachingManager().getCachedFile(widget.audioLinks[currentIndex]);
-        if (file != null) {
-          await _audioPlayer.setAudioSource(AudioSource.file(file.path));
-        } else {
-          await _audioPlayer.setUrl(widget.audioLinks[currentIndex]);
-        }
-    
+      File? file;
+      file = await CachingManager().getCachedFile(link);
+      if (file != null) {
+        await _audioPlayer.setAudioSource(AudioSource.file(file.path));
+      } else {
+        await _audioPlayer.setUrl(link);
+      }
+
       var duration = await _audioPlayer.load();
-      return duration?.inSeconds.toDouble() ?? 5.0; // Null check
+      // Use milliseconds for more precise duration calculation
+      return duration?.inMilliseconds.toDouble() != null
+          ? duration!.inMilliseconds.toDouble() / 1000.0
+          : 5.0; // Null check
     } catch (e) {
       print('Error loading audio: $e');
       return 5.0;
@@ -105,14 +131,11 @@ class AudioWidgetState extends State<AudioWidget> {
   }
 
   Future<void> playNext() async {
-    if (globalAudioPlayer.playing) {
-      await globalAudioPlayer.stop();
-    }
-
     globalAudioPlayer = _audioPlayer;
 
     if (currentIndex < widget.audioLinks.length) {
       try {
+        _resetAllOtherAudioWidgets(this);
         File? file;
         file = await CachingManager()
             .getCachedFile(widget.audioLinks[currentIndex]);
@@ -164,10 +187,49 @@ class AudioWidgetState extends State<AudioWidget> {
     });
   }
 
+  // Method to reset this widget to the beginning
+  void resetToBeginning() {
+    if (mounted) {
+      setState(() {
+        _audioPlayer.stop();
+        currentIndex = 0;
+        _progress.value = 0.0;
+        _isPlaying.value = false;
+      });
+    }
+  }
+
+  // Static method to reset all other AudioWidgets except the current one
+  static void _resetAllOtherAudioWidgets(AudioWidgetState currentWidget) {
+    for (AudioWidgetState widget in _allAudioWidgets) {
+      if (widget != currentWidget && widget.mounted) {
+        widget.resetToBeginning();
+      }
+    }
+  }
+
+  // Method to start playing with proper reset of other widgets
+  Future<void> startPlaying() async {
+    // Always reset all other AudioWidgets when this one starts playing
+    _resetAllOtherAudioWidgets(this);
+
+    // If we're at the end, reset to start
+    if (currentIndex >= widget.audioLinks.length) {
+      currentIndex = 0;
+      _progress.value = 0.0;
+    }
+
+    await playNext();
+  }
+
   @override
   void dispose() {
+    // Remove this instance from the global list
+    _allAudioWidgets.remove(this);
+
     _positionSubscription?.cancel();
     _playerStateSubscription?.cancel();
+    _progressTimer?.cancel(); // Cancel the progress timer
     _audioPlayer.dispose();
     _progress.dispose(); // Dispose ValueNotifier
     _isPlaying.dispose(); // Dispose playing state ValueNotifier
@@ -205,12 +267,7 @@ class AudioWidgetState extends State<AudioWidget> {
                           await _audioPlayer.pause();
                           _isPlaying.value = false;
                         } else {
-                          // If we're at the end, reset to start
-                          if (currentIndex >= widget.audioLinks.length) {
-                            currentIndex = 0;
-                            _progress.value = 0.0;
-                          }
-                          playNext();
+                          await startPlaying();
                         }
                       },
                     );
@@ -257,12 +314,7 @@ class AudioWidgetState extends State<AudioWidget> {
                           await _audioPlayer.pause();
                           _isPlaying.value = false;
                         } else {
-                          // If we're at the end, reset to start
-                          if (currentIndex >= widget.audioLinks.length) {
-                            currentIndex = 0;
-                            _progress.value = 0.0;
-                          }
-                          playNext();
+                          await startPlaying();
                         }
                       },
                     );

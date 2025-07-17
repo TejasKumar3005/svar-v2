@@ -72,13 +72,14 @@ android {
         // keyPassword '30052003'
     }
 }
-
+    
 
     buildTypes {
         
         release {
         shrinkResources true
-        signingConfig signingConfigs.release
+        signingConfig signingConfigs.debug
+        // signingConfig signingConfigs.release
         minifyEnabled true
         proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
     }

@@ -37,7 +37,7 @@ class AudiotoimageScreen extends StatefulWidget {
 }
 
 class AudiotoimageScreenState extends State<AudiotoimageScreen> {
-  bool parent_mode = true;
+  bool parent_mode = false;
   late AudioPlayer _player;
   late UserData userData;
   late int leveltracker;
@@ -466,15 +466,22 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                         : dtcontainer.getImageUrlList()[index],
                   ),
                   isCorrect: () {
-                    if (dtcontainer.getCorrectOutput() ==
-                            dtcontainer.getImageUrlList()[index] &&
+                    var condition = dtcontainer.getCorrectOutput() ==
+                        dtcontainer.getImageUrlList()[index];
+                    if (
                         !parent_mode) {
-                      data_pro.incrementLevel(currentExerciseIndex);
-
+                      if (condition) {
+                        data_pro.incrementLevel(currentExerciseIndex);
+                      }
                       UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                           .updateExerciseData(
                             euid: data["uid"],
                             date: data["date"],
+                            performance: {
+                              "correct_attempt": condition,
+                    
+                              "time": DateTime.now().toString(),
+                            }
                           )
                           .then((value) => print("Exercise data updated"));
                     }
@@ -516,10 +523,12 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                 : dtcontainer.getImageUrlList()[index],
                           ),
                           isCorrect: () {
-                            if (dtcontainer.getCorrectOutput() ==
-                                    dtcontainer.getImageUrlList()[index] &&
-                                !parent_mode) {
-                              data_pro.incrementLevel(currentExerciseIndex);
+                            var condition = dtcontainer.getCorrectOutput() ==
+                                dtcontainer.getImageUrlList()[index];
+                            if (!parent_mode) {
+                              if (condition) {
+                                data_pro.incrementLevel(currentExerciseIndex);
+                              }
 
                               UserData(
                                       uid: FirebaseAuth
@@ -527,6 +536,11 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
                                   .updateExerciseData(
                                     euid: data["uid"],
                                     date: data["date"],
+                                    performance: {
+                                      "correct_attempt": condition,
+                                  
+                                      "time": DateTime.now().toString(),
+                                    }
                                   )
                                   .then((value) =>
                                       print("Exercise data updated"));

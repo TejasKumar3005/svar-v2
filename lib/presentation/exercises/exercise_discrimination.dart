@@ -7,7 +7,6 @@ import 'package:svar_new/data/models/levelManagementModel/visual.dart';
 import 'package:svar_new/database/userController.dart';
 import 'package:svar_new/presentation/exercises/exercise_provider.dart';
 import 'package:svar_new/presentation/discrimination/appbar.dart';
-import 'package:svar_new/presentation/exercises/exercise_video.dart';
 import 'package:svar_new/widgets/custom_button.dart';
 import 'package:svar_new/widgets/Options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -52,7 +51,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
   bool hasMoreExercises = false;
   int currentExerciseIndex = 0;
 
-  bool parent_mode = true;
+  bool parent_mode = false;
 
   @override
   void initState() {
@@ -534,10 +533,13 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
       ),
       isCorrect: () {
         var condition = isCorrectFn();
-        if (condition && !parent_mode) {
-          var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-          data_pro.incrementLevel(startExerciseIndex);
 
+        if (!parent_mode) {
+          if (condition) {
+            var data_pro =
+                Provider.of<ExerciseProvider>(context, listen: false);
+            data_pro.incrementLevel(startExerciseIndex);
+          }
           UserData(uid: FirebaseAuth.instance.currentUser!.uid)
               .updateExerciseData(
                   euid: data["uid"],
@@ -629,9 +631,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                         _childKey.currentState!.progress.value > ans &&
                             _childKey.currentState!.progress.value < ans + 0.4;
 
-                    if (condition && !parent_mode) {
-                      data_pro.incrementLevel(startExerciseIndex);
-
+                    if (!parent_mode) {
+                      if (condition) {
+                        data_pro.incrementLevel(startExerciseIndex);
+                      }
                       UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                           .updateExerciseData(
                               euid: data["uid"],
@@ -639,6 +642,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                               performance: {
                             "progress": _childKey.currentState!.progress.value,
                             "total_length": total_length,
+                            "correct_attempt": condition,
+  
                           });
                     }
 
@@ -703,9 +708,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                             type: ButtonType.Same, onPressed: () {}),
                         isCorrect: () {
                           var condition = diffSounds.getSame();
-                          if (condition && !parent_mode) {
-                            data_pro.incrementLevel(startExerciseIndex);
-
+                          if (!parent_mode) {
+                            if (condition) {
+                              data_pro.incrementLevel(startExerciseIndex);
+                            }
                             UserData(
                                     uid: FirebaseAuth.instance.currentUser!.uid)
                                 .updateExerciseData(
@@ -730,9 +736,10 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                             type: ButtonType.Diff, onPressed: () {}),
                         isCorrect: () {
                           var condition = !diffSounds.getSame();
-                          if (condition && !parent_mode) {
-                            data_pro.incrementLevel(startExerciseIndex);
-
+                          if (!parent_mode) {
+                            if (condition) {
+                              data_pro.incrementLevel(startExerciseIndex);
+                            }
                             UserData(
                                     uid: FirebaseAuth.instance.currentUser!.uid)
                                 .updateExerciseData(
@@ -750,7 +757,7 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
                   ],
                 ),
               ],
-            ),
+            ),  
           );
         },
       ),
@@ -826,6 +833,8 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     int startExerciseIndex = obj[3] as int;
     Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+    List<String> videoUrls = List<String>.from(oddOne.getVideoUrls());
+    videoUrls.shuffle();
 
     // Function to build each audio option
     Widget buildAudioOption(int index) {
@@ -849,16 +858,16 @@ class _DiscriminationState extends State<ExerciseDiscrimination>
             ],
           ),
           child: AudioWidget(
-            audioLinks: [oddOne.getVideoUrls()[index]],
+            audioLinks: [videoUrls[index]],
           ),
         ),
         isCorrect: () {
-          var condition =
-              oddOne.getVideoUrls()[index] == oddOne.getCorrectOutput();
+          var condition = videoUrls[index] == oddOne.getCorrectOutput();
 
-          if (condition && !parent_mode) {
-            data_pro.incrementLevel(startExerciseIndex);
-
+          if (!parent_mode) {
+            if (condition) {
+              data_pro.incrementLevel(startExerciseIndex);
+            }
             UserData(uid: FirebaseAuth.instance.currentUser!.uid)
                 .updateExerciseData(
                     euid: data["uid"],

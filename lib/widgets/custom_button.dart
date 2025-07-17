@@ -788,24 +788,12 @@ class SpectrumPainter extends CustomPainter {
     for (int i = 0; i < barCount; i++) {
       final double x = horizontalPadding + i * (barWidth + spacing);
 
-      double baseHeight = size.height * 0.05;
-      double maxHeight = size.height * 0.95;
+      // Static bar height - no wave effect
+      double barHeight = size.height * 0.6; // A uniform height
 
-      double barHeight;
-
-      if (isPlaying) {
-        // Animate height with a sine wave based on time and position for a fluid look
-        double timeFactor = DateTime.now().millisecondsSinceEpoch * 0.005;
-        double posFactor = (i / barCount) * math.pi * 2;
-        double waveHeight = (math.sin(timeFactor + posFactor) * 0.5 + 0.5);
-        barHeight = baseHeight + (maxHeight - baseHeight) * waveHeight;
-      } else {
-        // When not playing, show a flat line representing progress
-        barHeight = size.height * 0.6; // A uniform height
-      }
-
-      // Color based on progress
-      paint.color = (i < activeBars) ? color : Colors.grey.withOpacity(0.4);
+      // Color based on progress - always green for active bars
+      paint.color =
+          (i < activeBars) ? Colors.green : Colors.grey.withOpacity(0.4);
 
       canvas.drawRRect(
         RRect.fromRectAndRadius(

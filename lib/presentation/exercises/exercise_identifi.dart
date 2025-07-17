@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:chewie/chewie.dart';
@@ -41,7 +40,7 @@ class ExerciseIdentification extends StatefulWidget {
 class AuditoryScreenState extends State<ExerciseIdentification> {
   late AudioPlayer _player;
   late int leveltracker;
-  bool parent_mode = true;
+  bool parent_mode = false;
 
   ChewieController? _chewieController;
 
@@ -168,6 +167,9 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
     print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
 
     if (isCorrect) {
+      if (_correctTrigger != null) {
+        _correctTrigger!.fire();
+      }
       if (!parent_mode) {
         setState(() {
           exerciseCompleted = true;
@@ -176,21 +178,15 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
 
       // Only auto-navigate if there are no more exercises for today
       if (!hasMoreExercises) {
-        if (_correctTrigger != null) {
-          print("Firing correct trigger");
-          _correctTrigger!.fire();
-          print("Correct trigger fired");
           Future.delayed(const Duration(seconds: 3), () {
             if (mounted && !parent_mode && exerciseCompleted) {
               Navigator.pop(context);
             }
           });
-        }
       }
     } else {
       if (_incorrectTrigger != null) {
         _incorrectTrigger!.fire();
-        print("Incorrect trigger fired");
       }
     }
   }
@@ -547,9 +543,11 @@ class AuditoryScreenState extends State<ExerciseIdentification> {
                                       context,
                                       listen: false);
 
-                                  if (isCorrect && !parent_mode) {
-                                    data_pro
-                                        .incrementLevel(currentExerciseIndex);
+                                  if (!parent_mode) {
+                                    if (isCorrect) {
+                                      data_pro
+                                          .incrementLevel(currentExerciseIndex);
+                                    }
 
                                     UserData(
                                             uid: FirebaseAuth
