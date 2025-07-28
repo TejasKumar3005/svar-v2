@@ -16,18 +16,17 @@ class CachingManager {
 
   static Future<void> cacheFilesInIsolate(List<dynamic> exercises) async {
     List<String> urls = [];
-    urls= urlsFromExercises(exercises);
+    urls = urlsFromExercises(exercises);
     preloadFiles(urls);
-
   }
 
   // Access cached file or download and cache it if not found
   Future<File?> getCachedFile(String fileUrl) async {
     try {
       // Try to get the file from cache
-      print("getting from cache"+fileUrl);
+      print("getting from cache" + fileUrl);
       final cachedFile = await DefaultCacheManager().getFileFromCache(fileUrl);
-      if (cachedFile != null ) {
+      if (cachedFile != null) {
         print("cached file");
         return cachedFile.file; // Return the cached file
       } else {
@@ -54,7 +53,7 @@ class CachingManager {
     }
   }
 
-  static List<String> urlsFromExercises(List<dynamic> exercises)  {
+  static List<String> urlsFromExercises(List<dynamic> exercises) {
     List<String> urls = [
       "https://svarbucket.s3.amazonaws.com/videos/cat_loop.mp4",
       "https://svarbucket.s3.amazonaws.com/videos/car_honking.mp4",
@@ -92,13 +91,17 @@ class CachingManager {
       "https://svarbucket.s3.amazonaws.com/images/akg_20250528_112529_3df8a0a6.png",
       "https://svarbucket.s3.amazonaws.com/audios/male_voice_sample.mp3",
       "https://svarbucket.s3.amazonaws.com/audios/female_voice_sample.mp3",
+      "https://svarbucket.s3.amazonaws.com/new_vehicles/images/akg_20250606_052714_adf3fb26.png",
+      "https://svarbucket.s3.amazonaws.com/new_vehicles/images/akg_20250606_052716_9b74238a.png",
+      "https://svarbucket.s3.amazonaws.com/new_environment/images/akg_20250606_052742_2be51053.png",
+      "https://svarbucket.s3.amazonaws.com/new_environment/images/akg_20250606_052744_411dae16.png"
     ];
     for (var exercise in exercises) {
       var type = exercise["type"];
       if (type == "video") {
         if (exercise["video"] != null) urls.add(exercise["video"]);
         if (exercise["video_url"] != null) urls.add(exercise["video_url"]);
-      } else if (type == "ImageToAudio" || type=="DiffImageToAudio") {
+      } else if (type == "ImageToAudio" || type == "DiffImageToAudio") {
         ImageToAudio imageToAudio = ImageToAudio.fromJson(exercise);
         urls.add(imageToAudio.image_url);
         urls.addAll(imageToAudio.audio_list);
@@ -109,7 +112,7 @@ class CachingManager {
       } else if (type == "FigToWord") {
         FigToWord figToWord = FigToWord.fromJson(exercise);
         urls.add(figToWord.image_url);
-      } else if (type == "AudioToImage" || type=="DiffAudioToImage") {
+      } else if (type == "AudioToImage" || type == "DiffAudioToImage") {
         AudioToImage audioToImage = AudioToImage.fromJson(exercise);
         urls.addAll(audioToImage.audio_url);
         urls.addAll(audioToImage.image_list);
@@ -131,14 +134,18 @@ class CachingManager {
       } else if (type == "DiffHalf") {
         DiffHalf diffHalf = DiffHalf.fromJson(exercise);
         urls.addAll(diffHalf.video_url);
-      }else if (type == "Vocabulary") {
-        urls.add(exercise["url"]);
-
-      }else{
-        
-      }
+      } else if (type == "Vocabulary") {
+        if (exercise["category"] == "opposites") {
+          String image1 = exercise[exercise["word"].split("-")[0]] ?? "";
+          String image2 = exercise[exercise["word"].split("-")[1]] ?? "";
+          urls.add(image1);
+          urls.add(image2);
+        } else {
+          urls.add(exercise["url"]);
+        }
+      } else {}
     }
-  
+
     print("returning urls $urls");
     return urls;
   }
