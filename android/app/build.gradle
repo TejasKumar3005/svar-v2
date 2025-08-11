@@ -41,9 +41,9 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.svarnew.app"
         minSdkVersion 26
-        targetSdkVersion 34 //flutter.targetSdkVersion
+        targetSdkVersion 35 //flutter.targetSdkVersion
         multiDexEnabled true
-        versionCode 802
+        versionCode 803
         versionName "0.0.1"
         
     }
@@ -66,10 +66,10 @@ android {
     signingConfigs {
         debug {}
     release {
-        // storeFile file('C:\\Users\\SOI\\upload-keystore.jks')
-        // storePassword '30052003'
-        // keyAlias 'upload'
-        // keyPassword '30052003'
+        storeFile file('C:\\Users\\SOI\\upload-keystore.jks')
+        storePassword '30052003'
+        keyAlias 'upload'
+        keyPassword '30052003'
     }
 }
     
@@ -78,8 +78,8 @@ android {
         
         release {
         shrinkResources true
-        signingConfig signingConfigs.debug
-        // signingConfig signingConfigs.release
+        // signingConfig signingConfigs.debug
+        signingConfig signingConfigs.release
         minifyEnabled true
         proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
     }
