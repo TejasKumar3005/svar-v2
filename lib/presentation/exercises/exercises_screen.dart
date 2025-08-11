@@ -981,7 +981,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     int originalIndex,
   ) {
     String description =
-        exercise['description'] as String? ?? 'Unnamed Exercise';
+        exercise['description'] as String? ?? exercise['exerciseType'] as String? ?? 'Unnamed Exercise';
     // String exerciseType = exercise['exerciseType'] as String? ?? 'N/A';
 
     Color itemColor;
@@ -1256,33 +1256,38 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           break;
         case "Vocabulary":
           _handleVocabulary(context, "notcompleted", exerciseIndex);
+          break;
+        case "Comprehension":
+          _handleComprehension(context, "notcompleted", exerciseIndex);
+          break;
         case "Custom":
           debugPrint("Custom exercise type: $exerciseType");
-          _handleCustomNonVideo(context , "notcompleted" , exerciseIndex);
+          _handleCustomNonVideo(context, "notcompleted", exerciseIndex);
           break;
         case "Introduction":
           var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
-      Map<String, dynamic> data = data_pro.todaysExercises[exerciseIndex];
+          Map<String, dynamic> data = data_pro.todaysExercises[exerciseIndex];
           Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ExerciseVideo(
-              videoUrl: data["video_url"],
-              onVideoComplete: () {
-                if (!mounted) return;
-                data_pro.incrementLevel(exerciseIndex);
-                if (data["completedAt"] == null) {
-                  UserData(uid: FirebaseAuth.instance.currentUser!.uid)
-                      .updateExerciseData(euid: data["uid"], date: data["date"])
-                      .then((value) =>
-                          print("Exercise data updated for ${data["uid"]}"))
-                      .catchError(
-                          (e) => print("Error updating exercise data: $e"));
-                }
-              },
+            context,
+            MaterialPageRoute(
+              builder: (context) => ExerciseVideo(
+                videoUrl: data["video_url"],
+                onVideoComplete: () {
+                  if (!mounted) return;
+                  data_pro.incrementLevel(exerciseIndex);
+                  if (data["completedAt"] == null) {
+                    UserData(uid: FirebaseAuth.instance.currentUser!.uid)
+                        .updateExerciseData(
+                            euid: data["uid"], date: data["date"])
+                        .then((value) =>
+                            print("Exercise data updated for ${data["uid"]}"))
+                        .catchError(
+                            (e) => print("Error updating exercise data: $e"));
+                  }
+                },
+              ),
             ),
-          ),
-        );
+          );
           break;
         default:
           debugPrint("Unknown exercise type: $exerciseType");
@@ -1385,7 +1390,6 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     }
   }
 
-
   void _handleCustomNonVideo(
       BuildContext context, String params, int startExerciseIndex) async {
     try {
@@ -1417,9 +1421,49 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       if (!mounted) return; // Check mounted status before navigating
       NavigatorService.pushNamed(AppRoutes.exerciseCustomNonVideo,
           arguments: argumentsList);
-
     } catch (e) {
       debugPrint("Error in Vocabulary handling: $e");
+    }
+  }
+
+  void _handleComprehension(
+      BuildContext context, String params, int startExerciseIndex) async {
+    try {
+      var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
+      Map<String, dynamic> data = data_pro.todaysExercises[startExerciseIndex];
+      if (data.isEmpty) return;
+      String? type = data["type"];
+      if (type == null) {
+        debugPrint("Type is null in Comprehension data.");
+        _showErrorSnackbar('Exercise data is incomplete.');
+        return;
+      }
+
+      final Object dtcontainer = retrieveObject(type, data);
+      if (dtcontainer is String && dtcontainer == "unexpected value") {
+        _showErrorSnackbar('Could not process exercise data for $type.');
+        return;
+      }
+
+      List<dynamic> argumentsList = [
+        type,
+        dtcontainer,
+        params,
+        startExerciseIndex,
+        data["uid"],
+        data["date"],
+        data,
+      ];
+
+      debugPrint("Comprehension Arguments list: $argumentsList");
+
+      await Future.delayed(Duration.zero);
+      if (!mounted) return;
+      NavigatorService.pushNamed(AppRoutes.exerciseComprehension,
+          arguments: argumentsList);
+    } catch (e) {
+      debugPrint("Error in Comprehension handling: $e");
+      _showErrorSnackbar('Error loading comprehension exercise.');
     }
   }
 
@@ -1702,32 +1746,6 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     } catch (e) {
       debugPrint("Error in Level handling: $e");
       _showErrorSnackbar('Error loading this level exercise.');
-    }
-  }
-
-  Object retrieveObject(String type, Map<String, dynamic> data) {
-    try {
-      if (type == "ImageToAudio") return ImageToAudio.fromJson(data);
-      if (type == "WordToFig") return WordToFiG.fromJson(data);
-      if (type == "FigToWord") return FigToWord.fromJson(data);
-      if (type == "AudioToImage") return AudioToImage.fromJson(data);
-      if (type == "AudioToAudio") return AudioToAudio.fromJson(data);
-      if (type == "MutedUnmuted") return MutedUnmuted.fromJson(data);
-      if (type == "HalfMuted") return HalfMuted.fromJson(data);
-      if (type == "DiffSounds") return DiffSounds.fromJson(data);
-      if (type == "OddOne") return OddOne.fromJson(data);
-      if (type == "DiffHalf") return DiffHalf.fromJson(data);
-      if (type == "MaleFemale") return MaleFemale.fromJson(data);
-      if (type == "DiffImageToAudio") return ImageToAudio.fromJson(data);
-      if (type == "DiffAudioToImage") return AudioToImage.fromJson(data);
-
-      debugPrint(
-          "Unexpected object type to retrieve: $type. Returning 'unexpected value'.");
-      return "unexpected value";
-    } catch (e) {
-      debugPrint(
-          "Error in retrieveObject for type $type: $e. Returning 'unexpected value'.");
-      return "unexpected value";
     }
   }
 }

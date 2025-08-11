@@ -24,9 +24,9 @@ if (flutterVersionName == null) {
 }
 
 android {
-    compileSdkVersion 34
-    // namespace 'com.svarnew.myapp'
-    ndkVersion "25.1.8937393"
+    compileSdk 35
+    namespace 'com.svarnew.app'
+    ndkVersion "26.1.10909125"
 
 
     sourceSets {

@@ -277,6 +277,248 @@ class MaleFemale {
   }
 }
 
+class PictureMatchingComprehension {
+  List<Map<String, dynamic>> options;
+  int correct;
+  String prompt_audio_url;
+  String prompt;
+
+  PictureMatchingComprehension({
+    required this.options,
+    required this.correct,
+    required this.prompt_audio_url,
+    required this.prompt,
+  });
+
+  factory PictureMatchingComprehension.fromJson(Map<String, dynamic> json) {
+    return PictureMatchingComprehension(
+      options: List<Map<String, dynamic>>.from(
+          json['options']), // [{image_url: String, text: String}]
+      correct: json['correct'] as int,
+      prompt_audio_url: json['prompt_audio_url'] as String,
+      prompt: json['prompt'] as String,
+    );
+  }
+
+  List<Map<String, dynamic>> getOptions() {
+    return options;
+  }
+
+  int getCorrect() {
+    return correct;
+  }
+
+  String getPromptAudioUrl() {
+    return prompt_audio_url;
+  }
+
+  String getPrompt() {
+    return prompt;
+  }
+}
+
+class Wh {
+  String prompt;
+  int correct;
+  List<Map<String, dynamic>> options;
+
+  Wh({
+    required this.prompt,
+    required this.correct,
+    required this.options,
+  });
+
+  factory Wh.fromJson(Map<String, dynamic> json) {
+    return Wh(
+      prompt: json['prompt'] as String,
+      correct: json['correct'] as int,
+      options: List<Map<String, dynamic>>.from(json[
+          'options']), // [{image_url: String, text: String]
+    );
+  }
+
+  String getPrompt() {
+    return prompt;
+  }
+
+  int getCorrect() {
+    return correct;
+  }
+
+  List<Map<String, dynamic>> getOptions() {
+    return options;
+  }
+}
+
+class YesNoComprehension {
+  String prompt;
+  String correct;
+  String output_prompt;
+  String input_audio_url;
+  String output_audio_url;
+  String output_image_url;
+
+  YesNoComprehension({
+    required this.prompt,
+    required this.correct,
+    required this.output_prompt,
+    required this.input_audio_url,
+    required this.output_audio_url,
+    required this.output_image_url,
+  });
+
+  factory YesNoComprehension.fromJson(Map<String, dynamic> json) {
+    return YesNoComprehension(
+      prompt: json['prompt'] as String,
+      correct: json['correct'] as String,
+      output_prompt: json['output_prompt'] as String,
+      input_audio_url: json['input_audio_url'] as String,
+      output_audio_url: json['output_audio_url'] as String,
+      output_image_url: json['output_image_url'] as String,
+    );
+  }
+
+  String getPrompt() {
+    return prompt;
+  }
+
+  String getCorrect() {
+    return correct;
+  }
+}
+
+class StoryCompletion {
+  String prompt;
+  int correct;
+  List<Map<String, dynamic>> options;
+
+  StoryCompletion({
+    required this.prompt,
+    required this.correct,
+    required this.options,
+  });
+
+  factory StoryCompletion.fromJson(Map<String, dynamic> json) {
+    return StoryCompletion(
+      prompt: json['prompt'] as String,
+      correct: json['correct'] as int,
+      options: List<Map<String, dynamic>>.from(json[
+          'options']), //[{image_url: String, text: String,audio_url: String}]
+    );
+  }
+
+  String getPrompt() {
+    return prompt;
+  }
+
+  int getCorrect() {
+    return correct;
+  }
+}
+
+class Question {
+  String answer;
+  String audio_url;
+  String text;
+  List<Map<String, dynamic>>
+      options; //[{image_url: String, text: String,audio_url: String}]
+
+  Question({
+    required this.answer,
+    required this.audio_url,
+    required this.text,
+    required this.options,
+  });
+
+  factory Question.fromJson(Map<String, dynamic> json) {
+    return Question(
+      answer: json['answer'] as String,
+      audio_url: json['audio_url'] as String,
+      text: json['text'] as String,
+      options: List<Map<String, dynamic>>.from(json['options']),
+    );
+  }
+
+  String getAnswer() {
+    return answer;
+  }
+
+  String getAudioUrl() {
+    return audio_url;
+  }
+
+  String getText() {
+    return text;
+  }
+
+  List<Map<String, dynamic>> getOptions() {
+    return options;
+  }
+}
+
+class Scene {
+  String audio_url;
+  String description;
+  String id;
+  String image_concept;
+  String image_url;
+  Scene({
+    required this.audio_url,
+    required this.description,
+    required this.id,
+    required this.image_concept,
+    required this.image_url,
+  });
+  factory Scene.fromJson(Map<String, dynamic> json) {
+    return Scene(
+      audio_url: json['audio_url'] as String,
+      description: json['description'] as String,
+      id: json['id'] as String,
+      image_concept: json['image_concept'] as String,
+      image_url: json['image_url'] as String,
+    );
+  }
+  String getAudioUrl() {
+    return audio_url;
+  }
+
+  String getDescription() {
+    return description;
+  }
+}
+
+class StoryComprehension {
+  String prompt;
+  List<Question> questions;
+  List<Scene> scenes;
+
+  StoryComprehension({
+    required this.prompt,
+    required this.questions,
+    required this.scenes,
+  });
+
+  factory StoryComprehension.fromJson(Map<String, dynamic> json) {
+    return StoryComprehension(
+      prompt: json['prompt'] as String,
+      questions: (json['questions'] as List<dynamic>)
+          .map((q) => Question.fromJson(q as Map<String, dynamic>))
+          .toList(),
+      scenes: (json['scenes'] as List<dynamic>)
+          .map((s) => Scene.fromJson(s as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  String getPrompt() {
+    return prompt;
+  }
+
+  List<Question> getQuestions() {
+    return questions;
+  }
+}
+
 Object retrieveObject(String type, Map<String, dynamic> data) {
   try {
     if (type == "ImageToAudio") return ImageToAudio.fromJson(data);
@@ -292,6 +534,12 @@ Object retrieveObject(String type, Map<String, dynamic> data) {
     if (type == "MaleFemale") return MaleFemale.fromJson(data);
     if (type == "DiffImageToAudio") return ImageToAudio.fromJson(data);
     if (type == "DiffAudioToImage") return AudioToImage.fromJson(data);
+    if (type == "PictureMatchingComprehension")
+      return PictureMatchingComprehension.fromJson(data);
+    if (type == "Wh") return Wh.fromJson(data);
+    if (type == "YesNoComprehension") return YesNoComprehension.fromJson(data);
+    if (type == "StoryCompletion") return StoryCompletion.fromJson(data);
+    if (type == "StoryComprehension") return StoryComprehension.fromJson(data);
 
     debugPrint(
         "Unexpected object type to retrieve: $type. Returning 'unexpected value'.");

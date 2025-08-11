@@ -6,6 +6,7 @@ import 'package:svar_new/presentation/exercises/exercise_discrimination.dart';
 import 'package:svar_new/presentation/exercises/exercise_identifi.dart';
 import 'package:svar_new/presentation/exercises/exercise_pronunciation.dart';
 import 'package:svar_new/presentation/exercises/exercise_vocabulary.dart';
+import 'package:svar_new/presentation/exercises/exercise_comprehension.dart';
 import 'package:svar_new/presentation/exercises/exercises_screen.dart';
 import 'package:svar_new/presentation/camera_video_excercise/videoCam.dart';
 import 'package:svar_new/presentation/login/login.dart';
@@ -86,6 +87,7 @@ class AppRoutes {
   static const String practiceScreen = '/practice_screen';
   static const String exerciseVocabulary = '/exercise_vocabulary';
   static const String exerciseCustomNonVideo = "/exercise_customNonVideo";
+  static const String exerciseComprehension = '/exercise_comprehension';
 
   static Map<String, WidgetBuilder> get routes => {
         welcomeScreenPotraitScreen: WelcomeScreenPotraitScreen.builder,
@@ -121,5 +123,6 @@ class AppRoutes {
         practiceScreen: (context) => const PracticeScreen(),
         exerciseVocabulary: ExerciseVocabulary.builder,
         exerciseCustomNonVideo: ExerciseCustomNonVideo.builder,
+        exerciseComprehension: ExerciseComprehension.builder,
       };
 }
