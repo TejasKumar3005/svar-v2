@@ -20,6 +20,7 @@ class OptionWidget extends StatefulWidget {
 
 class _OptionWidgetState extends State<OptionWidget> {
   bool _isGlowing = false;
+  bool? _lastIsCorrectResult; // Store last correctness result
   // OverlayEntry? _overlayEntry;
   final AudioPlayer _audioPlayer = AudioPlayer();
 
@@ -42,29 +43,30 @@ class _OptionWidgetState extends State<OptionWidget> {
   }
 
   void click() async {
+    print('click');
     bool isCorrectResult = widget.isCorrect();
     widget.triggerAnimation(isCorrectResult); // Trigger animation
 
     // Play the appropriate audio
     await _playAudio(isCorrectResult);
 
-  
-      setState(() {
-        _isGlowing = true;
-      });
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          setState(() {
-            _isGlowing = false;
-          });
-        }
-      });
-    
+    setState(() {
+      _isGlowing = true;
+      _lastIsCorrectResult = isCorrectResult; // Store result for build
+    });
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _isGlowing = false;
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isCorrectResult = widget.isCorrect();
+    // Use the last result, default to false if null
+    bool isCorrectResult = _lastIsCorrectResult ?? false;
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
       decoration: BoxDecoration(
@@ -73,18 +75,21 @@ class _OptionWidgetState extends State<OptionWidget> {
             ? !isCorrectResult
                 ? [
                     BoxShadow(
-                      color: const Color.fromARGB(255, 255, 0, 0).withOpacity(0.6),
-                      spreadRadius: 8,
-                      blurRadius: 5,
-                    ),
-                  ]:[
-                    BoxShadow(
-                      color: const Color.fromARGB(255, 6, 220, 27).withOpacity(0.6),
+                      color:
+                          const Color.fromARGB(255, 255, 0, 0).withOpacity(0.6),
                       spreadRadius: 8,
                       blurRadius: 5,
                     ),
                   ]
-                : [],
+                : [
+                    BoxShadow(
+                      color: const Color.fromARGB(255, 6, 220, 27)
+                          .withOpacity(0.6),
+                      spreadRadius: 8,
+                      blurRadius: 5,
+                    ),
+                  ]
+            : [],
       ),
       child: ClickProvider(child: widget.child, click: click),
     );

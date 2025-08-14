@@ -88,10 +88,13 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
     }
   }
 
-  void _triggerAnimation(bool isCorrect) {
+    void _triggerAnimation(bool isCorrect) {
     print("\nTrying to fire ${isCorrect ? 'correct' : 'incorrect'} trigger");
 
     if (isCorrect) {
+      if (_correctTrigger != null) {
+        _correctTrigger!.fire();
+      }
       if (!parent_mode) {
         setState(() {
           exerciseCompleted = true;
@@ -100,21 +103,15 @@ class AudiotoimageScreenState extends State<AudiotoimageScreen> {
 
       // Only auto-navigate if there are no more exercises for today
       if (!hasMoreExercises) {
-        if (_correctTrigger != null) {
-          print("Firing correct trigger");
-          _correctTrigger!.fire();
-          print("Correct trigger fired");
           Future.delayed(const Duration(seconds: 3), () {
             if (mounted && !parent_mode && exerciseCompleted) {
               Navigator.pop(context);
             }
           });
-        }
       }
     } else {
       if (_incorrectTrigger != null) {
         _incorrectTrigger!.fire();
-        print("Incorrect trigger fired");
       }
     }
   }

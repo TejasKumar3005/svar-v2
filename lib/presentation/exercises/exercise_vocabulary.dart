@@ -192,11 +192,12 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
     if (kIsWeb) {
       await flutterTts.setLanguage("hi-IN");
       await flutterTts.setPitch(1.0);
-      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.setSpeechRate(0.3);
+      await flutterTts.setVolume(1.0);
     } else {
       await flutterTts.setLanguage("hi-IN");
       await flutterTts.setPitch(1.0);
-      await flutterTts.setSpeechRate(0.5);
+      await flutterTts.setSpeechRate(0.3);
       await flutterTts.setVolume(1.0);
     }
 
@@ -387,15 +388,11 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
               padding: const EdgeInsets.only(top: 20.0),
               child: DisciAppBar(
                 context,
-                show_switch: true,
+                show_switch: false,
                 parent_mode: parent_mode,
+              
                 onParentModeChanged: (value) {
-                  setState(() {
-                    parent_mode = value;
-                    userAnswer = null;
-                    exerciseCompleted = false;
-                    _setDisplayData();
-                  });
+                
                 },
               ),
             ),
@@ -496,7 +493,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                         border: Border.all(color: Colors.blue[200]!, width: 1),
                       ),
                       child: Text(
-                        "Did you understand the word correctly?",
+                        "Do child understand the word correctly?",
                         style: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -519,7 +516,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                           icon:
                               Icon(Icons.close, color: Colors.white, size: 24),
                           label: Text(
-                            "WRONG",
+                            "NO",
                             style: GoogleFonts.inter(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -542,7 +539,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                           icon:
                               Icon(Icons.check, color: Colors.white, size: 24),
                           label: Text(
-                            "RIGHT",
+                            "YES",
                             style: GoogleFonts.inter(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

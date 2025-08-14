@@ -143,6 +143,45 @@ class CachingManager {
         } else {
           urls.add(exercise["url"]);
         }
+      } else if (type == "PictureMatchingComprehension") {
+        PictureMatchingComprehension pictureMatching =
+            PictureMatchingComprehension.fromJson(exercise);
+        urls.add(pictureMatching.prompt_audio_url);
+        for (var option in pictureMatching.options) {
+          if (option['image_url'] != null) urls.add(option['image_url']);
+        }
+      } else if (type == "Wh") {
+        Wh wh = Wh.fromJson(exercise);
+        for (var option in wh.options) {
+          if (option['image_url'] != null) urls.add(option['image_url']);
+        }
+      } else if (type == "YesNoComprehension") {
+        YesNoComprehension yesNo = YesNoComprehension.fromJson(exercise);
+        urls.add(yesNo.input_audio_url);
+        urls.add(yesNo.output_audio_url);
+        urls.add(yesNo.output_image_url);
+      } else if (type == "StoryCompletion") {
+        StoryCompletion storyCompletion = StoryCompletion.fromJson(exercise);
+        for (var option in storyCompletion.options) {
+          if (option['image_url'] != null) urls.add(option['image_url']);
+          if (option['audio_url'] != null) urls.add(option['audio_url']);
+        }
+      } else if (type == "StoryComprehension") {
+        StoryComprehension storyComprehension =
+            StoryComprehension.fromJson(exercise);
+        // Cache scene images and audio
+        for (var scene in storyComprehension.scenes) {
+          urls.add(scene.image_url);
+          urls.add(scene.audio_url);
+        }
+        // Cache question audio and option images/audio
+        for (var question in storyComprehension.questions) {
+          urls.add(question.audio_url);
+          for (var option in question.options) {
+            if (option['image_url'] != null) urls.add(option['image_url']);
+            if (option['audio_url'] != null) urls.add(option['audio_url']);
+          }
+        }
       } else {}
     }
 

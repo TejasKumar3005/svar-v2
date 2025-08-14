@@ -981,7 +981,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     int originalIndex,
   ) {
     String description =
-        exercise['description'] as String? ?? exercise['exerciseType'] as String? ?? 'Unnamed Exercise';
+        exercise['description'] as String? ?? exercise['type'] as String? ?? 'Unnamed Exercise';
     // String exerciseType = exercise['exerciseType'] as String? ?? 'N/A';
 
     Color itemColor;

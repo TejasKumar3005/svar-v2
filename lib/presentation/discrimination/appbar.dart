@@ -25,6 +25,7 @@ Widget DisciAppBar(
           ),
         ),
         Spacer(),
+        if (show_switch)
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
@@ -50,7 +51,7 @@ Widget DisciAppBar(
                 ),
               ),
               SizedBox(width: 8),
-              if (show_switch)
+            
                 Switch(
                   value: !parent_mode,
                   onChanged: (value) {

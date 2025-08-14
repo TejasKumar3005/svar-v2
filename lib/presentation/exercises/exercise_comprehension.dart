@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:async'; // Add Timer import
 import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:chiclet/chiclet.dart';
 import 'package:flutter/services.dart';
 import 'package:svar_new/core/network/cacheManager.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
@@ -18,6 +20,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:svar_new/widgets/audio_widget.dart';
 import 'package:svar_new/widgets/image_option.dart';
 import 'package:svar_new/widgets/text_option.dart';
+import 'package:svar_new/widgets/duolingo_option.dart';
 
 class ExerciseComprehension extends StatefulWidget {
   const ExerciseComprehension({Key? key}) : super(key: key);
@@ -51,10 +54,25 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
   int currentQuestionIndex = 0;
   bool showingStory = true; // true for scenes, false for questions
 
+  // Session management for story comprehension
+  String? _storySessionId;
+
+  // Timer management for auto-play functionality
+  Timer? _autoPlayTimer;
+  Timer? _sceneAutoTimer;
+  Timer? _audioReplayTimer; // New timer for repetitive audio replay
+  bool _hasPlayedAudio = false;
+  bool _autoPlayEnabled = true;
+  String? _currentAudioUrl; // Track current audio URL for replay
+
   @override
   void dispose() {
     super.dispose();
     _player.dispose();
+    // Clean up timers to prevent memory leaks
+    _autoPlayTimer?.cancel();
+    _sceneAutoTimer?.cancel();
+    _audioReplayTimer?.cancel();
   }
 
   @override
@@ -78,6 +96,14 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
     super.didChangeDependencies();
     var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
     currentExerciseIndex = obj[3] as int;
+
+    // Generate new session ID for story comprehension
+    _storySessionId = DateTime.now().millisecondsSinceEpoch.toString();
+    print('New story session ID generated: $_storySessionId');
+
+    // Reset auto-play state for new exercise
+    _resetAutoPlayState();
+    _resetSceneAutoPlayState();
 
     // Check if there are more exercises
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
@@ -113,6 +139,98 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
     print("Has more exercises for this date: $hasMoreExercises");
   }
 
+  // Auto-play timer management methods
+  void _startAutoPlayTimer(VoidCallback audioCallback) {
+    if (!_autoPlayEnabled || _hasPlayedAudio) return;
+
+    _autoPlayTimer?.cancel();
+    // Play audio immediately on first load (no delay)
+    if (mounted && !_hasPlayedAudio) {
+      audioCallback();
+      setState(() {
+        _hasPlayedAudio = true;
+      });
+    }
+  }
+
+  // Modified auto-play for exercises with replay
+  void _startAutoPlayWithReplay(String audioUrl) {
+    if (!_autoPlayEnabled || _hasPlayedAudio) return;
+
+    _autoPlayTimer?.cancel();
+    // Play audio immediately on first load (no delay) and start replay
+    if (mounted && !_hasPlayedAudio && audioUrl.isNotEmpty) {
+      _playAudioWithReplay(audioUrl);
+      setState(() {
+        _hasPlayedAudio = true;
+      });
+    }
+  }
+
+  void _cancelAutoPlayTimer() {
+    _autoPlayTimer?.cancel();
+    setState(() {
+      _hasPlayedAudio = true;
+    });
+  }
+
+  void _resetAutoPlayState() {
+    _autoPlayTimer?.cancel();
+    _stopAudioReplay(); // Stop any ongoing audio replay
+    setState(() {
+      _hasPlayedAudio = false;
+    });
+  }
+
+  // Scene auto-play timer management methods
+  void _startSceneAutoPlayTimer(Scene scene, StoryComprehension storyData) {
+    _sceneAutoTimer?.cancel();
+    // Play audio immediately on first load (no delay) and start replay
+    if (mounted && !_hasPlayedAudio && scene.getAudioUrl().isNotEmpty) {
+      _playAudioWithReplay(scene.getAudioUrl());
+      setState(() {
+        _hasPlayedAudio = true;
+      });
+    }
+  }
+
+  void _cancelSceneAutoTimer() {
+    _sceneAutoTimer?.cancel();
+    setState(() {
+      _hasPlayedAudio = false;
+    });
+  }
+
+  void _resetSceneAutoPlayState() {
+    _sceneAutoTimer?.cancel();
+    _stopAudioReplay(); // Stop any ongoing audio replay
+    setState(() {
+      _hasPlayedAudio = false;
+    });
+  }
+
+  // Audio replay management methods
+  void _startAudioReplay(String audioUrl) {
+    _currentAudioUrl = audioUrl;
+    _audioReplayTimer?.cancel();
+    _audioReplayTimer = Timer.periodic(Duration(seconds: 3), (timer) {
+      if (mounted && _currentAudioUrl != null) {
+        _player.play(UrlSource(_currentAudioUrl!));
+      }
+    });
+  }
+
+  void _stopAudioReplay() {
+    _audioReplayTimer?.cancel();
+    _currentAudioUrl = null;
+  }
+
+  Future<void> _playAudioWithReplay(String audioUrl) async {
+    _stopAudioReplay(); // Stop any existing replay
+    await _player.play(UrlSource(audioUrl));
+    _startAudioReplay(audioUrl); // Start new replay cycle
+  }
+
   void _onRiveInit(Artboard artboard) async {
     final controller =
         StateMachineController.fromArtboard(artboard, 'State Machine 2');
@@ -127,6 +245,9 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
   }
 
   void _triggerAnimation(bool isCorrect) {
+      var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
+
+    String type = obj[0] as String;
     print("isCorrect: $isCorrect");
     if (isCorrect) {
       if (_correctTrigger != null) {
@@ -137,7 +258,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
       });
 
       // Auto-navigate if no more exercises
-      if (!hasMoreExercises) {
+      if (!hasMoreExercises && type != "StoryComprehension") {
         Future.delayed(const Duration(seconds: 3), () {
           if (mounted && exerciseCompleted) {
             Navigator.pop(context);
@@ -186,6 +307,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
               // Custom app bar without parent mode
               DisciAppBar(
                 context,
+                show_switch: false,
                 parent_mode: false,
                 onParentModeChanged: (value) {},
               ),
@@ -195,7 +317,6 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
                   child: Stack(
                 children: [
                   Container(
-                  
                     child: _buildExerciseContent(
                       context,
                       provider,
@@ -214,6 +335,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
                             height: MediaQuery.of(context).size.height * 0.4,
                             width: MediaQuery.of(context).size.width,
                             child: RiveAnimation.asset(
+                              key: type=="StoryComprehension" ? Key(currentQuestionIndex.toString()) : null,
                               'assets/rive/Celebration_animation.riv',
                               onInit: _onRiveInit,
                               fit: BoxFit.fitHeight,
@@ -280,6 +402,9 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
   }
 
   Widget _buildPictureMatchingComprehension(PictureMatchingComprehension data) {
+    // Start auto-play timer for prompt audio after 5 seconds
+    _startAutoPlayWithReplay(data.getPromptAudioUrl());
+
     return Padding(
       padding: EdgeInsets.all(16.h),
       child: Column(
@@ -290,11 +415,10 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
             width: double.infinity,
             padding: EdgeInsets.all(20.h),
             decoration: BoxDecoration(
-            
               borderRadius: BorderRadius.circular(16),
-            
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   data.getPrompt(),
@@ -306,14 +430,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
                   ),
                 ),
                 SizedBox(height: 16.v),
-                // Audio play button
-                CustomButton(
-                  width: 150,
-                  type: ButtonType.Play,
-                  onPressed: () async {
-                    await _player.play(UrlSource(data.getPromptAudioUrl()));
-                  },
-                ),
+                // Audio play button - now shows auto-play status
               ],
             ),
           ),
@@ -328,7 +445,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
               crossAxisCount: 2,
               crossAxisSpacing: 16.h,
               mainAxisSpacing: 16.v,
-              childAspectRatio: 0.8,
+              childAspectRatio: 0.9, // Adjusted for larger images
             ),
             itemCount: data.getOptions().length,
             itemBuilder: (context, index) {
@@ -336,9 +453,8 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
               return OptionWidget(
                 key: Key(index.toString()),
                 triggerAnimation: _triggerAnimation,
-                child: _buildDuolingoOption(
-                  imageUrl: option['image_url'] ?? '',
-                  text: option['text'] ?? '',
+                child: ImageWidget(
+                  imagePath: option['image_url'] ?? '',
                 ),
                 isCorrect: () {
                   print("index: $index");
@@ -355,6 +471,9 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
   }
 
   Widget _buildWhComprehension(Wh data) {
+    _startAutoPlayWithReplay(data.getPromptAudioUrl());
+    // Wh class doesn't have audio, so we skip auto-play for this type
+
     return Padding(
       padding: EdgeInsets.all(16.h),
       child: Column(
@@ -366,13 +485,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
             padding: EdgeInsets.all(24.h),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
+            
             ),
             child: Text(
               data.getPrompt(),
@@ -395,19 +508,17 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
                 crossAxisCount: 2,
                 crossAxisSpacing: 16.h,
                 mainAxisSpacing: 16.v,
-                childAspectRatio:
-                    0.8, // Increased height for better text visibility
+                childAspectRatio: 0.9, // Adjusted for larger images
               ),
               itemCount: data.getOptions().length,
               itemBuilder: (context, index) {
                 final option = data.getOptions()[index];
                 return OptionWidget(
                   triggerAnimation: _triggerAnimation,
-                  child: _buildDuolingoOption(
-                    imageUrl: option['image_url'] ?? '',
-                    text: option['text'] ?? '',
-                    isFullWidth: false, // Grid items don't need full width
-                  ),
+                    child: ImageWidget(
+                      imagePath: option['image_url'] ?? '',
+                    ),
+
                   isCorrect: () {
                     bool isCorrect = index == data.getCorrect();
                     _handleAnswer(isCorrect);
@@ -423,6 +534,9 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
   }
 
   Widget _buildYesNoComprehension(YesNoComprehension data) {
+    // Start auto-play timer for input audio after 5 seconds
+    _startAutoPlayWithReplay(data.input_audio_url);
+
     return Padding(
       padding: EdgeInsets.all(16.h),
       child: Column(
@@ -433,15 +547,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
             width: double.infinity,
             padding: EdgeInsets.all(24.h),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.9),
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
             ),
             child: Column(
               children: [
@@ -453,13 +559,6 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF2E7D32),
                   ),
-                ),
-                SizedBox(height: 16.v),
-                CustomButton(
-                  type: ButtonType.Play,
-                  onPressed: () async {
-                    await _player.play(UrlSource(data.input_audio_url));
-                  },
                 ),
               ],
             ),
@@ -492,39 +591,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
               ),
             ),
 
-          // Output prompt
-          if (data.output_prompt.isNotEmpty)
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(20.h),
-              margin: EdgeInsets.only(bottom: 24.v),
-              decoration: BoxDecoration(
-                color: Color(0xFFF3E5F5).withOpacity(0.9),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    data.output_prompt,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.comicNeue(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF4A148C),
-                    ),
-                  ),
-                  if (data.output_audio_url.isNotEmpty) ...[
-                    SizedBox(height: 12.v),
-                    CustomButton(
-                      type: ButtonType.Play,
-                      onPressed: () async {
-                        await _player.play(UrlSource(data.output_audio_url));
-                      },
-                    ),
-                  ],
-                ],
-              ),
-            ),
+        
 
           // Yes/No options
           Row(
@@ -532,7 +599,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
               Expanded(
                 child: OptionWidget(
                   triggerAnimation: _triggerAnimation,
-                  child: _buildYesNoButton("Yes", Colors.green),
+                  child: YesNoButtonWidget(text: "Yes", color: Colors.green),
                   isCorrect: () {
                     bool isCorrect = data.getCorrect().toLowerCase() == "yes";
                     _handleAnswer(isCorrect);
@@ -544,7 +611,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
               Expanded(
                 child: OptionWidget(
                   triggerAnimation: _triggerAnimation,
-                  child: _buildYesNoButton("No", Colors.red),
+                  child: YesNoButtonWidget(text: "No", color: Colors.red),
                   isCorrect: () {
                     bool isCorrect = data.getCorrect().toLowerCase() == "no";
                     _handleAnswer(isCorrect);
@@ -560,6 +627,8 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
   }
 
   Widget _buildStoryCompletion(StoryCompletion data) {
+    // StoryCompletion class doesn't have prompt audio, so we skip auto-play for this type
+    _startAutoPlayWithReplay(data.getPromptAudioUrl());
     return Padding(
       padding: EdgeInsets.all(16.h),
       child: Column(
@@ -569,17 +638,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(24.h),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.9),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
+            decoration: BoxDecoration(),
             child: Text(
               data.getPrompt(),
               textAlign: TextAlign.center,
@@ -602,18 +661,16 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
               crossAxisCount: 2,
               crossAxisSpacing: 16.h,
               mainAxisSpacing: 16.v,
-              childAspectRatio: 0.7,
+              childAspectRatio: 0.8, // Adjusted for larger images
             ),
             itemCount: data.options.length,
             itemBuilder: (context, index) {
               final option = data.options[index];
               return OptionWidget(
                 triggerAnimation: _triggerAnimation,
-                child: _buildStoryOption(
-                  imageUrl: option['image_url'] ?? '',
-                  text: option['text'] ?? '',
-                  audioUrl: option['audio_url'] ?? '',
-                ),
+                  child: ImageWidget(
+                    imagePath: option['image_url'] ?? '',
+                  ),
                 isCorrect: () {
                   bool isCorrect = index == data.getCorrect();
                   _handleAnswer(isCorrect);
@@ -647,8 +704,13 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
         content =
             _buildStoryQuestion(data.questions[currentQuestionIndex], data);
       } else {
-        // All questions completed
-        content = _buildStoryCompleted();
+        // All questions completed - this should not happen now since we navigate back
+        // But keep a fallback
+        content = Container(
+          child: Center(
+            child: Text("Questions completed"),
+          ),
+        );
       }
     }
 
@@ -660,6 +722,9 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
   }
 
   Widget _buildStoryScene(Scene scene, StoryComprehension storyData) {
+    // Start automatic audio playback and scene progression
+    _startSceneAutoPlayTimer(scene, storyData);
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(16.h),
       child: Column(
@@ -715,16 +780,8 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
             width: double.infinity,
             padding: EdgeInsets.all(20.h),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.9),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
+                borderRadius: BorderRadius.circular(16),
+                color: const Color.fromARGB(255, 174, 179, 98)),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -732,28 +789,23 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
                   scene.getDescription(),
                   textAlign: TextAlign.center,
                   style: GoogleFonts.comicNeue(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
                     color: Color(0xFF2E7D32),
                     height: 1.4,
                   ),
                 ),
                 SizedBox(height: 16.v),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     // Audio play button
-                    CustomButton(
-                      type: ButtonType.Play,
-                      onPressed: () async {
-                        await _player.play(UrlSource(scene.getAudioUrl()));
-                      },
-                    ),
-                    SizedBox(width: 20.h),
+
                     // Next scene button
                     CustomButton(
+                      width: 150,
                       type: ButtonType.Next,
-                      onPressed: _nextScene,
+                      onPressed: () => _nextScene(storyData),
                       child: Text(
                         currentSceneIndex == storyData.scenes.length - 1
                             ? "Start Questions"
@@ -775,6 +827,18 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
   }
 
   Widget _buildStoryQuestion(Question question, StoryComprehension storyData) {
+    // Play question audio automatically when question shows with replay
+    if (!_hasPlayedAudio && question.getAudioUrl().isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _playAudioWithReplay(question.getAudioUrl());
+          setState(() {
+            _hasPlayedAudio = true;
+          });
+        }
+      });
+    }
+
     return Column(
       children: [
         // Fixed header section
@@ -805,18 +869,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
               // Question text and audio
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(24.h),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
+                decoration: BoxDecoration(),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -830,12 +883,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
                       ),
                     ),
                     SizedBox(height: 16.v),
-                    CustomButton(
-                      type: ButtonType.Play,
-                      onPressed: () async {
-                        await _player.play(UrlSource(question.getAudioUrl()));
-                      },
-                    ),
+                    // Next question button
                   ],
                 ),
               ),
@@ -853,24 +901,24 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
                 crossAxisCount: 2,
                 crossAxisSpacing: 16.h,
                 mainAxisSpacing: 16.v,
-                childAspectRatio: 0.7,
+                childAspectRatio: 0.8, // Adjusted for larger images
               ),
               itemCount: question.getOptions().length,
               itemBuilder: (context, index) {
                 final option = question.getOptions()[index];
                 return OptionWidget(
-                  triggerAnimation: (isCorrect) {
+                  key: Key(question.getText()+ index.toString()),
+                  triggerAnimation: (isCorrect) async {
+                    _triggerAnimation(isCorrect);
                     if (isCorrect) {
-                      _nextQuestion(storyData);
+                      await _nextQuestion(storyData);
                     }
                   },
-                  child: _buildStoryQuestionOption(
-                    imageUrl: option['image_url'] ?? '',
-                    text: option['text'] ?? '',
-                    audioUrl: option['audio_url'] ?? '',
+                  child: ImageWidget(
+                    imagePath: option['image_url'] ?? '',
                   ),
                   isCorrect: () {
-                    bool isCorrect = option['text'] == question.getAnswer();
+                    bool isCorrect = option['index'] == question.getAnswer();
                     _handleStoryAnswer(isCorrect, storyData);
                     return isCorrect;
                   },
@@ -879,204 +927,46 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
             ),
           ),
         ),
+        CustomButton(
+          width: 120,
+          type: ButtonType.Next,
+          onPressed: () => _nextQuestion(storyData),
+          child: Text(
+            "Next",
+            style: GoogleFonts.inter(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildStoryQuestionOption({
-    required String imageUrl,
-    required String text,
-    required String audioUrl,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFFE0E0E0), width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          if (imageUrl.isNotEmpty) ...[
-            Expanded(
-              flex: 3,
-              child: Stack(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(16)),
-                    ),
-                    child: ClipRRect(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(16)),
-                      child: CustomImageView(
-                        imagePath: imageUrl,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  if (audioUrl.isNotEmpty)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: GestureDetector(
-                        onTap: () async {
-                          await _player.play(UrlSource(audioUrl));
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Icon(
-                            Icons.play_arrow,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-          if (text.isNotEmpty) ...[
-            Expanded(
-              flex: 2,
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(12.h),
-                decoration: BoxDecoration(
-                  color: Color(0xFFF8F9FA),
-                  borderRadius: imageUrl.isNotEmpty
-                      ? BorderRadius.vertical(bottom: Radius.circular(16))
-                      : BorderRadius.circular(16),
-                ),
-                child: Center(
-                  child: Text(
-                    text,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF212529),
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStoryCompleted() {
-    return Center(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(16.h),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(32.h),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.check_circle,
-                    size: 64,
-                    color: Colors.green,
-                  ),
-                  SizedBox(height: 16.v),
-                  Text(
-                    "Story Completed!",
-                    style: GoogleFonts.comicNeue(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2E7D32),
-                    ),
-                  ),
-                  SizedBox(height: 8.v),
-                  Text(
-                    "Great job understanding the story!",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      fontSize: 18,
-                      color: Color(0xFF666666),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 32.v),
-            if (hasMoreExercises)
-              CustomButton(
-                type: ButtonType.Next,
-                onPressed: _moveToNextExercise,
-                child: Text(
-                  "Next Exercise",
-                  style: GoogleFonts.inter(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )
-            else
-              CustomButton(
-                type: ButtonType.Home,
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  "Finish",
-                  style: GoogleFonts.inter(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _nextScene() {
+  void _nextScene(StoryComprehension storyData) {
+    _stopAudioReplay(); // Stop current audio replay
     setState(() {
       if (currentSceneIndex < 999) {
         // Use a large number since we check in build
         currentSceneIndex++;
+        // Reset auto-play state for the new scene
+        _hasPlayedAudio = false;
+        _sceneAutoTimer?.cancel();
       }
     });
   }
 
-  void _nextQuestion(StoryComprehension storyData) {
+  Future<void> _nextQuestion(StoryComprehension storyData) async {
+    _stopAudioReplay(); // Stop current audio replay
+    await Future.delayed(const Duration(seconds: 1));
     setState(() {
       currentQuestionIndex++;
+      // Reset audio state for the new question
+      _hasPlayedAudio = false;
       if (currentQuestionIndex >= storyData.questions.length) {
-        exerciseCompleted = true;
+        // Instead of showing completion, go back to previous screen
+        Navigator.pop(context);
+        return;
       }
     });
   }
@@ -1085,215 +975,21 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
     var data_pro = Provider.of<ExerciseProvider>(context, listen: false);
     Map<String, dynamic> data = data_pro.todaysExercises[currentExerciseIndex];
 
-    if (isCorrect) {
+    if (isCorrect && currentQuestionIndex == storyData.questions.length - 1) {
       data_pro.incrementLevel(currentExerciseIndex);
     }
 
-    UserData(uid: FirebaseAuth.instance.currentUser!.uid).updateExerciseData(
-      euid: data["uid"],
-      date: data["date"],
-      performance: {
-        "correct_attempt": isCorrect,
-        "time": DateTime.now().toString(),
-        "question_index": currentQuestionIndex,
-        "total_questions": storyData.questions.length,
-      },
-    ).then((value) => print("Story exercise data updated"));
-  }
-
-  Widget _buildDuolingoOption({
-    required String imageUrl,
-    required String text,
-    bool isFullWidth = false,
-  }) {
-    return Container(
-      width: isFullWidth ? double.infinity : null,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFFE0E0E0), width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          if (imageUrl.isNotEmpty) ...[
-            Expanded(
-              flex: 3,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
-                  child: CustomImageView(
-                    imagePath: imageUrl,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-          ],
-          if (text.isNotEmpty) ...[
-            Expanded(
-              flex: imageUrl.isNotEmpty
-                  ? 3
-                  : 1, // Increased flex for more text space
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(horizontal: 8.h, vertical: 8.v),
-                decoration: BoxDecoration(
-                  color: Color(0xFFF8F9FA),
-                  borderRadius: imageUrl.isNotEmpty
-                      ? BorderRadius.vertical(bottom: Radius.circular(14))
-                      : BorderRadius.circular(16),
-                ),
-                child: Center(
-                  child: Text(
-                    text,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF212529),
-                      height: 1.2, // Better line height for readability
-                    ),
-                    maxLines: 3, // Allow up to 3 lines of text
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildYesNoButton(String text, Color color) {
-    return Container(
-      height: 60.v,
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color, width: 2),
-      ),
-      child: Center(
-        child: Text(
-          text,
-          style: GoogleFonts.inter(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStoryOption({
-    required String imageUrl,
-    required String text,
-    required String audioUrl,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFFE0E0E0), width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          if (imageUrl.isNotEmpty) ...[
-            Expanded(
-              flex: 3,
-              child: Stack(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(16)),
-                    ),
-                    child: ClipRRect(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(16)),
-                      child: CustomImageView(
-                        imagePath: imageUrl,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  if (audioUrl.isNotEmpty)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: GestureDetector(
-                        onTap: () async {
-                          await _player.play(UrlSource(audioUrl));
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Icon(
-                            Icons.play_arrow,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-          if (text.isNotEmpty) ...[
-            Expanded(
-              flex: 2,
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(8.h),
-                decoration: BoxDecoration(
-                  color: Color(0xFFF8F9FA),
-                  borderRadius: imageUrl.isNotEmpty
-                      ? BorderRadius.vertical(bottom: Radius.circular(16))
-                      : BorderRadius.circular(16),
-                ),
-                child: Center(
-                  child: Text(
-                    text,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF212529),
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
+    // Use the new story comprehension attempt function
+    userData
+        .updateStoryComprehensionAttempt(
+          date: data["date"],
+          euid: data["uid"],
+          questionIndex: currentQuestionIndex,
+          totalQuestions: storyData.questions.length,
+          isCorrect: isCorrect,
+          sessionId: _storySessionId,
+        )
+        .then((value) => print("Story comprehension attempt updated"));
   }
 
   void _handleAnswer(bool isCorrect) {

@@ -71,6 +71,7 @@ void main() async {
     PrefUtils().init()
   ]).then((value) {
     initializeFirebaseAuth();
+
     runApp(MyApp(
       analyticsService: analyticsService,
     ));

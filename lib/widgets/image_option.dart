@@ -20,7 +20,7 @@ class ImageWidget extends StatefulWidget {
 
 class _ImageWidgetState extends State<ImageWidget> {
   bool _isNetworkImage(String path) {
-    return path.startsWith('http'); // Check if the image is a network image
+    return path.startsWith('https'); // Check if the image is a network image
   }
 
   File? _cachedImage ;
@@ -63,8 +63,8 @@ class _ImageWidgetState extends State<ImageWidget> {
         child: CustomImageView(
            width: MediaQuery.of(context).size.width * 0.75,
           height: MediaQuery.of(context).size.height * 0.45,
-          fit: BoxFit.cover,
-            imagePath: widget.imagePath,
+          fit: BoxFit.fill,
+            imagePath: _cachedImage?.path ?? widget.imagePath,
           ),
       ),
     );

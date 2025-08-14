@@ -640,11 +640,11 @@ class _CustomButtonState extends State<CustomButton>
           width: width,
           decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.75),
-            borderRadius: BorderRadius.circular(12.0),
+          
             border: Border.all(color: Colors.white.withOpacity(0.1)),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(12.0),
+          
             child: CustomPaint(
               painter: SpectrumPainter(
                 progress: _currentProgress,

@@ -20,6 +20,7 @@ import 'package:vad/vad.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:svar_new/data/models/levelManagementModel/visual.dart';
+import 'package:svar_new/widgets/rive_preloader.dart';
 import 'dart:math';
 
 // import 'dart:html' as html;
@@ -276,6 +277,9 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
       return;
     }
 
+    // Initialize Rive preloader
+    await RivePreloader().initialize();
+
     _setupVadHandler(); // Setup VAD (it won't start automatically)
     initializeApp();
 
@@ -451,10 +455,25 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
                 child: SizedBox(
                   height: size.height * 0.4,
                   width: size.width,
-                  child: rive.RiveAnimation.asset(
-                    'assets/rive/5_stepping_stone.riv',
-                    onInit: _onRiveInit,
-                    fit: BoxFit.contain,
+                  child: Builder(
+                    builder: (context) {
+                      final riveFile = RivePreloader()
+                          .getRiveFile('assets/rive/5_stepping_stone.riv');
+                      if (riveFile != null) {
+                        return rive.RiveAnimation.direct(
+                          riveFile,
+                          onInit: _onRiveInit,
+                          fit: BoxFit.contain,
+                        );
+                      } else {
+                        // Fallback to loading from file if preloaded file is not available
+                        return rive.RiveAnimation.file(
+                          'assets/rive/5_stepping_stone.riv',
+                          onInit: _onRiveInit,
+                          fit: BoxFit.contain,
+                        );
+                      }
+                    },
                   ),
                 ),
               ),

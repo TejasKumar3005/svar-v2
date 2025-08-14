@@ -320,12 +320,14 @@ class PictureMatchingComprehension {
 class Wh {
   String prompt;
   int correct;
+  String prompt_audio_url;
   List<Map<String, dynamic>> options;
 
   Wh({
     required this.prompt,
     required this.correct,
     required this.options,
+    required this.prompt_audio_url,
   });
 
   factory Wh.fromJson(Map<String, dynamic> json) {
@@ -334,6 +336,7 @@ class Wh {
       correct: json['correct'] as int,
       options: List<Map<String, dynamic>>.from(json[
           'options']), // [{image_url: String, text: String]
+      prompt_audio_url: json['prompt_audio_url'] as String,
     );
   }
 
@@ -343,6 +346,10 @@ class Wh {
 
   int getCorrect() {
     return correct;
+  }
+
+  String getPromptAudioUrl() {
+    return prompt_audio_url;
   }
 
   List<Map<String, dynamic>> getOptions() {
@@ -390,12 +397,16 @@ class YesNoComprehension {
 class StoryCompletion {
   String prompt;
   int correct;
+  String prompt_audio_url;
+  String prompt_image_url;
   List<Map<String, dynamic>> options;
 
   StoryCompletion({
     required this.prompt,
     required this.correct,
-    required this.options,
+    required this.options,  
+    required this.prompt_audio_url,
+    required this.prompt_image_url,
   });
 
   factory StoryCompletion.fromJson(Map<String, dynamic> json) {
@@ -404,6 +415,8 @@ class StoryCompletion {
       correct: json['correct'] as int,
       options: List<Map<String, dynamic>>.from(json[
           'options']), //[{image_url: String, text: String,audio_url: String}]
+      prompt_audio_url: json['prompt_audio_url'] as String,
+      prompt_image_url: json['prompt_image_url'] as String,
     );
   }
 
@@ -413,6 +426,14 @@ class StoryCompletion {
 
   int getCorrect() {
     return correct;
+  }
+
+  String getPromptAudioUrl() {
+    return prompt_audio_url;
+  }
+
+  String getPromptImageUrl() {
+    return prompt_image_url;
   }
 }
 
@@ -435,7 +456,15 @@ class Question {
       answer: json['answer'] as String,
       audio_url: json['audio_url'] as String,
       text: json['text'] as String,
-      options: List<Map<String, dynamic>>.from(json['options']),
+      options: (json['options'] as Map<String, dynamic>).entries.map((entry) {
+        // entry.key is "0", "1", "2", "3"
+        // entry.value is the option map
+        final option = Map<String, dynamic>.from(entry.value);
+        // Add index field as "A", "B", "C", "D" based on key
+        final indexLetter = String.fromCharCode('A'.codeUnitAt(0) + int.parse(entry.key));
+        option['index'] = indexLetter;
+        return option;
+      }).toList(),
     );
   }
 
@@ -459,7 +488,7 @@ class Question {
 class Scene {
   String audio_url;
   String description;
-  String id;
+  int id;
   String image_concept;
   String image_url;
   Scene({
@@ -473,7 +502,7 @@ class Scene {
     return Scene(
       audio_url: json['audio_url'] as String,
       description: json['description'] as String,
-      id: json['id'] as String,
+      id: json['id'] as int,
       image_concept: json['image_concept'] as String,
       image_url: json['image_url'] as String,
     );

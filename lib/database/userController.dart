@@ -149,6 +149,122 @@ class UserData {
     }
   }
 
+  Future<void> updateStoryComprehensionAttempt({
+    required String date,
+    required String euid,
+    required int questionIndex,
+    required int totalQuestions,
+    required bool isCorrect,
+    String? sessionId,
+  }) async {
+    try {
+      final userDoc = userCollection.doc(uid);
+
+      // Get the current user document data
+      final docSnapshot = await userDoc.get();
+
+      if (!docSnapshot.exists) {
+        print('User document with ID $uid not found.');
+        return;
+      }
+
+      var userData = docSnapshot.data() as Map<String, dynamic>;
+      var exercises = userData['exercises'] as Map<String, dynamic>? ?? {};
+
+      if (!exercises.containsKey(date)) {
+        print('No exercises found for date $date.');
+        return;
+      }
+
+      var exercisesForDate = exercises[date] as List<dynamic>;
+      var exerciseIndex = exercisesForDate
+          .indexWhere((exercise) => exercise is Map && exercise['uid'] == euid);
+
+      if (exerciseIndex == -1) {
+        print('Exercise with eid $euid not found for date $date.');
+        return;
+      }
+
+      Map<String, dynamic> exerciseData =
+          Map<String, dynamic>.from(exercisesForDate[exerciseIndex]);
+
+      // Initialize performance array if it doesn't exist
+      if (exerciseData['performance'] == null) {
+        exerciseData['performance'] = [];
+      }
+
+      // Create the question attempt data
+      Map<String, dynamic> questionAttempt = {
+        "question_index": questionIndex,
+        "total_questions": totalQuestions,
+        "correct_attempt": isCorrect,
+        "time": DateTime.now().toString(),
+        "session_id":
+            sessionId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      };
+
+      // Check if there's an existing session attempt
+      List<dynamic> performance =
+          List<dynamic>.from(exerciseData['performance']);
+      Map<String, dynamic>? existingSessionAttempt;
+      int sessionIndex = -1;
+
+      // Find existing session attempt if sessionId is provided
+      if (sessionId != null) {
+        for (int i = 0; i < performance.length; i++) {
+          var attempt = performance[i];
+          if (attempt is Map &&
+              attempt['session_id'] == sessionId &&
+              attempt['type'] == 'story_comprehension_session') {
+            existingSessionAttempt = Map<String, dynamic>.from(attempt);
+            sessionIndex = i;
+            break;
+          }
+        }
+      }
+
+      if (existingSessionAttempt != null) {
+        // Add to existing session attempt
+        if (existingSessionAttempt['question_attempts'] == null) {
+          existingSessionAttempt['question_attempts'] = [];
+        }
+        existingSessionAttempt['question_attempts'].add(questionAttempt);
+        existingSessionAttempt['last_updated'] = DateTime.now().toString();
+
+        // Update the session attempt in performance array
+        performance[sessionIndex] = existingSessionAttempt;
+      } else {
+        // Create new session attempt
+        Map<String, dynamic> newSessionAttempt = {
+          "type": "story_comprehension_session",
+          "session_id":
+              sessionId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+          "started_at": DateTime.now().toString(),
+          "last_updated": DateTime.now().toString(),
+          "question_attempts": [questionAttempt],
+        };
+        performance.add(newSessionAttempt);
+      }
+
+      // Update the exercise data
+      exerciseData['performance'] = performance;
+      exercisesForDate[exerciseIndex] = exerciseData;
+
+      // Update Firestore
+      await userDoc.update({
+        'exercises.$date': exercisesForDate,
+      });
+
+      print('Story comprehension attempt updated successfully!');
+      print(
+          'Session ID: ${sessionId ?? DateTime.now().millisecondsSinceEpoch.toString()}');
+      print('Question Index: $questionIndex, Correct: $isCorrect');
+    } catch (e) {
+      print('Error updating story comprehension attempt: $e');
+      rethrow; // Rethrow the error to handle it in the calling code
+    }
+  }
+
   Future<List<dynamic>> getfortnightExercises(
       Map<String, dynamic> exercises) async {
     // FIX: Now preserves all original exercise data including completedAt, views, performance
@@ -192,16 +308,14 @@ class UserData {
                 "exerciseType": exercise["subtype"],
                 "date": formattedDate
               });
-            }else if (exercise["type"].toString() == "HalfMuted"){
-            // do nothing..remove this exercise from the list
-            }
-             else if (exercise["type"].toString() == "DiffHalf") {
+            } else if (exercise["type"].toString() == "HalfMuted") {
+              // do nothing..remove this exercise from the list
+            } else if (exercise["type"].toString() == "DiffHalf") {
               updatedData.add({
                 ...baseExercise, // Preserve original data
                 "date": formattedDate,
                 "exerciseType": "DiffHalf",
               });
-              
             } else {
               updatedData.add({
                 ...baseExercise, // Preserve original data
