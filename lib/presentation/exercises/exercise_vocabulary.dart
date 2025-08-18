@@ -408,10 +408,10 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _buildImageContainer(
-                            context, displayImage1!, isSmallScreen, size),
+                            context, displayImage1!, isSmallScreen, Size(size.width*0.45, size.height*0.3)),
                         SizedBox(width: 16),
                         _buildImageContainer(
-                            context, displayImage2!, isSmallScreen, size),
+                            context, displayImage2!, isSmallScreen, Size(size.width*0.45, size.height*0.3)),
                       ],
                     )
                   else
@@ -420,7 +420,7 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
                         await speakHindi(displayWord);
                       },
                       child: _buildImageContainer(
-                          context, displayImage1 ?? '', isSmallScreen, size),
+                          context, displayImage1 ?? '', isSmallScreen, Size(size.width*0.9, size.height*0.3)),
                     ),
 
                   // Word Display
@@ -765,8 +765,8 @@ class ExerciseVocabularyState extends State<ExerciseVocabulary> {
   Widget _buildImageContainer(
       BuildContext context, String imageUrl, bool isSmallScreen, Size size) {
     return Container(
-      width: isSmallScreen ? size.width * 0.32 : size.width * 0.18,
-      height: isSmallScreen ? size.width * 0.32 : size.width * 0.18,
+      width: size.width,
+      height: size.height ,
       margin: EdgeInsets.symmetric(vertical: 20),
       decoration: BoxDecoration(
         color: Colors.white,

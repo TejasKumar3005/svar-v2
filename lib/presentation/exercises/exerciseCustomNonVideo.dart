@@ -172,7 +172,7 @@ class _ExerciseCustomNonVideoState extends State<ExerciseCustomNonVideo> {
 
   }
 
-  void _showSnack(String msg, ContentType type) {
+void _showSnack(String msg, ContentType type) {
     final sb = SnackBar(
       elevation: 0,
       behavior: SnackBarBehavior.floating,

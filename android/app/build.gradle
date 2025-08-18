@@ -65,12 +65,12 @@ android {
 
     signingConfigs {
         debug {}
-    release {
-        storeFile file('C:\\Users\\SOI\\upload-keystore.jks')
-        storePassword '30052003'
-        keyAlias 'upload'
-        keyPassword '30052003'
-    }
+    // release {
+    //     storeFile file('C:\\Users\\SOI\\upload-keystore.jks')
+    //     storePassword '30052003'
+    //     keyAlias 'upload'
+    //     keyPassword '30052003'
+    // }
 }
     
 
@@ -79,7 +79,7 @@ android {
         release {
         shrinkResources true
         // signingConfig signingConfigs.debug
-        signingConfig signingConfigs.release
+        signingConfig signingConfigs.debug
         minifyEnabled true
         proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
     }

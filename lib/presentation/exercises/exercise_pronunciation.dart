@@ -92,6 +92,43 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
   late String displayCharacter;
   late String originalCharacter;
 
+  // Audio URL cache
+  Map<String, String> _audioUrlCache = {};
+
+  // Pre-fetch audio URLs for all required texts
+  Future<void> _preFetchAudioUrls() async {
+    print("Starting to pre-fetch audio URLs...");
+
+    // Create a set of all texts that might be used
+    Set<String> textsToFetch = {};
+
+    // Add the main character
+    textsToFetch.add(originalCharacter);
+
+    // Add all sample pronunciations
+    for (String pronunciation in samplePronunciations) {
+      textsToFetch.add(pronunciation);
+    }
+
+    // Fetch URLs for all texts
+    for (String text in textsToFetch) {
+      try {
+        String? audioUrl = await generateSpeech(text, 'non_sound', lang: 'hi');
+        if (audioUrl != null) {
+          _audioUrlCache[text] = audioUrl;
+          print("Cached audio URL for: $text");
+        } else {
+          print("Failed to fetch audio URL for: $text");
+        }
+      } catch (e) {
+        print("Error fetching audio URL for $text: $e");
+      }
+    }
+
+    print(
+        "Audio URL pre-fetching completed. Cached ${_audioUrlCache.length} URLs");
+  }
+
   @override
   bool get wantKeepAlive => true;
 
@@ -102,6 +139,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     originalCharacter = widget.character;
     _setDisplayCharacter();
     _initializeWithConnectivityCheck();
+    // Pre-fetch audio URLs for better performance
+    _preFetchAudioUrls();
   }
 
   void _setDisplayCharacter() {
@@ -291,24 +330,85 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
     });
   }
 
+  // API call to generate speech audio URL
+  Future<String?> generateSpeech(String text, String type,
+      {String lang = 'hi'}) async {
+    const String apiUrl = 'https://gameapi.svar.in/generate_speech';
+    if (text.isEmpty) return null;
+
+    try {
+      var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
+      request.fields['text'] = text;
+      request.fields['lang'] = lang;
+      request.fields['type'] = type;
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['result']['url'];
+      } else {
+        print(
+            'Speech generation failed for "$text" with status: ${response.statusCode}');
+        return null;
+      }
+    } catch (error) {
+      print('Speech generation failed: ${error.toString()}');
+      return null;
+    }
+  }
+
   // Modify speakHindiWithoutRecording method
   Future<void> speakHindiWithoutRecording(String text) async {
-    print("Starting TTS for text: $text");
+    print("Starting speech playback for text: $text");
     if (text.isEmpty) return;
 
     // Store VAD state and stop if it's listening
     bool wasVadListening = _isVadListening;
     if (_isVadListening) {
-      print("Stopping VAD for TTS");
+      print("Stopping VAD for speech playback");
       _safeStopVadListening();
     }
 
     try {
       setState(() => isSpeaking = true);
-      await flutterTts.speak(text);
-      await Future.delayed(Duration(milliseconds: 2500));
+
+      String? audioUrl;
+
+      // First, try to get URL from cache
+      if (_audioUrlCache.containsKey(text)) {
+        audioUrl = _audioUrlCache[text];
+        print("Using cached audio URL for: $text");
+      } else {
+        // If not in cache, fetch it now
+        print("Audio URL not in cache, fetching for: $text");
+        audioUrl = await generateSpeech(text, 'non_sound', lang: 'hi');
+        if (audioUrl != null) {
+          _audioUrlCache[text] = audioUrl; // Cache for future use
+          print("Fetched and cached audio URL for: $text");
+        }
+      }
+
+      if (audioUrl != null) {
+        print("Playing audio from URL: $audioUrl");
+        await _audioPlayer.play(UrlSource(audioUrl));
+        await Future.delayed(Duration(milliseconds: 2500));
+      } else {
+        print("Failed to get audio URL, falling back to TTS");
+        // Fallback to TTS if API fails
+        await flutterTts.speak(text);
+        await Future.delayed(Duration(milliseconds: 2500));
+      }
     } catch (e) {
-      print("Error speaking: $e");
+      print("Error in speech playback: $e");
+      // Fallback to TTS on error
+      try {
+        await flutterTts.speak(text);
+        await Future.delayed(Duration(milliseconds: 2500));
+      } catch (ttsError) {
+        print("TTS fallback also failed: $ttsError");
+      }
     } finally {
       setState(() => isSpeaking = false);
 
@@ -769,6 +869,7 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
   }
 
   void _triggerNextAnimation() {
+
     if (_nextTrigger != null) {
       _nextTrigger!.fire();
     } else {
@@ -948,6 +1049,8 @@ class ExercisePronunciationState extends State<ExercisePronunciation>
 
           if (isCorrectPronunciation) {
             correctAttempts++;
+            await _audioPlayer.play(AssetSource('assets/audio/correct_answer.mp3'));
+            await Future.delayed(Duration(milliseconds: 1000));
             _triggerNextAnimation();
 
             if (correctAttempts >= REQUIRED_CORRECT_ATTEMPTS) {
