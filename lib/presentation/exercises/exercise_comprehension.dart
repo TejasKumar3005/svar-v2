@@ -244,7 +244,7 @@ class ExerciseComprehensionState extends State<ExerciseComprehension> {
     }
   }
 
-  void _triggerAnimation(bool isCorrect) {
+void _triggerAnimation(bool isCorrect) {
       var obj = ModalRoute.of(context)?.settings.arguments as List<dynamic>;
 
     String type = obj[0] as String;
